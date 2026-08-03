@@ -1,4 +1,4 @@
-﻿go<%@ Page Title="Approve Proposal"
+﻿<%@ Page Title="Approve Proposal"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"

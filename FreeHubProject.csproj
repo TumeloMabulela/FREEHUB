@@ -218,6 +218,7 @@
     <Compile Include="Transactions.aspx.designer.cs">
       <DependentUpon>Transactions.aspx</DependentUpon>
     </Compile>
+    <Compile Include="DatabaseHelper.cs" />
     <Compile Include="TransactionStore.cs" />
     <Compile Include="Wallet.aspx.cs">
       <DependentUpon>Wallet.aspx</DependentUpon>
@@ -236,6 +237,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Database\FreeHubDB.sql" />
     <Content Include="Site1.Master" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
