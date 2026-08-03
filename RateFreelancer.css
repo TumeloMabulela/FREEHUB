@@ -1,0 +1,452 @@
+﻿/* =========================================
+   FREEHUB - RATE FREELANCER
+========================================= */
+
+.rate-page-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7f8;
+    font-family: Arial,Helvetica,sans-serif;
+}
+
+/*==========================
+ SIDEBAR
+===========================*/
+
+.rate-sidebar {
+    width: 235px;
+    background: #ffffff;
+    border-right: 1px solid #e3e8ea;
+    padding: 22px 18px;
+    box-sizing: border-box;
+}
+
+.rate-sidebar-heading {
+    margin: 20px 10px 10px;
+    color: #8a949a;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.rate-menu-title {
+    margin: 18px 10px 10px;
+    color: #8a949a;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.rate-sidebar-section {
+    margin-bottom: 18px;
+}
+
+.rate-sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #5e6770;
+    border-radius: 8px;
+    transition: .25s;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+    .rate-sidebar-item:hover {
+        background: #edf7f1;
+        color: #0b7c4d;
+    }
+
+.rate-sidebar-active {
+    background: #e6f5ea;
+    color: #08754a;
+}
+
+.rate-sidebar-icon {
+    width: 18px;
+    text-align: center;
+}
+
+/*==========================
+ SUPPORT CARD
+===========================*/
+
+.rate-support-card {
+    margin-top: 35px;
+    padding: 18px;
+    background: #f8fbfb;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+}
+
+    .rate-support-card h4 {
+        margin-bottom: 8px;
+        color: #374048;
+    }
+
+    .rate-support-card p {
+        font-size: 13px;
+        color: #6f7a81;
+        margin-bottom: 14px;
+    }
+
+.rate-support-button {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #b8d9c8;
+    background: #fff;
+    color: #08754a;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/*==========================
+ MAIN CONTENT
+===========================*/
+
+.rate-main-content {
+    flex: 1;
+    padding: 25px 30px;
+}
+
+.rate-breadcrumb {
+    color: #879198;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+    .rate-breadcrumb span {
+        margin: 0 8px;
+    }
+
+.rate-heading h1 {
+    font-size: 36px;
+    color: #243328;
+    margin-bottom: 6px;
+}
+
+.rate-heading p {
+    color: #6d7880;
+    margin-bottom: 25px;
+}
+
+/*==========================
+ LAYOUT
+===========================*/
+
+.rate-content-layout {
+    display: grid;
+    grid-template-columns: 2fr 350px;
+    gap: 25px;
+}
+
+/*==========================
+ COMPLETED BANNER
+===========================*/
+
+.rate-completed-banner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #eefaf1;
+    border: 1px solid #d4ead9;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.rate-completed-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #38b66d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+/*==========================
+ CARDS
+===========================*/
+
+.rate-card,
+.rating-side-card {
+    background: #fff;
+    border: 1px solid #e4e8ea;
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+    .rate-card h2,
+    .rating-side-card h3 {
+        margin-bottom: 18px;
+        color: #2d373e;
+    }
+
+/*==========================
+ SUMMARY
+===========================*/
+
+.rate-summary-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.rate-project-summary {
+    display: flex;
+    gap: 18px;
+    flex: 1;
+}
+
+.rate-project-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #e6f5ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #08754a;
+}
+
+.rate-project-summary h3 {
+    margin-bottom: 8px;
+}
+
+.rate-project-summary p {
+    color: #6f7981;
+    margin-bottom: 4px;
+}
+
+.rate-freelancer-summary {
+    min-width: 300px;
+}
+
+.rate-freelancer-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.rate-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #dfeef7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #1e5aa5;
+}
+
+.rate-name-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+    .rate-name-row span {
+        color: #2e9f57;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+.rate-view-profile-button {
+    margin-left: auto;
+    padding: 10px 16px;
+    border: 1px solid #d8dee2;
+    background: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/*==========================
+ STARS
+===========================*/
+
+.star-rating {
+    display: flex;
+    gap: 8px;
+    margin: 18px 0;
+}
+
+.rating-star {
+    font-size: 34px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #d8d8d8;
+}
+
+.selected-star {
+    color: #f4b400;
+}
+
+.rating-comment-box {
+    width: 100%;
+    border: 1px solid #d8dee2;
+    border-radius: 8px;
+    padding: 14px;
+    resize: none;
+    margin-top: 10px;
+}
+
+.rating-character-count {
+    text-align: right;
+    margin-top: 8px;
+    color: #7a848b;
+    font-size: 13px;
+}
+
+/*==========================
+ BUTTONS
+===========================*/
+
+.rating-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.rating-cancel-button {
+    padding: 12px 22px;
+    background: #fff;
+    border: 1px solid #d9dfe2;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.rating-submit-button {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    background: #0a7b49;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .rating-submit-button:hover {
+        background: #06663d;
+    }
+
+/*==========================
+ INFO BOX
+===========================*/
+
+.rating-information-box {
+    display: flex;
+    gap: 15px;
+    padding: 16px;
+    background: #eef5fd;
+    border: 1px solid #d7e6fb;
+    border-radius: 8px;
+}
+
+.rating-information-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #4b8fd7;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*==========================
+ RIGHT SIDE
+===========================*/
+
+.rating-tip {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.rating-tip-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.green-tip {
+    background: #3db36b;
+}
+
+.yellow-tip {
+    background: #f0b22d;
+}
+
+.blue-tip {
+    background: #4b8fd7;
+}
+
+.rating-guidelines {
+    padding-left: 18px;
+}
+
+    .rating-guidelines li {
+        margin-bottom: 10px;
+    }
+
+.report-freelancer-button {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #f0c7c7;
+    background: #fff;
+    color: #d04242;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/*==========================
+ RESPONSIVE
+===========================*/
+
+@media(max-width:1100px) {
+
+    .rate-content-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .rate-sidebar {
+        display: none;
+    }
+}
+
+@media(max-width:700px) {
+
+    .rate-summary-card {
+        flex-direction: column;
+    }
+
+    .rate-freelancer-summary {
+        min-width: 100%;
+    }
+
+    .rating-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .rating-submit-button,
+    .rating-cancel-button {
+        width: 100%;
+    }
+}

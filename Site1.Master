@@ -1,0 +1,158 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true"
+    CodeBehind="Site1.Master.cs"
+    Inherits="FreeHubProject.Site1" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+    <title>FreeHUB</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="<%= ResolveUrl("~/StyleSheet1.css") %>"
+          rel="stylesheet"
+          type="text/css" />
+
+    <asp:ContentPlaceHolder ID="HeadContent"
+        runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+
+<body>
+
+    <form id="form1" runat="server">
+
+        <!-- Navigation Bar -->
+        <header class="main-header">
+
+            <div class="nav-container">
+
+                <a href="Default.aspx" class="logo">
+                    Free<span>HUB</span>
+                </a>
+
+                <nav class="main-navigation">
+
+                    <a href="Default.aspx">Dashboard</a>
+
+                    <a href="BrowseProjects.aspx">
+                        Browse Projects
+                    </a>
+
+                    <a href="PostProject.aspx">
+                        Post a Project
+                    </a>
+                 <a href="Notifications.aspx">
+                      Messages
+                    </a>
+
+                  
+
+                </nav>
+
+                <div class="nav-buttons">
+
+                    <a href="Login.aspx"
+                       class="login-link">
+
+                        Log In
+
+                    </a>
+
+                    <a href="Register.aspx"
+                       class="register-button">
+
+                        Sign Up
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- Main Page Content -->
+        <main class="page-content">
+
+            <asp:ContentPlaceHolder
+                ID="MainContent"
+                runat="server">
+
+            </asp:ContentPlaceHolder>
+
+        </main>
+
+
+        <!-- Footer -->
+        <footer class="main-footer">
+
+            <div class="footer-container">
+
+                <div>
+
+                    <h3>
+                        Free<span>HUB</span>
+                    </h3>
+
+                    <p>
+                        Connecting skilled freelancers
+                        with employers and opportunities.
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <h4>
+                        Quick Links
+                    </h4>
+
+                    <a href="BrowseProjects.aspx">
+                        Browse Projects
+                    </a>
+
+                    <a href="PostProject.aspx">
+                        Post a Project
+                    </a>
+
+                    <a href="Dashboard.aspx">
+                        Dashboard
+                    </a>
+
+                </div>
+
+                <div>
+
+                    <h4>
+                        Contact
+                    </h4>
+
+                    <p>
+                        support@freehub.co.za
+                    </p>
+
+                    <p>
+                        South Africa
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                © 2026 FreeHUB.
+                All rights reserved.
+
+            </div>
+
+        </footer>
+
+    </form>
+
+</body>
+</html>
