@@ -1,134 +1,98 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
+using System.Data;
+using System.Data.SqlClient;
 
 namespace FreeHubProject
 {
     public partial class SelectProposal : System.Web.UI.Page
     {
-        protected void Page_Load(
-            object sender,
-            EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
         }
 
-
-        protected void btnBackToProject_Click(
-            object sender,
-            EventArgs e)
+        protected void btnBackToProject_Click(object sender, EventArgs e)
         {
-            Response.Redirect(
-                "MyProjects.aspx"
-            );
+            Response.Redirect("MyProjects.aspx");
         }
 
-
-        protected void btnSelectProposal1_Click(
-            object sender,
-            EventArgs e)
+        protected void btnSelectProposal1_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Thabo Mokoena's proposal has been selected. " +
-                "The project will be updated in SQL Server later.";
+            SelectAndReview("Thabo Mokoena");
         }
 
-
-        protected void btnSelectProposal2_Click(
-            object sender,
-            EventArgs e)
+        protected void btnSelectProposal2_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Aisha Khan's proposal has been selected. " +
-                "The project will be updated in SQL Server later.";
+            SelectAndReview("Aisha Khan");
         }
 
-
-        protected void btnSelectProposal3_Click(
-            object sender,
-            EventArgs e)
+        protected void btnSelectProposal3_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "John Tau's proposal has been selected. " +
-                "The project will be updated in SQL Server later.";
+            SelectAndReview("John Tau");
         }
 
-
-        protected void btnSelectProposal4_Click(
-            object sender,
-            EventArgs e)
+        protected void btnSelectProposal4_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Sarah Patel's proposal has been selected. " +
-                "The project will be updated in SQL Server later.";
+            SelectAndReview("Sarah Patel");
         }
 
-
-        protected void btnViewProposal1_Click(
-            object sender,
-            EventArgs e)
+        protected void btnViewProposal1_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Viewing Thabo Mokoena's proposal details.";
+            ViewProposalDetails("Thabo Mokoena", "R12,000", "15 days",
+                "I have over 5 years of experience in designing and developing modern, responsive websites. I specialize in creating user-friendly interfaces that drive conversions and improve user experience.");
         }
 
-
-        protected void btnViewProposal2_Click(
-            object sender,
-            EventArgs e)
+        protected void btnViewProposal2_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Viewing Aisha Khan's proposal details.";
+            ViewProposalDetails("Aisha Khan", "R9,500", "18 days",
+                "I can deliver a clean, modern and fully responsive website redesign that aligns with your brand and business goals. I have strong skills in frontend and UI/UX design.");
         }
 
-
-        protected void btnViewProposal3_Click(
-            object sender,
-            EventArgs e)
+        protected void btnViewProposal3_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Viewing John Tau's proposal details.";
+            ViewProposalDetails("John Tau", "R8,000", "20 days",
+                "I will redesign your website with a modern look and better user experience. I have strong skills in frontend and UI/UX design with 3 years of experience.");
         }
 
-
-        protected void btnViewProposal4_Click(
-            object sender,
-            EventArgs e)
+        protected void btnViewProposal4_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "Viewing Sarah Patel's proposal details.";
+            ViewProposalDetails("Sarah Patel", "R8,500", "22 days",
+                "I can deliver a fast, responsive and SEO-friendly website redesign that matches your brand and goals. Experienced in HTML, CSS, JavaScript and React.");
         }
 
-
-        protected void btnLoadMoreProposals_Click(
-            object sender,
-            EventArgs e)
+        private void SelectAndReview(string freelancerName)
         {
-            lblProposalMessage.Text =
-                "More proposals will be loaded " +
-                "from SQL Server later.";
+            Session["SelectedFreelancerName"] = freelancerName;
+            lblProposalMessage.Text = freelancerName + "'s proposal has been selected for review.";
+            Response.Redirect("ReviewProposal.aspx");
         }
 
-
-        protected void btnContactSupport_Click(
-            object sender,
-            EventArgs e)
+        private void ViewProposalDetails(string name, string rate, string time, string coverLetter)
         {
-            lblProposalMessage.Text =
-                "The support page will be connected later.";
+            Session["ViewProposalName"] = name;
+            Session["ViewProposalRate"] = rate;
+            Session["ViewProposalTime"] = time;
+            Session["ViewProposalCoverLetter"] = coverLetter;
+            Response.Redirect("ReviewProposal.aspx");
         }
 
-
-        protected void btnHelpSupport_Click(
-            object sender,
-            EventArgs e)
+        protected void btnLoadMoreProposals_Click(object sender, EventArgs e)
         {
-            lblProposalMessage.Text =
-                "The support page will be connected later.";
+            lblProposalMessage.Text = "All proposals for this project have been displayed.";
+        }
+
+        protected void btnContactSupport_Click(object sender, EventArgs e)
+        {
+            lblProposalMessage.Text = "For support, please email support@freehub.co.za";
+        }
+
+        protected void btnHelpSupport_Click(object sender, EventArgs e)
+        {
+            lblProposalMessage.Text = "For support, please email support@freehub.co.za";
         }
     }
 }

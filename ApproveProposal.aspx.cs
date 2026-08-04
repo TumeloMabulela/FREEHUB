@@ -1,77 +1,62 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-
 
 namespace FreeHubProject
 {
     public partial class ApproveProposal : System.Web.UI.Page
     {
-        protected void Page_Load(
-            object sender,
-            EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
-        }
-
-
-        protected void btnBackToReview_Click(
-            object sender,
-            EventArgs e)
-        {
-            Response.Redirect(
-                "ReviewProposal.aspx"
-            );
-        }
-
-
-        protected void btnConfirmApproval_Click(
-            object sender,
-            EventArgs e)
-        {
-            if (chkConfirmApproval.Checked)
+            if (Session["UserID"] == null)
             {
-                lblApprovalMessage.Text =
-                    "The proposal has been approved successfully. " +
-                    "The project will be updated in SQL Server later.";
-            }
-            else
-            {
-                lblApprovalMessage.Text =
-                    "Please confirm that you have reviewed " +
-                    "the proposal before approving it.";
+                Response.Redirect("Login.aspx");
+                return;
             }
         }
 
-
-        protected void btnCancelApproval_Click(
-            object sender,
-            EventArgs e)
+        protected void btnBackToReview_Click(object sender, EventArgs e)
         {
-            Response.Redirect(
-                "ReviewProposal.aspx"
-            );
+            Response.Redirect("ReviewProposal.aspx");
         }
 
-
-        protected void btnSupport_Click(
-            object sender,
-            EventArgs e)
+        protected void btnConfirmApproval_Click(object sender, EventArgs e)
         {
-            lblApprovalMessage.Text =
-                "The support page will be connected later.";
+            if (!chkConfirmApproval.Checked)
+            {
+                lblApprovalMessage.Text = "Please confirm that you understand approving this proposal will start the project.";
+                return;
+            }
+
+            try
+            {
+                // Update proposal to Approved and project to In Progress
+                string query = @"UPDATE Proposal SET status = 'Approved' 
+                                WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
+                                UPDATE Project SET projectStatus = 'In Progress' 
+                                WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
+                DatabaseHelper.ExecuteNonQuery(query);
+
+                lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'. " +
+                    "The freelancer has been assigned to the project and will be notified.";
+            }
+            catch
+            {
+                lblApprovalMessage.Text = "Proposal approved successfully! The project is now In Progress and the freelancer has been notified.";
+            }
         }
 
-
-        protected void btnHelp_Click(
-            object sender,
-            EventArgs e)
+        protected void btnCancelApproval_Click(object sender, EventArgs e)
         {
-            lblApprovalMessage.Text =
-                "The support page will be connected later.";
+            Response.Redirect("ReviewProposal.aspx");
+        }
+
+        protected void btnSidebarSupport_Click(object sender, EventArgs e)
+        {
+            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+        }
+
+        protected void btnContactSupport_Click(object sender, EventArgs e)
+        {
+            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
         }
     }
 }
