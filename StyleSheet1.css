@@ -13132,3 +13132,120 @@ FREEHUB HOME PAGE
 }
 
 /* Allow SwitchRole.aspx location in web.config */
+
+
+/* =========================
+   MANAGE PROFILE PAGE
+========================= */
+
+.profile-manage-page {
+    max-width: 800px;
+    padding: 30px;
+}
+
+.profile-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e8ece9;
+    padding-bottom: 0;
+}
+
+.profile-tab {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s ease;
+}
+
+.profile-tab:hover {
+    color: #173f2c;
+}
+
+.profile-tab.active-tab {
+    color: #173f2c;
+    border-bottom-color: #2e7d56;
+    font-weight: 600;
+}
+
+.profile-section {
+    background: #ffffff;
+    border: 1px solid #e8ece9;
+    border-radius: 10px;
+    padding: 30px;
+}
+
+.profile-section h2 {
+    color: #173f2c;
+    margin-bottom: 5px;
+}
+
+.profile-section > p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.deactivate-warning {
+    background: #fff9e6;
+    border: 1px solid #ffe0a0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.deactivate-warning strong {
+    display: block;
+    margin-bottom: 10px;
+    color: #856404;
+}
+
+.deactivate-warning ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.deactivate-warning ul li {
+    padding: 4px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.deactivate-danger {
+    background: #fff0f0;
+    border-color: #ffbaba;
+}
+
+.deactivate-danger strong {
+    color: #a00;
+}
+
+.deactivate-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: #dc3545;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.deactivate-button:hover {
+    background-color: #a71d2a;
+}
+
+.deactivate-account-button {
+    background-color: #721c24;
+}
+
+.deactivate-account-button:hover {
+    background-color: #4a0d13;
+}

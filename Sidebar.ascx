@@ -78,6 +78,12 @@
 
     <div class="sidebar-section">
 
+        <a href="ManageProfile.aspx"
+           class="sidebar-item <%= GetActiveClass("ManageProfile") %>">
+            <span class="sidebar-icon">&#128100;</span>
+            <span>Profile</span>
+        </a>
+
         <a href="SwitchRole.aspx"
            class="sidebar-item <%= GetActiveClass("SwitchRole") %>">
             <span class="sidebar-icon">&#128260;</span>

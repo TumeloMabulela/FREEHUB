@@ -8,7 +8,12 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            // Check login
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (!IsPostBack)
             {
@@ -18,79 +23,84 @@ namespace FreeHubProject
             }
         }
 
+        private int GetUserId()
+        {
+            return Convert.ToInt32(Session["UserID"]);
+        }
+
         private void UpdateButtonStates()
         {
             string currentRole = Session["UserType"] as string ?? "";
+            lblCurrentRole.Text = currentRole;
+
+            btnSwitchFreelancer.Enabled = true;
+            btnSwitchFreelancer.Text = "Switch to Freelancer";
+            btnSwitchEmployer.Enabled = true;
+            btnSwitchEmployer.Text = "Switch to Employer";
 
             if (currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 btnSwitchFreelancer.Enabled = false;
                 btnSwitchFreelancer.Text = "Currently Freelancer";
-                btnSwitchEmployer.Enabled = true;
             }
             else if (currentRole.Equals("Employer", StringComparison.OrdinalIgnoreCase))
             {
                 btnSwitchEmployer.Enabled = false;
                 btnSwitchEmployer.Text = "Currently Employer";
-                btnSwitchFreelancer.Enabled = true;
             }
         }
 
         protected void btnSwitchFreelancer_Click(object sender, EventArgs e)
         {
-            int userId = AuthHelper.GetCurrentUserId(this);
+            int userId = GetUserId();
 
             try
             {
-                // Check if freelancer profile exists
                 DataRow freelancer = DatabaseHelper.GetFreelancerByUserId(userId);
 
                 if (freelancer == null)
                 {
-                    // Show create profile form
                     pnlCreateFreelancerProfile.Visible = true;
                     pnlCreateEmployerProfile.Visible = false;
                     ShowMessage("Please complete your freelancer profile to switch roles.", false);
                     return;
                 }
 
-                // Switch role
                 SwitchUserRole(userId, "Freelancer");
-                ShowMessage("You are now acting as a Freelancer!", true);
+                ShowMessage("You are now acting as a Freelancer! Navigation updated.", true);
+                pnlCreateFreelancerProfile.Visible = false;
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                ShowMessage("Error: " + ex.Message, false);
+                ShowMessage("Error switching role: " + ex.Message, false);
             }
         }
 
         protected void btnSwitchEmployer_Click(object sender, EventArgs e)
         {
-            int userId = AuthHelper.GetCurrentUserId(this);
+            int userId = GetUserId();
 
             try
             {
-                // Check if employer profile exists
                 DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
 
                 if (employer == null)
                 {
-                    // Show create profile form
                     pnlCreateEmployerProfile.Visible = true;
                     pnlCreateFreelancerProfile.Visible = false;
                     ShowMessage("Please complete your employer profile to switch roles.", false);
                     return;
                 }
 
-                // Switch role
                 SwitchUserRole(userId, "Employer");
-                ShowMessage("You are now acting as an Employer!", true);
+                ShowMessage("You are now acting as an Employer! Navigation updated.", true);
+                pnlCreateEmployerProfile.Visible = false;
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                ShowMessage("Error: " + ex.Message, false);
+                ShowMessage("Error switching role: " + ex.Message, false);
             }
         }
 
@@ -109,7 +119,7 @@ namespace FreeHubProject
                 return;
             }
 
-            int userId = AuthHelper.GetCurrentUserId(this);
+            int userId = GetUserId();
 
             try
             {
@@ -125,12 +135,12 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Freelancer");
                 pnlCreateFreelancerProfile.Visible = false;
-                ShowMessage("Freelancer profile created! You are now a Freelancer.", true);
+                ShowMessage("Freelancer profile created successfully! You are now a Freelancer.", true);
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                ShowMessage("Error creating profile: " + ex.Message, false);
+                ShowMessage("Error: " + ex.Message, false);
             }
         }
 
@@ -154,7 +164,7 @@ namespace FreeHubProject
                 return;
             }
 
-            int userId = AuthHelper.GetCurrentUserId(this);
+            int userId = GetUserId();
             string contactEmail = string.IsNullOrWhiteSpace(txtContactEmail.Text)
                 ? Session["Email"] as string ?? "" : txtContactEmail.Text.Trim();
 
@@ -172,24 +182,22 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Employer");
                 pnlCreateEmployerProfile.Visible = false;
-                ShowMessage("Employer profile created! You are now an Employer.", true);
+                ShowMessage("Employer profile created successfully! You are now an Employer.", true);
                 UpdateButtonStates();
             }
             catch (Exception ex)
             {
-                ShowMessage("Error creating profile: " + ex.Message, false);
+                ShowMessage("Error: " + ex.Message, false);
             }
         }
 
         private void SwitchUserRole(int userId, string newRole)
         {
-            // Update in database
             string query = "UPDATE [User] SET userType = @UserType WHERE userID = @UserID";
             DatabaseHelper.ExecuteNonQuery(query,
                 new SqlParameter("@UserType", newRole),
                 new SqlParameter("@UserID", userId));
 
-            // Update session
             Session["UserType"] = newRole;
             lblCurrentRole.Text = newRole;
         }
