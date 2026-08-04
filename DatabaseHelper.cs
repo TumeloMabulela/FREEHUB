@@ -178,5 +178,138 @@ namespace FreeHubProject
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
+
+        // ============================================================
+        // PROJECT OPERATIONS
+        // ============================================================
+
+        public static DataRow GetProjectById(int projectID)
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
+                            p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
+                            p.experienceLevel, p.skills, p.employerID,
+                            e.companyName, u.firstName + ' ' + u.lastName AS employerName
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            INNER JOIN [User] u ON e.userID = u.userID
+                            WHERE p.projectID = @ProjectID";
+            DataTable result = ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
+            if (result.Rows.Count > 0) return result.Rows[0];
+            return null;
+        }
+
+        public static DataTable GetOpenProjects()
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
+                            p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
+                            p.experienceLevel, p.skills, e.companyName,
+                            u.firstName + ' ' + u.lastName AS employerName
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            INNER JOIN [User] u ON e.userID = u.userID
+                            WHERE p.projectStatus = 'Open'
+                            ORDER BY p.dateCreated DESC";
+            return ExecuteQuery(query);
+        }
+
+        public static DataTable GetProjectsByEmployer(int userID)
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
+                            p.dateCreated, p.deadline, p.projectStatus,
+                            (SELECT COUNT(*) FROM Proposal pr WHERE pr.projectID = p.projectID) AS proposalCount
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            WHERE e.userID = @UserID
+                            ORDER BY p.dateCreated DESC";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        // ============================================================
+        // PROPOSAL OPERATIONS
+        // ============================================================
+
+        /// <summary>
+        /// Submits a proposal. Returns proposalID on success, -1 if already submitted, 0 on error.
+        /// </summary>
+        public static int SubmitProposal(int projectID, int userID, string coverLetter,
+            decimal proposedRate, string estimatedTime)
+        {
+            // First get the freelancerID for this user
+            DataRow freelancer = GetFreelancerByUserId(userID);
+            int freelancerID;
+
+            if (freelancer != null)
+            {
+                freelancerID = Convert.ToInt32(freelancer["freelancerID"]);
+            }
+            else
+            {
+                // Auto-create a basic freelancer profile if user is registered but hasn't created one
+                string createQuery = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
+                                      VALUES (@UserID, 'General', '', '', @Rate);
+                                      SELECT SCOPE_IDENTITY();";
+                object newId = ExecuteScalar(createQuery,
+                    new SqlParameter("@UserID", userID),
+                    new SqlParameter("@Rate", proposedRate));
+                freelancerID = Convert.ToInt32(newId);
+            }
+
+            // Check if already submitted
+            string checkQuery = "SELECT COUNT(*) FROM Proposal WHERE projectID = @ProjectID AND freelancerID = @FreelancerID";
+            object existsResult = ExecuteScalar(checkQuery,
+                new SqlParameter("@ProjectID", projectID),
+                new SqlParameter("@FreelancerID", freelancerID));
+
+            if (Convert.ToInt32(existsResult) > 0)
+            {
+                return -1; // Already submitted
+            }
+
+            // Insert proposal
+            string insertQuery = @"INSERT INTO Proposal (projectID, freelancerID, coverLetter, proposedRate, estimatedCompletionTime, status)
+                                  VALUES (@ProjectID, @FreelancerID, @CoverLetter, @ProposedRate, @EstimatedTime, 'Pending');
+                                  SELECT SCOPE_IDENTITY();";
+
+            object result = ExecuteScalar(insertQuery,
+                new SqlParameter("@ProjectID", projectID),
+                new SqlParameter("@FreelancerID", freelancerID),
+                new SqlParameter("@CoverLetter", coverLetter),
+                new SqlParameter("@ProposedRate", proposedRate),
+                new SqlParameter("@EstimatedTime", estimatedTime));
+
+            if (result != null && result != DBNull.Value)
+            {
+                return Convert.ToInt32(result);
+            }
+
+            return 0;
+        }
+
+        public static DataTable GetProposalsByProject(int projectID)
+        {
+            string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
+                            pr.estimatedCompletionTime, pr.status, pr.date,
+                            u.firstName + ' ' + u.lastName AS freelancerName,
+                            u.ratingScore, f.skills
+                            FROM Proposal pr
+                            INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                            INNER JOIN [User] u ON f.userID = u.userID
+                            WHERE pr.projectID = @ProjectID
+                            ORDER BY pr.date DESC";
+            return ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
+        }
+
+        public static DataTable GetProposalsByFreelancer(int userID)
+        {
+            string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
+                            pr.estimatedCompletionTime, pr.status, pr.date,
+                            p.title AS projectTitle, p.budget, p.category
+                            FROM Proposal pr
+                            INNER JOIN Project p ON pr.projectID = p.projectID
+                            INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                            WHERE f.userID = @UserID
+                            ORDER BY pr.date DESC";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
     }
 }

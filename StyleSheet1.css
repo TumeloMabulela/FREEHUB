@@ -12871,3 +12871,53 @@ FREEHUB HOME PAGE
     background-color: #a8d5ba;
     color: #173f2c;
 }
+
+
+/* =========================
+   PROPOSAL FORM STYLES
+========================= */
+
+.proposal-project-summary {
+    background-color: #f0f7f3;
+    border: 1px solid #d4e8dc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.proposal-project-summary h3 {
+    color: #173f2c;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.proposal-project-meta {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    color: #555;
+}
+
+.proposal-project-meta strong {
+    color: #173f2c;
+}
+
+.post-status {
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.post-success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+}
+
+.post-error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}

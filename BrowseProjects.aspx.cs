@@ -213,8 +213,13 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
-            lblProjectMessage.Text =
-                "The proposal page will be created next.";
+            // Store selected project info in session for the proposal page
+            Session["SelectedProjectTitle"] = lblProjectTitle.Text;
+            Session["SelectedProjectBudget"] = lblBudget.Text;
+            Session["SelectedProjectDeadline"] = lblDeadline.Text;
+            Session["SelectedProjectCategory"] = lblCategory.Text;
+
+            Response.Redirect("SubmitProposal.aspx");
         }
 
 

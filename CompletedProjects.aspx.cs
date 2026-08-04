@@ -9,6 +9,8 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            if (!AuthHelper.RequireLogin(this)) return;
+
             if (!IsPostBack)
             {
                 pnlCompletedMessage.Visible = false;

@@ -59,6 +59,8 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!AuthHelper.RequireLogin(this)) return;
+
             if (!IsPostBack)
             {
                 BindUsers("");

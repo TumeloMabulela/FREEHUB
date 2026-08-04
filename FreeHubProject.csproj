@@ -79,7 +79,9 @@
     <Content Include="ProjectDetails.aspx" />
     <Content Include="RateFreelancer.aspx" />
     <Content Include="RateFreelancer.css" />
+    <Content Include="Sidebar.ascx" />
     <Content Include="StartChat.aspx" />
+    <Content Include="SubmitProposal.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="RejectProposal.aspx" />
     <Content Include="ReviewProposal.aspx" />
@@ -219,6 +221,21 @@
       <DependentUpon>Transactions.aspx</DependentUpon>
     </Compile>
     <Compile Include="DatabaseHelper.cs" />
+    <Compile Include="AuthHelper.cs" />
+    <Compile Include="Sidebar.ascx.cs">
+      <DependentUpon>Sidebar.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Sidebar.ascx.designer.cs">
+      <DependentUpon>Sidebar.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="SubmitProposal.aspx.cs">
+      <DependentUpon>SubmitProposal.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SubmitProposal.aspx.designer.cs">
+      <DependentUpon>SubmitProposal.aspx</DependentUpon>
+    </Compile>
     <Compile Include="TransactionStore.cs" />
     <Compile Include="Wallet.aspx.cs">
       <DependentUpon>Wallet.aspx</DependentUpon>
