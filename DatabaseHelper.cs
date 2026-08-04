@@ -128,6 +128,7 @@ namespace FreeHubProject
         {
             string hashedPassword = HashPassword(password);
 
+            // Try with hashed password first
             string query = @"
                 SELECT userID, firstName, lastName, email, contactNumber, username,
                        accountStatus, userType, ratingScore, dateCreated
@@ -139,6 +140,14 @@ namespace FreeHubProject
             DataTable result = ExecuteQuery(query,
                 new SqlParameter("@Login", emailOrUsername),
                 new SqlParameter("@Password", hashedPassword)
+            );
+
+            if (result.Rows.Count > 0) return result.Rows[0];
+
+            // Try with plain-text password (for existing records)
+            result = ExecuteQuery(query,
+                new SqlParameter("@Login", emailOrUsername),
+                new SqlParameter("@Password", password)
             );
 
             if (result.Rows.Count > 0) return result.Rows[0];
