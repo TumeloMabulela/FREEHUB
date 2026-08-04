@@ -1,4 +1,4 @@
-﻿<%@ Page Title="My Projects"
+<%@ Page Title="My Projects"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -26,7 +26,7 @@
             <a href="Dashboard.aspx"
                class="my-projects-menu-item">
 
-                <span>⌂</span>
+                <span>�</span>
                 Dashboard
 
             </a>
@@ -34,7 +34,7 @@
             <a href="BrowseProjects.aspx"
                class="my-projects-menu-item">
 
-                <span>⌕</span>
+                <span>?</span>
                 Find Work
 
             </a>
@@ -42,7 +42,7 @@
             <a href="MyProjects.aspx"
                class="my-projects-menu-item my-projects-active">
 
-                <span>▣</span>
+                <span>?</span>
                 My Projects
 
             </a>
@@ -74,10 +74,10 @@
             </div>
 
 
-            <a href="Proposals.aspx"
+            <a href="SelectProposal.aspx"
                class="my-projects-menu-item">
 
-                <span>▤</span>
+                <span>?</span>
                 Proposals
 
             </a>
@@ -85,7 +85,7 @@
             <a href="Messages.aspx"
                class="my-projects-menu-item">
 
-                <span>✉</span>
+                <span>?</span>
                 Messages
 
             </a>
@@ -93,7 +93,7 @@
             <a href="Contracts.aspx"
                class="my-projects-menu-item">
 
-                <span>▧</span>
+                <span>?</span>
                 Contracts
 
             </a>
@@ -101,7 +101,7 @@
             <a href="Payments.aspx"
                class="my-projects-menu-item">
 
-                <span>▱</span>
+                <span>?</span>
                 Payments
 
             </a>
@@ -113,18 +113,18 @@
                 ACCOUNT
             </div>
 
-            <a href="Profile.aspx"
+            <a href="Default.aspx"
                class="my-projects-menu-item">
 
-                <span>♙</span>
+                <span>?</span>
                 Profile
 
             </a>
 
-            <a href="Settings.aspx"
+            <a href="Default.aspx"
                class="my-projects-menu-item">
 
-                <span>⚙</span>
+                <span>?</span>
                 Company Settings
 
             </a>
@@ -132,12 +132,12 @@
             <a href="Notifications.aspx"
                class="my-projects-menu-item">
 
-                <span>◯</span>
+                <span>?</span>
                 Notification Settings
 
             </a>
 
-            <a href="HelpSupport.aspx"
+            <a href="Default.aspx"
                class="my-projects-menu-item">
 
                 <span>?</span>
@@ -156,7 +156,7 @@
                     Dashboard
                 </a>
 
-                <span>›</span>
+                <span>�</span>
 
                 <strong>
                     My Projects
@@ -300,7 +300,7 @@
                     <article class="my-project-card">
 
                         <div class="my-project-icon">
-                            ▣
+                            ?
                         </div>
 
                         <div class="my-project-information">
@@ -377,7 +377,7 @@
                     Visible="false">
 
                     <div>
-                        ▣
+                        ?
                     </div>
 
                     <h3>

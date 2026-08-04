@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Review Proposal"
+<%@ Page Title="Review Proposal"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -34,7 +34,7 @@
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ▦
+                        ?
                     </span>
 
                     <span>
@@ -48,7 +48,7 @@
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ⌕
+                        ?
                     </span>
 
                     <span>
@@ -64,7 +64,7 @@
                    class="review-link active">
 
                     <span class="review-link-icon">
-                        ▣
+                        ?
                     </span>
 
                     <span class="review-link-text">
@@ -72,7 +72,7 @@
                     </span>
 
                     <span class="review-project-arrow">
-                        ▴
+                        ?
                     </span>
 
                 </a>
@@ -97,11 +97,11 @@
                 </div>
 
 
-                <a href="Proposals.aspx"
+                <a href="SelectProposal.aspx"
                    class="review-link review-sub-active">
 
                     <span class="review-link-icon">
-                        ▤
+                        ?
                     </span>
 
                     <span>
@@ -115,7 +115,7 @@
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ✉
+                        ?
                     </span>
 
                     <span class="review-link-text">
@@ -133,7 +133,7 @@
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ▧
+                        ?
                     </span>
 
                     <span>
@@ -166,11 +166,11 @@
                 </p>
 
 
-                <a href="Profile.aspx"
+                <a href="Default.aspx"
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ●
+                        ?
                     </span>
 
                     <span>
@@ -180,11 +180,11 @@
                 </a>
 
 
-                <a href="Settings.aspx"
+                <a href="Default.aspx"
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ⚙
+                        ?
                     </span>
 
                     <span>
@@ -198,7 +198,7 @@
                    class="review-link">
 
                     <span class="review-link-icon">
-                        ◯
+                        ?
                     </span>
 
                     <span>
@@ -208,7 +208,7 @@
                 </a>
 
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="review-link">
 
                     <span class="review-link-icon">
@@ -264,7 +264,7 @@
                 </a>
 
                 <span>
-                    ›
+                    �
                 </span>
 
                 <a href="MyProjects.aspx">
@@ -272,7 +272,7 @@
                 </a>
 
                 <span>
-                    ›
+                    �
                 </span>
 
                 <a href="ProjectDetails.aspx">
@@ -280,15 +280,15 @@
                 </a>
 
                 <span>
-                    ›
+                    �
                 </span>
 
-                <a href="Proposals.aspx">
+                <a href="SelectProposal.aspx">
                     Proposals
                 </a>
 
                 <span>
-                    ›
+                    �
                 </span>
 
                 <strong>
@@ -319,7 +319,7 @@
                 <asp:Button
                     ID="btnBackToProposals"
                     runat="server"
-                    Text="← Back to Proposals"
+                    Text="? Back to Proposals"
                     CssClass="review-back-button"
                     CausesValidation="false"
                     OnClick="btnBackToProposals_Click" />
@@ -347,7 +347,7 @@
             <section class="review-project-card">
 
                 <div class="review-project-icon">
-                    ▣
+                    ?
                 </div>
 
 
@@ -377,7 +377,7 @@
                     </small>
 
                     <strong>
-                        R8,000 – R15,000
+                        R8,000 � R15,000
                     </strong>
 
                 </div>
@@ -440,13 +440,13 @@
 
                                 <p class="review-rating">
 
-                                    ★ 4.8
+                                    ? 4.8
 
                                     <span>
                                         (56 Reviews)
                                     </span>
 
-                                    • South Africa
+                                    � South Africa
 
                                 </p>
 
@@ -773,7 +773,7 @@
                                 Relevant Work
                             </h2>
 
-                            <a href="Profile.aspx">
+                            <a href="Default.aspx">
                                 View Portfolio
                             </a>
 
@@ -860,7 +860,7 @@
                             <asp:Button
                                 ID="btnRejectProposal"
                                 runat="server"
-                                Text="× Reject Proposal"
+                                Text="� Reject Proposal"
                                 CssClass="reject-proposal-button"
                                 OnClick="btnRejectProposal_Click" />
 
@@ -868,7 +868,7 @@
                             <asp:Button
                                 ID="btnRequestChanges"
                                 runat="server"
-                                Text="▣ Request Changes"
+                                Text="? Request Changes"
                                 CssClass="request-changes-button"
                                 OnClick="btnRequestChanges_Click" />
 
@@ -876,7 +876,7 @@
                             <asp:Button
                                 ID="btnApproveProposal"
                                 runat="server"
-                                Text="✓ Approve Proposal"
+                                Text="? Approve Proposal"
                                 CssClass="approve-proposal-button"
                                 OnClick="btnApproveProposal_Click" />
 
@@ -908,7 +908,7 @@
                         <div class="review-side-card-heading">
 
                             <span class="review-side-icon">
-                                ▣
+                                ?
                             </span>
 
                             <h3>
@@ -976,7 +976,7 @@
                             View Project Details
 
                             <span>
-                                ›
+                                �
                             </span>
 
                         </a>
@@ -1026,7 +1026,7 @@
                             </span>
 
                             <strong>
-                                ★ 4.8
+                                ? 4.8
                             </strong>
 
                         </div>
@@ -1067,7 +1067,7 @@
                         <div class="review-side-card-heading">
 
                             <span class="review-star-icon">
-                                ☆
+                                ?
                             </span>
 
                             <h3>
@@ -1078,23 +1078,23 @@
 
 
                         <p>
-                            ✓ High job success rate
+                            ? High job success rate
                         </p>
 
                         <p>
-                            ✓ Top rated freelancer
+                            ? Top rated freelancer
                         </p>
 
                         <p>
-                            ✓ Strong portfolio and work history
+                            ? Strong portfolio and work history
                         </p>
 
                         <p>
-                            ✓ Positive reviews from clients
+                            ? Positive reviews from clients
                         </p>
 
                         <p>
-                            ✓ Quick response time
+                            ? Quick response time
                         </p>
 
                     </section>
@@ -1110,23 +1110,23 @@
 
 
                         <p>
-                            ✓ Proposal meets project needs
+                            ? Proposal meets project needs
                         </p>
 
                         <p>
-                            ✓ Rate fits the project budget
+                            ? Rate fits the project budget
                         </p>
 
                         <p>
-                            ✓ Completion time is suitable
+                            ? Completion time is suitable
                         </p>
 
                         <p>
-                            ✓ Skills match project requirements
+                            ? Skills match project requirements
                         </p>
 
                         <p>
-                            ✓ Freelancer experience reviewed
+                            ? Freelancer experience reviewed
                         </p>
 
                     </section>

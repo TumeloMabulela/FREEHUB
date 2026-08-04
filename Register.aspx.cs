@@ -40,36 +40,43 @@ namespace FreeHubProject
                 return;
             }
 
-            if (DatabaseHelper.EmailExists(txtEmail.Text.Trim()))
+            try
             {
-                lblMessage.Text = "An account with this email address already exists.";
-                return;
+                if (DatabaseHelper.EmailExists(txtEmail.Text.Trim()))
+                {
+                    lblMessage.Text = "An account with this email address already exists.";
+                    return;
+                }
+
+                string username = txtEmail.Text.Trim();
+                string userType = hfAccountType.Value;
+                if (string.IsNullOrWhiteSpace(userType)) userType = "Freelancer";
+
+                int newUserID = DatabaseHelper.RegisterUser(
+                    txtFirstName.Text.Trim(),
+                    txtLastName.Text.Trim(),
+                    txtEmail.Text.Trim(),
+                    "",
+                    username,
+                    txtPassword.Text,
+                    userType
+                );
+
+                if (newUserID > 0)
+                {
+                    lblMessage.CssClass = "register-message success-message";
+                    lblMessage.Text = "Account created successfully! Redirecting to login...";
+                    ClientScript.RegisterStartupScript(this.GetType(), "redirect",
+                        "setTimeout(function() { window.location.href = 'Login.aspx'; }, 2000);", true);
+                }
+                else
+                {
+                    lblMessage.Text = "An error occurred while creating your account. Please try again.";
+                }
             }
-
-            string username = txtEmail.Text.Trim();
-            string userType = hfAccountType.Value;
-            if (string.IsNullOrWhiteSpace(userType)) userType = "Freelancer";
-
-            int newUserID = DatabaseHelper.RegisterUser(
-                txtFirstName.Text.Trim(),
-                txtLastName.Text.Trim(),
-                txtEmail.Text.Trim(),
-                "",
-                username,
-                txtPassword.Text,
-                userType
-            );
-
-            if (newUserID > 0)
+            catch (Exception ex)
             {
-                lblMessage.CssClass = "register-message success-message";
-                lblMessage.Text = "Account created successfully! Redirecting to login...";
-                ClientScript.RegisterStartupScript(this.GetType(), "redirect",
-                    "setTimeout(function() { window.location.href = 'Login.aspx'; }, 2000);", true);
-            }
-            else
-            {
-                lblMessage.Text = "An error occurred while creating your account. Please try again.";
+                lblMessage.Text = "Database connection error: " + ex.Message;
             }
         }
     }

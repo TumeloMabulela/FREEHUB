@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Withdraw Funds"
+<%@ Page Title="Withdraw Funds"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -27,7 +27,7 @@
             <a href="Dashboard.aspx"
                class="withdraw-menu-link">
 
-                <span>⌂</span>
+                <span>�</span>
                 Dashboard
 
             </a>
@@ -35,7 +35,7 @@
             <a href="CompletedProjects.aspx"
                class="withdraw-menu-link">
 
-                <span>▣</span>
+                <span>?</span>
                 My Projects
 
             </a>
@@ -43,15 +43,15 @@
             <a href="BrowseProjects.aspx"
                class="withdraw-menu-link">
 
-                <span>♙</span>
+                <span>?</span>
                 Freelancers
 
             </a>
 
-            <a href="Proposals.aspx"
+            <a href="SelectProposal.aspx"
                class="withdraw-menu-link">
 
-                <span>▤</span>
+                <span>?</span>
                 Proposals
 
             </a>
@@ -59,7 +59,7 @@
             <a href="Messages.aspx"
                class="withdraw-menu-link">
 
-                <span>✉</span>
+                <span>?</span>
                 Messages
 
             </a>
@@ -67,7 +67,7 @@
             <a href="Contracts.aspx"
                class="withdraw-menu-link">
 
-                <span>▧</span>
+                <span>?</span>
                 Contracts
 
             </a>
@@ -75,7 +75,7 @@
             <a href="Wallet.aspx"
                class="withdraw-menu-link withdraw-menu-active">
 
-                <span>▱</span>
+                <span>?</span>
                 Wallet
 
             </a>
@@ -110,7 +110,7 @@
             <a href="Disputes.aspx"
                class="withdraw-menu-link">
 
-                <span>◉</span>
+                <span>?</span>
                 Disputes
 
             </a>
@@ -118,7 +118,7 @@
             <a href="Refunds.aspx"
                class="withdraw-menu-link">
 
-                <span>↻</span>
+                <span>?</span>
                 Refunds
 
             </a>
@@ -126,30 +126,30 @@
             <a href="Reports.aspx"
                class="withdraw-menu-link">
 
-                <span>▤</span>
+                <span>?</span>
                 Reports
 
             </a>
 
             <div class="withdraw-divider"></div>
 
-            <a href="Profile.aspx"
+            <a href="Default.aspx"
                class="withdraw-menu-link">
 
-                <span>⚙</span>
+                <span>?</span>
                 Profile Settings
 
             </a>
 
-            <a href="Settings.aspx"
+            <a href="Default.aspx"
                class="withdraw-menu-link">
 
-                <span>⚙</span>
+                <span>?</span>
                 Account Settings
 
             </a>
 
-            <a href="HelpSupport.aspx"
+            <a href="Default.aspx"
                class="withdraw-menu-link">
 
                 <span>?</span>
@@ -176,7 +176,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>�</span>
 
                         <strong>
                             Withdraw Funds
@@ -210,7 +210,7 @@
                     </div>
 
                     <span class="withdraw-wallet-icon">
-                        ▱
+                        ?
                     </span>
 
                 </div>
@@ -319,7 +319,7 @@
                         <div class="withdraw-method-card">
 
                             <span class="withdraw-method-icon">
-                                ▦
+                                ?
                             </span>
 
                             <div>
@@ -414,7 +414,7 @@
                             </h3>
 
                             <span>
-                                ◈
+                                ?
                             </span>
 
                         </div>
@@ -428,7 +428,7 @@
 
                             <li>
                                 Approved withdrawals are processed
-                                within 1–3 business days.
+                                within 1�3 business days.
                             </li>
 
                             <li>
@@ -524,7 +524,7 @@
                             Visible="false">
 
                             <div class="withdraw-empty-icon">
-                                ↓
+                                ?
                             </div>
 
                             <strong>

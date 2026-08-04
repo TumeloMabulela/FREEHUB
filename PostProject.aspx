@@ -44,7 +44,7 @@
                 </a>
 
 
-                <a href="Proposals.aspx"
+                <a href="SelectProposal.aspx"
                    class="sidebar-item">
 
                     <span class="sidebar-icon">▤</span>
@@ -82,7 +82,7 @@
 
             <div class="sidebar-section">
 
-                <a href="Profile.aspx"
+                <a href="Default.aspx"
                    class="sidebar-item">
 
                     <span class="sidebar-icon">♙</span>
@@ -91,7 +91,7 @@
                 </a>
 
 
-                <a href="Settings.aspx"
+                <a href="Default.aspx"
                    class="sidebar-item">
 
                     <span class="sidebar-icon">⚙</span>
@@ -100,7 +100,7 @@
                 </a>
 
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="sidebar-item">
 
                     <span class="sidebar-icon">?</span>

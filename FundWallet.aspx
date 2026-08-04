@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Fund Wallet"
+<%@ Page Title="Fund Wallet"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -25,39 +25,39 @@
         <aside class="fw-sidebar">
 
             <a href="Dashboard.aspx" class="fw-menu-link">
-                <span>⌂</span>
+                <span>�</span>
                 Dashboard
             </a>
 
             <a href="CompletedProjects.aspx" class="fw-menu-link">
-                <span>▣</span>
+                <span>?</span>
                 My Projects
             </a>
 
             <a href="BrowseProjects.aspx" class="fw-menu-link">
-                <span>♙</span>
+                <span>?</span>
                 Freelancers
             </a>
 
-            <a href="Proposals.aspx" class="fw-menu-link">
-                <span>▤</span>
+            <a href="SelectProposal.aspx" class="fw-menu-link">
+                <span>?</span>
                 Proposals
             </a>
 
             <a href="Messages.aspx" class="fw-menu-link">
-                <span>✉</span>
+                <span>?</span>
                 Messages
             </a>
 
             <a href="Contracts.aspx" class="fw-menu-link">
-                <span>▧</span>
+                <span>?</span>
                 Contracts
             </a>
 
             <a href="Wallet.aspx"
                class="fw-menu-link fw-menu-active">
 
-                <span>▱</span>
+                <span>?</span>
                 Wallet
 
             </a>
@@ -90,33 +90,33 @@
             </div>
 
             <a href="Disputes.aspx" class="fw-menu-link">
-                <span>◉</span>
+                <span>?</span>
                 Disputes
             </a>
 
             <a href="Refunds.aspx" class="fw-menu-link">
-                <span>↻</span>
+                <span>?</span>
                 Refunds
             </a>
 
             <a href="Reports.aspx" class="fw-menu-link">
-                <span>▤</span>
+                <span>?</span>
                 Reports
             </a>
 
             <div class="fw-divider"></div>
 
-            <a href="Profile.aspx" class="fw-menu-link">
-                <span>⚙</span>
+            <a href="Default.aspx" class="fw-menu-link">
+                <span>?</span>
                 Profile Settings
             </a>
 
-            <a href="Settings.aspx" class="fw-menu-link">
-                <span>⚙</span>
+            <a href="Default.aspx" class="fw-menu-link">
+                <span>?</span>
                 Account Settings
             </a>
 
-            <a href="HelpSupport.aspx" class="fw-menu-link">
+            <a href="Default.aspx" class="fw-menu-link">
                 <span>?</span>
                 Help &amp; Support
             </a>
@@ -138,7 +138,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>�</span>
 
                         <strong>Fund Wallet</strong>
 
@@ -169,7 +169,7 @@
                     </div>
 
                     <span class="fw-wallet-icon">
-                        ▱
+                        ?
                     </span>
 
                 </div>
@@ -325,7 +325,7 @@
                         OnClick="btnProceed_Click" />
 
                     <div class="fw-secure-text">
-                        ▣ Your payment details are secure and encrypted.
+                        ? Your payment details are secure and encrypted.
                     </div>
 
                 </section>
@@ -409,7 +409,7 @@
                             CssClass="fw-empty-topups">
 
                             <div class="fw-empty-icon">
-                                ▱
+                                ?
                             </div>
 
                             <strong>

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Rate Freelancer"
+<%@ Page Title="Rate Freelancer"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -30,7 +30,7 @@
                 <a href="Dashboard.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">⌂</span>
+                    <span class="rate-sidebar-icon">�</span>
                     <span>Dashboard</span>
 
                 </a>
@@ -39,7 +39,7 @@
                 <a href="BrowseProjects.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">⌕</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Find Work</span>
 
                 </a>
@@ -53,7 +53,7 @@
                 <a href="ReviewProposal.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">▣</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Active Projects</span>
 
                 </a>
@@ -62,7 +62,7 @@
                 <a href="CompletedProjects.aspx"
                    class="rate-sidebar-item rate-sidebar-active">
 
-                    <span class="rate-sidebar-icon">✓</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Completed Projects</span>
 
                 </a>
@@ -71,16 +71,16 @@
                 <a href="CancelledProjects.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">×</span>
+                    <span class="rate-sidebar-icon">�</span>
                     <span>Cancelled Projects</span>
 
                 </a>
 
 
-                <a href="Proposals.aspx"
+                <a href="SelectProposal.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">▤</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Proposals</span>
 
                 </a>
@@ -89,7 +89,7 @@
                 <a href="Messages.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">✉</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Messages</span>
 
                 </a>
@@ -98,7 +98,7 @@
                 <a href="Wallet.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">▱</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Wallet</span>
 
                 </a>
@@ -113,19 +113,19 @@
 
             <div class="rate-sidebar-section">
 
-                <a href="Profile.aspx"
+                <a href="Default.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">♙</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Profile</span>
 
                 </a>
 
 
-                <a href="Settings.aspx"
+                <a href="Default.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">⚙</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Settings</span>
 
                 </a>
@@ -134,13 +134,13 @@
                 <a href="Notifications.aspx"
                    class="rate-sidebar-item">
 
-                    <span class="rate-sidebar-icon">◯</span>
+                    <span class="rate-sidebar-icon">?</span>
                     <span>Notification Settings</span>
 
                 </a>
 
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="rate-sidebar-item">
 
                     <span class="rate-sidebar-icon">?</span>
@@ -162,7 +162,7 @@
                 <asp:Button
                     ID="btnContactSupport"
                     runat="server"
-                    Text="◔ Contact Support"
+                    Text="? Contact Support"
                     CssClass="rate-support-button"
                     CausesValidation="false"
                     OnClick="btnContactSupport_Click" />
@@ -180,11 +180,11 @@
 
                 My Projects
 
-                <span>›</span>
+                <span>�</span>
 
                 Completed Projects
 
-                <span>›</span>
+                <span>�</span>
 
                 <strong>
                     E-commerce Website Redesign
@@ -217,7 +217,7 @@
                     <div class="rate-completed-banner">
 
                         <div class="rate-completed-icon">
-                            ✓
+                            ?
                         </div>
 
                         <div>
@@ -249,7 +249,7 @@
                             <div class="rate-project-summary">
 
                                 <div class="rate-project-icon">
-                                    ▣
+                                    ?
                                 </div>
 
                                 <div>
@@ -259,11 +259,11 @@
                                     </h3>
 
                                     <p>
-                                        📅 Completed on: 25 May 2024
+                                        ?? Completed on: 25 May 2024
                                     </p>
 
                                     <p>
-                                        💰 Total Amount: R12,000
+                                        ?? Total Amount: R12,000
                                     </p>
 
                                 </div>
@@ -300,7 +300,7 @@
                                         </div>
 
                                         <p>
-                                            ◉ South Africa
+                                            ? South Africa
                                         </p>
 
                                     </div>
@@ -354,35 +354,35 @@
                                     class="rating-star"
                                     data-value="1"
                                     onclick="selectRating(1)">
-                                ★
+                                ?
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="2"
                                     onclick="selectRating(2)">
-                                ★
+                                ?
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="3"
                                     onclick="selectRating(3)">
-                                ★
+                                ?
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="4"
                                     onclick="selectRating(4)">
-                                ★
+                                ?
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="5"
                                     onclick="selectRating(5)">
-                                ★
+                                ?
                             </button>
 
                         </div>
@@ -447,7 +447,7 @@
                             <asp:Button
                                 ID="btnSubmitRating"
                                 runat="server"
-                                Text="☆ Submit Rating"
+                                Text="? Submit Rating"
                                 CssClass="rating-submit-button"
                                 OnClick="btnSubmitRating_Click" />
 
@@ -501,7 +501,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon green-tip">
-                                ♧
+                                ?
                             </span>
 
                             <p>
@@ -515,7 +515,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon yellow-tip">
-                                ▥
+                                ?
                             </span>
 
                             <p>
@@ -530,7 +530,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon blue-tip">
-                                ▣
+                                ?
                             </span>
 
                             <p>
@@ -552,13 +552,13 @@
 
                         <ul class="rating-guidelines">
 
-                            <li>✓ Be honest and fair</li>
+                            <li>? Be honest and fair</li>
 
-                            <li>✓ Focus on your experience</li>
+                            <li>? Focus on your experience</li>
 
-                            <li>✓ Avoid personal information</li>
+                            <li>? Avoid personal information</li>
 
-                            <li>✓ Keep comments professional</li>
+                            <li>? Keep comments professional</li>
 
                         </ul>
 
@@ -580,7 +580,7 @@
                         <asp:Button
                             ID="btnReportFreelancer"
                             runat="server"
-                            Text="⚠ Report Freelancer"
+                            Text="? Report Freelancer"
                             CssClass="report-freelancer-button"
                             CausesValidation="false"
                             OnClick="btnReportFreelancer_Click" />

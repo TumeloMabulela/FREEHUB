@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Project Details"
+<%@ Page Title="Project Details"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -27,7 +27,7 @@
             <a href="Dashboard.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">⌂</span>
+                <span class="pd-menu-icon">�</span>
                 <span>Dashboard</span>
 
             </a>
@@ -35,15 +35,15 @@
             <a href="BrowseProjects.aspx"
                class="pd-menu-item pd-menu-active">
 
-                <span class="pd-menu-icon">⌕</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Browse Projects</span>
 
             </a>
 
-            <a href="Proposals.aspx"
+            <a href="SelectProposal.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">▣</span>
+                <span class="pd-menu-icon">?</span>
                 <span>My Proposals</span>
 
             </a>
@@ -51,7 +51,7 @@
             <a href="Messages.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">✉</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Messages</span>
 
             </a>
@@ -59,7 +59,7 @@
             <a href="Wallet.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">▱</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Wallet</span>
 
             </a>
@@ -67,7 +67,7 @@
             <a href="SavedProjects.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">♡</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Saved Projects</span>
 
             </a>
@@ -78,23 +78,23 @@
                 ACCOUNT
             </div>
 
-            <a href="Profile.aspx"
+            <a href="Default.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">♙</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Profile</span>
 
             </a>
 
-            <a href="Settings.aspx"
+            <a href="Default.aspx"
                class="pd-menu-item">
 
-                <span class="pd-menu-icon">⚙</span>
+                <span class="pd-menu-icon">?</span>
                 <span>Settings</span>
 
             </a>
 
-            <a href="HelpSupport.aspx"
+            <a href="Default.aspx"
                class="pd-menu-item">
 
                 <span class="pd-menu-icon">?</span>
@@ -105,14 +105,14 @@
             <a href="PostProject.aspx"
                class="pd-mode-button">
 
-                <span>♙</span>
+                <span>?</span>
 
                 <div>
                     <strong>Switch to</strong>
                     <small>Employer Mode</small>
                 </div>
 
-                <span>›</span>
+                <span>�</span>
 
             </a>
 
@@ -129,13 +129,13 @@
                     Dashboard
                 </a>
 
-                <span>›</span>
+                <span>�</span>
 
                 <a href="BrowseProjects.aspx">
                     Projects
                 </a>
 
-                <span>›</span>
+                <span>�</span>
 
                 <strong>
                     Project Details
@@ -164,7 +164,7 @@
                     <p>
                         Project posted by
                         <strong>John Smith</strong>
-                        <span>•</span>
+                        <span>�</span>
                         Posted 2 hours ago
                     </p>
 
@@ -173,7 +173,7 @@
                 <a href="BrowseProjects.aspx"
                    class="pd-back-button">
 
-                    ← Back to Projects
+                    ? Back to Projects
 
                 </a>
 
@@ -219,7 +219,7 @@
                             <div class="pd-feature">
 
                                 <span class="pd-feature-icon">
-                                    ◇
+                                    ?
                                 </span>
 
                                 <div>
@@ -240,7 +240,7 @@
                             <div class="pd-feature">
 
                                 <span class="pd-feature-icon">
-                                    ☆
+                                    ?
                                 </span>
 
                                 <div>
@@ -261,7 +261,7 @@
                             <div class="pd-feature">
 
                                 <span class="pd-feature-icon">
-                                    ▣
+                                    ?
                                 </span>
 
                                 <div>
@@ -357,7 +357,7 @@
 
                             <strong>
                                 John Smith
-                                <span>●</span>
+                                <span>?</span>
                             </strong>
 
                             <small>
@@ -365,14 +365,14 @@
                             </small>
 
                             <p>
-                                ★ 4.8 (18 reviews)
+                                ? 4.8 (18 reviews)
                             </p>
 
                         </div>
 
                     </div>
 
-                    <a href="Profile.aspx"
+                    <a href="Default.aspx"
                        class="pd-view-profile-button">
 
                         View Profile
@@ -468,7 +468,7 @@
                                         </span>
 
                                         <small>
-                                            • <%# Eval("DisplayTime") %>
+                                            � <%# Eval("DisplayTime") %>
                                         </small>
 
                                     </div>
@@ -528,7 +528,7 @@
                         CssClass="pd-no-comments"
                         Visible="false">
 
-                        <div>✉</div>
+                        <div>?</div>
 
                         <strong>
                             No comments yet
@@ -573,7 +573,7 @@
                             <asp:LinkButton
                                 ID="btnCancelReply"
                                 runat="server"
-                                Text="×"
+                                Text="�"
                                 CssClass="pd-cancel-reply"
                                 CausesValidation="false"
                                 OnClick="btnCancelReply_Click">
@@ -621,7 +621,7 @@
                                 <button type="button"
                                         onclick="insertFormatting('list')">
 
-                                    ☷
+                                    ?
 
                                 </button>
 
@@ -650,7 +650,7 @@
 
                         <div class="pd-community-note">
 
-                            ♙ Be respectful and follow our
+                            ? Be respectful and follow our
                             community guidelines.
 
                         </div>
@@ -668,19 +668,19 @@
                         <ul>
 
                             <li>
-                                ✓ Be respectful and professional
+                                ? Be respectful and professional
                             </li>
 
                             <li>
-                                ✓ Stay on topic
+                                ? Stay on topic
                             </li>
 
                             <li>
-                                ✓ No spamming or self-promotion
+                                ? No spamming or self-promotion
                             </li>
 
                             <li>
-                                ✓ Protect your privacy and others'
+                                ? Protect your privacy and others'
                             </li>
 
                         </ul>
@@ -748,7 +748,7 @@
             }
             else if (type === "list") {
                 replacement =
-                    "• " + selectedText;
+                    "� " + selectedText;
             }
 
             textBox.value =

@@ -1,4 +1,4 @@
-﻿<%@ Page Title="View Transactions"
+<%@ Page Title="View Transactions"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -28,7 +28,7 @@
             <a href="Dashboard.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">⌂</span>
+                <span class="transactions-menu-icon">�</span>
                 <span>Dashboard</span>
 
             </a>
@@ -36,15 +36,15 @@
             <a href="CompletedProjects.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▣</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>My Projects</span>
 
             </a>
 
-            <a href="Proposals.aspx"
+            <a href="SelectProposal.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▤</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Proposals</span>
 
             </a>
@@ -52,7 +52,7 @@
             <a href="Messages.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">✉</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Messages</span>
 
             </a>
@@ -60,7 +60,7 @@
             <a href="BrowseProjects.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">♙</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Freelancers</span>
 
             </a>
@@ -68,7 +68,7 @@
             <a href="Contracts.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▧</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Contracts</span>
 
             </a>
@@ -76,7 +76,7 @@
             <a href="Wallet.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▱</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Wallet</span>
 
             </a>
@@ -84,7 +84,7 @@
             <a href="Transactions.aspx"
                class="transactions-menu-item transactions-menu-active">
 
-                <span class="transactions-menu-icon">☷</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Transactions</span>
 
             </a>
@@ -92,7 +92,7 @@
             <a href="Payouts.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▤</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Payouts</span>
 
             </a>
@@ -100,7 +100,7 @@
             <a href="Disputes.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">◈</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Disputes</span>
 
             </a>
@@ -108,7 +108,7 @@
             <a href="Refunds.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">↻</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Refunds</span>
 
             </a>
@@ -116,30 +116,30 @@
             <a href="Reports.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">▥</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Reports</span>
 
             </a>
 
             <div class="transactions-sidebar-divider"></div>
 
-            <a href="Profile.aspx"
+            <a href="Default.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">⚙</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Profile Settings</span>
 
             </a>
 
-            <a href="Settings.aspx"
+            <a href="Default.aspx"
                class="transactions-menu-item">
 
-                <span class="transactions-menu-icon">⚙</span>
+                <span class="transactions-menu-icon">?</span>
                 <span>Account Settings</span>
 
             </a>
 
-            <a href="HelpSupport.aspx"
+            <a href="Default.aspx"
                class="transactions-menu-item">
 
                 <span class="transactions-menu-icon">?</span>
@@ -165,7 +165,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>�</span>
 
                         <strong>
                             Transactions
@@ -198,7 +198,7 @@
                     </div>
 
                     <span class="transactions-wallet-icon">
-                        ▱
+                        ?
                     </span>
 
                 </section>
@@ -408,7 +408,7 @@
                                                 <asp:LinkButton
                                                     ID="btnViewDetails"
                                                     runat="server"
-                                                    Text="◉"
+                                                    Text="?"
                                                     CssClass="transaction-view-button"
                                                     CommandName="ViewDetails"
                                                     CommandArgument='<%# Eval("TransactionId") %>'>
@@ -436,7 +436,7 @@
                         Visible="false">
 
                         <div class="transactions-empty-icon">
-                            ☷
+                            ?
                         </div>
 
                         <strong>
@@ -465,7 +465,7 @@
                         <asp:LinkButton
                             ID="btnCloseDetails"
                             runat="server"
-                            Text="×"
+                            Text="�"
                             CssClass="transactions-close-button"
                             CausesValidation="false"
                             OnClick="btnCloseDetails_Click">
@@ -480,7 +480,7 @@
                         CssClass="transactions-empty-details">
 
                         <div class="transactions-empty-details-icon">
-                            ◉
+                            ?
                         </div>
 
                         <strong>
@@ -507,7 +507,7 @@
                                 runat="server"
                                 class="transactions-details-icon">
 
-                                ↓
+                                ?
 
                             </span>
 
@@ -613,7 +613,7 @@
                         <asp:Button
                             ID="btnDownloadReceipt"
                             runat="server"
-                            Text="↓ Download Receipt"
+                            Text="? Download Receipt"
                             CssClass="transactions-download-button"
                             OnClick="btnDownloadReceipt_Click" />
 
@@ -646,7 +646,7 @@
 
                 </div>
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="transactions-support-button">
 
                     Contact Support

@@ -24,36 +24,45 @@ namespace FreeHubProject
                 return;
             }
 
-            DataRow user = DatabaseHelper.AuthenticateUser(
-                txtLoginEmail.Text.Trim(),
-                txtLoginPassword.Text
-            );
-
-            if (user == null)
+            try
             {
-                lblLoginMessage.Text = "Invalid email or password. Please try again.";
-                return;
+                DataRow user = DatabaseHelper.AuthenticateUser(
+                    txtLoginEmail.Text.Trim(),
+                    txtLoginPassword.Text
+                );
+
+                if (user == null)
+                {
+                    lblLoginMessage.Text = "Invalid email or password. Please try again.";
+                    return;
+                }
+
+                // Store user info in session
+                Session["UserID"] = Convert.ToInt32(user["userID"]);
+                Session["FirstName"] = Convert.ToString(user["firstName"]);
+                Session["LastName"] = Convert.ToString(user["lastName"]);
+                Session["Email"] = Convert.ToString(user["email"]);
+                Session["Username"] = Convert.ToString(user["username"]);
+                Session["UserType"] = Convert.ToString(user["userType"]);
+                Session["AccountStatus"] = Convert.ToString(user["accountStatus"]);
+                Session["RatingScore"] = user["ratingScore"] == DBNull.Value
+                    ? 0.0m : Convert.ToDecimal(user["ratingScore"]);
+
+                // Load wallet balance
+                DataRow wallet = DatabaseHelper.GetWalletByUserId(
+                    Convert.ToInt32(user["userID"]));
+                if (wallet != null)
+                {
+                    Session["WalletID"] = Convert.ToInt32(wallet["walletID"]);
+                    Session["AvailableBalance"] = Convert.ToDecimal(wallet["balance"]);
+                }
+
+                Response.Redirect("Default.aspx");
             }
-
-            // Store user info in session
-            Session["UserID"] = Convert.ToInt32(user["userID"]);
-            Session["FirstName"] = Convert.ToString(user["firstName"]);
-            Session["LastName"] = Convert.ToString(user["lastName"]);
-            Session["Email"] = Convert.ToString(user["email"]);
-            Session["Username"] = Convert.ToString(user["username"]);
-            Session["UserType"] = Convert.ToString(user["userType"]);
-            Session["AccountStatus"] = Convert.ToString(user["accountStatus"]);
-            Session["RatingScore"] = user["ratingScore"] == DBNull.Value ? 0.0m : Convert.ToDecimal(user["ratingScore"]);
-
-            // Load wallet balance
-            DataRow wallet = DatabaseHelper.GetWalletByUserId(Convert.ToInt32(user["userID"]));
-            if (wallet != null)
+            catch (Exception ex)
             {
-                Session["WalletID"] = Convert.ToInt32(wallet["walletID"]);
-                Session["AvailableBalance"] = Convert.ToDecimal(wallet["balance"]);
+                lblLoginMessage.Text = "Database connection error: " + ex.Message;
             }
-
-            Response.Redirect("Default.aspx");
         }
     }
 }

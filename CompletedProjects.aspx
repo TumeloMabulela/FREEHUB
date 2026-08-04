@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Completed Projects"
+<%@ Page Title="Completed Projects"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -20,7 +20,7 @@
                 <a href="Dashboard.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">⌂</span>
+                    <span class="completed-sidebar-icon">�</span>
 
                     <span>Dashboard</span>
 
@@ -30,7 +30,7 @@
                 <a href="BrowseProjects.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">⌕</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Find Work</span>
 
@@ -47,7 +47,7 @@
                 <a href="PostProject.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">▣</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Post Project</span>
 
@@ -57,7 +57,7 @@
                 <a href="ReviewProposal.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">▤</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Active Projects</span>
 
@@ -67,17 +67,17 @@
                 <a href="CompletedProjects.aspx"
                    class="completed-sidebar-item completed-active">
 
-                    <span class="completed-sidebar-icon">✓</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Completed Projects</span>
 
                 </a>
 
 
-                <a href="Proposals.aspx"
+                <a href="SelectProposal.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">▤</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Proposals</span>
 
@@ -87,7 +87,7 @@
                 <a href="StartChat.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">✉</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Messages</span>
 
@@ -97,7 +97,7 @@
                 <a href="Wallet.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">▱</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Wallet</span>
 
@@ -115,20 +115,20 @@
 
             <div class="completed-sidebar-section">
 
-                <a href="Profile.aspx"
+                <a href="Default.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">♙</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Profile</span>
 
                 </a>
 
 
-                <a href="Settings.aspx"
+                <a href="Default.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">⚙</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Settings</span>
 
@@ -138,14 +138,14 @@
                 <a href="Notifications.aspx"
                    class="completed-sidebar-item">
 
-                    <span class="completed-sidebar-icon">◯</span>
+                    <span class="completed-sidebar-icon">?</span>
 
                     <span>Notifications</span>
 
                 </a>
 
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="completed-sidebar-item">
 
                     <span class="completed-sidebar-icon">?</span>
@@ -179,7 +179,7 @@
                 <asp:Button
                     ID="btnContactSupport"
                     runat="server"
-                    Text="◔ Contact Support"
+                    Text="? Contact Support"
                     CssClass="completed-support-button"
                     CausesValidation="false"
                     OnClick="btnContactSupport_Click" />
@@ -200,7 +200,7 @@
 
                 My Projects
 
-                <span>›</span>
+                <span>�</span>
 
                 <strong>
 
@@ -278,7 +278,7 @@
 
                     <div class="completed-project-icon">
 
-                        ▣
+                        ?
 
                     </div>
 
@@ -296,7 +296,7 @@
 
                             <span class="completed-badge">
 
-                                ✓ Completed
+                                ? Completed
 
                             </span>
 
@@ -316,7 +316,7 @@
 
                             <span>
 
-                                📅 Completed:
+                                ?? Completed:
                                 25 May 2024
 
                             </span>
@@ -324,7 +324,7 @@
 
                             <span>
 
-                                💰 Total Amount:
+                                ?? Total Amount:
                                 R12,000
 
                             </span>
@@ -332,7 +332,7 @@
 
                             <span>
 
-                                ⏱ Duration:
+                                ? Duration:
                                 15 Days
 
                             </span>
@@ -406,7 +406,7 @@
 
                             <span>
 
-                                ★ 4.8
+                                ? 4.8
 
                                 <small>
 
@@ -419,7 +419,7 @@
 
                             <span class="completed-location">
 
-                                • South Africa
+                                � South Africa
 
                             </span>
 
@@ -467,7 +467,7 @@
 
                         <span>
 
-                            ✓
+                            ?
 
                         </span>
 
@@ -524,7 +524,7 @@
                         <asp:Button
                             ID="btnRateFreelancer"
                             runat="server"
-                            Text="★ Rate Freelancer"
+                            Text="? Rate Freelancer"
                             CssClass="completed-rate-button"
                             CausesValidation="false"
                             OnClick="btnRateFreelancer_Click" />

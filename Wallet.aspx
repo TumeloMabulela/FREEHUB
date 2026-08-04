@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Manage Wallet"
+<%@ Page Title="Manage Wallet"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -29,7 +29,7 @@
                 <a href="Dashboard.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">⌂</span>
+                    <span class="wallet-sidebar-icon">�</span>
                     <span>Dashboard</span>
 
                 </a>
@@ -37,15 +37,15 @@
                 <a href="CompletedProjects.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">▣</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>My Projects</span>
 
                 </a>
 
-                <a href="Proposals.aspx"
+                <a href="SelectProposal.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">▤</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Proposals</span>
 
                 </a>
@@ -53,7 +53,7 @@
                 <a href="Messages.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">✉</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Messages</span>
 
                 </a>
@@ -61,7 +61,7 @@
                 <a href="BrowseProjects.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">♙</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Freelancers</span>
 
                 </a>
@@ -69,7 +69,7 @@
                 <a href="Contracts.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">▧</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Contracts</span>
 
                 </a>
@@ -77,11 +77,11 @@
                 <a href="Wallet.aspx"
                    class="wallet-sidebar-link wallet-active-link">
 
-                    <span class="wallet-sidebar-icon">▱</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Wallet</span>
 
                     <span class="wallet-sidebar-arrow">
-                        ⌄
+                        ?
                     </span>
 
                 </a>
@@ -116,7 +116,7 @@
                 <a href="Disputes.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">◉</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Disputes</span>
 
                 </a>
@@ -124,7 +124,7 @@
                 <a href="Refunds.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">↻</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Refunds</span>
 
                 </a>
@@ -132,7 +132,7 @@
                 <a href="Reports.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">▤</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Reports</span>
 
                 </a>
@@ -141,23 +141,23 @@
 
             <div class="wallet-sidebar-section wallet-account-section">
 
-                <a href="Profile.aspx"
+                <a href="Default.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">⚙</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Profile Settings</span>
 
                 </a>
 
-                <a href="Settings.aspx"
+                <a href="Default.aspx"
                    class="wallet-sidebar-link">
 
-                    <span class="wallet-sidebar-icon">⚙</span>
+                    <span class="wallet-sidebar-icon">?</span>
                     <span>Account Settings</span>
 
                 </a>
 
-                <a href="HelpSupport.aspx"
+                <a href="Default.aspx"
                    class="wallet-sidebar-link">
 
                     <span class="wallet-sidebar-icon">?</span>
@@ -185,7 +185,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>�</span>
 
                         <strong>
                             Manage Wallet
@@ -218,7 +218,7 @@
                     </div>
 
                     <span class="wallet-balance-icon">
-                        ▱
+                        ?
                     </span>
 
                 </section>
@@ -251,7 +251,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon available-icon">
-                            ▱
+                            ?
                         </span>
 
                         <div>
@@ -274,7 +274,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon hold-icon">
-                            ◷
+                            ?
                         </span>
 
                         <div>
@@ -297,7 +297,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon withdrawal-icon">
-                            ↑
+                            ?
                         </span>
 
                         <div>
@@ -320,7 +320,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon total-icon">
-                            ◉
+                            ?
                         </span>
 
                         <div>
@@ -367,7 +367,7 @@
                             OnClick="btnFundWallet_Click">
 
                             <span class="wallet-action-icon fund-icon">
-                                ▱
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -384,7 +384,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -396,7 +396,7 @@
                             OnClick="btnWithdrawFunds_Click">
 
                             <span class="wallet-action-icon withdraw-icon">
-                                ↓
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -413,7 +413,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -425,7 +425,7 @@
                             OnClick="btnViewTransactions_Click">
 
                             <span class="wallet-action-icon transactions-icon">
-                                ☷
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -442,7 +442,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -454,7 +454,7 @@
                             OnClick="btnPayouts_Click">
 
                             <span class="wallet-action-icon payouts-icon">
-                                ▣
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -471,7 +471,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -483,7 +483,7 @@
                             OnClick="btnDisputes_Click">
 
                             <span class="wallet-action-icon disputes-icon">
-                                ◈
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -500,7 +500,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -512,7 +512,7 @@
                             OnClick="btnRefunds_Click">
 
                             <span class="wallet-action-icon refunds-icon">
-                                ↻
+                                ?
                             </span>
 
                             <span class="wallet-action-information">
@@ -529,7 +529,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                �
                             </span>
 
                         </asp:LinkButton>
@@ -745,7 +745,7 @@
                                                 ID="btnViewTransaction"
                                                 runat="server"
                                                 CssClass="transaction-view-button"
-                                                Text="◉"
+                                                Text="?"
                                                 CommandArgument='<%# Eval("Reference") %>'
                                                 OnCommand="ViewTransaction_Command">
                                             </asp:LinkButton>
@@ -772,7 +772,7 @@
                     Visible="false">
 
                     <div class="wallet-empty-icon">
-                        ▤
+                        ?
                     </div>
 
                     <strong>
@@ -788,7 +788,7 @@
                 <asp:Button
                     ID="btnViewAllTransactions"
                     runat="server"
-                    Text="View All Transactions ›"
+                    Text="View All Transactions �"
                     CssClass="wallet-bottom-view-button"
                     OnClick="btnViewTransactions_Click" />
 
