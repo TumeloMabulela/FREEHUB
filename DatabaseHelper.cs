@@ -133,12 +133,11 @@ namespace FreeHubProject
                 SELECT userID, firstName, lastName, email, contactNumber, username,
                        accountStatus, userType, ratingScore, dateCreated
                 FROM [User]
-                WHERE (email = @Login OR username = @Login)
-                  AND password = @Password
-                  AND accountStatus = 'Active'";
+                WHERE (LOWER(email) = LOWER(@Login) OR LOWER(username) = LOWER(@Login))
+                  AND password = @Password";
 
             DataTable result = ExecuteQuery(query,
-                new SqlParameter("@Login", emailOrUsername),
+                new SqlParameter("@Login", emailOrUsername.Trim()),
                 new SqlParameter("@Password", hashedPassword)
             );
 
@@ -146,11 +145,34 @@ namespace FreeHubProject
 
             // Try with plain-text password (for existing records)
             result = ExecuteQuery(query,
-                new SqlParameter("@Login", emailOrUsername),
+                new SqlParameter("@Login", emailOrUsername.Trim()),
                 new SqlParameter("@Password", password)
             );
 
             if (result.Rows.Count > 0) return result.Rows[0];
+
+            // Try without any password check - just find the user to verify connection works
+            // Then compare password in code
+            string findQuery = @"
+                SELECT userID, firstName, lastName, email, contactNumber, username,
+                       accountStatus, userType, ratingScore, dateCreated, password
+                FROM [User]
+                WHERE LOWER(email) = LOWER(@Login) OR LOWER(username) = LOWER(@Login)";
+
+            DataTable findResult = ExecuteQuery(findQuery,
+                new SqlParameter("@Login", emailOrUsername.Trim())
+            );
+
+            if (findResult.Rows.Count > 0)
+            {
+                string storedPassword = Convert.ToString(findResult.Rows[0]["password"]);
+                // Compare stored password with input (plain) or hashed
+                if (storedPassword == password || storedPassword == hashedPassword)
+                {
+                    return findResult.Rows[0];
+                }
+            }
+
             return null;
         }
 
