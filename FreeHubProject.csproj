@@ -82,6 +82,7 @@
     <Content Include="Sidebar.ascx" />
     <Content Include="StartChat.aspx" />
     <Content Include="SubmitProposal.aspx" />
+    <Content Include="SwitchRole.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="RejectProposal.aspx" />
     <Content Include="ReviewProposal.aspx" />
@@ -235,6 +236,13 @@
     </Compile>
     <Compile Include="SubmitProposal.aspx.designer.cs">
       <DependentUpon>SubmitProposal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SwitchRole.aspx.cs">
+      <DependentUpon>SwitchRole.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SwitchRole.aspx.designer.cs">
+      <DependentUpon>SwitchRole.aspx</DependentUpon>
     </Compile>
     <Compile Include="TransactionStore.cs" />
     <Compile Include="Wallet.aspx.cs">

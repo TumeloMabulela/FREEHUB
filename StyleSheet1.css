@@ -13002,3 +13002,133 @@ FREEHUB HOME PAGE
     padding: 30px;
     overflow-y: auto;
 }
+
+
+/* =========================
+   SWITCH ROLE PAGE
+========================= */
+
+.switch-role-page {
+    max-width: 900px;
+    padding: 30px;
+}
+
+.switch-role-page h1 {
+    color: #173f2c;
+    margin-bottom: 8px;
+}
+
+.switch-role-description {
+    color: #555;
+    margin-bottom: 25px;
+    font-size: 15px;
+}
+
+.switch-role-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.role-card {
+    background: #ffffff;
+    border: 2px solid #e8ece9;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.role-card:hover {
+    border-color: #2e7d56;
+}
+
+.role-card-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+}
+
+.role-card h2 {
+    color: #173f2c;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.role-card p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.role-features {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.role-features li {
+    padding: 6px 0;
+    font-size: 13px;
+    color: #444;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.role-features li:last-child {
+    border-bottom: none;
+}
+
+.role-switch-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.freelancer-button {
+    background-color: #2e7d56;
+    color: #ffffff;
+}
+
+.freelancer-button:hover {
+    background-color: #1f5c3f;
+}
+
+.employer-button {
+    background-color: #1a5276;
+    color: #ffffff;
+}
+
+.employer-button:hover {
+    background-color: #133a55;
+}
+
+.role-switch-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.create-profile-section {
+    margin-top: 30px;
+    padding: 25px;
+    background: #f9fdfb;
+    border: 1px solid #d4e8dc;
+    border-radius: 10px;
+}
+
+.create-profile-section h2 {
+    color: #173f2c;
+    margin-bottom: 8px;
+}
+
+.create-profile-section p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Allow SwitchRole.aspx location in web.config */

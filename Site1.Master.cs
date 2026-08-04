@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Security;
 
 namespace FreeHubProject
 {
@@ -19,12 +20,11 @@ namespace FreeHubProject
 
             if (loggedIn)
             {
-                // Show logged-in navigation
                 pnlLoggedInNav.Visible = true;
                 pnlGuestButtons.Visible = false;
                 pnlUserButtons.Visible = true;
 
-                // Show Post a Project only for Employers
+                // Show Post a Project for Employers
                 pnlEmployerNav.Visible =
                     userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
@@ -41,7 +41,6 @@ namespace FreeHubProject
             }
             else
             {
-                // Show guest navigation
                 pnlLoggedInNav.Visible = false;
                 pnlEmployerNav.Visible = false;
                 pnlGuestButtons.Visible = true;
@@ -53,6 +52,7 @@ namespace FreeHubProject
         {
             Session.Clear();
             Session.Abandon();
+            FormsAuthentication.SignOut();
             Response.Redirect("Login.aspx");
         }
     }

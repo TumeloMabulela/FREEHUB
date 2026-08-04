@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Web.Security;
 
 namespace FreeHubProject
 {
@@ -57,7 +58,20 @@ namespace FreeHubProject
                     Session["AvailableBalance"] = Convert.ToDecimal(wallet["balance"]);
                 }
 
-                Response.Redirect("Default.aspx");
+                // Create Forms Authentication ticket
+                FormsAuthentication.SetAuthCookie(
+                    Convert.ToString(user["email"]), false);
+
+                // Redirect to return URL or default
+                string returnUrl = Request.QueryString["ReturnUrl"];
+                if (!string.IsNullOrWhiteSpace(returnUrl))
+                {
+                    Response.Redirect(returnUrl);
+                }
+                else
+                {
+                    Response.Redirect("Default.aspx");
+                }
             }
             catch (Exception ex)
             {

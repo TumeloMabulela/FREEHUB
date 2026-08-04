@@ -74,4 +74,16 @@
 
     </div>
 
+    <div class="sidebar-heading">ACCOUNT</div>
+
+    <div class="sidebar-section">
+
+        <a href="SwitchRole.aspx"
+           class="sidebar-item <%= GetActiveClass("SwitchRole") %>">
+            <span class="sidebar-icon">&#128260;</span>
+            <span>Switch Role</span>
+        </a>
+
+    </div>
+
 </aside>
