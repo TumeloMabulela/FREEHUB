@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="RejectProposal.aspx.cs"
     Inherits="FreeHubProject.RejectProposal" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
@@ -12,87 +13,7 @@
     <div class="reject-page">
 
         <!-- SIDEBAR -->
-        <aside class="reject-sidebar">
-
-            <div class="reject-menu">
-
-                <a href="Dashboard.aspx" class="reject-link">
-                    <span>▦</span>
-                    Dashboard
-                </a>
-
-                <a href="FindWork.aspx" class="reject-link">
-                    <span>⌕</span>
-                    Find Work
-                </a>
-
-                <a href="MyProjects.aspx" class="reject-link active">
-                    <span>▣</span>
-                    My Projects
-                </a>
-
-                <a href="Messages.aspx" class="reject-link">
-                    <span>✉</span>
-                    Messages
-                </a>
-
-                <a href="#" class="reject-link">
-                    <span>▤</span>
-                    Contracts
-                </a>
-
-                <a href="#" class="reject-link">
-                    <span>R</span>
-                    Payments
-                </a>
-
-            </div>
-
-            <div class="reject-account">
-
-                <p>ACCOUNT</p>
-
-                <a href="#" class="reject-link">
-                    <span>●</span>
-                    Profile
-                </a>
-
-                <a href="#" class="reject-link">
-                    <span>⚙</span>
-                    Company Settings
-                </a>
-
-                <a href="#" class="reject-link">
-                    <span>◯</span>
-                    Notifications
-                </a>
-
-                <a href="#" class="reject-link">
-                    <span>?</span>
-                    Help &amp; Support
-                </a>
-
-            </div>
-
-            <div class="reject-support">
-
-                <h4>Need Help?</h4>
-
-                <p>
-                    Our support team is ready
-                    to assist you.
-                </p>
-
-                <asp:Button
-                    ID="btnSupport"
-                    runat="server"
-                    Text="Contact Support"
-                    CssClass="reject-support-button"
-                    OnClick="btnSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->

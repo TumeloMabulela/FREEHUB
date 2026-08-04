@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="ProjectDetails.aspx.cs"
     Inherits="FreeHubProject.ProjectDetails" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="ProjectDetailsHead"
     ContentPlaceHolderID="HeadContent"
@@ -21,102 +22,7 @@
 
     <div class="pd-page">
 
-        <!-- LEFT SIDEBAR -->
-        <aside class="pd-sidebar">
-
-            <a href="Dashboard.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">¦</span>
-                <span>Dashboard</span>
-
-            </a>
-
-            <a href="BrowseProjects.aspx"
-               class="pd-menu-item pd-menu-active">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Browse Projects</span>
-
-            </a>
-
-            <a href="SelectProposal.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>My Proposals</span>
-
-            </a>
-
-            <a href="Messages.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Messages</span>
-
-            </a>
-
-            <a href="Wallet.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Wallet</span>
-
-            </a>
-
-            <a href="SavedProjects.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Saved Projects</span>
-
-            </a>
-
-            <div class="pd-sidebar-divider"></div>
-
-            <div class="pd-sidebar-title">
-                ACCOUNT
-            </div>
-
-            <a href="Default.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Profile</span>
-
-            </a>
-
-            <a href="Default.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Settings</span>
-
-            </a>
-
-            <a href="Default.aspx"
-               class="pd-menu-item">
-
-                <span class="pd-menu-icon">?</span>
-                <span>Help &amp; Support</span>
-
-            </a>
-
-            <a href="PostProject.aspx"
-               class="pd-mode-button">
-
-                <span>?</span>
-
-                <div>
-                    <strong>Switch to</strong>
-                    <small>Employer Mode</small>
-                </div>
-
-                <span>›</span>
-
-            </a>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->
@@ -125,17 +31,17 @@
             <!-- BREADCRUMB -->
             <div class="pd-breadcrumb">
 
-                <a href="Dashboard.aspx">
+                <a href="Default.aspx">
                     Dashboard
                 </a>
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 <a href="BrowseProjects.aspx">
                     Projects
                 </a>
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 <strong>
                     Project Details
@@ -164,7 +70,7 @@
                     <p>
                         Project posted by
                         <strong>John Smith</strong>
-                        <span>•</span>
+                        <span>ï¿½</span>
                         Posted 2 hours ago
                     </p>
 
@@ -468,7 +374,7 @@
                                         </span>
 
                                         <small>
-                                            • <%# Eval("DisplayTime") %>
+                                            ï¿½ <%# Eval("DisplayTime") %>
                                         </small>
 
                                     </div>
@@ -573,7 +479,7 @@
                             <asp:LinkButton
                                 ID="btnCancelReply"
                                 runat="server"
-                                Text="×"
+                                Text="ï¿½"
                                 CssClass="pd-cancel-reply"
                                 CausesValidation="false"
                                 OnClick="btnCancelReply_Click">
@@ -748,7 +654,7 @@
             }
             else if (type === "list") {
                 replacement =
-                    "• " + selectedText;
+                    "ï¿½ " + selectedText;
             }
 
             textBox.value =

@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="ReviewProposal.aspx.cs"
     Inherits="FreeHubProject.ReviewProposal" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="ReviewProposalHead"
     ContentPlaceHolderID="HeadContent"
@@ -26,226 +27,7 @@
              EMPLOYER SIDEBAR
         ====================================== -->
 
-        <aside class="review-sidebar">
-
-            <div class="review-menu">
-
-                <a href="Dashboard.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Dashboard
-                    </span>
-
-                </a>
-
-
-                <a href="FindWork.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Find Work
-                    </span>
-
-                </a>
-
-
-                <!-- MY PROJECTS -->
-
-                <a href="MyProjects.aspx"
-                   class="review-link active">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span class="review-link-text">
-                        My Projects
-                    </span>
-
-                    <span class="review-project-arrow">
-                        ?
-                    </span>
-
-                </a>
-
-
-                <!-- MINI SECTION -->
-
-                <div class="review-project-mini-menu">
-
-                    <a href="MyProjects.aspx?view=Active">
-                        Active Projects
-                    </a>
-
-                    <a href="MyProjects.aspx?view=Completed">
-                        Completed Projects
-                    </a>
-
-                    <a href="MyProjects.aspx?view=Cancelled">
-                        Cancelled Projects
-                    </a>
-
-                </div>
-
-
-                <a href="SelectProposal.aspx"
-                   class="review-link review-sub-active">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Proposals
-                    </span>
-
-                </a>
-
-
-                <a href="Messages.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span class="review-link-text">
-                        Messages
-                    </span>
-
-                    <span class="review-notification-badge">
-                        2
-                    </span>
-
-                </a>
-
-
-                <a href="Contracts.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Contracts
-                    </span>
-
-                </a>
-
-
-                <a href="Payments.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        R
-                    </span>
-
-                    <span>
-                        Payments
-                    </span>
-
-                </a>
-
-            </div>
-
-
-            <div class="review-account">
-
-                <p>
-                    ACCOUNT
-                </p>
-
-
-                <a href="Default.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Profile
-                    </span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Company Settings
-                    </span>
-
-                </a>
-
-
-                <a href="Notifications.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Notification Settings
-                    </span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="review-link">
-
-                    <span class="review-link-icon">
-                        ?
-                    </span>
-
-                    <span>
-                        Help &amp; Support
-                    </span>
-
-                </a>
-
-            </div>
-
-
-            <div class="review-support">
-
-                <h4>
-                    Need Help?
-                </h4>
-
-                <p>
-                    Our support team is ready
-                    to assist you.
-                </p>
-
-                <asp:Button
-                    ID="btnSidebarSupport"
-                    runat="server"
-                    Text="Contact Support"
-                    CssClass="review-support-button"
-                    CausesValidation="false"
-                    OnClick="btnSidebarSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- =====================================
@@ -259,12 +41,12 @@
 
             <div class="review-breadcrumb">
 
-                <a href="Dashboard.aspx">
+                <a href="Default.aspx">
                     Dashboard
                 </a>
 
                 <span>
-                    ›
+                    ï¿½
                 </span>
 
                 <a href="MyProjects.aspx">
@@ -272,7 +54,7 @@
                 </a>
 
                 <span>
-                    ›
+                    ï¿½
                 </span>
 
                 <a href="ProjectDetails.aspx">
@@ -280,7 +62,7 @@
                 </a>
 
                 <span>
-                    ›
+                    ï¿½
                 </span>
 
                 <a href="SelectProposal.aspx">
@@ -288,7 +70,7 @@
                 </a>
 
                 <span>
-                    ›
+                    ï¿½
                 </span>
 
                 <strong>
@@ -377,7 +159,7 @@
                     </small>
 
                     <strong>
-                        R8,000 – R15,000
+                        R8,000 ï¿½ R15,000
                     </strong>
 
                 </div>
@@ -446,7 +228,7 @@
                                         (56 Reviews)
                                     </span>
 
-                                    • South Africa
+                                    ï¿½ South Africa
 
                                 </p>
 
@@ -860,7 +642,7 @@
                             <asp:Button
                                 ID="btnRejectProposal"
                                 runat="server"
-                                Text="× Reject Proposal"
+                                Text="ï¿½ Reject Proposal"
                                 CssClass="reject-proposal-button"
                                 OnClick="btnRejectProposal_Click" />
 
@@ -976,7 +758,7 @@
                             View Project Details
 
                             <span>
-                                ›
+                                ï¿½
                             </span>
 
                         </a>

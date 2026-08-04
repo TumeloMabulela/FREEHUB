@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="MyProjects.aspx.cs"
     Inherits="FreeHubProject.MyProjects" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="MyProjectsHead"
     ContentPlaceHolderID="HeadContent"
@@ -21,142 +22,18 @@
 
     <div class="my-projects-page">
 
-        <aside class="my-projects-sidebar">
-
-            <a href="Dashboard.aspx"
-               class="my-projects-menu-item">
-
-                <span>¦</span>
-                Dashboard
-
-            </a>
-
-            <a href="BrowseProjects.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Find Work
-
-            </a>
-
-            <a href="MyProjects.aspx"
-               class="my-projects-menu-item my-projects-active">
-
-                <span>?</span>
-                My Projects
-
-            </a>
-
-
-            <div class="my-projects-mini-menu">
-
-                <asp:HyperLink
-                    ID="lnkMiniActive"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Active"
-                    Text="Active Projects">
-                </asp:HyperLink>
-
-                <asp:HyperLink
-                    ID="lnkMiniCompleted"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Completed"
-                    Text="Completed Projects">
-                </asp:HyperLink>
-
-                <asp:HyperLink
-                    ID="lnkMiniCancelled"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Cancelled"
-                    Text="Cancelled Projects">
-                </asp:HyperLink>
-
-            </div>
-
-
-            <a href="SelectProposal.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Proposals
-
-            </a>
-
-            <a href="Messages.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Messages
-
-            </a>
-
-            <a href="Contracts.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Contracts
-
-            </a>
-
-            <a href="Payments.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Payments
-
-            </a>
-
-
-            <div class="my-projects-sidebar-divider"></div>
-
-            <div class="my-projects-sidebar-heading">
-                ACCOUNT
-            </div>
-
-            <a href="Default.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Profile
-
-            </a>
-
-            <a href="Default.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Company Settings
-
-            </a>
-
-            <a href="Notifications.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Notification Settings
-
-            </a>
-
-            <a href="Default.aspx"
-               class="my-projects-menu-item">
-
-                <span>?</span>
-                Help &amp; Support
-
-            </a>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <main class="my-projects-main">
 
             <div class="project-breadcrumb">
 
-                <a href="Dashboard.aspx">
+                <a href="Default.aspx">
                     Dashboard
                 </a>
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 <strong>
                     My Projects
@@ -356,7 +233,7 @@
 
                             </a>
 
-                            <a href="Proposals.aspx?project=Ecommerce"
+                            <a href="SelectProposal.aspx"
                                class="my-project-primary-button">
 
                                 View Proposals

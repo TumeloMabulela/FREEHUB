@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="PostProject.aspx.cs"
     Inherits="FreeHubProject.PostProject" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
@@ -11,106 +12,7 @@
 
     <div class="freehub-dashboard-layout">
 
-        <!-- LEFT SIDEBAR -->
-
-        <aside class="freehub-sidebar">
-
-            <div class="sidebar-section">
-
-                <a href="Default.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">⌂</span>
-                    <span>Dashboard</span>
-
-                </a>
-
-
-                <a href="BrowseProjects.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">⌕</span>
-                    <span>Find Work</span>
-
-                </a>
-
-
-                <a href="PostProject.aspx"
-                   class="sidebar-item active-sidebar-item">
-
-                    <span class="sidebar-icon">▣</span>
-                    <span>My Projects</span>
-
-                </a>
-
-
-                <a href="SelectProposal.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">▤</span>
-                    <span>Proposals</span>
-
-                </a>
-
-
-                <a href="StartChat.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">✉</span>
-                    <span>Messages</span>
-
-                </a>
-
-
-                <a href="Wallet.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">▱</span>
-                    <span>Wallet</span>
-
-                </a>
-
-            </div>
-
-
-            <div class="sidebar-heading">
-
-                PROFILE
-
-            </div>
-
-
-            <div class="sidebar-section">
-
-                <a href="Default.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">♙</span>
-                    <span>Profile</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">⚙</span>
-                    <span>Settings</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="sidebar-item">
-
-                    <span class="sidebar-icon">?</span>
-                    <span>Help &amp; Support</span>
-
-                </a>
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->

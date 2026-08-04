@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="RateFreelancer.aspx.cs"
     Inherits="FreeHubProject.RateFreelancer" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="RateFreelancerHead"
     ContentPlaceHolderID="HeadContent"
@@ -23,153 +24,7 @@
     <div class="rate-page-layout">
 
         <!-- LEFT SIDEBAR -->
-        <aside class="rate-sidebar">
-
-            <div class="rate-sidebar-section">
-
-                <a href="Dashboard.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">¦</span>
-                    <span>Dashboard</span>
-
-                </a>
-
-
-                <a href="BrowseProjects.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Find Work</span>
-
-                </a>
-
-
-                <div class="rate-menu-title">
-                    MY PROJECTS
-                </div>
-
-
-                <a href="ReviewProposal.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Active Projects</span>
-
-                </a>
-
-
-                <a href="CompletedProjects.aspx"
-                   class="rate-sidebar-item rate-sidebar-active">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Completed Projects</span>
-
-                </a>
-
-
-                <a href="CancelledProjects.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">×</span>
-                    <span>Cancelled Projects</span>
-
-                </a>
-
-
-                <a href="SelectProposal.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Proposals</span>
-
-                </a>
-
-
-                <a href="Messages.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Messages</span>
-
-                </a>
-
-
-                <a href="Wallet.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Wallet</span>
-
-                </a>
-
-            </div>
-
-
-            <div class="rate-sidebar-heading">
-                ACCOUNT
-            </div>
-
-
-            <div class="rate-sidebar-section">
-
-                <a href="Default.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Profile</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Settings</span>
-
-                </a>
-
-
-                <a href="Notifications.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Notification Settings</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="rate-sidebar-item">
-
-                    <span class="rate-sidebar-icon">?</span>
-                    <span>Help &amp; Support</span>
-
-                </a>
-
-            </div>
-
-
-            <div class="rate-support-card">
-
-                <h4>Need Help?</h4>
-
-                <p>
-                    Our support team is here to help you.
-                </p>
-
-                <asp:Button
-                    ID="btnContactSupport"
-                    runat="server"
-                    Text="? Contact Support"
-                    CssClass="rate-support-button"
-                    CausesValidation="false"
-                    OnClick="btnContactSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->
@@ -180,11 +35,11 @@
 
                 My Projects
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 Completed Projects
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 <strong>
                     E-commerce Website Redesign

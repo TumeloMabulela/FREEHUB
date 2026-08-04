@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="Transactions.aspx.cs"
     Inherits="FreeHubProject.Transactions" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="TransactionsHead"
     ContentPlaceHolderID="HeadContent"
@@ -23,131 +24,7 @@
     <div class="transactions-page">
 
         <!-- SIDEBAR -->
-        <aside class="transactions-sidebar">
-
-            <a href="Dashboard.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">¦</span>
-                <span>Dashboard</span>
-
-            </a>
-
-            <a href="CompletedProjects.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>My Projects</span>
-
-            </a>
-
-            <a href="SelectProposal.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Proposals</span>
-
-            </a>
-
-            <a href="Messages.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Messages</span>
-
-            </a>
-
-            <a href="BrowseProjects.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Freelancers</span>
-
-            </a>
-
-            <a href="Contracts.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Contracts</span>
-
-            </a>
-
-            <a href="Wallet.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Wallet</span>
-
-            </a>
-
-            <a href="Transactions.aspx"
-               class="transactions-menu-item transactions-menu-active">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Transactions</span>
-
-            </a>
-
-            <a href="Payouts.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Payouts</span>
-
-            </a>
-
-            <a href="Disputes.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Disputes</span>
-
-            </a>
-
-            <a href="Refunds.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Refunds</span>
-
-            </a>
-
-            <a href="Reports.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Reports</span>
-
-            </a>
-
-            <div class="transactions-sidebar-divider"></div>
-
-            <a href="Default.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Profile Settings</span>
-
-            </a>
-
-            <a href="Default.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Account Settings</span>
-
-            </a>
-
-            <a href="Default.aspx"
-               class="transactions-menu-item">
-
-                <span class="transactions-menu-icon">?</span>
-                <span>Help &amp; Support</span>
-
-            </a>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN -->
@@ -165,7 +42,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>ï¿½</span>
 
                         <strong>
                             Transactions
@@ -465,7 +342,7 @@
                         <asp:LinkButton
                             ID="btnCloseDetails"
                             runat="server"
-                            Text="×"
+                            Text="ï¿½"
                             CssClass="transactions-close-button"
                             CausesValidation="false"
                             OnClick="btnCloseDetails_Click">

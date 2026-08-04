@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="ApproveProposal.aspx.cs"
     Inherits="FreeHubProject.ApproveProposal" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
@@ -12,89 +13,7 @@
     <div class="approve-page">
 
         <!-- EMPLOYER SIDEBAR -->
-        <aside class="approve-sidebar">
-
-            <div class="approve-menu">
-
-                <a href="Default.aspx" class="approve-link">
-                    <span>▦</span>
-                    Dashboard
-                </a>
-
-                <a href="FindWork.aspx" class="approve-link">
-                    <span>⌕</span>
-                    Find Work
-                </a>
-
-                <a href="MyProjects.aspx" class="approve-link active">
-                    <span>▣</span>
-                    My Projects
-                </a>
-
-                <a href="Messages.aspx" class="approve-link">
-                    <span>✉</span>
-                    Messages
-                </a>
-
-                <a href="#" class="approve-link">
-                    <span>▤</span>
-                    Contracts
-                </a>
-
-                <a href="#" class="approve-link">
-                    <span>R</span>
-                    Payments
-                </a>
-
-            </div>
-
-
-            <div class="approve-account">
-
-                <p>ACCOUNT</p>
-
-                <a href="#" class="approve-link">
-                    <span>●</span>
-                    Profile
-                </a>
-
-                <a href="#" class="approve-link">
-                    <span>⚙</span>
-                    Company Settings
-                </a>
-
-                <a href="#" class="approve-link">
-                    <span>◯</span>
-                    Notifications
-                </a>
-
-                <a href="#" class="approve-link">
-                    <span>?</span>
-                    Help &amp; Support
-                </a>
-
-            </div>
-
-
-            <div class="approve-support">
-
-                <h4>Need Help?</h4>
-
-                <p>
-                    Our support team is ready
-                    to assist you.
-                </p>
-
-                <asp:Button
-                    ID="btnSupport"
-                    runat="server"
-                    Text="Contact Support"
-                    CssClass="approve-support-button"
-                    OnClick="btnSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->

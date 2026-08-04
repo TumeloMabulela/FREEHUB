@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="CompletedProjects.aspx.cs"
     Inherits="FreeHubProject.CompletedProjects" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
@@ -13,180 +14,7 @@
 
         <!-- LEFT SIDEBAR -->
 
-        <aside class="completed-sidebar">
-
-            <div class="completed-sidebar-section">
-
-                <a href="Dashboard.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">¦</span>
-
-                    <span>Dashboard</span>
-
-                </a>
-
-
-                <a href="BrowseProjects.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Find Work</span>
-
-                </a>
-
-
-                <div class="completed-menu-title">
-
-                    MY PROJECTS
-
-                </div>
-
-
-                <a href="PostProject.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Post Project</span>
-
-                </a>
-
-
-                <a href="ReviewProposal.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Active Projects</span>
-
-                </a>
-
-
-                <a href="CompletedProjects.aspx"
-                   class="completed-sidebar-item completed-active">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Completed Projects</span>
-
-                </a>
-
-
-                <a href="SelectProposal.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Proposals</span>
-
-                </a>
-
-
-                <a href="StartChat.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Messages</span>
-
-                </a>
-
-
-                <a href="Wallet.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Wallet</span>
-
-                </a>
-
-            </div>
-
-
-            <div class="completed-sidebar-heading">
-
-                ACCOUNT
-
-            </div>
-
-
-            <div class="completed-sidebar-section">
-
-                <a href="Default.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Profile</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Settings</span>
-
-                </a>
-
-
-                <a href="Notifications.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Notifications</span>
-
-                </a>
-
-
-                <a href="Default.aspx"
-                   class="completed-sidebar-item">
-
-                    <span class="completed-sidebar-icon">?</span>
-
-                    <span>Help &amp; Support</span>
-
-                </a>
-
-            </div>
-
-
-            <!-- SUPPORT -->
-
-            <div class="completed-support-card">
-
-                <h4>
-
-                    Need Help?
-
-                </h4>
-
-
-                <p>
-
-                    Our support team is here
-                    to help you.
-
-                </p>
-
-
-                <asp:Button
-                    ID="btnContactSupport"
-                    runat="server"
-                    Text="? Contact Support"
-                    CssClass="completed-support-button"
-                    CausesValidation="false"
-                    OnClick="btnContactSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->
@@ -200,7 +28,7 @@
 
                 My Projects
 
-                <span>›</span>
+                <span>ï¿½</span>
 
                 <strong>
 
@@ -419,7 +247,7 @@
 
                             <span class="completed-location">
 
-                                • South Africa
+                                ï¿½ South Africa
 
                             </span>
 

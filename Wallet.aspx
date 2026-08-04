@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="Wallet.aspx.cs"
     Inherits="FreeHubProject.Wallet" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="WalletHead"
     ContentPlaceHolderID="HeadContent"
@@ -22,152 +23,7 @@
     <div class="wallet-page-layout">
 
         <!-- LEFT SIDEBAR -->
-        <aside class="wallet-sidebar">
-
-            <div class="wallet-sidebar-section">
-
-                <a href="Dashboard.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">¦</span>
-                    <span>Dashboard</span>
-
-                </a>
-
-                <a href="CompletedProjects.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>My Projects</span>
-
-                </a>
-
-                <a href="SelectProposal.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Proposals</span>
-
-                </a>
-
-                <a href="Messages.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Messages</span>
-
-                </a>
-
-                <a href="BrowseProjects.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Freelancers</span>
-
-                </a>
-
-                <a href="Contracts.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Contracts</span>
-
-                </a>
-
-                <a href="Wallet.aspx"
-                   class="wallet-sidebar-link wallet-active-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Wallet</span>
-
-                    <span class="wallet-sidebar-arrow">
-                        ?
-                    </span>
-
-                </a>
-
-                <div class="wallet-submenu">
-
-                    <a href="Wallet.aspx"
-                       class="wallet-submenu-active">
-
-                        Manage Wallet
-
-                    </a>
-
-                    <a href="Transactions.aspx">
-                        Transactions
-                    </a>
-
-                    <a href="Payouts.aspx">
-                        Payouts
-                    </a>
-
-                    <a href="FundWallet.aspx">
-                        Fund Wallet
-                    </a>
-
-                    <a href="WithdrawFunds.aspx">
-                        Withdraw Funds
-                    </a>
-
-                </div>
-
-                <a href="Disputes.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Disputes</span>
-
-                </a>
-
-                <a href="Refunds.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Refunds</span>
-
-                </a>
-
-                <a href="Reports.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Reports</span>
-
-                </a>
-
-            </div>
-
-            <div class="wallet-sidebar-section wallet-account-section">
-
-                <a href="Default.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Profile Settings</span>
-
-                </a>
-
-                <a href="Default.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Account Settings</span>
-
-                </a>
-
-                <a href="Default.aspx"
-                   class="wallet-sidebar-link">
-
-                    <span class="wallet-sidebar-icon">?</span>
-                    <span>Help &amp; Support</span>
-
-                </a>
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
         <!-- MAIN CONTENT -->
         <main class="wallet-main-content">
@@ -185,7 +41,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>ï¿½</span>
 
                         <strong>
                             Manage Wallet
@@ -384,7 +240,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -413,7 +269,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -442,7 +298,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -471,7 +327,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -500,7 +356,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -529,7 +385,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                ›
+                                ï¿½
                             </span>
 
                         </asp:LinkButton>
@@ -788,7 +644,7 @@
                 <asp:Button
                     ID="btnViewAllTransactions"
                     runat="server"
-                    Text="View All Transactions ›"
+                    Text="View All Transactions ï¿½"
                     CssClass="wallet-bottom-view-button"
                     OnClick="btnViewTransactions_Click" />
 

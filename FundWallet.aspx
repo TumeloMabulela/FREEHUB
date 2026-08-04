@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="FundWallet.aspx.cs"
     Inherits="FreeHubProject.FundWallet" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="FundWalletHead"
     ContentPlaceHolderID="HeadContent"
@@ -22,106 +23,7 @@
     <div class="fw-page">
 
         <!-- SIDEBAR -->
-        <aside class="fw-sidebar">
-
-            <a href="Dashboard.aspx" class="fw-menu-link">
-                <span>¦</span>
-                Dashboard
-            </a>
-
-            <a href="CompletedProjects.aspx" class="fw-menu-link">
-                <span>?</span>
-                My Projects
-            </a>
-
-            <a href="BrowseProjects.aspx" class="fw-menu-link">
-                <span>?</span>
-                Freelancers
-            </a>
-
-            <a href="SelectProposal.aspx" class="fw-menu-link">
-                <span>?</span>
-                Proposals
-            </a>
-
-            <a href="Messages.aspx" class="fw-menu-link">
-                <span>?</span>
-                Messages
-            </a>
-
-            <a href="Contracts.aspx" class="fw-menu-link">
-                <span>?</span>
-                Contracts
-            </a>
-
-            <a href="Wallet.aspx"
-               class="fw-menu-link fw-menu-active">
-
-                <span>?</span>
-                Wallet
-
-            </a>
-
-            <div class="fw-submenu">
-
-                <a href="Wallet.aspx">
-                    Manage Wallet
-                </a>
-
-                <a href="Transactions.aspx">
-                    Transactions
-                </a>
-
-                <a href="Payouts.aspx">
-                    Payouts
-                </a>
-
-                <a href="FundWallet.aspx"
-                   class="fw-submenu-active">
-
-                    Fund Wallet
-
-                </a>
-
-                <a href="WithdrawFunds.aspx">
-                    Withdraw Funds
-                </a>
-
-            </div>
-
-            <a href="Disputes.aspx" class="fw-menu-link">
-                <span>?</span>
-                Disputes
-            </a>
-
-            <a href="Refunds.aspx" class="fw-menu-link">
-                <span>?</span>
-                Refunds
-            </a>
-
-            <a href="Reports.aspx" class="fw-menu-link">
-                <span>?</span>
-                Reports
-            </a>
-
-            <div class="fw-divider"></div>
-
-            <a href="Default.aspx" class="fw-menu-link">
-                <span>?</span>
-                Profile Settings
-            </a>
-
-            <a href="Default.aspx" class="fw-menu-link">
-                <span>?</span>
-                Account Settings
-            </a>
-
-            <a href="Default.aspx" class="fw-menu-link">
-                <span>?</span>
-                Help &amp; Support
-            </a>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN AREA -->
@@ -138,7 +40,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>ï¿½</span>
 
                         <strong>Fund Wallet</strong>
 

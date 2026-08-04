@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="SelectProposal.aspx.cs"
     Inherits="FreeHubProject.SelectProposal" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
@@ -12,92 +13,7 @@
     <div class="select-proposal-page">
 
         <!-- EMPLOYER SIDEBAR -->
-        <aside class="employer-sidebar">
-
-            <div class="employer-menu">
-
-                <a href="Dashboard.aspx" class="employer-link">
-                    <span>▦</span>
-                    Dashboard
-                </a>
-
-                <a href="FindWork.aspx" class="employer-link">
-                    <span>⌕</span>
-                    Find Work
-                </a>
-
-                <a href="MyProjects.aspx"
-                    class="employer-link active">
-
-                    <span>▣</span>
-                    My Projects
-                </a>
-
-                <a href="Messages.aspx" class="employer-link">
-                    <span>✉</span>
-                    Messages
-                </a>
-
-                <a href="#" class="employer-link">
-                    <span>▤</span>
-                    Contracts
-                </a>
-
-                <a href="#" class="employer-link">
-                    <span>R</span>
-                    Payments
-                </a>
-
-            </div>
-
-
-            <div class="employer-account">
-
-                <p>ACCOUNT</p>
-
-                <a href="#" class="employer-link">
-                    <span>●</span>
-                    Profile
-                </a>
-
-                <a href="#" class="employer-link">
-                    <span>⚙</span>
-                    Company Settings
-                </a>
-
-                <a href="#" class="employer-link">
-                    <span>◯</span>
-                    Notification Settings
-                </a>
-
-                <a href="#" class="employer-link">
-                    <span>?</span>
-                    Help &amp; Support
-                </a>
-
-            </div>
-
-
-            <!-- SUPPORT CARD -->
-            <div class="sidebar-support">
-
-                <h4>Need Help?</h4>
-
-                <p>
-                    Our support team is here
-                    to help you.
-                </p>
-
-                <asp:Button
-                    ID="btnContactSupport"
-                    runat="server"
-                    Text="◔ Contact Support"
-                    CssClass="support-button"
-                    OnClick="btnContactSupport_Click" />
-
-            </div>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->

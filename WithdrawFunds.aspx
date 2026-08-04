@@ -4,6 +4,7 @@
     AutoEventWireup="true"
     CodeBehind="WithdrawFunds.aspx.cs"
     Inherits="FreeHubProject.WithdrawFunds" %>
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="WithdrawFundsHead"
     ContentPlaceHolderID="HeadContent"
@@ -22,142 +23,7 @@
     <div class="withdraw-page">
 
         <!-- LEFT SIDEBAR -->
-        <aside class="withdraw-sidebar">
-
-            <a href="Dashboard.aspx"
-               class="withdraw-menu-link">
-
-                <span>¦</span>
-                Dashboard
-
-            </a>
-
-            <a href="CompletedProjects.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                My Projects
-
-            </a>
-
-            <a href="BrowseProjects.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Freelancers
-
-            </a>
-
-            <a href="SelectProposal.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Proposals
-
-            </a>
-
-            <a href="Messages.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Messages
-
-            </a>
-
-            <a href="Contracts.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Contracts
-
-            </a>
-
-            <a href="Wallet.aspx"
-               class="withdraw-menu-link withdraw-menu-active">
-
-                <span>?</span>
-                Wallet
-
-            </a>
-
-            <div class="withdraw-submenu">
-
-                <a href="Wallet.aspx">
-                    Manage Wallet
-                </a>
-
-                <a href="Transactions.aspx">
-                    Transactions
-                </a>
-
-                <a href="Payouts.aspx">
-                    Payouts
-                </a>
-
-                <a href="FundWallet.aspx">
-                    Fund Wallet
-                </a>
-
-                <a href="WithdrawFunds.aspx"
-                   class="withdraw-submenu-active">
-
-                    Withdraw Funds
-
-                </a>
-
-            </div>
-
-            <a href="Disputes.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Disputes
-
-            </a>
-
-            <a href="Refunds.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Refunds
-
-            </a>
-
-            <a href="Reports.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Reports
-
-            </a>
-
-            <div class="withdraw-divider"></div>
-
-            <a href="Default.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Profile Settings
-
-            </a>
-
-            <a href="Default.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Account Settings
-
-            </a>
-
-            <a href="Default.aspx"
-               class="withdraw-menu-link">
-
-                <span>?</span>
-                Help &amp; Support
-
-            </a>
-
-        </aside>
+        <uc:Sidebar runat="server" ID="SidebarControl" />
 
 
         <!-- MAIN CONTENT -->
@@ -176,7 +42,7 @@
 
                         Wallet
 
-                        <span>›</span>
+                        <span>ï¿½</span>
 
                         <strong>
                             Withdraw Funds
@@ -428,7 +294,7 @@
 
                             <li>
                                 Approved withdrawals are processed
-                                within 1–3 business days.
+                                within 1ï¿½3 business days.
                             </li>
 
                             <li>

@@ -12921,3 +12921,84 @@ FREEHUB HOME PAGE
     border: 1px solid #f5c6cb;
     color: #721c24;
 }
+
+
+/* =========================
+   SHARED SIDEBAR CONTROL
+========================= */
+
+.freehub-sidebar {
+    width: 260px;
+    min-width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #e8ece9;
+    padding: 20px 0;
+    min-height: calc(100vh - 75px);
+    position: sticky;
+    top: 75px;
+    align-self: flex-start;
+}
+
+.freehub-sidebar .sidebar-section {
+    padding: 0 12px;
+    margin-bottom: 10px;
+}
+
+.freehub-sidebar .sidebar-heading {
+    padding: 15px 20px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8a9e91;
+    letter-spacing: 1px;
+}
+
+.freehub-sidebar .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: #3d5a47;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    margin-bottom: 2px;
+}
+
+.freehub-sidebar .sidebar-item:hover {
+    background-color: #edf5f0;
+    color: #173f2c;
+}
+
+.freehub-sidebar .sidebar-item.active-sidebar-item {
+    background-color: #173f2c;
+    color: #ffffff;
+}
+
+.freehub-sidebar .sidebar-item .sidebar-icon {
+    font-size: 16px;
+    width: 22px;
+    text-align: center;
+}
+
+/* Layout wrapper for pages using the shared sidebar */
+.freehub-dashboard-layout,
+.my-projects-page,
+.wallet-page-layout,
+.completed-page-layout,
+.rate-page-layout {
+    display: flex;
+    min-height: calc(100vh - 75px);
+}
+
+.freehub-dashboard-layout > section,
+.freehub-dashboard-layout > .freehub-main-content,
+.my-projects-page > .my-projects-content,
+.wallet-page-layout > .wallet-main-content,
+.completed-page-layout > .completed-main-content,
+.rate-page-layout > .rate-main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}

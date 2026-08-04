@@ -468,8 +468,7 @@ VALUES (
     'admin@freehub.co.za',
     '0000000000',
     'admin@freehub.co.za',
-    -- SHA256 hash of 'admin@2026'
-    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855admin2026',
+    '8b3ce0c3977ee6e8d53efeb1fb5b4f82bfb85e44b706c4eded197bd78875da67',
     'Active',
     'Admin',
     NULL
@@ -483,8 +482,7 @@ VALUES (
     'freelancer@freehub.co.za',
     '0712345678',
     'freelancer@freehub.co.za',
-    -- SHA256 hash of 'free@2026'
-    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855free2026',
+    '1f81397415ab9129b5a95e8277cc55a8265e1656d49c321b9bba8f013d00964f',
     'Active',
     'Freelancer',
     4.5
@@ -498,8 +496,7 @@ VALUES (
     'employer@freehub.co.za',
     '0823456789',
     'employer@freehub.co.za',
-    -- SHA256 hash of 'emp@2026'
-    'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855emp2026',
+    '8c6621f34cad2a8ced988287ff66f6ff71e1ad5f91b3abe80081ae2d391a1195',
     'Active',
     'Employer',
     4.8
