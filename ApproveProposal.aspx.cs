@@ -6,23 +6,18 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-<<<<<<< HEAD
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            // Role check - Employer only
             string userType = Session["UserType"] as string ?? "";
             if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Default.aspx");
                 return;
             }
-=======
-            if (!AuthHelper.RequireRole(this, "Employer")) return;
->>>>>>> 097d0b50cf53ee8e24d9083984714f35a7d81d6a
         }
 
         protected void btnBackToReview_Click(object sender, EventArgs e)
@@ -40,15 +35,13 @@ namespace FreeHubProject
 
             try
             {
-                // Update proposal to Approved and project to In Progress
                 string query = @"UPDATE Proposal SET status = 'Approved' 
                                 WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
                                 UPDATE Project SET projectStatus = 'In Progress' 
                                 WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
                 DatabaseHelper.ExecuteNonQuery(query);
 
-                lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'. " +
-                    "The freelancer has been assigned to the project and will be notified.";
+                lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'. The freelancer has been assigned to the project and will be notified.";
             }
             catch
             {
