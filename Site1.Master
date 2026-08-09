@@ -84,10 +84,6 @@
         <!-- Main Page Content -->
         <main class="page-content">
 
-            <div class="back-button-bar">
-                <a href="javascript:history.back()" class="back-link">&larr; Back</a>
-            </div>
-
             <asp:ContentPlaceHolder
                 ID="MainContent"
                 runat="server">

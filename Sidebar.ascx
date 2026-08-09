@@ -4,6 +4,10 @@
 
 <aside class="freehub-sidebar">
 
+    <div class="sidebar-back">
+        <a href="javascript:history.back()" class="sidebar-back-link">&larr; Back</a>
+    </div>
+
     <div class="sidebar-section">
 
         <a href="Default.aspx"
@@ -24,11 +28,21 @@
             <span>My Projects</span>
         </a>
 
+        <% if (CurrentUserType == "Freelancer") { %>
         <a href="SelectProposal.aspx"
            class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
             <span class="sidebar-icon">&#128221;</span>
-            <span>Proposals</span>
+            <span>My Proposals</span>
         </a>
+        <% } %>
+
+        <% if (CurrentUserType == "Employer") { %>
+        <a href="SelectProposal.aspx"
+           class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
+            <span class="sidebar-icon">&#128221;</span>
+            <span>Proposals Received</span>
+        </a>
+        <% } %>
 
         <a href="StartChat.aspx"
            class="sidebar-item <%= GetActiveClass("StartChat") %>">
@@ -54,11 +68,13 @@
 
     <div class="sidebar-section">
 
+        <% if (CurrentUserType == "Employer") { %>
         <a href="PostProject.aspx"
            class="sidebar-item <%= GetActiveClass("PostProject") %>">
             <span class="sidebar-icon">&#10133;</span>
             <span>Post a Project</span>
         </a>
+        <% } %>
 
         <a href="CompletedProjects.aspx"
            class="sidebar-item <%= GetActiveClass("CompletedProjects") %>">

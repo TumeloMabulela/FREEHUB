@@ -16,6 +16,14 @@ namespace FreeHubProject
                 return;
             }
 
+            // Only employers can post projects
+            string userType = Session["UserType"] as string ?? "";
+            if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("SwitchRole.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 pnlPreview.Visible = false;
