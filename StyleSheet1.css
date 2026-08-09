@@ -13249,3 +13249,32 @@ FREEHUB HOME PAGE
 .deactivate-account-button:hover {
     background-color: #4a0d13;
 }
+
+
+/* =========================
+   BROWSE PROJECTS (DYNAMIC)
+========================= */
+
+.no-projects-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-projects-message h3 {
+    color: #173f2c;
+    margin-bottom: 10px;
+}
+
+.no-selection-panel {
+    text-align: center;
+    padding: 80px 30px;
+    color: #888;
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+}
+
+.no-selection-panel h3 {
+    color: #173f2c;
+    margin-bottom: 10px;
+}

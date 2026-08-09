@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Web.UI.WebControls;
 
 namespace FreeHubProject
 {
@@ -10,125 +11,91 @@ namespace FreeHubProject
         {
             if (!IsPostBack)
             {
-                LoadProjectsFromDatabase();
+                LoadProjects();
             }
         }
 
-        private void LoadProjectsFromDatabase()
+        private void LoadProjects()
         {
             try
             {
                 DataTable projects = DatabaseHelper.GetOpenProjects();
 
-                if (projects.Rows.Count > 0)
+                if (projects.Rows.Count == 0)
                 {
-                    // Load first project into the detail panel
-                    LoadProjectDetail(projects.Rows[0]);
-                    lblFilterMessage.Text = projects.Rows.Count + " projects available";
+                    pnlNoProjects.Visible = true;
+                    lblFilterMessage.Text = "";
                 }
                 else
                 {
-                    lblFilterMessage.Text = "No projects available at this time.";
+                    pnlNoProjects.Visible = false;
+                    lblFilterMessage.Text = projects.Rows.Count + " open project(s) found";
                 }
+
+                rptProjects.DataSource = projects;
+                rptProjects.DataBind();
             }
-            catch
+            catch (Exception ex)
             {
-                // Fallback to hardcoded data if database not available
-                LoadFallbackProject();
+                pnlNoProjects.Visible = true;
+                lblFilterMessage.Text = "Error loading projects: " + ex.Message;
             }
         }
 
-        private void LoadProjectDetail(DataRow project)
+        protected void rptProjects_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            lblProjectTitle.Text = Convert.ToString(project["title"]);
-            lblPosted.Text = "Posted " + Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
-            lblDescription.Text = Convert.ToString(project["description"]);
-            lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " - " +
-                            Convert.ToString(project["budgetType"]);
-            lblDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
-            lblCategory.Text = Convert.ToString(project["category"]);
-            lblExperience.Text = Convert.ToString(project["experienceLevel"]);
-            lblEmployerName.Text = Convert.ToString(project["employerName"]);
-            lblEmployerDetails.Text = "Company: " + Convert.ToString(project["companyName"]);
-            lblEmployerRating.Text = "Verified Employer";
-
-            string name = Convert.ToString(project["employerName"]);
-            string initials = "";
-            string[] parts = name.Split(' ');
-            foreach (string part in parts)
+            if (e.CommandName == "SelectProject")
             {
-                if (part.Length > 0) initials += part[0];
+                int projectId = Convert.ToInt32(e.CommandArgument);
+                LoadProjectDetails(projectId);
             }
-            lblEmployerInitials.Text = initials.ToUpper();
-
-            // Store project ID for submit proposal
-            ViewState["SelectedProjectId"] = Convert.ToInt32(project["projectID"]);
-
-            lblProjectMessage.Text = "";
         }
 
-        private void LoadFallbackProject()
-        {
-            lblProjectTitle.Text = "E-commerce Website Redesign";
-            lblPosted.Text = "Posted recently";
-            lblDescription.Text = "We need a modern and user-friendly redesign of our existing e-commerce website. The goal is to improve UX/UI, increase conversion rate, and ensure mobile responsiveness. The project includes front-end and back-end development.";
-            lblBudget.Text = "R8,000 - R15,000 - Fixed Price";
-            lblDeadline.Text = "30 Jun 2026";
-            lblCategory.Text = "Web Development";
-            lblExperience.Text = "Intermediate";
-            lblEmployerName.Text = "John Smith";
-            lblEmployerDetails.Text = "Company: TechStore SA";
-            lblEmployerRating.Text = "4.8 rating";
-            lblEmployerInitials.Text = "JS";
-            lblFilterMessage.Text = "Showing sample projects";
-        }
-
-        protected void btnProjectOne_Click(object sender, EventArgs e)
-        {
-            LoadProjectByIndex(0);
-        }
-
-        protected void btnProjectTwo_Click(object sender, EventArgs e)
-        {
-            LoadProjectByIndex(1);
-        }
-
-        protected void btnProjectThree_Click(object sender, EventArgs e)
-        {
-            LoadProjectByIndex(2);
-        }
-
-        protected void btnProjectFour_Click(object sender, EventArgs e)
-        {
-            LoadProjectByIndex(3);
-        }
-
-        protected void btnProjectFive_Click(object sender, EventArgs e)
-        {
-            LoadProjectByIndex(4);
-        }
-
-        private void LoadProjectByIndex(int index)
+        private void LoadProjectDetails(int projectId)
         {
             try
             {
-                DataTable projects = DatabaseHelper.GetOpenProjects();
-                if (projects.Rows.Count > index)
+                DataRow project = DatabaseHelper.GetProjectById(projectId);
+
+                if (project == null)
                 {
-                    LoadProjectDetail(projects.Rows[index]);
+                    lblProjectMessage.Text = "Project not found.";
+                    return;
                 }
-                else if (projects.Rows.Count > 0)
+
+                // Show details panel
+                pnlNoSelection.Visible = false;
+                pnlProjectDetails.Visible = true;
+
+                // Fill in details
+                lblProjectTitle.Text = Convert.ToString(project["title"]);
+                lblPosted.Text = "Posted " + Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
+                lblDescription.Text = Convert.ToString(project["description"]);
+                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " (" + Convert.ToString(project["budgetType"]) + ")";
+                lblDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
+                lblCategory.Text = Convert.ToString(project["category"]);
+                lblExperience.Text = Convert.ToString(project["experienceLevel"]);
+                lblEmployerName.Text = Convert.ToString(project["employerName"]);
+                lblEmployerDetails.Text = Convert.ToString(project["companyName"]);
+                lblEmployerRating.Text = "Verified Employer";
+
+                // Initials
+                string name = Convert.ToString(project["employerName"]);
+                string initials = "";
+                string[] parts = name.Split(' ');
+                foreach (string part in parts)
                 {
-                    LoadProjectDetail(projects.Rows[0]);
+                    if (part.Length > 0) initials += part[0];
                 }
-                else
-                {
-                    LoadFallbackProject();
-                }
+                lblEmployerInitials.Text = initials.ToUpper();
+
+                // Store for submit proposal
+                ViewState["SelectedProjectId"] = projectId;
+                lblProjectMessage.Text = "";
             }
-            catch
+            catch (Exception ex)
             {
-                LoadFallbackProject();
+                lblProjectMessage.Text = "Error: " + ex.Message;
             }
         }
 
@@ -136,7 +103,6 @@ namespace FreeHubProject
         {
             try
             {
-                string category = ddlCategory.SelectedValue;
                 string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
                                 p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
                                 p.experienceLevel, p.skills, e.companyName,
@@ -146,37 +112,42 @@ namespace FreeHubProject
                                 INNER JOIN [User] u ON e.userID = u.userID
                                 WHERE p.projectStatus = 'Open'";
 
-                if (!string.IsNullOrEmpty(category))
+                // Category filter
+                if (!string.IsNullOrEmpty(ddlCategory.SelectedValue))
                 {
-                    query += " AND p.category = @Category";
+                    query += " AND p.category = '" + ddlCategory.SelectedValue.Replace("'", "''") + "'";
+                }
+
+                // Budget filter
+                if (!string.IsNullOrEmpty(ddlBudget.SelectedValue))
+                {
+                    string[] range = ddlBudget.SelectedValue.Split('-');
+                    if (range.Length == 2)
+                    {
+                        query += " AND p.budget >= " + range[0] + " AND p.budget <= " + range[1];
+                    }
+                }
+
+                // Date filter
+                if (!string.IsNullOrEmpty(ddlDate.SelectedValue))
+                {
+                    int days = Convert.ToInt32(ddlDate.SelectedValue);
+                    query += " AND p.dateCreated >= DATEADD(day, -" + days + ", GETDATE())";
                 }
 
                 query += " ORDER BY p.dateCreated DESC";
 
-                DataTable results;
-                if (!string.IsNullOrEmpty(category))
-                {
-                    results = DatabaseHelper.ExecuteQuery(query,
-                        new SqlParameter("@Category", category));
-                }
-                else
-                {
-                    results = DatabaseHelper.ExecuteQuery(query);
-                }
+                DataTable results = DatabaseHelper.ExecuteQuery(query);
 
-                if (results.Rows.Count > 0)
-                {
-                    LoadProjectDetail(results.Rows[0]);
-                    lblFilterMessage.Text = results.Rows.Count + " projects found matching your filters.";
-                }
-                else
-                {
-                    lblFilterMessage.Text = "No projects found matching your filters.";
-                }
+                rptProjects.DataSource = results;
+                rptProjects.DataBind();
+
+                pnlNoProjects.Visible = results.Rows.Count == 0;
+                lblFilterMessage.Text = results.Rows.Count + " project(s) found";
             }
-            catch
+            catch (Exception ex)
             {
-                lblFilterMessage.Text = "Filters applied.";
+                lblFilterMessage.Text = "Filter error: " + ex.Message;
             }
         }
 
@@ -185,26 +156,16 @@ namespace FreeHubProject
             ddlCategory.SelectedIndex = 0;
             ddlBudget.SelectedIndex = 0;
             ddlDate.SelectedIndex = 0;
-            LoadProjectsFromDatabase();
-            lblFilterMessage.Text = "All filters have been reset.";
-        }
-
-        protected void btnLoadMore_Click(object sender, EventArgs e)
-        {
-            lblFilterMessage.Text = "All available projects are displayed.";
-        }
-
-        protected void btnReturn_Click(object sender, EventArgs e)
-        {
-            lblProjectMessage.Text = "";
+            LoadProjects();
         }
 
         protected void btnSubmitProposal_Click(object sender, EventArgs e)
         {
-            Session["SelectedProjectTitle"] = lblProjectTitle.Text;
-            Session["SelectedProjectBudget"] = lblBudget.Text;
-            Session["SelectedProjectDeadline"] = lblDeadline.Text;
-            Session["SelectedProjectCategory"] = lblCategory.Text;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (ViewState["SelectedProjectId"] != null)
             {
@@ -212,18 +173,13 @@ namespace FreeHubProject
             }
             else
             {
-                Response.Redirect("SubmitProposal.aspx");
+                lblProjectMessage.Text = "Please select a project first.";
             }
         }
 
         protected void btnSaveProject_Click(object sender, EventArgs e)
         {
             lblProjectMessage.Text = "Project saved to your list.";
-        }
-
-        protected void btnViewProfile_Click(object sender, EventArgs e)
-        {
-            lblProjectMessage.Text = "Employer: " + lblEmployerName.Text + " | " + lblEmployerDetails.Text;
         }
     }
 }
