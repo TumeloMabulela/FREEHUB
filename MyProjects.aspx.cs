@@ -105,19 +105,23 @@ namespace FreeHubProject
                 int projectId = Convert.ToInt32(e.CommandArgument);
                 try
                 {
-                    // Delete related records first, then the project
+                    // Delete ALL related records first
                     DatabaseHelper.ExecuteNonQuery("DELETE FROM Comment WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
                     DatabaseHelper.ExecuteNonQuery("DELETE FROM Proposal WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
                     DatabaseHelper.ExecuteNonQuery("DELETE FROM Rating WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Dispute WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM ChatSession WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    // Now delete the project
                     DatabaseHelper.ExecuteNonQuery("DELETE FROM Project WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
-
-                    LoadProjects();
                 }
-                catch { LoadProjects(); }
+                catch { }
+                LoadProjects();
             }
         }
 
