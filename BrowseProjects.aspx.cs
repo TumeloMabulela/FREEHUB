@@ -71,7 +71,10 @@ namespace FreeHubProject
                 lblProjectTitle.Text = Convert.ToString(project["title"]);
                 lblPosted.Text = "Posted " + Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
                 lblDescription.Text = Convert.ToString(project["description"]);
-                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " (" + Convert.ToString(project["budgetType"]) + ")";
+                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " - " + 
+                    (Convert.ToString(project["budgetType"]) == "Fixed" ? "Fixed Price" : 
+                     Convert.ToString(project["budgetType"]) == "Hourly" ? "Hourly Rate" : 
+                     Convert.ToString(project["budgetType"]));
                 lblDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
                 lblCategory.Text = Convert.ToString(project["category"]);
                 lblExperience.Text = Convert.ToString(project["experienceLevel"]);

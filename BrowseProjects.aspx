@@ -102,7 +102,7 @@
                                 </span>
                                 <span class="project-budget">
                                     <span>R<%# Convert.ToDecimal(Eval("budget")).ToString("N0") %></span>
-                                    <small><%# Eval("budgetType") %></small>
+                                    <small><%# Eval("budgetType").ToString() == "Fixed" ? "Fixed Price" : Eval("budgetType").ToString() == "Hourly" ? "Hourly Rate" : Eval("budgetType") %></small>
                                 </span>
 
                             </asp:LinkButton>
