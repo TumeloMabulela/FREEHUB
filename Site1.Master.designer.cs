@@ -10,6 +10,7 @@ namespace FreeHubProject
     {
         protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContent;
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.Panel pnlFreelancerNav;
         protected global::System.Web.UI.WebControls.Panel pnlEmployerNav;
         protected global::System.Web.UI.WebControls.Panel pnlLoggedInNav;
         protected global::System.Web.UI.WebControls.Panel pnlGuestButtons;

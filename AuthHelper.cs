@@ -48,5 +48,49 @@ namespace FreeHubProject
         {
             return page.Session["UserType"] as string ?? "";
         }
+
+        /// <summary>
+        /// Requires the user to have a specific role.
+        /// Redirects to Default.aspx if the user does not match.
+        /// Returns true if the user has the required role.
+        /// </summary>
+        public static bool RequireRole(
+            System.Web.UI.Page page,
+            params string[] allowedRoles)
+        {
+            if (!RequireLogin(page)) return false;
+
+            string userType = GetCurrentUserType(page);
+
+            foreach (string role in allowedRoles)
+            {
+                if (string.Equals(
+                    userType,
+                    role,
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            page.Response.Redirect("Default.aspx");
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the current user has a specific role without redirecting.
+        /// </summary>
+        public static bool IsInRole(
+            System.Web.UI.Page page,
+            string role)
+        {
+            string userType = GetCurrentUserType(page);
+
+            return string.Equals(
+                userType,
+                role,
+                StringComparison.OrdinalIgnoreCase
+            );
+        }
     }
 }

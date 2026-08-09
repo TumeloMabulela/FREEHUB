@@ -7,11 +7,7 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null)
-            {
-                Response.Redirect("Login.aspx");
-                return;
-            }
+            if (!AuthHelper.RequireRole(this, "Employer")) return;
         }
 
         protected void btnBackToProposals_Click(object sender, EventArgs e)
