@@ -41,7 +41,7 @@
 
                         Wallet
 
-                        <span>�</span>
+                        <span>›</span>
 
                         <strong>
                             Manage Wallet
@@ -612,7 +612,7 @@
                                                 CssClass="transaction-view-button"
                                                 Text="?"
                                                 CommandName="ViewTransaction"
-                                                CommandArgument='<%# Eval("Reference") %>'
+                                                CommandArgument='<%# Eval("TransactionId") %>'
                                                 CausesValidation="false">
                                             </asp:LinkButton>
 

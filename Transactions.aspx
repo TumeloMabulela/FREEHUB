@@ -40,9 +40,11 @@
 
                     <div class="transactions-breadcrumb">
 
-                        Wallet
+                        <a href="Wallet.aspx" class="breadcrumb-link">
+                            Wallet
+                        </a>
 
-                        <span>�</span>
+                        <span>›</span>
 
                         <strong>
                             Transactions
@@ -178,6 +180,7 @@
                     runat="server"
                     Text="Filter"
                     CssClass="transactions-filter-button"
+                    CausesValidation="false"
                     OnClick="btnFilter_Click" />
 
 
@@ -288,7 +291,8 @@
                                                     Text="?"
                                                     CssClass="transaction-view-button"
                                                     CommandName="ViewDetails"
-                                                    CommandArgument='<%# Eval("TransactionId") %>'>
+                                                    CommandArgument='<%# Eval("TransactionId") %>'
+                                                    CausesValidation="false">
                                                 </asp:LinkButton>
 
                                             </td>
@@ -492,6 +496,7 @@
                             runat="server"
                             Text="? Download Receipt"
                             CssClass="transactions-download-button"
+                            CausesValidation="false"
                             OnClick="btnDownloadReceipt_Click" />
 
                     </asp:Panel>

@@ -38,9 +38,11 @@
 
                     <div class="fw-breadcrumb">
 
-                        Wallet
+                        <a href="Wallet.aspx" class="breadcrumb-link">
+                            Wallet
+                        </a>
 
-                        <span>�</span>
+                        <span>›</span>
 
                         <strong>Fund Wallet</strong>
 
@@ -224,6 +226,7 @@
                         runat="server"
                         Text="Proceed to Payment"
                         CssClass="fw-proceed-button"
+                        CausesValidation="false"
                         OnClick="btnProceed_Click" />
 
                     <div class="fw-secure-text">
