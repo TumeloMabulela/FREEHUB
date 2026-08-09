@@ -10,737 +10,82 @@
     ContentPlaceHolderID="MainContent"
     runat="server">
 
-    <div class="select-proposal-page">
+    <div class="freehub-dashboard-layout">
 
-        <!-- EMPLOYER SIDEBAR -->
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
+        <section class="freehub-main-content">
 
-        <!-- MAIN CONTENT -->
-        <main class="select-proposal-main">
-
-
-            <!-- BREADCRUMBS -->
-            <div class="proposal-breadcrumb">
-
-                Dashboard
-
-                <span>›</span>
-
-                My Projects
-
-                <span>›</span>
-
-                Website Development Project
-
-                <span>›</span>
-
-                <strong>Proposals</strong>
-
+            <div class="post-page-heading">
+                <div class="post-breadcrumb">
+                    Dashboard <span>/</span> My Projects <span>/</span> Proposals
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <h1>Proposals Received</h1>
+                        <p>Review proposals submitted by freelancers for your projects.</p>
+                    </div>
+                    <a href="MyProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Projects</a>
+                </div>
             </div>
 
+            <!-- MESSAGE -->
+            <asp:Panel ID="pnlMessage" runat="server" CssClass="post-status" Visible="false">
+                <asp:Label ID="lblProposalMessage" runat="server" />
+            </asp:Panel>
 
-            <!-- PAGE TITLE -->
-            <div class="select-page-heading">
+            <!-- NO PROPOSALS -->
+            <asp:Panel ID="pnlNoProposals" runat="server" Visible="false" CssClass="no-projects-message">
+                <h3>No proposals received yet</h3>
+                <p>Once freelancers submit proposals for your projects, they will appear here for you to review.</p>
+            </asp:Panel>
 
-                <div>
-
-                    <h1>Select Proposal</h1>
-
-                    <p>
-                        Review proposals received and
-                        select the best fit for your project.
-                    </p>
-
-                </div>
-
-
-                <asp:Button
-                    ID="btnBackToProject"
-                    runat="server"
-                    Text="← Back to Project"
-                    CssClass="back-project-button"
-                    OnClick="btnBackToProject_Click" />
-
-            </div>
-
-
-            <!-- PROJECT SUMMARY -->
-            <section class="selected-project-summary">
-
-                <div class="summary-project-icon">
-                    ▣
-                </div>
-
-
-                <div class="summary-project-information">
-
-                    <h2>
-                        Website Development Project
-                    </h2>
-
-                    <p>
-                        We need a modern and user-friendly
-                        website with responsive pages.
-                    </p>
-
-                    <a href="#">
-                        View Project Details
-                    </a>
-
-                </div>
-
-
-                <div class="summary-information">
-
-                    <small>Budget</small>
-
-                    <strong>
-                        R8,000 - R15,000
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-information">
-
-                    <small>Deadline</small>
-
-                    <strong>
-                        30 May 2026
-                    </strong>
-
-                    <em>
-                        18 days left
-                    </em>
-
-                </div>
-
-
-                <div class="summary-information">
-
-                    <small>Proposals Received</small>
-
-                    <strong>
-                        4 Proposals
-                    </strong>
-
-                </div>
-
-            </section>
-
-
-            <!-- PROPOSALS AND RIGHT PANEL -->
-            <div class="proposal-content-layout">
-
-
-                <!-- PROPOSALS -->
-                <section class="proposals-area">
-
-
-                    <div class="proposals-top">
-
-                        <h2>
-                            Proposals
-                            <span>(4)</span>
-                        </h2>
-
-
-                        <div>
-
-                            <label>
-                                Sort by:
-                            </label>
-
-                            <asp:DropDownList
-                                ID="ddlProposalSort"
-                                runat="server"
-                                CssClass="proposal-sort">
-
-                                <asp:ListItem>
-                                    Newest First
-                                </asp:ListItem>
-
-                                <asp:ListItem>
-                                    Oldest First
-                                </asp:ListItem>
-
-                                <asp:ListItem>
-                                    Lowest Rate
-                                </asp:ListItem>
-
-                                <asp:ListItem>
-                                    Highest Rating
-                                </asp:ListItem>
-
-                            </asp:DropDownList>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PROPOSAL 1 -->
-                    <div class="freelancer-proposal selected-proposal">
-
-                        <div class="proposal-select-circle">
-                            ●
-                        </div>
-
-
-                        <div class="freelancer-avatar avatar-blue">
-                            TM
-                        </div>
-
-
-                        <div class="freelancer-proposal-info">
-
-                            <div class="freelancer-name-row">
-
-                                <h3>
-                                    Thabo Mokoena
-                                </h3>
-
-                                <span class="top-rated">
-                                    Top Rated
-                                </span>
-
+            <!-- PROPOSALS LIST -->
+            <asp:Repeater ID="rptProposals" runat="server" OnItemCommand="rptProposals_ItemCommand">
+                <ItemTemplate>
+                    <div class="proposal-card">
+                        <div class="proposal-card-left">
+                            <div class="comment-avatar" style="background-color:#2e7d56; width:45px; height:45px; font-size:16px;">
+                                <%# Eval("freelancerName").ToString().Length > 0 ? Eval("freelancerName").ToString().Substring(0,1).ToUpper() : "?" %>
                             </div>
-
-
-                            <p class="freelancer-rating">
-
-                                ★ 4.8
-
-                                <span>
-                                    (56 Reviews)
-                                </span>
-
-                                • South Africa
-
-                            </p>
-
-
-                            <p class="proposal-preview">
-
-                                I have over 5 years of experience
-                                in designing and developing modern,
-                                responsive websites. I specialise in
-                                creating user-friendly interfaces.
-
-                            </p>
-
-
-                            <a href="#">
-                                View Full Proposal
-                            </a>
-
-                        </div>
-
-
-                        <div class="proposal-rate">
-
-                            <small>
-                                Proposed Rate
-                            </small>
-
-                            <strong>
-                                R12,000
-                            </strong>
-
-
-                            <small>
-                                Estimated Time
-                            </small>
-
-                            <strong>
-                                15 days
-                            </strong>
-
-
-                            <em>
-                                Submitted 2 hours ago
-                            </em>
-
-                        </div>
-
-
-                        <div class="proposal-actions">
-
-                            <asp:Button
-                                ID="btnSelectProposal1"
-                                runat="server"
-                                Text="Select Proposal"
-                                CssClass="select-proposal-button"
-                                OnClick="btnSelectProposal1_Click" />
-
-
-                            <asp:Button
-                                ID="btnViewProposal1"
-                                runat="server"
-                                Text="View Details"
-                                CssClass="view-proposal-button"
-                                OnClick="btnViewProposal1_Click" />
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PROPOSAL 2 -->
-                    <div class="freelancer-proposal">
-
-                        <div class="proposal-select-circle empty">
-                            ○
-                        </div>
-
-
-                        <div class="freelancer-avatar avatar-purple">
-                            AK
-                        </div>
-
-
-                        <div class="freelancer-proposal-info">
-
-                            <div class="freelancer-name-row">
-
-                                <h3>
-                                    Aisha Khan
-                                </h3>
-
-                                <span class="top-rated">
-                                    Top Rated
-                                </span>
-
+                            <div class="proposal-info">
+                                <h3><%# Eval("freelancerName") %></h3>
+                                <p class="proposal-project-name">Project: <%# Eval("projectTitle") %></p>
+                                <p class="proposal-cover"><%# Eval("coverLetter").ToString().Length > 150 ? Eval("coverLetter").ToString().Substring(0, 150) + "..." : Eval("coverLetter") %></p>
+                                <small class="comment-time">Submitted <%# Convert.ToDateTime(Eval("date")).ToString("dd MMM yyyy") %></small>
                             </div>
-
-
-                            <p class="freelancer-rating">
-
-                                ★ 4.7
-
-                                <span>
-                                    (34 Reviews)
-                                </span>
-
-                                • Pakistan
-
-                            </p>
-
-
-                            <p class="proposal-preview">
-
-                                I can deliver a clean, modern and
-                                fully responsive website that aligns
-                                with your brand and business goals.
-
-                            </p>
-
-
-                            <a href="#">
-                                View Full Proposal
-                            </a>
-
                         </div>
-
-
-                        <div class="proposal-rate">
-
-                            <small>
-                                Proposed Rate
-                            </small>
-
-                            <strong>
-                                R10,500
-                            </strong>
-
-
-                            <small>
-                                Estimated Time
-                            </small>
-
-                            <strong>
-                                18 days
-                            </strong>
-
-
-                            <em>
-                                Submitted 5 hours ago
-                            </em>
-
-                        </div>
-
-
-                        <div class="proposal-actions">
-
-                            <asp:Button
-                                ID="btnSelectProposal2"
-                                runat="server"
-                                Text="Select Proposal"
-                                CssClass="select-proposal-button"
-                                OnClick="btnSelectProposal2_Click" />
-
-
-                            <asp:Button
-                                ID="btnViewProposal2"
-                                runat="server"
-                                Text="View Details"
-                                CssClass="view-proposal-button"
-                                OnClick="btnViewProposal2_Click" />
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PROPOSAL 3 -->
-                    <div class="freelancer-proposal">
-
-                        <div class="proposal-select-circle empty">
-                            ○
-                        </div>
-
-
-                        <div class="freelancer-avatar avatar-lightblue">
-                            JT
-                        </div>
-
-
-                        <div class="freelancer-proposal-info">
-
-                            <div class="freelancer-name-row">
-
-                                <h3>
-                                    John Tau
-                                </h3>
-
-                                <span class="top-rated">
-                                    Top Rated
-                                </span>
-
+                        <div class="proposal-card-right">
+                            <div class="proposal-rate">
+                                <small>Proposed Rate</small>
+                                <strong>R<%# Convert.ToDecimal(Eval("proposedRate")).ToString("N0") %></strong>
                             </div>
-
-
-                            <p class="freelancer-rating">
-
-                                ★ 4.6
-
-                                <span>
-                                    (22 Reviews)
-                                </span>
-
-                                • Kenya
-
-                            </p>
-
-
-                            <p class="proposal-preview">
-
-                                I will create a professional website
-                                with a modern look and better user
-                                experience. The website will be
-                                responsive and easy to use.
-
-                            </p>
-
-
-                            <a href="#">
-                                View Full Proposal
-                            </a>
-
-                        </div>
-
-
-                        <div class="proposal-rate">
-
-                            <small>
-                                Proposed Rate
-                            </small>
-
-                            <strong>
-                                R9,000
-                            </strong>
-
-
-                            <small>
-                                Estimated Time
-                            </small>
-
-                            <strong>
-                                20 days
-                            </strong>
-
-
-                            <em>
-                                Submitted 1 day ago
-                            </em>
-
-                        </div>
-
-
-                        <div class="proposal-actions">
-
-                            <asp:Button
-                                ID="btnSelectProposal3"
-                                runat="server"
-                                Text="Select Proposal"
-                                CssClass="select-proposal-button"
-                                OnClick="btnSelectProposal3_Click" />
-
-
-                            <asp:Button
-                                ID="btnViewProposal3"
-                                runat="server"
-                                Text="View Details"
-                                CssClass="view-proposal-button"
-                                OnClick="btnViewProposal3_Click" />
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- PROPOSAL 4 -->
-                    <div class="freelancer-proposal">
-
-                        <div class="proposal-select-circle empty">
-                            ○
-                        </div>
-
-
-                        <div class="freelancer-avatar avatar-yellow">
-                            SP
-                        </div>
-
-
-                        <div class="freelancer-proposal-info">
-
-                            <div class="freelancer-name-row">
-
-                                <h3>
-                                    Sarah Patel
-                                </h3>
-
-                                <span class="top-rated">
-                                    Top Rated
-                                </span>
-
+                            <div class="proposal-time">
+                                <small>Estimated Time</small>
+                                <strong><%# Eval("estimatedCompletionTime") %></strong>
                             </div>
-
-
-                            <p class="freelancer-rating">
-
-                                ★ 4.5
-
-                                <span>
-                                    (17 Reviews)
-                                </span>
-
-                                • India
-
-                            </p>
-
-
-                            <p class="proposal-preview">
-
-                                I can deliver a high-quality website
-                                that matches your brand and provides
-                                an excellent experience for your
-                                customers.
-
-                            </p>
-
-
-                            <a href="#">
-                                View Full Proposal
-                            </a>
-
+                            <div class="proposal-status-badge" style="color:<%# Eval("status").ToString() == "Approved" ? "#155724" : Eval("status").ToString() == "Rejected" ? "#721c24" : "#856404" %>; background:<%# Eval("status").ToString() == "Approved" ? "#d4edda" : Eval("status").ToString() == "Rejected" ? "#f8d7da" : "#fff3cd" %>; padding:4px 10px; border-radius:12px; font-size:12px;">
+                                <%# Eval("status") %>
+                            </div>
+                            <asp:Button ID="btnApprove" runat="server"
+                                CommandName="ApproveProposal"
+                                CommandArgument='<%# Eval("proposalID") %>'
+                                Text="Approve"
+                                Visible='<%# Eval("status").ToString() == "Pending" %>'
+                                style="background-color:#2e7d56;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;" />
+                            <asp:Button ID="btnReject" runat="server"
+                                CommandName="RejectProposal"
+                                CommandArgument='<%# Eval("proposalID") %>'
+                                Text="Reject"
+                                Visible='<%# Eval("status").ToString() == "Pending" %>'
+                                OnClientClick="return confirm('Are you sure you want to reject this proposal?');"
+                                style="background-color:#dc3545;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:13px;cursor:pointer;" />
                         </div>
-
-
-                        <div class="proposal-rate">
-
-                            <small>
-                                Proposed Rate
-                            </small>
-
-                            <strong>
-                                R8,500
-                            </strong>
-
-
-                            <small>
-                                Estimated Time
-                            </small>
-
-                            <strong>
-                                22 days
-                            </strong>
-
-
-                            <em>
-                                Submitted 1 day ago
-                            </em>
-
-                        </div>
-
-
-                        <div class="proposal-actions">
-
-                            <asp:Button
-                                ID="btnSelectProposal4"
-                                runat="server"
-                                Text="Select Proposal"
-                                CssClass="select-proposal-button"
-                                OnClick="btnSelectProposal4_Click" />
-
-
-                            <asp:Button
-                                ID="btnViewProposal4"
-                                runat="server"
-                                Text="View Details"
-                                CssClass="view-proposal-button"
-                                OnClick="btnViewProposal4_Click" />
-
-                        </div>
-
                     </div>
+                </ItemTemplate>
+            </asp:Repeater>
 
-
-                    <asp:Button
-                        ID="btnLoadMoreProposals"
-                        runat="server"
-                        Text="Load More Proposals  ⌄"
-                        CssClass="load-proposals-button"
-                        OnClick="btnLoadMoreProposals_Click" />
-
-
-                    <asp:Label
-                        ID="lblProposalMessage"
-                        runat="server"
-                        CssClass="proposal-page-message">
-                    </asp:Label>
-
-                </section>
-
-
-                <!-- RIGHT SIDE -->
-                <aside class="proposal-right-side">
-
-
-                    <!-- TIPS -->
-                    <section class="proposal-tips">
-
-                        <h3>
-                            Tips for Choosing the
-                            Right Freelancer
-                        </h3>
-
-
-                        <div class="tip">
-
-                            <span>▣</span>
-
-                            <p>
-                                Review cover letters and
-                                understand the freelancer's
-                                approach.
-                            </p>
-
-                        </div>
-
-
-                        <div class="tip">
-
-                            <span>▣</span>
-
-                            <p>
-                                Compare proposed rates
-                                and delivery times.
-                            </p>
-
-                        </div>
-
-
-                        <div class="tip">
-
-                            <span>★</span>
-
-                            <p>
-                                Check ratings, reviews
-                                and past work.
-                            </p>
-
-                        </div>
-
-
-                        <div class="tip">
-
-                            <span>▤</span>
-
-                            <p>
-                                Choose a proposal that
-                                best fits your needs
-                                and budget.
-                            </p>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- HELP -->
-                    <section class="proposal-help">
-
-                        <h3>
-                            Need Help?
-                        </h3>
-
-                        <p>
-                            If you need assistance in
-                            choosing the right freelancer,
-                            our support team is here.
-                        </p>
-
-
-                        <asp:Button
-                            ID="btnHelpSupport"
-                            runat="server"
-                            Text="◔ Contact Support"
-                            CssClass="proposal-help-button"
-                            OnClick="btnHelpSupport_Click" />
-
-                    </section>
-
-
-                    <!-- NEXT STEP -->
-                    <section class="proposal-next-step">
-
-                        <div>
-
-                            <h3>
-                                Next Step
-                            </h3>
-
-                            <p>
-                                After selecting a proposal,
-                                you can review the contract
-                                details before approving.
-                            </p>
-
-                        </div>
-
-                        <span>
-                            ›
-                        </span>
-
-                    </section>
-
-                </aside>
-
-            </div>
-
-        </main>
+        </section>
 
     </div>
 

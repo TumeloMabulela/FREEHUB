@@ -13610,3 +13610,65 @@ FREEHUB HOME PAGE
     background-color: #a71d2a;
     color: #fff;
 }
+
+
+/* =========================
+   PROPOSAL CARDS
+========================= */
+
+.proposal-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #ffffff;
+    border: 1px solid #e8ece9;
+    border-radius: 10px;
+    padding: 20px 25px;
+    margin-bottom: 15px;
+    gap: 20px;
+}
+
+.proposal-card-left {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+}
+
+.proposal-info h3 {
+    color: #173f2c;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.proposal-project-name {
+    color: #2e7d56;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.proposal-cover {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+
+.proposal-card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 160px;
+}
+
+.proposal-rate strong,
+.proposal-time strong {
+    color: #173f2c;
+    font-size: 15px;
+}
+
+.proposal-rate small,
+.proposal-time small {
+    color: #888;
+    font-size: 11px;
+}

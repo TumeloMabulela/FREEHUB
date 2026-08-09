@@ -8,87 +8,119 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
+            if (!IsPostBack)
+            {
+                pnlMessage.Visible = false;
+                LoadProposals();
+            }
         }
 
-        protected void btnBackToProject_Click(object sender, EventArgs e)
+        private void LoadProposals()
         {
-            Response.Redirect("MyProjects.aspx");
+            int userId = Convert.ToInt32(Session["UserID"]);
+            string userType = Session["UserType"] as string ?? "";
+
+            try
+            {
+                DataTable proposals;
+
+                if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Employer sees proposals received for their projects
+                    string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
+                                    pr.estimatedCompletionTime, pr.status, pr.date,
+                                    u.firstName + ' ' + u.lastName AS freelancerName,
+                                    p.title AS projectTitle
+                                    FROM Proposal pr
+                                    INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                                    INNER JOIN [User] u ON f.userID = u.userID
+                                    INNER JOIN Project p ON pr.projectID = p.projectID
+                                    INNER JOIN Employer e ON p.employerID = e.employerID
+                                    WHERE e.userID = @UserID
+                                    ORDER BY pr.date DESC";
+                    proposals = DatabaseHelper.ExecuteQuery(query,
+                        new SqlParameter("@UserID", userId));
+                }
+                else
+                {
+                    // Freelancer sees their own submitted proposals
+                    string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
+                                    pr.estimatedCompletionTime, pr.status, pr.date,
+                                    u2.firstName + ' ' + u2.lastName AS freelancerName,
+                                    p.title AS projectTitle
+                                    FROM Proposal pr
+                                    INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                                    INNER JOIN [User] u2 ON f.userID = u2.userID
+                                    INNER JOIN Project p ON pr.projectID = p.projectID
+                                    WHERE f.userID = @UserID
+                                    ORDER BY pr.date DESC";
+                    proposals = DatabaseHelper.ExecuteQuery(query,
+                        new SqlParameter("@UserID", userId));
+                }
+
+                rptProposals.DataSource = proposals;
+                rptProposals.DataBind();
+
+                pnlNoProposals.Visible = proposals.Rows.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                pnlNoProposals.Visible = true;
+                ShowMessage("Error loading proposals: " + ex.Message, false);
+            }
         }
 
-        protected void btnSelectProposal1_Click(object sender, EventArgs e)
+        protected void rptProposals_ItemCommand(object source,
+            System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
-            SelectAndReview("Thabo Mokoena");
+            int proposalId = Convert.ToInt32(e.CommandArgument);
+
+            if (e.CommandName == "ApproveProposal")
+            {
+                try
+                {
+                    // Approve proposal and set project to In Progress
+                    string query = @"UPDATE Proposal SET status = 'Approved' WHERE proposalID = @ID;
+                                    UPDATE Project SET projectStatus = 'In Progress'
+                                    WHERE projectID = (SELECT projectID FROM Proposal WHERE proposalID = @ID)";
+                    DatabaseHelper.ExecuteNonQuery(query,
+                        new SqlParameter("@ID", proposalId));
+                    ShowMessage("Proposal approved! The project is now In Progress.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage("Error: " + ex.Message, false);
+                }
+                LoadProposals();
+            }
+            else if (e.CommandName == "RejectProposal")
+            {
+                try
+                {
+                    string query = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = @ID";
+                    DatabaseHelper.ExecuteNonQuery(query,
+                        new SqlParameter("@ID", proposalId));
+                    ShowMessage("Proposal rejected. The freelancer has been notified.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage("Error: " + ex.Message, false);
+                }
+                LoadProposals();
+            }
         }
 
-        protected void btnSelectProposal2_Click(object sender, EventArgs e)
+        private void ShowMessage(string message, bool success)
         {
-            SelectAndReview("Aisha Khan");
-        }
-
-        protected void btnSelectProposal3_Click(object sender, EventArgs e)
-        {
-            SelectAndReview("John Tau");
-        }
-
-        protected void btnSelectProposal4_Click(object sender, EventArgs e)
-        {
-            SelectAndReview("Sarah Patel");
-        }
-
-        protected void btnViewProposal1_Click(object sender, EventArgs e)
-        {
-            ViewProposalDetails("Thabo Mokoena", "R12,000", "15 days",
-                "I have over 5 years of experience in designing and developing modern, responsive websites. I specialize in creating user-friendly interfaces that drive conversions and improve user experience.");
-        }
-
-        protected void btnViewProposal2_Click(object sender, EventArgs e)
-        {
-            ViewProposalDetails("Aisha Khan", "R9,500", "18 days",
-                "I can deliver a clean, modern and fully responsive website redesign that aligns with your brand and business goals. I have strong skills in frontend and UI/UX design.");
-        }
-
-        protected void btnViewProposal3_Click(object sender, EventArgs e)
-        {
-            ViewProposalDetails("John Tau", "R8,000", "20 days",
-                "I will redesign your website with a modern look and better user experience. I have strong skills in frontend and UI/UX design with 3 years of experience.");
-        }
-
-        protected void btnViewProposal4_Click(object sender, EventArgs e)
-        {
-            ViewProposalDetails("Sarah Patel", "R8,500", "22 days",
-                "I can deliver a fast, responsive and SEO-friendly website redesign that matches your brand and goals. Experienced in HTML, CSS, JavaScript and React.");
-        }
-
-        private void SelectAndReview(string freelancerName)
-        {
-            Session["SelectedFreelancerName"] = freelancerName;
-            lblProposalMessage.Text = freelancerName + "'s proposal has been selected for review.";
-            Response.Redirect("ReviewProposal.aspx");
-        }
-
-        private void ViewProposalDetails(string name, string rate, string time, string coverLetter)
-        {
-            Session["ViewProposalName"] = name;
-            Session["ViewProposalRate"] = rate;
-            Session["ViewProposalTime"] = time;
-            Session["ViewProposalCoverLetter"] = coverLetter;
-            Response.Redirect("ReviewProposal.aspx");
-        }
-
-        protected void btnLoadMoreProposals_Click(object sender, EventArgs e)
-        {
-            lblProposalMessage.Text = "All proposals for this project have been displayed.";
-        }
-
-        protected void btnContactSupport_Click(object sender, EventArgs e)
-        {
-            lblProposalMessage.Text = "For support, please email support@freehub.co.za";
-        }
-
-        protected void btnHelpSupport_Click(object sender, EventArgs e)
-        {
-            lblProposalMessage.Text = "For support, please email support@freehub.co.za";
+            pnlMessage.Visible = true;
+            lblProposalMessage.Text = message;
+            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
         }
     }
 }
