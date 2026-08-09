@@ -13316,3 +13316,26 @@ FREEHUB HOME PAGE
     color: #173f2c;
     text-decoration: underline;
 }
+
+
+/* Fix: Force role to appear UNDER the name */
+.user-nav-info {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    line-height: 1.1 !important;
+}
+
+.user-nav-info .user-nav-name {
+    display: block !important;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-nav-info .user-nav-role {
+    display: block !important;
+    color: #a8d5ba;
+    font-size: 11px;
+    font-weight: 400;
+}
