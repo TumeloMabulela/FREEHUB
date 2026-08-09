@@ -84,21 +84,8 @@ namespace FreeHubProject
 
             if (e.CommandName == "ApproveProposal")
             {
-                try
-                {
-                    // Approve proposal and set project to In Progress
-                    string query = @"UPDATE Proposal SET status = 'Approved' WHERE proposalID = @ID;
-                                    UPDATE Project SET projectStatus = 'In Progress'
-                                    WHERE projectID = (SELECT projectID FROM Proposal WHERE proposalID = @ID)";
-                    DatabaseHelper.ExecuteNonQuery(query,
-                        new SqlParameter("@ID", proposalId));
-                    ShowMessage("Proposal approved! The project is now In Progress.", true);
-                }
-                catch (Exception ex)
-                {
-                    ShowMessage("Error: " + ex.Message, false);
-                }
-                LoadProposals();
+                // Select Proposal goes to Review page - NOT auto-approve
+                Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
             else if (e.CommandName == "RejectProposal")
             {
