@@ -394,10 +394,18 @@ namespace FreeHubProject
         }
 
 
-        protected void ViewTransaction_Command(
-            object sender,
-            CommandEventArgs e)
+        protected void rptTransactions_ItemCommand(
+            object source,
+            RepeaterCommandEventArgs e)
         {
+            if (!string.Equals(
+                e.CommandName,
+                "ViewTransaction",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             string transactionReference =
                 Convert.ToString(
                     e.CommandArgument

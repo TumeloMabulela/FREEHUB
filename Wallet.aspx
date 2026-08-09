@@ -220,6 +220,7 @@
                             ID="btnFundWallet"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnFundWallet_Click">
 
                             <span class="wallet-action-icon fund-icon">
@@ -249,6 +250,7 @@
                             ID="btnWithdrawFunds"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnWithdrawFunds_Click">
 
                             <span class="wallet-action-icon withdraw-icon">
@@ -278,6 +280,7 @@
                             ID="btnViewTransactions"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnViewTransactions_Click">
 
                             <span class="wallet-action-icon transactions-icon">
@@ -307,6 +310,7 @@
                             ID="btnPayouts"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnPayouts_Click">
 
                             <span class="wallet-action-icon payouts-icon">
@@ -336,6 +340,7 @@
                             ID="btnDisputes"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnDisputes_Click">
 
                             <span class="wallet-action-icon disputes-icon">
@@ -365,6 +370,7 @@
                             ID="btnRefunds"
                             runat="server"
                             CssClass="wallet-action-item"
+                            CausesValidation="false"
                             OnClick="btnRefunds_Click">
 
                             <span class="wallet-action-icon refunds-icon">
@@ -466,6 +472,7 @@
                         runat="server"
                         Text="Fund Wallet"
                         CssClass="wallet-fund-button"
+                        CausesValidation="false"
                         OnClick="btnFundWallet_Click" />
 
                 </aside>
@@ -486,6 +493,7 @@
                         runat="server"
                         Text="View All"
                         CssClass="wallet-view-all-link"
+                        CausesValidation="false"
                         OnClick="btnViewTransactions_Click" />
 
                 </div>
@@ -515,7 +523,8 @@
 
                             <asp:Repeater
                                 ID="rptTransactions"
-                                runat="server">
+                                runat="server"
+                                OnItemCommand="rptTransactions_ItemCommand">
 
                                 <ItemTemplate>
 
@@ -602,8 +611,9 @@
                                                 runat="server"
                                                 CssClass="transaction-view-button"
                                                 Text="?"
+                                                CommandName="ViewTransaction"
                                                 CommandArgument='<%# Eval("Reference") %>'
-                                                OnCommand="ViewTransaction_Command">
+                                                CausesValidation="false">
                                             </asp:LinkButton>
 
                                         </td>
@@ -644,8 +654,9 @@
                 <asp:Button
                     ID="btnViewAllTransactions"
                     runat="server"
-                    Text="View All Transactions �"
+                    Text="View All Transactions ›"
                     CssClass="wallet-bottom-view-button"
+                    CausesValidation="false"
                     OnClick="btnViewTransactions_Click" />
 
             </section>
