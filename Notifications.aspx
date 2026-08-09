@@ -5,9 +5,17 @@
     CodeBehind="Notifications.aspx.cs"
     Inherits="FreeHubProject.Notifications" %>
 
+<%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
+
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
     runat="server">
+
+    <div class="freehub-dashboard-layout">
+
+        <uc:Sidebar runat="server" ID="SidebarControl" />
+
+        <section class="freehub-main-content">
 
     <div class="notifications-page">
 
@@ -360,6 +368,9 @@
 
         </div>
 
+    </div>
+
+        </section>
     </div>
 
 </asp:Content>
