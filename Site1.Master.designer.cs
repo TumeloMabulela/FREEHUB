@@ -16,6 +16,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlUserButtons;
         protected global::System.Web.UI.WebControls.Literal litInitials;
         protected global::System.Web.UI.WebControls.Literal litFullName;
+        protected global::System.Web.UI.WebControls.Literal litUserRole;
         protected global::System.Web.UI.WebControls.LinkButton btnLogout;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
     }

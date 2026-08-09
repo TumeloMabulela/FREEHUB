@@ -64,8 +64,14 @@
                             <span class="user-nav-initials">
                                 <asp:Literal ID="litInitials" runat="server" />
                             </span>
-                            <span class="user-nav-name">
-                                <asp:Literal ID="litFullName" runat="server" />
+                            <div class="user-nav-info">
+                                <span class="user-nav-name">
+                                    <asp:Literal ID="litFullName" runat="server" />
+                                </span>
+                                <span class="user-nav-role">
+                                    <asp:Literal ID="litUserRole" runat="server" />
+                                </span>
+                            </div>
                             </span>
                             <asp:LinkButton ID="btnLogout" runat="server"
                                 CssClass="logout-link" OnClick="btnLogout_Click">

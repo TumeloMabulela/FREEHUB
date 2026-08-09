@@ -38,6 +38,8 @@ namespace FreeHubProject
                 if (firstName.Length > 0) initials += firstName[0];
                 if (lastName.Length > 0) initials += lastName[0];
                 litInitials.Text = initials.ToUpper();
+
+                litUserRole.Text = userType;
             }
             else
             {
