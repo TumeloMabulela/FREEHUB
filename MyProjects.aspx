@@ -190,7 +190,7 @@
                                     </div>
                                 </div>
                                 <div class="my-project-actions">
-                                    <a href="ProjectDetails.aspx" class="my-project-secondary-button">View Details</a>
+                                    <a href='EditProject.aspx?id=<%# Eval("projectID") %>' class="my-project-secondary-button">Edit Project</a>
                                     <a href="SelectProposal.aspx" class="my-project-primary-button">View Proposals</a>
                                 </div>
                             </article>

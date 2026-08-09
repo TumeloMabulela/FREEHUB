@@ -71,6 +71,7 @@
     <Content Include="BrowseProjects.aspx" />
     <Content Include="CompletedProjects.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="EditProject.aspx" />
     <Content Include="FundWallet.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="MyProjects.aspx" />
@@ -223,6 +224,13 @@
       <DependentUpon>Transactions.aspx</DependentUpon>
     </Compile>
     <Compile Include="DatabaseHelper.cs" />
+    <Compile Include="EditProject.aspx.cs">
+      <DependentUpon>EditProject.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="EditProject.aspx.designer.cs">
+      <DependentUpon>EditProject.aspx</DependentUpon>
+    </Compile>
     <Compile Include="AuthHelper.cs" />
     <Compile Include="Sidebar.ascx.cs">
       <DependentUpon>Sidebar.ascx</DependentUpon>
