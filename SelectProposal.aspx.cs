@@ -68,6 +68,7 @@ namespace FreeHubProject
                 rptProposals.DataBind();
 
                 pnlNoProposals.Visible = proposals.Rows.Count == 0;
+                lblProposalCount.Text = proposals.Rows.Count.ToString();
             }
             catch (Exception ex)
             {
@@ -113,6 +114,10 @@ namespace FreeHubProject
                     ShowMessage("Error: " + ex.Message, false);
                 }
                 LoadProposals();
+            }
+            else if (e.CommandName == "ViewDetails")
+            {
+                Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
         }
 

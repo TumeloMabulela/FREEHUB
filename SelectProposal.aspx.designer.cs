@@ -11,6 +11,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Label lblProposalMessage;
         protected global::System.Web.UI.WebControls.Panel pnlNoProposals;
+        protected global::System.Web.UI.WebControls.Label lblProposalCount;
         protected global::System.Web.UI.WebControls.Repeater rptProposals;
     }
 }
