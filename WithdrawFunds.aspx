@@ -40,9 +40,11 @@
 
                     <div class="withdraw-breadcrumb">
 
-                        Wallet
+                        <a href="Wallet.aspx" class="breadcrumb-link">
+                            Wallet
+                        </a>
 
-                        <span>�</span>
+                        <span>›</span>
 
                         <strong>
                             Withdraw Funds
@@ -262,6 +264,7 @@
                         runat="server"
                         Text="Continue"
                         CssClass="withdraw-continue-button"
+                        CausesValidation="false"
                         OnClick="btnContinue_Click" />
 
                 </section>

@@ -22,6 +22,17 @@ namespace FreeHubProject
                 return "active-sidebar-item";
             }
 
+            // Highlight Wallet for wallet-related sub-pages
+            if (string.Equals(pageName, "Wallet", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.Equals(currentPage, "Transactions", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(currentPage, "FundWallet", StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(currentPage, "WithdrawFunds", StringComparison.OrdinalIgnoreCase))
+                {
+                    return "active-sidebar-item";
+                }
+            }
+
             return "";
         }
     }

@@ -47,6 +47,24 @@ namespace FreeHubProject
                 LoadWalletBalance();
                 LoadTransactions();
                 HideDetails();
+
+                string requestedTxn =
+                    Request.QueryString["txn"];
+
+                if (!string.IsNullOrWhiteSpace(
+                    requestedTxn))
+                {
+                    DataRow transaction =
+                        TransactionStore.FindTransaction(
+                            Session,
+                            requestedTxn
+                        );
+
+                    if (transaction != null)
+                    {
+                        ShowDetails(transaction);
+                    }
+                }
             }
         }
 
