@@ -7,6 +7,11 @@
 
 <%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
+<asp:Content ID="SwitchRoleHead"
+    ContentPlaceHolderID="HeadContent"
+    runat="server">
+</asp:Content>
+
 <asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
     runat="server">

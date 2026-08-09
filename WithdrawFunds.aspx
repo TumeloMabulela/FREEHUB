@@ -78,7 +78,7 @@
                     </div>
 
                     <span class="withdraw-wallet-icon">
-                        ?
+                        &#128176;
                     </span>
 
                 </div>
@@ -187,7 +187,7 @@
                         <div class="withdraw-method-card">
 
                             <span class="withdraw-method-icon">
-                                ?
+                                &#127974;
                             </span>
 
                             <div>
@@ -283,7 +283,7 @@
                             </h3>
 
                             <span>
-                                ?
+                                &#9432;
                             </span>
 
                         </div>
@@ -393,7 +393,7 @@
                             Visible="false">
 
                             <div class="withdraw-empty-icon">
-                                ?
+                                &#128203;
                             </div>
 
                             <strong>
