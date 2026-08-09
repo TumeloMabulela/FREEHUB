@@ -13591,3 +13591,21 @@ FREEHUB HOME PAGE
 .delete-comment-btn:hover {
     background-color: #fff0f0;
 }
+
+
+/* Delete project button */
+.my-project-delete-button {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border: 1px solid #dc3545;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.my-project-delete-button:hover {
+    background-color: #dc3545;
+    color: #fff;
+}

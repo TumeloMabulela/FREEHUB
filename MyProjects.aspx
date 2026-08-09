@@ -174,7 +174,7 @@
                     ID="pnlProjectList"
                     runat="server">
 
-                    <asp:Repeater ID="rptProjects" runat="server">
+                    <asp:Repeater ID="rptProjects" runat="server" OnItemCommand="rptProjects_ItemCommand">
                         <ItemTemplate>
                             <article class="my-project-card">
                                 <div class="my-project-information">
@@ -192,6 +192,13 @@
                                 <div class="my-project-actions">
                                     <a href='EditProject.aspx?id=<%# Eval("projectID") %>' class="my-project-secondary-button">Edit Project</a>
                                     <a href="SelectProposal.aspx" class="my-project-primary-button">View Proposals</a>
+                                    <asp:LinkButton ID="btnDeleteProject" runat="server"
+                                        CommandName="DeleteProject"
+                                        CommandArgument='<%# Eval("projectID") %>'
+                                        CssClass="my-project-delete-button"
+                                        OnClientClick="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
+                                        Delete
+                                    </asp:LinkButton>
                                 </div>
                             </article>
                         </ItemTemplate>

@@ -98,6 +98,29 @@ namespace FreeHubProject
             }
         }
 
+        protected void rptProjects_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "DeleteProject")
+            {
+                int projectId = Convert.ToInt32(e.CommandArgument);
+                try
+                {
+                    // Delete related records first, then the project
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Comment WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Proposal WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Rating WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Project WHERE projectID = @ID",
+                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+
+                    LoadProjects();
+                }
+                catch { LoadProjects(); }
+            }
+        }
+
         protected string GetTabClass(string viewName)
         {
             return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
