@@ -22,7 +22,7 @@
                 <div class="post-breadcrumb">
                     Dashboard <span>/</span> Projects <span>/</span> Project Details
                 </div>
-                <div class="pd-title-row">
+                <div class="pd-title-row" style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <h1><asp:Label ID="lblTitle" runat="server" /></h1>
                         <p class="pd-posted">
@@ -30,7 +30,7 @@
                             &bull; Posted <asp:Label ID="lblPosted" runat="server" />
                         </p>
                     </div>
-                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;">&#8592; Back to Projects</a>
+                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Projects</a>
                 </div>
             </div>
 
