@@ -5,7 +5,9 @@
 <aside class="freehub-sidebar">
 
     <div class="sidebar-back">
-        <a href="javascript:history.back()" class="sidebar-back-link">&larr; Back</a>
+        <% if (!GetActiveClass("Default").Contains("active")) { %>
+        <a href="javascript:history.back()" class="sidebar-back-link">&#8592; Back</a>
+        <% } %>
     </div>
 
     <div class="sidebar-section">
