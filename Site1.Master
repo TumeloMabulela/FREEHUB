@@ -35,10 +35,6 @@
 
                 <nav class="main-navigation">
 
-                    <a href="Default.aspx">Dashboard</a>
-
-                    <a href="BrowseProjects.aspx">Browse Projects</a>
-
                     <asp:Panel ID="pnlFreelancerNav" runat="server" Visible="false" style="display:inline;">
                         <a href="SelectProposal.aspx">My Proposals</a>
                     </asp:Panel>
@@ -48,6 +44,8 @@
                     </asp:Panel>
 
                     <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:inline;">
+                        <a href="Default.aspx">Dashboard</a>
+                        <a href="BrowseProjects.aspx">Browse Projects</a>
                         <a href="MyProjects.aspx">My Projects</a>
                         <a href="StartChat.aspx">Messages</a>
                         <a href="Wallet.aspx">Wallet</a>
