@@ -10,19 +10,7 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null)
-            {
-                Response.Redirect("Login.aspx");
-                return;
-            }
-
-            // Only employers can post projects
-            string userType = Session["UserType"] as string ?? "";
-            if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
-            {
-                Response.Redirect("SwitchRole.aspx");
-                return;
-            }
+            if (!AuthHelper.RequireRole(this, "Employer")) return;
 
             if (!IsPostBack)
             {

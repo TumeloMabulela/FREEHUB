@@ -39,6 +39,10 @@
 
                     <a href="BrowseProjects.aspx">Browse Projects</a>
 
+                    <asp:Panel ID="pnlFreelancerNav" runat="server" Visible="false" style="display:inline;">
+                        <a href="SelectProposal.aspx">My Proposals</a>
+                    </asp:Panel>
+
                     <asp:Panel ID="pnlEmployerNav" runat="server" Visible="false" style="display:inline;">
                         <a href="PostProject.aspx">Post a Project</a>
                     </asp:Panel>
@@ -72,7 +76,6 @@
                                     <asp:Literal ID="litUserRole" runat="server" />
                                 </span>
                             </div>
-                            </span>
                             <asp:LinkButton ID="btnLogout" runat="server"
                                 CssClass="logout-link" OnClick="btnLogout_Click">
                                 Logout

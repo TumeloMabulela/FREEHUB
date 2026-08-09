@@ -24,8 +24,20 @@ namespace FreeHubProject
 
         private void LoadWalletInformation()
         {
-            decimal availableBalance =
-                GetSessionAmount("AvailableBalance");
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
+
+            decimal availableBalance = 0.00m;
+
+            if (walletID > 0)
+            {
+                availableBalance =
+                    DatabaseHelper.GetWalletBalance(walletID);
+
+                Session["AvailableBalance"] =
+                    availableBalance;
+            }
 
             decimal onHoldBalance =
                 GetSessionAmount("OnHoldBalance");
@@ -121,49 +133,76 @@ namespace FreeHubProject
 
         private void LoadTransactions()
         {
-            DataTable allTransactions =
-                TransactionStore.GetTransactions(
-                    Session
-                );
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
 
-            DataView sortedView =
-                allTransactions.DefaultView;
+            DataTable dbTransactions = new DataTable();
 
-            sortedView.Sort =
-                "TransactionDate DESC";
+            if (walletID > 0)
+            {
+                dbTransactions =
+                    DatabaseHelper.GetTransactionsByWallet(
+                        walletID
+                    );
+            }
 
-            DataTable recentTable =
-                allTransactions.Clone();
+            // Map DB columns to display columns expected by the Repeater
+            DataTable displayTable = new DataTable();
+            displayTable.Columns.Add("TransactionId", typeof(string));
+            displayTable.Columns.Add("TransactionDate", typeof(DateTime));
+            displayTable.Columns.Add("Description", typeof(string));
+            displayTable.Columns.Add("Type", typeof(string));
+            displayTable.Columns.Add("Amount", typeof(decimal));
+            displayTable.Columns.Add("Status", typeof(string));
+            displayTable.Columns.Add("Reference", typeof(string));
 
             int count = 0;
 
-            foreach (DataRowView rowView in sortedView)
+            foreach (DataRow row in dbTransactions.Rows)
             {
-                if (count >= 5)
-                {
-                    break;
-                }
+                if (count >= 5) break;
 
-                recentTable.ImportRow(
-                    rowView.Row
-                );
+                DataRow displayRow = displayTable.NewRow();
 
+                displayRow["TransactionId"] =
+                    Convert.ToString(row["transactionID"]);
+
+                displayRow["TransactionDate"] =
+                    Convert.ToDateTime(row["transactionDate"]);
+
+                displayRow["Description"] =
+                    Convert.ToString(row["itemDescription"]);
+
+                displayRow["Type"] =
+                    Convert.ToString(row["transactionType"]);
+
+                displayRow["Amount"] =
+                    Convert.ToDecimal(row["transactionAmount"]);
+
+                displayRow["Status"] =
+                    Convert.ToString(row["transactionStatus"]);
+
+                displayRow["Reference"] =
+                    Convert.ToString(row["reference"]);
+
+                displayTable.Rows.Add(displayRow);
                 count++;
             }
 
             rptTransactions.DataSource =
-                recentTable;
+                displayTable;
 
             rptTransactions.DataBind();
 
             pnlNoTransactions.Visible =
-                recentTable.Rows.Count == 0;
+                displayTable.Rows.Count == 0;
 
             btnViewAllTransactions.Visible =
-                recentTable.Rows.Count > 0;
+                displayTable.Rows.Count > 0;
 
             btnViewAllTop.Visible =
-                recentTable.Rows.Count > 0;
+                displayTable.Rows.Count > 0;
         }
 
 

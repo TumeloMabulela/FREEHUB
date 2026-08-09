@@ -54,15 +54,16 @@ namespace FreeHubProject
                 if (!string.IsNullOrWhiteSpace(
                     requestedTxn))
                 {
-                    DataRow transaction =
-                        TransactionStore.FindTransaction(
-                            Session,
-                            requestedTxn
-                        );
-
-                    if (transaction != null)
+                    int txnId;
+                    if (int.TryParse(requestedTxn, out txnId))
                     {
-                        ShowDetails(transaction);
+                        DataRow transaction =
+                            DatabaseHelper.GetTransactionById(txnId);
+
+                        if (transaction != null)
+                        {
+                            ShowDetails(transaction);
+                        }
                     }
                 }
             }
@@ -71,10 +72,19 @@ namespace FreeHubProject
 
         private void LoadWalletBalance()
         {
-            decimal balance =
-                GetSessionDecimal(
-                    "AvailableBalance"
-                );
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
+
+            decimal balance = 0.00m;
+
+            if (walletID > 0)
+            {
+                balance =
+                    DatabaseHelper.GetWalletBalance(walletID);
+
+                Session["AvailableBalance"] = balance;
+            }
 
             lblCurrentBalance.Text =
                 FormatCurrency(balance);
@@ -83,10 +93,19 @@ namespace FreeHubProject
 
         private void LoadTransactions()
         {
-            DataTable source =
-                TransactionStore.GetTransactions(
-                    Session
-                );
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
+
+            DataTable source = new DataTable();
+
+            if (walletID > 0)
+            {
+                source =
+                    DatabaseHelper.GetTransactionsByWallet(
+                        walletID
+                    );
+            }
 
             DataTable displayTable =
                 CreateDisplayTable();
@@ -109,25 +128,16 @@ namespace FreeHubProject
                     out toDate
                 );
 
-            DataView sortedView =
-                source.DefaultView;
-
-            sortedView.Sort =
-                "TransactionDate DESC";
-
-            foreach (DataRowView rowView in sortedView)
+            foreach (DataRow row in source.Rows)
             {
-                DataRow row =
-                    rowView.Row;
-
                 string type =
                     Convert.ToString(
-                        row["Type"]
+                        row["transactionType"]
                     );
 
                 DateTime transactionDate =
                     Convert.ToDateTime(
-                        row["TransactionDate"]
+                        row["transactionDate"]
                     );
 
                 if (selectedType != "All" &&
@@ -153,19 +163,19 @@ namespace FreeHubProject
 
                 decimal amount =
                     Convert.ToDecimal(
-                        row["Amount"]
+                        row["transactionAmount"]
                     );
 
                 string status =
                     Convert.ToString(
-                        row["Status"]
+                        row["transactionStatus"]
                     );
 
                 DataRow displayRow =
                     displayTable.NewRow();
 
                 displayRow["TransactionId"] =
-                    row["TransactionId"];
+                    Convert.ToString(row["transactionID"]);
 
                 displayRow["DisplayDate"] =
                     transactionDate.ToString(
@@ -173,7 +183,7 @@ namespace FreeHubProject
                     );
 
                 displayRow["Description"] =
-                    row["Description"];
+                    Convert.ToString(row["itemDescription"]);
 
                 displayRow["Type"] =
                     type;
@@ -261,11 +271,18 @@ namespace FreeHubProject
                     e.CommandArgument
                 );
 
-            DataRow transaction =
-                TransactionStore.FindTransaction(
-                    Session,
-                    transactionId
+            int txnId;
+            if (!int.TryParse(transactionId, out txnId))
+            {
+                ShowMessage(
+                    "The transaction could not be found.",
+                    false
                 );
+                return;
+            }
+
+            DataRow transaction =
+                DatabaseHelper.GetTransactionById(txnId);
 
             if (transaction == null)
             {
@@ -286,22 +303,22 @@ namespace FreeHubProject
         {
             string transactionId =
                 Convert.ToString(
-                    transaction["TransactionId"]
+                    transaction["transactionID"]
                 );
 
             string type =
                 Convert.ToString(
-                    transaction["Type"]
+                    transaction["transactionType"]
                 );
 
             string status =
                 Convert.ToString(
-                    transaction["Status"]
+                    transaction["transactionStatus"]
                 );
 
             decimal amount =
                 Convert.ToDecimal(
-                    transaction["Amount"]
+                    transaction["transactionAmount"]
                 );
 
             ViewState["SelectedTransactionId"] =
@@ -312,7 +329,7 @@ namespace FreeHubProject
 
             lblDetailsTitle.Text =
                 Convert.ToString(
-                    transaction["Title"]
+                    transaction["itemDescription"]
                 );
 
             lblDetailsType.Text =
@@ -329,7 +346,7 @@ namespace FreeHubProject
 
             lblDetailsDate.Text =
                 Convert.ToDateTime(
-                    transaction["TransactionDate"]
+                    transaction["transactionDate"]
                 ).ToString(
                     "dd MMM yyyy, hh:mm tt"
                 );
@@ -339,17 +356,17 @@ namespace FreeHubProject
 
             lblDetailsReference.Text =
                 Convert.ToString(
-                    transaction["Reference"]
+                    transaction["reference"]
                 );
 
             lblDetailsPaymentMethod.Text =
                 Convert.ToString(
-                    transaction["PaymentMethod"]
+                    transaction["paymentMethod"]
                 );
 
             lblDetailsDescription.Text =
                 Convert.ToString(
-                    transaction["Description"]
+                    transaction["itemDescription"]
                 );
 
             lblDetailsStatus.Text =
@@ -416,11 +433,18 @@ namespace FreeHubProject
                 return;
             }
 
-            DataRow transaction =
-                TransactionStore.FindTransaction(
-                    Session,
-                    transactionId
+            int txnId;
+            if (!int.TryParse(transactionId, out txnId))
+            {
+                ShowMessage(
+                    "The transaction could not be found.",
+                    false
                 );
+                return;
+            }
+
+            DataRow transaction =
+                DatabaseHelper.GetTransactionById(txnId);
 
             if (transaction == null)
             {
@@ -434,12 +458,12 @@ namespace FreeHubProject
 
             string type =
                 Convert.ToString(
-                    transaction["Type"]
+                    transaction["transactionType"]
                 );
 
             decimal amount =
                 Convert.ToDecimal(
-                    transaction["Amount"]
+                    transaction["transactionAmount"]
                 );
 
             StringBuilder receipt =
@@ -455,18 +479,18 @@ namespace FreeHubProject
 
             receipt.AppendLine(
                 "Transaction ID: " +
-                transaction["TransactionId"]
+                transaction["transactionID"]
             );
 
             receipt.AppendLine(
                 "Reference: " +
-                transaction["Reference"]
+                transaction["reference"]
             );
 
             receipt.AppendLine(
                 "Date: " +
                 Convert.ToDateTime(
-                    transaction["TransactionDate"]
+                    transaction["transactionDate"]
                 ).ToString(
                     "dd MMM yyyy, hh:mm tt"
                 )
@@ -487,17 +511,17 @@ namespace FreeHubProject
 
             receipt.AppendLine(
                 "Status: " +
-                transaction["Status"]
+                transaction["transactionStatus"]
             );
 
             receipt.AppendLine(
                 "Payment Method: " +
-                transaction["PaymentMethod"]
+                transaction["paymentMethod"]
             );
 
             receipt.AppendLine(
                 "Description: " +
-                transaction["Description"]
+                transaction["itemDescription"]
             );
 
             Response.Clear();

@@ -188,37 +188,68 @@ namespace FreeHubProject
                     .SelectedItem
                     .Text;
 
-            decimal newAvailableBalance =
-                availableBalance -
-                withdrawalAmount;
+            // Get wallet ID
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
 
-            decimal currentPendingAmount =
-                GetSessionDecimal(
-                    "PendingWithdrawals"
+            if (walletID == 0)
+            {
+                ShowMessage(
+                    "Wallet not found. Please log in again.",
+                    false
                 );
+                return;
+            }
 
-            decimal newPendingAmount =
-                currentPendingAmount +
-                withdrawalAmount;
+            // Get current balance from DB
+            decimal dbBalance =
+                DatabaseHelper.GetWalletBalance(walletID);
 
+            if (withdrawalAmount > dbBalance)
+            {
+                ShowMessage(
+                    "You do not have enough available funds.",
+                    false
+                );
+                return;
+            }
 
-            // Deduct from available balance
+            decimal newAvailableBalance =
+                dbBalance - withdrawalAmount;
+
+            // Update wallet balance in DB
+            DatabaseHelper.UpdateWalletBalance(
+                walletID, newAvailableBalance);
+
+            // Save transaction to DB
+            string withdrawalId =
+                TransactionStore.CreateReference("WD");
+
+            DatabaseHelper.AddTransaction(
+                walletID,
+                "Withdrawal to " + selectedBankAccount,
+                "Withdrawal",
+                withdrawalAmount,
+                "Pending",
+                withdrawalId,
+                "Bank Transfer"
+            );
+
+            // Update session
             Session["AvailableBalance"] =
                 newAvailableBalance;
 
+            decimal currentPendingAmount =
+                GetSessionDecimal("PendingWithdrawals");
 
-            // Add amount to pending withdrawals
+            decimal newPendingAmount =
+                currentPendingAmount + withdrawalAmount;
+
             Session["PendingWithdrawals"] =
                 newPendingAmount;
 
-
-            string withdrawalId =
-                TransactionStore.CreateReference(
-                    "WD"
-                );
-
-
-            // Save withdrawal request
+            // Save withdrawal request in session list
             List<WithdrawalRequest> withdrawals =
                 GetWithdrawalList();
 
@@ -247,20 +278,16 @@ namespace FreeHubProject
                         null
                 };
 
-            withdrawals.Add(
-                request
-            );
+            withdrawals.Add(request);
 
             Session["WithdrawalRequests"] =
                 withdrawals;
 
-
-            // Save transaction for Transactions page
+            // Keep in-memory transaction store in sync
             TransactionStore.AddTransaction(
                 Session,
                 "Withdrawal Request",
-                "Withdrawal to " +
-                selectedBankAccount,
+                "Withdrawal to " + selectedBankAccount,
                 "Withdrawal",
                 withdrawalAmount,
                 "Pending",
@@ -268,14 +295,11 @@ namespace FreeHubProject
                 "Bank Transfer"
             );
 
-
-            // Store latest withdrawal information
             Session["LastWithdrawalAmount"] =
                 withdrawalAmount;
 
             Session["LastWithdrawalTransactionId"] =
                 withdrawalId;
-
 
             LoadBalances();
             LoadWithdrawals();

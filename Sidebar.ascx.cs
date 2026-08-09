@@ -5,6 +5,17 @@ namespace FreeHubProject
 {
     public partial class Sidebar : System.Web.UI.UserControl
     {
+        /// <summary>
+        /// Gets the current user's role from session for use in the markup.
+        /// </summary>
+        public string CurrentUserType
+        {
+            get
+            {
+                return Session["UserType"] as string ?? "";
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
         }

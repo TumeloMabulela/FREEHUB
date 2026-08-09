@@ -21,9 +21,12 @@ namespace FreeHubProject
                 pnlGuestButtons.Visible = false;
                 pnlUserButtons.Visible = true;
 
-                // Show Post a Project for Employers
+                // Show role-specific navigation
                 pnlEmployerNav.Visible =
                     userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+
+                pnlFreelancerNav.Visible =
+                    userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
 
                 // Set user display info
                 string firstName = Session["FirstName"] as string ?? "";
@@ -42,6 +45,7 @@ namespace FreeHubProject
             {
                 pnlLoggedInNav.Visible = false;
                 pnlEmployerNav.Visible = false;
+                pnlFreelancerNav.Visible = false;
                 pnlGuestButtons.Visible = true;
                 pnlUserButtons.Visible = false;
             }

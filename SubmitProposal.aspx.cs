@@ -7,19 +7,7 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null)
-            {
-                Response.Redirect("Login.aspx");
-                return;
-            }
-
-            // Only freelancers can submit proposals
-            string userType = Session["UserType"] as string ?? "";
-            if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
-            {
-                Response.Redirect("BrowseProjects.aspx");
-                return;
-            }
+            if (!AuthHelper.RequireRole(this, "Freelancer")) return;
 
             if (!IsPostBack)
             {

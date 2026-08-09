@@ -8,11 +8,7 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserID"] == null)
-            {
-                Response.Redirect("Login.aspx");
-                return;
-            }
+            if (!AuthHelper.RequireLogin(this)) return;
         }
 
         protected void btnBackToProject_Click(object sender, EventArgs e)
