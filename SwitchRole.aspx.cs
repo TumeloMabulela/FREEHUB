@@ -67,9 +67,7 @@ namespace FreeHubProject
                 }
 
                 SwitchUserRole(userId, "Freelancer");
-                ShowMessage("You are now acting as a Freelancer! Navigation updated.", true);
-                pnlCreateFreelancerProfile.Visible = false;
-                UpdateButtonStates();
+                Response.Redirect("SwitchRole.aspx");
             }
             catch (Exception ex)
             {
@@ -94,9 +92,7 @@ namespace FreeHubProject
                 }
 
                 SwitchUserRole(userId, "Employer");
-                ShowMessage("You are now acting as an Employer! Navigation updated.", true);
-                pnlCreateEmployerProfile.Visible = false;
-                UpdateButtonStates();
+                Response.Redirect("SwitchRole.aspx");
             }
             catch (Exception ex)
             {
@@ -135,8 +131,7 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Freelancer");
                 pnlCreateFreelancerProfile.Visible = false;
-                ShowMessage("Freelancer profile created successfully! You are now a Freelancer.", true);
-                UpdateButtonStates();
+                Response.Redirect("SwitchRole.aspx");
             }
             catch (Exception ex)
             {
@@ -182,8 +177,7 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Employer");
                 pnlCreateEmployerProfile.Visible = false;
-                ShowMessage("Employer profile created successfully! You are now an Employer.", true);
-                UpdateButtonStates();
+                Response.Redirect("SwitchRole.aspx");
             }
             catch (Exception ex)
             {
