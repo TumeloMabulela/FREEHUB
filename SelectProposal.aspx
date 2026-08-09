@@ -22,8 +22,12 @@
                     <div class="post-breadcrumb">
                         Dashboard <span>/</span> My Projects <span>/</span> Proposals
                     </div>
-                    <h1 style="color:#173f2c; margin-top:5px;">Select Proposal</h1>
-                    <p style="color:#666; font-size:14px;">Review proposals received and select the best fit for your project.</p>
+                    <h1 style="color:#173f2c; margin-top:5px;">
+                        <%= IsFreelancerView() ? "My Proposals" : "Select Proposal" %>
+                    </h1>
+                    <p style="color:#666; font-size:14px;">
+                        <%= IsFreelancerView() ? "View your submitted proposals and their status." : "Review proposals received and select the best fit for your project." %>
+                    </p>
                 </div>
                 <a href="MyProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Project</a>
             </div>
@@ -82,12 +86,13 @@
                                         CommandName="ApproveProposal"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="Select Proposal"
-                                        Visible='<%# Eval("status").ToString() == "Pending" %>'
+                                        Visible='<%# Eval("status").ToString() == "Pending" && !IsFreelancerView() %>'
                                         style="background-color:#2e7d56;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px;" />
                                     <asp:Button ID="btnViewDetails" runat="server"
                                         CommandName="ViewDetails"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="View Details"
+                                        Visible='<%# !IsFreelancerView() %>'
                                         style="background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
                                     <span style="display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;color:<%# Eval("status").ToString() == "Approved" ? "#155724" : Eval("status").ToString() == "Rejected" ? "#721c24" : "#856404" %>;background:<%# Eval("status").ToString() == "Approved" ? "#d4edda" : Eval("status").ToString() == "Rejected" ? "#f8d7da" : "#fff3cd" %>; <%# Eval("status").ToString() == "Pending" ? "display:none;" : "" %>">
                                         <%# Eval("status") %>

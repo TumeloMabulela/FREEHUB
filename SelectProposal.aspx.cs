@@ -17,6 +17,18 @@ namespace FreeHubProject
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
+
+                // Restrict Select/Approve/Reject to Employer only
+                string userType = Session["UserType"] as string ?? "";
+                if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+                {
+                    ViewState["IsFreelancer"] = true;
+                }
+                else
+                {
+                    ViewState["IsFreelancer"] = false;
+                }
+
                 LoadProposals();
             }
         }
@@ -113,6 +125,12 @@ namespace FreeHubProject
             pnlMessage.Visible = true;
             lblProposalMessage.Text = message;
             pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+        }
+
+        protected bool IsFreelancerView()
+        {
+            string userType = Session["UserType"] as string ?? "";
+            return userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
