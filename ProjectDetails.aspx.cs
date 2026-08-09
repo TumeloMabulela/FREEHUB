@@ -1,667 +1,138 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
 
 namespace FreeHubProject
 {
     public partial class ProjectDetails : System.Web.UI.Page
     {
-        private const string CommentSessionKey =
-            "FreeHubProjectComments";
-
-
-        protected void Page_Load(
-            object sender,
-            EventArgs e)
+        private int ProjectId
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            get
+            {
+                int id = 0;
+                int.TryParse(Request.QueryString["id"], out id);
+                return id;
+            }
+        }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
-
-                EnsureCommentsExist();
+                LoadProject();
                 LoadComments();
             }
         }
 
-
-        private void EnsureCommentsExist()
+        private void LoadProject()
         {
-            DataTable comments =
-                Session[CommentSessionKey]
-                as DataTable;
-
-            if (comments != null)
+            if (ProjectId <= 0)
             {
+                ShowMessage("No project selected.", false);
                 return;
             }
 
-            comments =
-                CreateCommentTable();
-
-
-            AddInitialComment(
-                comments,
-                "Sarah Lee",
-                "SL",
-                "This sounds like an interesting project! Do you have a preferred tech stack for the front-end development?",
-                DateTime.Now.AddHours(-2),
-                false
-            );
-
-            AddInitialComment(
-                comments,
-                GetCurrentUserName(),
-                GetInitials(
-                    GetCurrentUserName()
-                ),
-                "Hi! I have experience with React, Next.js and Tailwind CSS. I can definitely help with your project.",
-                DateTime.Now.AddHours(-1),
-                true
-            );
-
-            AddInitialComment(
-                comments,
-                "John Smith",
-                "JS",
-                "Great! Next.js would be perfect for our needs. Looking forward to your proposal.",
-                DateTime.Now.AddMinutes(-30),
-                false
-            );
-
-            AddInitialComment(
-                comments,
-                "Aisha Khan",
-                "AK",
-                "Can you please share more details about the admin panel requirements?",
-                DateTime.Now.AddMinutes(-10),
-                false
-            );
-
-            Session[CommentSessionKey] =
-                comments;
-        }
-
-
-        private DataTable CreateCommentTable()
-        {
-            DataTable table =
-                new DataTable();
-
-            table.Columns.Add(
-                "CommentId",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "AuthorName",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "Initials",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "CommentText",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "CommentDate",
-                typeof(DateTime)
-            );
-
-            table.Columns.Add(
-                "IsCurrentUser",
-                typeof(bool)
-            );
-
-            table.Columns.Add(
-                "ReplyToCommentId",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "ReplyToName",
-                typeof(string)
-            );
-
-            return table;
-        }
-
-
-        private void AddInitialComment(
-            DataTable comments,
-            string authorName,
-            string initials,
-            string commentText,
-            DateTime commentDate,
-            bool isCurrentUser)
-        {
-            DataRow row =
-                comments.NewRow();
-
-            row["CommentId"] =
-                Guid.NewGuid().ToString("N");
-
-            row["AuthorName"] =
-                authorName;
-
-            row["Initials"] =
-                initials;
-
-            row["CommentText"] =
-                commentText;
-
-            row["CommentDate"] =
-                commentDate;
-
-            row["IsCurrentUser"] =
-                isCurrentUser;
-
-            row["ReplyToCommentId"] =
-                "";
-
-            row["ReplyToName"] =
-                "";
-
-            comments.Rows.Add(row);
-        }
-
-
-        private DataTable GetComments()
-        {
-            DataTable comments =
-                Session[CommentSessionKey]
-                as DataTable;
-
-            if (comments == null)
+            try
             {
-                comments =
-                    CreateCommentTable();
+                DataRow project = DatabaseHelper.GetProjectById(ProjectId);
+                if (project == null)
+                {
+                    ShowMessage("Project not found.", false);
+                    return;
+                }
 
-                Session[CommentSessionKey] =
-                    comments;
+                lblTitle.Text = Convert.ToString(project["title"]);
+                lblEmployerName.Text = Convert.ToString(project["employerName"]);
+                lblPosted.Text = Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
+                lblDescription.Text = Convert.ToString(project["description"]);
+                lblCategory.Text = Convert.ToString(project["category"]);
+                lblExperience.Text = Convert.ToString(project["experienceLevel"]);
+                lblBudgetType.Text = Convert.ToString(project["budgetType"]) == "Fixed" ? "Fixed Price" : Convert.ToString(project["budgetType"]);
+                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2");
+                lblDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
+                lblStatus.Text = Convert.ToString(project["projectStatus"]);
             }
-
-            return comments;
+            catch (Exception ex)
+            {
+                ShowMessage("Error loading project: " + ex.Message, false);
+            }
         }
-
 
         private void LoadComments()
         {
-            DataTable comments =
-                GetComments();
+            if (ProjectId <= 0) return;
 
-            DataTable displayTable =
-                CreateDisplayTable();
-
-            DataView sortedComments =
-                comments.DefaultView;
-
-            sortedComments.Sort =
-                ddlCommentSort.SelectedValue ==
-                "Oldest"
-                    ? "CommentDate ASC"
-                    : "CommentDate DESC";
-
-
-            foreach (
-                DataRowView commentView
-                in sortedComments)
+            try
             {
-                DataRow sourceRow =
-                    commentView.Row;
-
-                DataRow displayRow =
-                    displayTable.NewRow();
-
-                DateTime commentDate =
-                    Convert.ToDateTime(
-                        sourceRow["CommentDate"]
-                    );
-
-                displayRow["CommentId"] =
-                    sourceRow["CommentId"];
-
-                displayRow["AuthorName"] =
-                    sourceRow["AuthorName"];
-
-                displayRow["Initials"] =
-                    sourceRow["Initials"];
-
-                displayRow["CommentText"] =
-                    sourceRow["CommentText"];
-
-                displayRow["IsCurrentUser"] =
-                    sourceRow["IsCurrentUser"];
-
-                displayRow["ReplyToName"] =
-                    sourceRow["ReplyToName"];
-
-                displayRow["DisplayTime"] =
-                    GetRelativeTime(
-                        commentDate
-                    );
-
-                displayTable.Rows.Add(
-                    displayRow
-                );
+                DataTable comments = DatabaseHelper.GetCommentsByProject(ProjectId);
+                rptComments.DataSource = comments;
+                rptComments.DataBind();
+                lblCommentCount.Text = comments.Rows.Count.ToString();
+                pnlNoComments.Visible = comments.Rows.Count == 0;
             }
-
-
-            rptComments.DataSource =
-                displayTable;
-
-            rptComments.DataBind();
-
-
-            lblCommentCount.Text =
-                "(" +
-                comments.Rows.Count +
-                ")";
-
-            pnlNoComments.Visible =
-                comments.Rows.Count == 0;
-        }
-
-
-        private DataTable CreateDisplayTable()
-        {
-            DataTable table =
-                new DataTable();
-
-            table.Columns.Add(
-                "CommentId",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "AuthorName",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "Initials",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "CommentText",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "DisplayTime",
-                typeof(string)
-            );
-
-            table.Columns.Add(
-                "IsCurrentUser",
-                typeof(bool)
-            );
-
-            table.Columns.Add(
-                "ReplyToName",
-                typeof(string)
-            );
-
-            return table;
-        }
-
-
-        protected void btnPostComment_Click(
-            object sender,
-            EventArgs e)
-        {
-            string commentText =
-                txtComment.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(
-                commentText))
+            catch
             {
-                ShowMessage(
-                    "Please enter a comment before posting.",
-                    false
-                );
+                pnlNoComments.Visible = true;
+                lblCommentCount.Text = "0";
+            }
+        }
 
+        protected void btnPostComment_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtComment.Text))
+            {
+                ShowMessage("Please enter a comment.", false);
                 return;
             }
 
-            if (commentText.Length > 1000)
+            if (txtComment.Text.Trim().Length > 1000)
             {
-                ShowMessage(
-                    "Your comment cannot exceed 1,000 characters.",
-                    false
-                );
-
+                ShowMessage("Comment cannot exceed 1000 characters.", false);
                 return;
             }
 
-
-            DataTable comments =
-                GetComments();
-
-            string replyToCommentId =
-                hfReplyToCommentId.Value;
-
-            string replyToName =
-                "";
-
-            if (!string.IsNullOrWhiteSpace(
-                replyToCommentId))
+            try
             {
-                DataRow replyComment =
-                    FindComment(
-                        comments,
-                        replyToCommentId
-                    );
-
-                if (replyComment != null)
-                {
-                    replyToName =
-                        Convert.ToString(
-                            replyComment["AuthorName"]
-                        );
-                }
+                int userId = Convert.ToInt32(Session["UserID"]);
+                DatabaseHelper.AddComment(ProjectId, userId, txtComment.Text.Trim());
+                txtComment.Text = "";
+                LoadComments();
+                ShowMessage("Comment posted successfully!", true);
             }
-
-
-            string currentUserName =
-                GetCurrentUserName();
-
-            DataRow newComment =
-                comments.NewRow();
-
-            newComment["CommentId"] =
-                Guid.NewGuid().ToString("N");
-
-            newComment["AuthorName"] =
-                currentUserName;
-
-            newComment["Initials"] =
-                GetInitials(
-                    currentUserName
-                );
-
-            newComment["CommentText"] =
-                commentText;
-
-            newComment["CommentDate"] =
-                DateTime.Now;
-
-            newComment["IsCurrentUser"] =
-                true;
-
-            newComment["ReplyToCommentId"] =
-                replyToCommentId ?? "";
-
-            newComment["ReplyToName"] =
-                replyToName;
-
-            comments.Rows.Add(
-                newComment
-            );
-
-            Session[CommentSessionKey] =
-                comments;
-
-
-            txtComment.Text =
-                "";
-
-            ClearReply();
-
-            ddlCommentSort.SelectedValue =
-                "Newest";
-
-            LoadComments();
-
-            ShowMessage(
-                "Your comment was posted successfully.",
-                true
-            );
+            catch (Exception ex)
+            {
+                ShowMessage("Error posting comment: " + ex.Message, false);
+            }
         }
 
-
-        protected void rptComments_ItemCommand(
-            object source,
-            System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        protected string GetAvatarColor(int index)
         {
-            if (e.CommandName !=
-                "ReplyComment")
-            {
-                return;
-            }
-
-            string commentId =
-                Convert.ToString(
-                    e.CommandArgument
-                );
-
-            DataRow comment =
-                FindComment(
-                    GetComments(),
-                    commentId
-                );
-
-            if (comment == null)
-            {
-                ShowMessage(
-                    "The selected comment could not be found.",
-                    false
-                );
-
-                return;
-            }
-
-            hfReplyToCommentId.Value =
-                commentId;
-
-            lblReplyingTo.Text =
-                Convert.ToString(
-                    comment["AuthorName"]
-                );
-
-            pnlReplyingTo.Visible =
-                true;
-
-            txtComment.Focus();
+            string[] colors = { "#2e7d56", "#1a5276", "#7d3c98", "#d35400", "#27ae60", "#2980b9" };
+            return colors[index % colors.Length];
         }
 
-
-        protected void btnCancelReply_Click(
-            object sender,
-            EventArgs e)
+        protected string GetTimeAgo(DateTime date)
         {
-            ClearReply();
+            TimeSpan diff = DateTime.Now - date;
+            if (diff.TotalMinutes < 1) return "Just now";
+            if (diff.TotalMinutes < 60) return (int)diff.TotalMinutes + " min ago";
+            if (diff.TotalHours < 24) return (int)diff.TotalHours + " hours ago";
+            if (diff.TotalDays < 7) return (int)diff.TotalDays + " days ago";
+            return date.ToString("dd MMM yyyy");
         }
 
-
-        private void ClearReply()
+        private void ShowMessage(string message, bool success)
         {
-            hfReplyToCommentId.Value =
-                "";
-
-            lblReplyingTo.Text =
-                "";
-
-            pnlReplyingTo.Visible =
-                false;
-        }
-
-
-        protected void ddlCommentSort_SelectedIndexChanged(
-            object sender,
-            EventArgs e)
-        {
-            LoadComments();
-        }
-
-
-        private DataRow FindComment(
-            DataTable comments,
-            string commentId)
-        {
-            foreach (
-                DataRow row
-                in comments.Rows)
-            {
-                if (string.Equals(
-                    Convert.ToString(
-                        row["CommentId"]
-                    ),
-                    commentId,
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    return row;
-                }
-            }
-
-            return null;
-        }
-
-
-        private string GetCurrentUserName()
-        {
-            string userName =
-                Convert.ToString(
-                    Session["CurrentUserName"]
-                );
-
-            if (string.IsNullOrWhiteSpace(
-                userName))
-            {
-                userName =
-                    "Mabuella London";
-
-                Session["CurrentUserName"] =
-                    userName;
-            }
-
-            return userName;
-        }
-
-
-        private string GetInitials(
-            string fullName)
-        {
-            if (string.IsNullOrWhiteSpace(
-                fullName))
-            {
-                return "FH";
-            }
-
-            string[] names =
-                fullName.Split(
-                    new[] { ' ' },
-                    StringSplitOptions.RemoveEmptyEntries
-                );
-
-            if (names.Length == 1)
-            {
-                return names[0]
-                    .Substring(0, 1)
-                    .ToUpperInvariant();
-            }
-
-            return
-                names[0]
-                    .Substring(0, 1)
-                    .ToUpperInvariant() +
-                names[names.Length - 1]
-                    .Substring(0, 1)
-                    .ToUpperInvariant();
-        }
-
-
-        private string GetRelativeTime(
-            DateTime commentDate)
-        {
-            TimeSpan difference =
-                DateTime.Now -
-                commentDate;
-
-            if (difference.TotalMinutes < 1)
-            {
-                return "Just now";
-            }
-
-            if (difference.TotalMinutes < 60)
-            {
-                int minutes =
-                    Math.Max(
-                        1,
-                        (int)difference.TotalMinutes
-                    );
-
-                return
-                    minutes +
-                    (
-                        minutes == 1
-                            ? " minute ago"
-                            : " minutes ago"
-                    );
-            }
-
-            if (difference.TotalHours < 24)
-            {
-                int hours =
-                    Math.Max(
-                        1,
-                        (int)difference.TotalHours
-                    );
-
-                return
-                    hours +
-                    (
-                        hours == 1
-                            ? " hour ago"
-                            : " hours ago"
-                    );
-            }
-
-            if (difference.TotalDays < 7)
-            {
-                int days =
-                    Math.Max(
-                        1,
-                        (int)difference.TotalDays
-                    );
-
-                return
-                    days +
-                    (
-                        days == 1
-                            ? " day ago"
-                            : " days ago"
-                    );
-            }
-
-            return commentDate.ToString(
-                "dd MMM yyyy",
-                CultureInfo.InvariantCulture
-            );
-        }
-
-
-        private void ShowMessage(
-            string message,
-            bool success)
-        {
-            pnlMessage.Visible =
-                true;
-
-            lblMessage.Text =
-                message;
-
-            pnlMessage.CssClass =
-                success
-                    ? "pd-message pd-success-message"
-                    : "pd-message pd-error-message";
+            pnlMessage.Visible = true;
+            lblMessage.Text = message;
+            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
         }
     }
 }

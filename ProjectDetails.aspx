@@ -1,688 +1,126 @@
-<%@ Page Title="Project Details"
+<%@ Page Title="Project Details - FreeHUB"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
     CodeBehind="ProjectDetails.aspx.cs"
     Inherits="FreeHubProject.ProjectDetails" %>
+
 <%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
-<asp:Content ID="ProjectDetailsHead"
-    ContentPlaceHolderID="HeadContent"
-    runat="server">
-
-    <link href="<%= ResolveUrl("~/ProjectDetails.css?v=1") %>"
-          rel="stylesheet"
-          type="text/css" />
-
-</asp:Content>
-
-<asp:Content ID="ProjectDetailsContent"
+<asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
     runat="server">
 
-    <div class="pd-page">
+    <div class="freehub-dashboard-layout">
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
+        <section class="freehub-main-content">
 
-        <!-- MAIN CONTENT -->
-        <main class="pd-main">
-
-            <!-- BREADCRUMB -->
-            <div class="pd-breadcrumb">
-
-                <a href="Default.aspx">
-                    Dashboard
-                </a>
-
-                <span>�</span>
-
-                <a href="BrowseProjects.aspx">
-                    Projects
-                </a>
-
-                <span>�</span>
-
-                <strong>
-                    Project Details
-                </strong>
-
-            </div>
-
-
-            <!-- PROJECT HEADING -->
-            <div class="pd-heading-row">
-
-                <div>
-
-                    <div class="pd-title-row">
-
-                        <h1>
-                            E-commerce Website Redesign
-                        </h1>
-
-                        <span class="pd-open-badge">
-                            Open
-                        </span>
-
-                    </div>
-
-                    <p>
-                        Project posted by
-                        <strong>John Smith</strong>
-                        <span>�</span>
-                        Posted 2 hours ago
-                    </p>
-
+            <!-- BREADCRUMB & HEADER -->
+            <div class="pd-header">
+                <div class="post-breadcrumb">
+                    Dashboard <span>/</span> Projects <span>/</span> Project Details
                 </div>
-
-                <a href="BrowseProjects.aspx"
-                   class="pd-back-button">
-
-                    ? Back to Projects
-
-                </a>
-
+                <div class="pd-title-row">
+                    <div>
+                        <h1><asp:Label ID="lblTitle" runat="server" /></h1>
+                        <p class="pd-posted">
+                            Project posted by <strong><asp:Label ID="lblEmployerName" runat="server" /></strong>
+                            &bull; Posted <asp:Label ID="lblPosted" runat="server" />
+                        </p>
+                    </div>
+                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;">&#8592; Back to Projects</a>
+                </div>
             </div>
 
+            <!-- PROJECT INFO CARD -->
+            <div class="pd-info-card">
+                <div class="pd-description">
+                    <h3>Project Description</h3>
+                    <p><asp:Label ID="lblDescription" runat="server" /></p>
+                    <div class="pd-meta-row">
+                        <span>Category: <strong><asp:Label ID="lblCategory" runat="server" /></strong></span>
+                        <span>Experience: <strong><asp:Label ID="lblExperience" runat="server" /></strong></span>
+                        <span>Budget Type: <strong><asp:Label ID="lblBudgetType" runat="server" /></strong></span>
+                    </div>
+                </div>
+                <div class="pd-stats">
+                    <div class="pd-stat">
+                        <small>Budget</small>
+                        <strong><asp:Label ID="lblBudget" runat="server" /></strong>
+                    </div>
+                    <div class="pd-stat">
+                        <small>Deadline</small>
+                        <strong><asp:Label ID="lblDeadline" runat="server" /></strong>
+                    </div>
+                    <div class="pd-stat">
+                        <small>Status</small>
+                        <strong><asp:Label ID="lblStatus" runat="server" /></strong>
+                    </div>
+                </div>
+            </div>
 
-            <asp:Panel
-                ID="pnlMessage"
-                runat="server"
-                CssClass="pd-message"
-                Visible="false">
-
-                <asp:Label
-                    ID="lblMessage"
-                    runat="server">
-                </asp:Label>
-
+            <!-- MESSAGE -->
+            <asp:Panel ID="pnlMessage" runat="server" CssClass="post-status" Visible="false">
+                <asp:Label ID="lblMessage" runat="server" />
             </asp:Panel>
 
+            <!-- COMMENTS LAYOUT -->
+            <div class="pd-comments-layout">
 
-            <!-- PROJECT INFORMATION -->
-            <div class="pd-project-grid">
+                <!-- LEFT: COMMENTS LIST -->
+                <div class="pd-comments-list">
+                    <h3>Comments (<asp:Label ID="lblCommentCount" runat="server" Text="0" />)</h3>
 
-                <section class="pd-project-card">
-
-                    <div class="pd-description-area">
-
-                        <h2>
-                            Project Description
-                        </h2>
-
-                        <p>
-                            We need a modern and user-friendly redesign
-                            of our existing e-commerce website. The goal
-                            is to improve UI/UX, increase conversion rate,
-                            and ensure mobile responsiveness. The project
-                            includes front-end and back-end development.
-                        </p>
-
-
-                        <div class="pd-project-features">
-
-                            <div class="pd-feature">
-
-                                <span class="pd-feature-icon">
-                                    ?
-                                </span>
-
-                                <div>
-
-                                    <small>
-                                        Category
-                                    </small>
-
-                                    <strong>
-                                        Web Development
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="pd-feature">
-
-                                <span class="pd-feature-icon">
-                                    ?
-                                </span>
-
-                                <div>
-
-                                    <small>
-                                        Experience Level
-                                    </small>
-
-                                    <strong>
-                                        Intermediate Level
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="pd-feature">
-
-                                <span class="pd-feature-icon">
-                                    ?
-                                </span>
-
-                                <div>
-
-                                    <small>
-                                        Project Type
-                                    </small>
-
-                                    <strong>
-                                        Fixed Price
-                                    </strong>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="pd-project-summary">
-
-                        <div class="pd-summary-row">
-
-                            <span>Budget</span>
-
-                            <strong class="pd-budget">
-                                R8,000 - R15,000
-                            </strong>
-
-                        </div>
-
-                        <div class="pd-summary-row">
-
-                            <span>Project Deadline</span>
-
-                            <strong>
-                                30 May 2024
-                            </strong>
-
-                        </div>
-
-                        <div class="pd-summary-row">
-
-                            <span>Time Remaining</span>
-
-                            <strong>
-                                21 days
-                            </strong>
-
-                        </div>
-
-                        <div class="pd-summary-row">
-
-                            <span>Proposals</span>
-
-                            <strong>
-                                8
-                            </strong>
-
-                        </div>
-
-                        <div class="pd-summary-row">
-
-                            <span>Project ID</span>
-
-                            <strong>
-                                #PJ10078
-                            </strong>
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                <!-- EMPLOYER CARD -->
-                <aside class="pd-employer-card">
-
-                    <h3>
-                        About the Employer
-                    </h3>
-
-                    <div class="pd-employer-profile">
-
-                        <div class="pd-employer-avatar">
-                            JS
-                        </div>
-
-                        <div>
-
-                            <strong>
-                                John Smith
-                                <span>?</span>
-                            </strong>
-
-                            <small>
-                                Member since Mar 2022
-                            </small>
-
-                            <p>
-                                ? 4.8 (18 reviews)
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <a href="Default.aspx"
-                       class="pd-view-profile-button">
-
-                        View Profile
-
-                    </a>
-
-                </aside>
-
-            </div>
-
-
-            <!-- COMMENTS AND FORM -->
-            <div class="pd-discussion-grid">
-
-                <!-- COMMENTS -->
-                <section class="pd-comments-card">
-
-                    <div class="pd-comments-heading">
-
-                        <h2>
-
-                            Comments
-
-                            <asp:Label
-                                ID="lblCommentCount"
-                                runat="server"
-                                Text="(0)">
-                            </asp:Label>
-
-                        </h2>
-
-
-                        <asp:DropDownList
-                            ID="ddlCommentSort"
-                            runat="server"
-                            CssClass="pd-sort-dropdown"
-                            AutoPostBack="true"
-                            OnSelectedIndexChanged="ddlCommentSort_SelectedIndexChanged">
-
-                            <asp:ListItem
-                                Text="Newest First"
-                                Value="Newest">
-                            </asp:ListItem>
-
-                            <asp:ListItem
-                                Text="Oldest First"
-                                Value="Oldest">
-                            </asp:ListItem>
-
-                        </asp:DropDownList>
-
-                    </div>
-
-
-                    <asp:Repeater
-                        ID="rptComments"
-                        runat="server"
-                        OnItemCommand="rptComments_ItemCommand">
-
+                    <asp:Repeater ID="rptComments" runat="server">
                         <ItemTemplate>
-
-                            <article class='<%# Convert.ToBoolean(Eval("IsCurrentUser"))
-                                ? "pd-comment pd-own-comment"
-                                : "pd-comment" %>'>
-
-                                <div class="pd-comment-avatar">
-
-                                    <%# Eval("Initials") %>
-
+                            <div class="comment-item">
+                                <div class="comment-avatar" style="background-color:<%# GetAvatarColor(Container.ItemIndex) %>">
+                                    <%# Eval("authorName").ToString().Length > 0 ? Eval("authorName").ToString().Substring(0,1).ToUpper() : "?" %>
                                 </div>
-
-
-                                <div class="pd-comment-content">
-
-                                    <div class="pd-comment-meta">
-
-                                        <strong>
-                                            <%# Server.HtmlEncode(
-                                                Convert.ToString(
-                                                    Eval("AuthorName")
-                                                )
-                                            ) %>
-                                        </strong>
-
-                                        <span
-                                            class="pd-you-badge"
-                                            style='<%# Convert.ToBoolean(Eval("IsCurrentUser"))
-                                                ? ""
-                                                : "display:none;" %>'>
-
-                                            You
-
-                                        </span>
-
-                                        <small>
-                                            � <%# Eval("DisplayTime") %>
-                                        </small>
-
+                                <div class="comment-body">
+                                    <div>
+                                        <strong><%# Eval("authorName") %></strong>
+                                        <small class="comment-role"><%# Eval("userType") %></small>
+                                        <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
-
-
-                                    <div
-                                        class="pd-reply-reference"
-                                        style='<%# string.IsNullOrWhiteSpace(
-                                            Convert.ToString(Eval("ReplyToName"))
-                                        )
-                                            ? "display:none;"
-                                            : "" %>'>
-
-                                        Replying to
-                                        <strong>
-                                            <%# Server.HtmlEncode(
-                                                Convert.ToString(
-                                                    Eval("ReplyToName")
-                                                )
-                                            ) %>
-                                        </strong>
-
-                                    </div>
-
-
-                                    <p>
-                                        <%# Server.HtmlEncode(
-                                            Convert.ToString(
-                                                Eval("CommentText")
-                                            )
-                                        ) %>
-                                    </p>
-
-
-                                    <asp:LinkButton
-                                        ID="btnReply"
-                                        runat="server"
-                                        Text="Reply"
-                                        CssClass="pd-reply-button"
-                                        CommandName="ReplyComment"
-                                        CommandArgument='<%# Eval("CommentId") %>'
-                                        CausesValidation="false">
-                                    </asp:LinkButton>
-
+                                    <p><%# Eval("commentText") %></p>
                                 </div>
-
-                            </article>
-
+                            </div>
                         </ItemTemplate>
-
                     </asp:Repeater>
 
-
-                    <asp:Panel
-                        ID="pnlNoComments"
-                        runat="server"
-                        CssClass="pd-no-comments"
-                        Visible="false">
-
-                        <div>?</div>
-
-                        <strong>
-                            No comments yet
-                        </strong>
-
-                        <p>
-                            Be the first person to comment on this project.
-                        </p>
-
+                    <asp:Panel ID="pnlNoComments" runat="server" CssClass="no-comments">
+                        <p>No comments yet. Be the first to start the discussion!</p>
                     </asp:Panel>
+                </div>
 
-                </section>
+                <!-- RIGHT: ADD COMMENT -->
+                <div class="pd-add-comment">
+                    <h3>Add a Comment</h3>
+                    <asp:TextBox ID="txtComment" runat="server" CssClass="post-textarea"
+                        TextMode="MultiLine" Rows="5" placeholder="Write your comment..." />
+                    <asp:Button ID="btnPostComment" runat="server" Text="Post Comment"
+                        CssClass="post-submit-button" OnClick="btnPostComment_Click"
+                        style="width:100%; margin-top:10px;" />
+                    <p class="comment-guidelines">Be respectful and follow our community guidelines.</p>
 
-
-                <!-- COMMENT FORM -->
-                <aside class="pd-comment-column">
-
-                    <section class="pd-add-comment-card">
-
-                        <h3>
-                            Add a Comment
-                        </h3>
-
-
-                        <asp:Panel
-                            ID="pnlReplyingTo"
-                            runat="server"
-                            CssClass="pd-replying-box"
-                            Visible="false">
-
-                            <div>
-
-                                Replying to
-
-                                <asp:Label
-                                    ID="lblReplyingTo"
-                                    runat="server">
-                                </asp:Label>
-
-                            </div>
-
-                            <asp:LinkButton
-                                ID="btnCancelReply"
-                                runat="server"
-                                Text="�"
-                                CssClass="pd-cancel-reply"
-                                CausesValidation="false"
-                                OnClick="btnCancelReply_Click">
-                            </asp:LinkButton>
-
-                        </asp:Panel>
-
-
-                        <asp:HiddenField
-                            ID="hfReplyToCommentId"
-                            runat="server"
-                            Value="" />
-
-
-                        <asp:TextBox
-                            ID="txtComment"
-                            runat="server"
-                            TextMode="MultiLine"
-                            Rows="8"
-                            MaxLength="1000"
-                            CssClass="pd-comment-textbox"
-                            placeholder="Write your comment..."
-                            onkeyup="updateCommentCount(this)">
-                        </asp:TextBox>
-
-
-                        <div class="pd-comment-toolbar">
-
-                            <div>
-
-                                <button type="button"
-                                        onclick="insertFormatting('bold')">
-
-                                    <strong>B</strong>
-
-                                </button>
-
-                                <button type="button"
-                                        onclick="insertFormatting('italic')">
-
-                                    <em>I</em>
-
-                                </button>
-
-                                <button type="button"
-                                        onclick="insertFormatting('list')">
-
-                                    ?
-
-                                </button>
-
-                            </div>
-
-                            <span>
-
-                                <span id="commentCharacterCount">
-                                    0
-                                </span>
-
-                                /1000
-
-                            </span>
-
-                        </div>
-
-
-                        <asp:Button
-                            ID="btnPostComment"
-                            runat="server"
-                            Text="Post Comment"
-                            CssClass="pd-post-comment-button"
-                            OnClick="btnPostComment_Click" />
-
-
-                        <div class="pd-community-note">
-
-                            ? Be respectful and follow our
-                            community guidelines.
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- GUIDELINES -->
-                    <section class="pd-guidelines-card">
-
-                        <h3>
-                            Discussion Guidelines
-                        </h3>
-
+                    <div class="discussion-guidelines">
+                        <h4>Discussion Guidelines</h4>
                         <ul>
-
-                            <li>
-                                ? Be respectful and professional
-                            </li>
-
-                            <li>
-                                ? Stay on topic
-                            </li>
-
-                            <li>
-                                ? No spamming or self-promotion
-                            </li>
-
-                            <li>
-                                ? Protect your privacy and others'
-                            </li>
-
+                            <li>Be respectful and professional</li>
+                            <li>Stay on topic</li>
+                            <li>No spamming or self-promotion</li>
+                            <li>Protect your privacy and others'</li>
                         </ul>
-
-                    </section>
-
-                </aside>
+                    </div>
+                </div>
 
             </div>
 
-        </main>
+        </section>
 
     </div>
-
-
-    <script type="text/javascript">
-
-        function updateCommentCount(textBox) {
-
-            var counter =
-                document.getElementById(
-                    "commentCharacterCount"
-                );
-
-            if (counter) {
-                counter.innerText =
-                    textBox.value.length;
-            }
-        }
-
-
-        function insertFormatting(type) {
-
-            var textBox =
-                document.getElementById(
-                    "<%= txtComment.ClientID %>"
-                );
-
-            if (!textBox) {
-                return;
-            }
-
-            var start =
-                textBox.selectionStart || 0;
-
-            var end =
-                textBox.selectionEnd || 0;
-
-            var selectedText =
-                textBox.value.substring(
-                    start,
-                    end
-                );
-
-            var replacement =
-                selectedText;
-
-            if (type === "bold") {
-                replacement =
-                    "**" + selectedText + "**";
-            }
-            else if (type === "italic") {
-                replacement =
-                    "*" + selectedText + "*";
-            }
-            else if (type === "list") {
-                replacement =
-                    "� " + selectedText;
-            }
-
-            textBox.value =
-                textBox.value.substring(0, start) +
-                replacement +
-                textBox.value.substring(end);
-
-            textBox.focus();
-
-            updateCommentCount(textBox);
-        }
-
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-
-                var textBox =
-                    document.getElementById(
-                        "<%= txtComment.ClientID %>"
-                    );
-
-                if (textBox) {
-                    updateCommentCount(textBox);
-                }
-            }
-        );
-
-    </script>
 
 </asp:Content>

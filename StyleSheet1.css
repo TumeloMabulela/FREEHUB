@@ -13421,3 +13421,157 @@ FREEHUB HOME PAGE
 .add-comment-box .post-textarea {
     margin-bottom: 10px;
 }
+
+
+/* =========================
+   PROJECT DETAILS PAGE
+========================= */
+
+.pd-header {
+    margin-bottom: 25px;
+}
+
+.pd-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+
+.pd-title-row h1 {
+    color: #173f2c;
+    font-size: 24px;
+}
+
+.pd-posted {
+    color: #666;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.pd-info-card {
+    display: flex;
+    gap: 30px;
+    background: #ffffff;
+    border: 1px solid #e8ece9;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.pd-description {
+    flex: 1;
+}
+
+.pd-description h3 {
+    color: #173f2c;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.pd-description p {
+    color: #444;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.pd-meta-row {
+    display: flex;
+    gap: 25px;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+.pd-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 180px;
+}
+
+.pd-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.pd-stat small {
+    color: #888;
+    font-size: 12px;
+}
+
+.pd-stat strong {
+    color: #173f2c;
+    font-size: 15px;
+}
+
+.pd-comments-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 25px;
+}
+
+.pd-comments-list {
+    background: #ffffff;
+    border: 1px solid #e8ece9;
+    border-radius: 10px;
+    padding: 25px;
+}
+
+.pd-comments-list h3 {
+    color: #173f2c;
+    margin-bottom: 15px;
+}
+
+.pd-add-comment {
+    background: #ffffff;
+    border: 1px solid #e8ece9;
+    border-radius: 10px;
+    padding: 25px;
+    align-self: flex-start;
+    position: sticky;
+    top: 100px;
+}
+
+.pd-add-comment h3 {
+    color: #173f2c;
+    margin-bottom: 12px;
+}
+
+.comment-guidelines {
+    color: #888;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+.discussion-guidelines {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e8ece9;
+}
+
+.discussion-guidelines h4 {
+    color: #173f2c;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.discussion-guidelines ul {
+    list-style: none;
+    padding: 0;
+}
+
+.discussion-guidelines ul li {
+    font-size: 13px;
+    color: #555;
+    padding: 4px 0;
+    padding-left: 18px;
+    position: relative;
+}
+
+.discussion-guidelines ul li::before {
+    content: "\2713";
+    color: #2e7d56;
+    position: absolute;
+    left: 0;
+}
