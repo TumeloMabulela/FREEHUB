@@ -77,7 +77,7 @@
                     </div>
 
                     <span class="transactions-wallet-icon">
-                        ?
+                        &#128176;
                     </span>
 
                 </section>
@@ -288,7 +288,7 @@
                                                 <asp:LinkButton
                                                     ID="btnViewDetails"
                                                     runat="server"
-                                                    Text="?"
+                                                    Text="&#128065;"
                                                     CssClass="transaction-view-button"
                                                     CommandName="ViewDetails"
                                                     CommandArgument='<%# Eval("TransactionId") %>'
@@ -317,7 +317,7 @@
                         Visible="false">
 
                         <div class="transactions-empty-icon">
-                            ?
+                            &#128203;
                         </div>
 
                         <strong>
@@ -361,7 +361,7 @@
                         CssClass="transactions-empty-details">
 
                         <div class="transactions-empty-details-icon">
-                            ?
+                            &#128269;
                         </div>
 
                         <strong>
@@ -388,7 +388,7 @@
                                 runat="server"
                                 class="transactions-details-icon">
 
-                                ?
+                                &#128176;
 
                             </span>
 

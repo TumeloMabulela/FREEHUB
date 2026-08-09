@@ -74,7 +74,7 @@
                     </div>
 
                     <span class="wallet-balance-icon">
-                        ?
+                        &#128176;
                     </span>
 
                 </section>
@@ -107,7 +107,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon available-icon">
-                            ?
+                            &#128178;
                         </span>
 
                         <div>
@@ -130,7 +130,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon hold-icon">
-                            ?
+                            &#9203;
                         </span>
 
                         <div>
@@ -153,7 +153,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon withdrawal-icon">
-                            ?
+                            &#128228;
                         </span>
 
                         <div>
@@ -176,7 +176,7 @@
                     <div class="wallet-overview-item">
 
                         <span class="overview-icon total-icon">
-                            ?
+                            &#128142;
                         </span>
 
                         <div>
@@ -224,7 +224,7 @@
                             OnClick="btnFundWallet_Click">
 
                             <span class="wallet-action-icon fund-icon">
-                                ?
+                                &#10133;
                             </span>
 
                             <span class="wallet-action-information">
@@ -254,7 +254,7 @@
                             OnClick="btnWithdrawFunds_Click">
 
                             <span class="wallet-action-icon withdraw-icon">
-                                ?
+                                &#128228;
                             </span>
 
                             <span class="wallet-action-information">
@@ -284,7 +284,7 @@
                             OnClick="btnViewTransactions_Click">
 
                             <span class="wallet-action-icon transactions-icon">
-                                ?
+                                &#128203;
                             </span>
 
                             <span class="wallet-action-information">
@@ -314,7 +314,7 @@
                             OnClick="btnPayouts_Click">
 
                             <span class="wallet-action-icon payouts-icon">
-                                ?
+                                &#128184;
                             </span>
 
                             <span class="wallet-action-information">
@@ -344,7 +344,7 @@
                             OnClick="btnDisputes_Click">
 
                             <span class="wallet-action-icon disputes-icon">
-                                ?
+                                &#9888;
                             </span>
 
                             <span class="wallet-action-information">
@@ -374,7 +374,7 @@
                             OnClick="btnRefunds_Click">
 
                             <span class="wallet-action-icon refunds-icon">
-                                ?
+                                &#8617;
                             </span>
 
                             <span class="wallet-action-information">
@@ -610,7 +610,7 @@
                                                 ID="btnViewTransaction"
                                                 runat="server"
                                                 CssClass="transaction-view-button"
-                                                Text="?"
+                                                Text="&#128065;"
                                                 CommandName="ViewTransaction"
                                                 CommandArgument='<%# Eval("TransactionId") %>'
                                                 CausesValidation="false">
@@ -638,7 +638,7 @@
                     Visible="false">
 
                     <div class="wallet-empty-icon">
-                        ?
+                        &#128237;
                     </div>
 
                     <strong>

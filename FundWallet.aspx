@@ -73,7 +73,7 @@
                     </div>
 
                     <span class="fw-wallet-icon">
-                        ?
+                        &#128176;
                     </span>
 
                 </div>
@@ -314,7 +314,7 @@
                             CssClass="fw-empty-topups">
 
                             <div class="fw-empty-icon">
-                                ?
+                                &#128203;
                             </div>
 
                             <strong>

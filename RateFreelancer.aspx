@@ -72,7 +72,7 @@
                     <div class="rate-completed-banner">
 
                         <div class="rate-completed-icon">
-                            ?
+                            &#9989;
                         </div>
 
                         <div>
@@ -104,7 +104,7 @@
                             <div class="rate-project-summary">
 
                                 <div class="rate-project-icon">
-                                    ?
+                                    &#128196;
                                 </div>
 
                                 <div>
@@ -114,11 +114,11 @@
                                     </h3>
 
                                     <p>
-                                        ?? Completed on: 25 May 2024
+                                        &#128197; Completed on: 25 May 2024
                                     </p>
 
                                     <p>
-                                        ?? Total Amount: R12,000
+                                        &#128178; Total Amount: R12,000
                                     </p>
 
                                 </div>
@@ -209,35 +209,35 @@
                                     class="rating-star"
                                     data-value="1"
                                     onclick="selectRating(1)">
-                                ?
+                                &#9733;
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="2"
                                     onclick="selectRating(2)">
-                                ?
+                                &#9733;
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="3"
                                     onclick="selectRating(3)">
-                                ?
+                                &#9733;
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="4"
                                     onclick="selectRating(4)">
-                                ?
+                                &#9733;
                             </button>
 
                             <button type="button"
                                     class="rating-star"
                                     data-value="5"
                                     onclick="selectRating(5)">
-                                ?
+                                &#9733;
                             </button>
 
                         </div>
@@ -356,7 +356,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon green-tip">
-                                ?
+                                &#9989;
                             </span>
 
                             <p>
@@ -370,7 +370,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon yellow-tip">
-                                ?
+                                &#11088;
                             </span>
 
                             <p>
@@ -385,7 +385,7 @@
                         <div class="rating-tip">
 
                             <span class="rating-tip-icon blue-tip">
-                                ?
+                                &#128274;
                             </span>
 
                             <p>
