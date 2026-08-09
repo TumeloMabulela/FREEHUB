@@ -30,7 +30,7 @@
                             &bull; Posted <asp:Label ID="lblPosted" runat="server" />
                         </p>
                     </div>
-                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;">&#8592; Back to Projects</a>
+                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;">&#8592; Back to Projects</a>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
                 <div class="pd-comments-list">
                     <h3>Comments (<asp:Label ID="lblCommentCount" runat="server" Text="0" />)</h3>
 
-                    <asp:Repeater ID="rptComments" runat="server">
+                    <asp:Repeater ID="rptComments" runat="server" OnItemCommand="rptComments_ItemCommand">
                         <ItemTemplate>
                             <div class="comment-item">
                                 <div class="comment-avatar" style="background-color:<%# GetAvatarColor(Container.ItemIndex) %>">
@@ -87,6 +87,14 @@
                                     </div>
                                     <p><%# Eval("commentText") %></p>
                                 </div>
+                                <asp:LinkButton ID="btnDelete" runat="server"
+                                    CommandName="DeleteComment"
+                                    CommandArgument='<%# Eval("commentID") %>'
+                                    CssClass="delete-comment-btn"
+                                    Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
+                                    OnClientClick="return confirm('Are you sure you want to delete this comment?');">
+                                    &#128465;
+                                </asp:LinkButton>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>

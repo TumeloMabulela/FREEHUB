@@ -84,6 +84,27 @@ namespace FreeHubProject
             }
         }
 
+        protected void rptComments_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "DeleteComment")
+            {
+                int commentId = Convert.ToInt32(e.CommandArgument);
+                try
+                {
+                    string query = "DELETE FROM Comment WHERE commentID = @CommentID AND userID = @UserID";
+                    DatabaseHelper.ExecuteNonQuery(query,
+                        new System.Data.SqlClient.SqlParameter("@CommentID", commentId),
+                        new System.Data.SqlClient.SqlParameter("@UserID", Convert.ToInt32(Session["UserID"])));
+                    LoadComments();
+                    ShowMessage("Comment deleted successfully.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage("Error deleting comment: " + ex.Message, false);
+                }
+            }
+        }
+
         protected void btnPostComment_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtComment.Text))

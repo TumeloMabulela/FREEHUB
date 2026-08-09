@@ -13575,3 +13575,19 @@ FREEHUB HOME PAGE
     position: absolute;
     left: 0;
 }
+
+
+/* Delete comment button */
+.delete-comment-btn {
+    color: #dc3545;
+    text-decoration: none;
+    font-size: 16px;
+    margin-left: auto;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.delete-comment-btn:hover {
+    background-color: #fff0f0;
+}
