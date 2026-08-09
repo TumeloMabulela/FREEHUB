@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace FreeHubProject
 {
@@ -8,179 +10,105 @@ namespace FreeHubProject
         {
             get
             {
-                string view =
-                    Request.QueryString["view"];
-
-                if (string.Equals(
-                    view,
-                    "Completed",
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Completed";
-                }
-
-                if (string.Equals(
-                    view,
-                    "Cancelled",
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Cancelled";
-                }
-
+                string view = Request.QueryString["view"];
+                if (string.Equals(view, "Completed", StringComparison.OrdinalIgnoreCase)) return "Completed";
+                if (string.Equals(view, "Cancelled", StringComparison.OrdinalIgnoreCase)) return "Cancelled";
                 return "Active";
             }
         }
 
-
-        protected void Page_Load(
-            object sender,
-            EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (!IsPostBack)
             {
-                LoadProjectCounts();
-                LoadSelectedSection();
+                LoadProjects();
             }
         }
 
-
-        private void LoadProjectCounts()
+        private void LoadProjects()
         {
-            lblActiveCount.Text =
-                GetSessionCount(
-                    "ActiveProjectCount",
-                    1
-                ).ToString();
+            int userId = Convert.ToInt32(Session["UserID"]);
 
-            lblCompletedCount.Text =
-                GetSessionCount(
-                    "CompletedProjectCount",
-                    0
-                ).ToString();
-
-            lblCancelledCount.Text =
-                GetSessionCount(
-                    "CancelledProjectCount",
-                    0
-                ).ToString();
-        }
-
-
-        private void LoadSelectedSection()
-        {
-            switch (SelectedView)
+            try
             {
-                case "Completed":
+                // Get counts
+                DataTable allProjects = DatabaseHelper.GetProjectsByEmployer(userId);
+                int activeCount = 0, completedCount = 0, cancelledCount = 0;
 
-                    lblSectionTitle.Text =
-                        "Completed Projects";
+                foreach (DataRow row in allProjects.Rows)
+                {
+                    string status = Convert.ToString(row["projectStatus"]);
+                    if (status == "Open" || status == "In Progress") activeCount++;
+                    else if (status == "Completed") completedCount++;
+                    else if (status == "Cancelled") cancelledCount++;
+                }
 
-                    lblProjectStatus.Text =
-                        "Completed";
+                lblActiveCount.Text = activeCount.ToString();
+                lblCompletedCount.Text = completedCount.ToString();
+                lblCancelledCount.Text = cancelledCount.ToString();
 
-                    lblProjectStatus.CssClass =
-                        "my-project-status completed-project-status";
+                // Filter by selected view
+                DataTable filtered = allProjects.Clone();
+                foreach (DataRow row in allProjects.Rows)
+                {
+                    string status = Convert.ToString(row["projectStatus"]);
+                    bool include = false;
 
-                    pnlProjectList.Visible =
-                        GetSessionCount(
-                            "CompletedProjectCount",
-                            0
-                        ) > 0;
+                    switch (SelectedView)
+                    {
+                        case "Completed":
+                            include = status == "Completed";
+                            break;
+                        case "Cancelled":
+                            include = status == "Cancelled";
+                            break;
+                        default: // Active
+                            include = status == "Open" || status == "In Progress";
+                            break;
+                    }
 
-                    break;
+                    if (include) filtered.ImportRow(row);
+                }
 
+                rptProjects.DataSource = filtered;
+                rptProjects.DataBind();
 
-                case "Cancelled":
+                // Show/hide panels
+                pnlProjectList.Visible = filtered.Rows.Count > 0;
+                pnlEmptyProjects.Visible = filtered.Rows.Count == 0;
 
-                    lblSectionTitle.Text =
-                        "Cancelled Projects";
-
-                    lblProjectStatus.Text =
-                        "Cancelled";
-
-                    lblProjectStatus.CssClass =
-                        "my-project-status cancelled-project-status";
-
-                    pnlProjectList.Visible =
-                        GetSessionCount(
-                            "CancelledProjectCount",
-                            0
-                        ) > 0;
-
-                    break;
-
-
-                default:
-
-                    lblSectionTitle.Text =
-                        "Active Projects";
-
-                    lblProjectStatus.Text =
-                        "Active";
-
-                    lblProjectStatus.CssClass =
-                        "my-project-status active-project-status";
-
-                    pnlProjectList.Visible =
-                        true;
-
-                    break;
+                // Set section title
+                lblSectionTitle.Text = SelectedView == "Completed" ? "Completed Projects" :
+                                       SelectedView == "Cancelled" ? "Cancelled Projects" : "Active Projects";
             }
-
-            pnlEmptyProjects.Visible =
-                !pnlProjectList.Visible;
-        }
-
-
-        protected string GetTabClass(
-            string viewName)
-        {
-            return string.Equals(
-                SelectedView,
-                viewName,
-                StringComparison.OrdinalIgnoreCase)
-                    ? "my-projects-tab my-projects-tab-active"
-                    : "my-projects-tab";
-        }
-
-
-        protected string GetMiniMenuClass(
-            string viewName)
-        {
-            return string.Equals(
-                SelectedView,
-                viewName,
-                StringComparison.OrdinalIgnoreCase)
-                    ? "my-projects-mini-active"
-                    : "";
-        }
-
-
-        private int GetSessionCount(
-            string sessionName,
-            int defaultValue)
-        {
-            object value =
-                Session[sessionName];
-
-            if (value == null)
+            catch (Exception ex)
             {
-                Session[sessionName] =
-                    defaultValue;
-
-                return defaultValue;
+                pnlProjectList.Visible = false;
+                pnlEmptyProjects.Visible = true;
+                lblSectionTitle.Text = "Active Projects";
+                lblActiveCount.Text = "0";
+                lblCompletedCount.Text = "0";
+                lblCancelledCount.Text = "0";
             }
+        }
 
-            int count;
+        protected string GetTabClass(string viewName)
+        {
+            return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
+                ? "my-projects-tab my-projects-tab-active"
+                : "my-projects-tab";
+        }
 
-            return int.TryParse(
-                value.ToString(),
-                out count
-            )
-                ? count
-                : defaultValue;
+        protected string GetMiniMenuClass(string viewName)
+        {
+            return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
+                ? "my-projects-mini-active" : "";
         }
     }
 }

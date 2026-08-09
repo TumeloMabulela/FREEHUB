@@ -174,75 +174,28 @@
                     ID="pnlProjectList"
                     runat="server">
 
-                    <article class="my-project-card">
-
-                        <div class="my-project-icon">
-                            ?
-                        </div>
-
-                        <div class="my-project-information">
-
-                            <div class="my-project-title-row">
-
-                                <h3>
-                                    E-commerce Website Redesign
-                                </h3>
-
-                                <asp:Label
-                                    ID="lblProjectStatus"
-                                    runat="server"
-                                    CssClass="my-project-status active-project-status"
-                                    Text="Active">
-                                </asp:Label>
-
-                            </div>
-
-                            <p>
-                                Modern redesign of an existing e-commerce
-                                platform with improved UI and responsiveness.
-                            </p>
-
-                            <div class="my-project-meta">
-
-                                <span>
-                                    Budget:
-                                    <strong>R8,000 - R15,000</strong>
-                                </span>
-
-                                <span>
-                                    Proposals:
-                                    <strong>8</strong>
-                                </span>
-
-                                <span>
-                                    Posted:
-                                    <strong>10 May 2024</strong>
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="my-project-actions">
-
-                            <a href="ProjectDetails.aspx"
-                               class="my-project-secondary-button">
-
-                                View Details
-
-                            </a>
-
-                            <a href="SelectProposal.aspx"
-                               class="my-project-primary-button">
-
-                                View Proposals
-
-                            </a>
-
-                        </div>
-
-                    </article>
+                    <asp:Repeater ID="rptProjects" runat="server">
+                        <ItemTemplate>
+                            <article class="my-project-card">
+                                <div class="my-project-information">
+                                    <div class="my-project-title-row">
+                                        <h3><%# Eval("title") %></h3>
+                                        <span class="my-project-status active-project-status"><%# Eval("projectStatus") %></span>
+                                    </div>
+                                    <p><%# Eval("description").ToString().Length > 100 ? Eval("description").ToString().Substring(0, 100) + "..." : Eval("description") %></p>
+                                    <div class="my-project-meta">
+                                        <span>Budget: <strong>R<%# Convert.ToDecimal(Eval("budget")).ToString("N0") %></strong></span>
+                                        <span>Proposals: <strong><%# Eval("proposalCount") %></strong></span>
+                                        <span>Posted: <strong><%# Convert.ToDateTime(Eval("dateCreated")).ToString("dd MMM yyyy") %></strong></span>
+                                    </div>
+                                </div>
+                                <div class="my-project-actions">
+                                    <a href="ProjectDetails.aspx" class="my-project-secondary-button">View Details</a>
+                                    <a href="SelectProposal.aspx" class="my-project-primary-button">View Proposals</a>
+                                </div>
+                            </article>
+                        </ItemTemplate>
+                    </asp:Repeater>
 
                 </asp:Panel>
 
