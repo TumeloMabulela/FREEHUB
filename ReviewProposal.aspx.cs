@@ -1,9 +1,21 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace FreeHubProject
 {
     public partial class ReviewProposal : System.Web.UI.Page
     {
+        private int ProposalId
+        {
+            get
+            {
+                int id = 0;
+                int.TryParse(Request.QueryString["id"], out id);
+                return id;
+            }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserID"] == null)
@@ -12,11 +24,115 @@ namespace FreeHubProject
                 return;
             }
 
+            // Employer only
             string userType = Session["UserType"] as string ?? "";
             if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
-                Response.Redirect("Default.aspx");
+                Response.Redirect("SelectProposal.aspx");
                 return;
+            }
+
+            if (!IsPostBack)
+            {
+                pnlMessage.Visible = false;
+                LoadProposal();
+            }
+        }
+
+        private void LoadProposal()
+        {
+            if (ProposalId <= 0)
+            {
+                ShowMessage("No proposal selected.", false);
+                pnlActions.Visible = false;
+                return;
+            }
+
+            try
+            {
+                string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
+                                pr.estimatedCompletionTime, pr.status, pr.date,
+                                u.firstName + ' ' + u.lastName AS freelancerName,
+                                p.title AS projectTitle
+                                FROM Proposal pr
+                                INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                                INNER JOIN [User] u ON f.userID = u.userID
+                                INNER JOIN Project p ON pr.projectID = p.projectID
+                                WHERE pr.proposalID = @ProposalID";
+
+                DataTable result = DatabaseHelper.ExecuteQuery(query,
+                    new SqlParameter("@ProposalID", ProposalId));
+
+                if (result.Rows.Count == 0)
+                {
+                    ShowMessage("Proposal not found.", false);
+                    pnlActions.Visible = false;
+                    return;
+                }
+
+                DataRow proposal = result.Rows[0];
+
+                string freelancerName = Convert.ToString(proposal["freelancerName"]);
+                lblFreelancerName.Text = freelancerName;
+                lblFreelancerInitials.Text = GetInitials(freelancerName);
+                lblProjectTitle.Text = Convert.ToString(proposal["projectTitle"]);
+                lblRate.Text = "R" + Convert.ToDecimal(proposal["proposedRate"]).ToString("N0");
+                lblTime.Text = Convert.ToString(proposal["estimatedCompletionTime"]);
+                lblDate.Text = Convert.ToDateTime(proposal["date"]).ToString("dd MMM yyyy");
+                lblCoverLetter.Text = Convert.ToString(proposal["coverLetter"]);
+                lblStatus.Text = Convert.ToString(proposal["status"]);
+
+                // Hide action buttons if already approved/rejected
+                string status = Convert.ToString(proposal["status"]);
+                if (status != "Pending")
+                {
+                    btnApproveProposal.Visible = false;
+                    btnRejectProposal.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error loading proposal: " + ex.Message, false);
+            }
+        }
+
+        protected void btnApproveProposal_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = @"UPDATE Proposal SET status = 'Approved' WHERE proposalID = @ID;
+                                UPDATE Project SET projectStatus = 'In Progress'
+                                WHERE projectID = (SELECT projectID FROM Proposal WHERE proposalID = @ID)";
+                DatabaseHelper.ExecuteNonQuery(query,
+                    new SqlParameter("@ID", ProposalId));
+
+                ShowMessage("Proposal approved! The project is now In Progress and the freelancer has been assigned.", true);
+                btnApproveProposal.Visible = false;
+                btnRejectProposal.Visible = false;
+                lblStatus.Text = "Approved";
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error: " + ex.Message, false);
+            }
+        }
+
+        protected void btnRejectProposal_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = @ID";
+                DatabaseHelper.ExecuteNonQuery(query,
+                    new SqlParameter("@ID", ProposalId));
+
+                ShowMessage("Proposal rejected. The freelancer has been notified.", true);
+                btnApproveProposal.Visible = false;
+                btnRejectProposal.Visible = false;
+                lblStatus.Text = "Rejected";
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error: " + ex.Message, false);
             }
         }
 
@@ -25,58 +141,22 @@ namespace FreeHubProject
             Response.Redirect("SelectProposal.aspx");
         }
 
-        protected void btnViewProfile_Click(object sender, EventArgs e)
+        private string GetInitials(string name)
         {
-            string name = Session["ViewProposalName"] as string ?? "Freelancer";
-            lblReviewMessage.Text = "Viewing profile for: " + name + ". This freelancer has submitted proposals and completed projects on FreeHUB.";
-        }
-
-        protected void btnApproveProposal_Click(object sender, EventArgs e)
-        {
-            try
+            string initials = "";
+            string[] parts = name.Split(' ');
+            foreach (string part in parts)
             {
-                string updateProposal = "UPDATE Proposal SET status = 'Approved' WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC)";
-                DatabaseHelper.ExecuteNonQuery(updateProposal);
-
-                string updateProject = "UPDATE Project SET projectStatus = 'In Progress' WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
-                DatabaseHelper.ExecuteNonQuery(updateProject);
-
-                lblReviewMessage.Text = "Proposal approved successfully! The project is now In Progress and the freelancer has been assigned.";
+                if (part.Length > 0) initials += part[0];
             }
-            catch
-            {
-                lblReviewMessage.Text = "Proposal approved successfully! The project is now In Progress and the freelancer has been notified.";
-            }
+            return initials.ToUpper();
         }
 
-        protected void btnRequestChanges_Click(object sender, EventArgs e)
+        private void ShowMessage(string message, bool success)
         {
-            lblReviewMessage.Text = "A message has been sent to the freelancer requesting changes to their proposal.";
-        }
-
-        protected void btnRejectProposal_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                string updateProposal = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC)";
-                DatabaseHelper.ExecuteNonQuery(updateProposal);
-
-                lblReviewMessage.Text = "Proposal has been rejected. The freelancer has been notified and the project remains open.";
-            }
-            catch
-            {
-                lblReviewMessage.Text = "Proposal has been rejected. The freelancer has been notified.";
-            }
-        }
-
-        protected void btnSidebarSupport_Click(object sender, EventArgs e)
-        {
-            lblReviewMessage.Text = "For support, please email support@freehub.co.za";
-        }
-
-        protected void btnContactSupport_Click(object sender, EventArgs e)
-        {
-            lblReviewMessage.Text = "For support, please email support@freehub.co.za";
+            pnlMessage.Visible = true;
+            lblReviewMessage.Text = message;
+            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
         }
     }
 }

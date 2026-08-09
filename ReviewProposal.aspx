@@ -1,948 +1,109 @@
-<%@ Page Title="Review Proposal"
+<%@ Page Title="Review Proposal - FreeHUB"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
     CodeBehind="ReviewProposal.aspx.cs"
     Inherits="FreeHubProject.ReviewProposal" %>
+
 <%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
-<asp:Content ID="ReviewProposalHead"
-    ContentPlaceHolderID="HeadContent"
-    runat="server">
-
-    <link href="<%= ResolveUrl("~/ReviewProposal.css?v=20") %>"
-          rel="stylesheet"
-          type="text/css" />
-
-</asp:Content>
-
-
-<asp:Content ID="ReviewProposalContent"
+<asp:Content ID="Content1"
     ContentPlaceHolderID="MainContent"
     runat="server">
 
-    <div class="review-proposal-page">
-
-        <!-- =====================================
-             EMPLOYER SIDEBAR
-        ====================================== -->
+    <div class="freehub-dashboard-layout">
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
+        <section class="freehub-main-content">
 
-        <!-- =====================================
-             MAIN PAGE
-        ====================================== -->
-
-        <main class="review-main">
-
-
-            <!-- BREADCRUMB -->
-
-            <div class="review-breadcrumb">
-
-                <a href="Default.aspx">
-                    Dashboard
-                </a>
-
-                <span>
-                    �
-                </span>
-
-                <a href="MyProjects.aspx">
-                    My Projects
-                </a>
-
-                <span>
-                    �
-                </span>
-
-                <a href="ProjectDetails.aspx">
-                    Website Development Project
-                </a>
-
-                <span>
-                    �
-                </span>
-
-                <a href="SelectProposal.aspx">
-                    Proposals
-                </a>
-
-                <span>
-                    �
-                </span>
-
-                <strong>
-                    Review Proposal
-                </strong>
-
-            </div>
-
-
-            <!-- PAGE HEADING -->
-
-            <div class="review-heading">
-
+            <!-- HEADER -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
                 <div>
-
-                    <h1>
-                        Review Proposal
-                    </h1>
-
-                    <p>
-                        Review the freelancer's complete proposal
-                        before making your decision.
-                    </p>
-
+                    <div class="post-breadcrumb">
+                        Dashboard <span>/</span> Proposals <span>/</span> Review Proposal
+                    </div>
+                    <h1 style="color:#173f2c; margin-top:5px;">Review Proposal</h1>
+                    <p style="color:#666; font-size:14px;">Review the proposal details before making your decision.</p>
                 </div>
-
-
-                <asp:Button
-                    ID="btnBackToProposals"
-                    runat="server"
-                    Text="? Back to Proposals"
-                    CssClass="review-back-button"
-                    CausesValidation="false"
-                    OnClick="btnBackToProposals_Click" />
-
+                <a href="SelectProposal.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Proposals</a>
             </div>
 
+            <!-- MESSAGE -->
+            <asp:Panel ID="pnlMessage" runat="server" CssClass="post-status" Visible="false">
+                <asp:Label ID="lblReviewMessage" runat="server" />
+            </asp:Panel>
 
-            <!-- INFORMATION MESSAGE -->
+            <!-- PROPOSAL CONTENT -->
+            <div style="display:grid; grid-template-columns:1fr; gap:20px;">
 
-            <div class="review-information-banner">
-
-                <span class="review-information-icon">
-                    i
-                </span>
-
-                <p>
-                    You are reviewing this proposal.
-                </p>
-
-            </div>
-
-
-            <!-- PROJECT INFORMATION -->
-
-            <section class="review-project-card">
-
-                <div class="review-project-icon">
-                    ?
-                </div>
-
-
-                <div class="review-project-details">
-
-                    <p class="review-small-heading">
-                        PROJECT
-                    </p>
-
-                    <h2>
-                        Website Development Project
-                    </h2>
-
-                    <p>
-                        Create a modern, responsive and
-                        user-friendly website for a growing
-                        business.
-                    </p>
-
-                </div>
-
-
-                <div class="review-project-budget">
-
-                    <small>
-                        Project Budget
-                    </small>
-
-                    <strong>
-                        R8,000 � R15,000
-                    </strong>
-
-                </div>
-
-            </section>
-
-
-            <div class="review-content-layout">
-
-
-                <!-- =====================================
-                     LEFT CONTENT
-                ====================================== -->
-
-                <section class="review-left-content">
-
-
-                    <!-- FREELANCER PROFILE -->
-
-                    <section class="review-card">
-
-                        <div class="review-card-title">
-
-                            <h2>
-                                Freelancer Information
-                            </h2>
-
-                            <asp:Button
-                                ID="btnViewProfile"
-                                runat="server"
-                                Text="View Full Profile"
-                                CssClass="view-profile-button"
-                                CausesValidation="false"
-                                OnClick="btnViewProfile_Click" />
-
+                <!-- FREELANCER INFO -->
+                <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:25px;">
+                    <h3 style="color:#173f2c; margin-bottom:15px;">Freelancer Information</h3>
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <div style="width:50px;height:50px;border-radius:50%;background-color:#2e7d56;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;">
+                            <asp:Label ID="lblFreelancerInitials" runat="server" />
                         </div>
-
-
-                        <div class="freelancer-review-profile">
-
-                            <div class="review-avatar">
-                                TM
-                            </div>
-
-
-                            <div class="review-freelancer-details">
-
-                                <div class="review-name-row">
-
-                                    <h2>
-                                        Thabo Mokoena
-                                    </h2>
-
-                                    <span>
-                                        Top Rated
-                                    </span>
-
-                                </div>
-
-
-                                <p class="review-rating">
-
-                                    ? 4.8
-
-                                    <span>
-                                        (56 Reviews)
-                                    </span>
-
-                                    � South Africa
-
-                                </p>
-
-
-                                <p class="review-title">
-                                    Full-Stack Web Developer
-                                </p>
-
-
-                                <p class="review-experience">
-
-                                    5+ years of experience in
-                                    website design and development.
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="review-profile-stats">
-
-                            <div>
-
-                                <small>
-                                    Job Success
-                                </small>
-
-                                <strong>
-                                    98%
-                                </strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <small>
-                                    Response Time
-                                </small>
-
-                                <strong>
-                                    1 hour
-                                </strong>
-
-                            </div>
-
-
-                            <div>
-
-                                <small>
-                                    Jobs Completed
-                                </small>
-
-                                <strong>
-                                    45+
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="review-skills">
-
-                            <h3>
-                                Skills
-                            </h3>
-
-                            <span>
-                                HTML
-                            </span>
-
-                            <span>
-                                CSS
-                            </span>
-
-                            <span>
-                                JavaScript
-                            </span>
-
-                            <span>
-                                ASP.NET
-                            </span>
-
-                            <span>
-                                SQL Server
-                            </span>
-
-                            <span>
-                                Responsive Design
-                            </span>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- PROPOSAL DETAILS -->
-
-                    <section class="review-card">
-
-                        <div class="review-card-title">
-
-                            <h2>
-                                Proposal Details
-                            </h2>
-
-                            <span class="proposal-status">
-                                Submitted
-                            </span>
-
-                        </div>
-
-
-                        <div class="proposal-information-grid">
-
-                            <div>
-
-                                <small>
-                                    Proposed Rate
-                                </small>
-
-                                <strong>
-                                    R12,000
-                                </strong>
-
-                                <p>
-                                    Fixed Price
-                                </p>
-
-                            </div>
-
-
-                            <div>
-
-                                <small>
-                                    Estimated Completion
-                                </small>
-
-                                <strong>
-                                    15 Days
-                                </strong>
-
-                                <p>
-                                    After project approval
-                                </p>
-
-                            </div>
-
-
-                            <div>
-
-                                <small>
-                                    Proposal Submitted
-                                </small>
-
-                                <strong>
-                                    Today
-                                </strong>
-
-                                <p>
-                                    2 hours ago
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- COVER LETTER -->
-
-                    <section class="review-card">
-
-                        <div class="review-card-title">
-
-                            <h2>
-                                Cover Letter
-                            </h2>
-
-                        </div>
-
-
-                        <div class="cover-letter-content">
-
-                            <p>
-                                Dear Employer,
-                            </p>
-
-
-                            <p>
-                                I am excited to submit my proposal
-                                for your Website Development Project.
-                                I have more than five years of
-                                experience creating modern,
-                                professional and responsive websites.
-                            </p>
-
-
-                            <p>
-                                I understand that you need a website
-                                that is visually attractive,
-                                user-friendly and easy to use on
-                                different devices. I will use modern
-                                web technologies to create a clean
-                                design that supports your business
-                                goals.
-                            </p>
-
-
-                            <p>
-                                The website will include responsive
-                                pages, clear navigation, secure
-                                functionality and a professional
-                                user experience. I will also test
-                                the website before final delivery.
-                            </p>
-
-
-                            <p>
-                                I estimate that the project can be
-                                completed within 15 days. I will
-                                provide regular progress updates and
-                                communicate with you throughout the
-                                development process.
-                            </p>
-
-
-                            <p>
-                                Thank you for considering my
-                                proposal. I look forward to working
-                                with you.
-                            </p>
-
-
-                            <p>
-                                Kind regards,
-                                <br />
-
-                                <strong>
-                                    Thabo Mokoena
-                                </strong>
-
-                            </p>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- ATTACHMENTS -->
-
-                    <section class="review-card">
-
-                        <div class="review-card-title">
-
-                            <h2>
-                                Attachments
-                            </h2>
-
-                        </div>
-
-
-                        <div class="review-attachments">
-
-                            <a href="#"
-                               class="review-attachment-item">
-
-                                <span class="review-pdf-icon">
-                                    PDF
-                                </span>
-
-                                <div>
-
-                                    <strong>
-                                        Proposal_Document.pdf
-                                    </strong>
-
-                                    <small>
-                                        1.2 MB
-                                    </small>
-
-                                </div>
-
-                            </a>
-
-
-                            <a href="#"
-                               class="review-attachment-item">
-
-                                <span class="review-zip-icon">
-                                    ZIP
-                                </span>
-
-                                <div>
-
-                                    <strong>
-                                        Portfolio_Examples.zip
-                                    </strong>
-
-                                    <small>
-                                        4.8 MB
-                                    </small>
-
-                                </div>
-
-                            </a>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- PORTFOLIO -->
-
-                    <section class="review-card">
-
-                        <div class="review-card-title">
-
-                            <h2>
-                                Relevant Work
-                            </h2>
-
-                            <a href="Default.aspx">
-                                View Portfolio
-                            </a>
-
-                        </div>
-
-
-                        <div class="review-portfolio">
-
-                            <div class="portfolio-item">
-
-                                <div class="portfolio-image">
-                                    WEB
-                                </div>
-
-                                <h4>
-                                    Business Website
-                                </h4>
-
-                                <p>
-                                    Responsive company website
-                                </p>
-
-                            </div>
-
-
-                            <div class="portfolio-item">
-
-                                <div class="portfolio-image">
-                                    APP
-                                </div>
-
-                                <h4>
-                                    Online Booking System
-                                </h4>
-
-                                <p>
-                                    Web-based booking platform
-                                </p>
-
-                            </div>
-
-
-                            <div class="portfolio-item">
-
-                                <div class="portfolio-image">
-                                    SHOP
-                                </div>
-
-                                <h4>
-                                    E-Commerce Website
-                                </h4>
-
-                                <p>
-                                    Online shopping platform
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- DECISION ACTIONS -->
-
-                    <section class="review-decision-card">
-
                         <div>
-
-                            <h2>
-                                Make a Decision
-                            </h2>
-
-                            <p>
-                                Review all the information before
-                                approving or rejecting this proposal.
-                            </p>
-
+                            <strong style="font-size:16px; color:#173f2c;"><asp:Label ID="lblFreelancerName" runat="server" /></strong>
+                            <p style="color:#666; font-size:13px;">Project: <asp:Label ID="lblProjectTitle" runat="server" /></p>
                         </div>
+                    </div>
+                </div>
 
-
-                        <div class="review-decision-buttons">
-
-                            <asp:Button
-                                ID="btnRejectProposal"
-                                runat="server"
-                                Text="� Reject Proposal"
-                                CssClass="reject-proposal-button"
-                                OnClick="btnRejectProposal_Click" />
-
-
-                            <asp:Button
-                                ID="btnRequestChanges"
-                                runat="server"
-                                Text="? Request Changes"
-                                CssClass="request-changes-button"
-                                OnClick="btnRequestChanges_Click" />
-
-
-                            <asp:Button
-                                ID="btnApproveProposal"
-                                runat="server"
-                                Text="? Approve Proposal"
-                                CssClass="approve-proposal-button"
-                                OnClick="btnApproveProposal_Click" />
-
+                <!-- PROPOSAL DETAILS -->
+                <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="color:#173f2c;">Proposal Details</h3>
+                        <span style="padding:4px 12px; border-radius:12px; font-size:12px; background:#fff3cd; color:#856404;">
+                            <asp:Label ID="lblStatus" runat="server" />
+                        </span>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:20px;">
+                        <div>
+                            <small style="color:#888;">Proposed Rate</small><br/>
+                            <strong style="color:#173f2c; font-size:18px;"><asp:Label ID="lblRate" runat="server" /></strong>
                         </div>
-
-
-                        <asp:Label
-                            ID="lblReviewMessage"
-                            runat="server"
-                            CssClass="review-message">
-                        </asp:Label>
-
-                    </section>
-
-                </section>
-
-
-                <!-- =====================================
-                     RIGHT SIDE
-                ====================================== -->
-
-                <aside class="review-right-content">
-
-
-                    <!-- PROJECT SUMMARY -->
-
-                    <section class="review-summary-card">
-
-                        <div class="review-side-card-heading">
-
-                            <span class="review-side-icon">
-                                ?
-                            </span>
-
-                            <h3>
-                                Project Summary
-                            </h3>
-
+                        <div>
+                            <small style="color:#888;">Estimated Completion</small><br/>
+                            <strong style="color:#173f2c; font-size:18px;"><asp:Label ID="lblTime" runat="server" /></strong>
                         </div>
-
-
-                        <h4>
-                            Website Development Project
-                        </h4>
-
-
-                        <p class="review-summary-description">
-
-                            Create a modern and responsive
-                            website for a growing business.
-
-                        </p>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Budget
-                            </span>
-
-                            <strong>
-                                R8,000 - R15,000
-                            </strong>
-
+                        <div>
+                            <small style="color:#888;">Submitted</small><br/>
+                            <strong style="color:#173f2c;"><asp:Label ID="lblDate" runat="server" /></strong>
                         </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Deadline
-                            </span>
-
-                            <strong>
-                                30 May 2024
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Posted Date
-                            </span>
-
-                            <strong>
-                                10 May 2024
-                            </strong>
-
-                        </div>
-
-
-                        <a href="ProjectDetails.aspx"
-                           class="review-project-details-link">
-
-                            View Project Details
-
-                            <span>
-                                �
-                            </span>
-
-                        </a>
-
-                    </section>
-
-
-                    <!-- PROPOSAL SUMMARY -->
-
-                    <section class="review-summary-card">
-
-                        <h3>
-                            Proposal Summary
-                        </h3>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Proposed Rate
-                            </span>
-
-                            <strong>
-                                R12,000
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Completion Time
-                            </span>
-
-                            <strong>
-                                15 Days
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Freelancer Rating
-                            </span>
-
-                            <strong>
-                                ? 4.8
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Reviews
-                            </span>
-
-                            <strong>
-                                56
-                            </strong>
-
-                        </div>
-
-
-                        <div class="summary-line">
-
-                            <span>
-                                Experience
-                            </span>
-
-                            <strong>
-                                5+ Years
-                            </strong>
-
-                        </div>
-
-                    </section>
-
-
-                    <!-- WHY THIS FREELANCER -->
-
-                    <section class="review-checklist">
-
-                        <div class="review-side-card-heading">
-
-                            <span class="review-star-icon">
-                                ?
-                            </span>
-
-                            <h3>
-                                Why this freelancer?
-                            </h3>
-
-                        </div>
-
-
-                        <p>
-                            ? High job success rate
-                        </p>
-
-                        <p>
-                            ? Top rated freelancer
-                        </p>
-
-                        <p>
-                            ? Strong portfolio and work history
-                        </p>
-
-                        <p>
-                            ? Positive reviews from clients
-                        </p>
-
-                        <p>
-                            ? Quick response time
-                        </p>
-
-                    </section>
-
-
-                    <!-- REVIEW CHECKLIST -->
-
-                    <section class="review-checklist">
-
-                        <h3>
-                            Review Checklist
-                        </h3>
-
-
-                        <p>
-                            ? Proposal meets project needs
-                        </p>
-
-                        <p>
-                            ? Rate fits the project budget
-                        </p>
-
-                        <p>
-                            ? Completion time is suitable
-                        </p>
-
-                        <p>
-                            ? Skills match project requirements
-                        </p>
-
-                        <p>
-                            ? Freelancer experience reviewed
-                        </p>
-
-                    </section>
-
-
-                    <!-- HELP -->
-
-                    <section class="review-help">
-
-                        <h3>
-                            Need Assistance?
-                        </h3>
-
-                        <p>
-                            Contact our support team if you
-                            need help reviewing a proposal.
-                        </p>
-
-
-                        <asp:Button
-                            ID="btnContactSupport"
-                            runat="server"
-                            Text="Contact Support"
-                            CssClass="review-help-button"
-                            CausesValidation="false"
-                            OnClick="btnContactSupport_Click" />
-
-                    </section>
-
-                </aside>
+                    </div>
+                </div>
+
+                <!-- COVER LETTER -->
+                <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:25px;">
+                    <h3 style="color:#173f2c; margin-bottom:15px;">Cover Letter</h3>
+                    <p style="color:#444; font-size:14px; line-height:1.8; white-space:pre-wrap;">
+                        <asp:Label ID="lblCoverLetter" runat="server" />
+                    </p>
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <asp:Panel ID="pnlActions" runat="server" style="display:flex; gap:15px; margin-top:10px;">
+                    <asp:Button ID="btnApproveProposal" runat="server"
+                        Text="Approve Proposal"
+                        OnClick="btnApproveProposal_Click"
+                        OnClientClick="return confirm('Are you sure you want to approve this proposal? The project will start.');"
+                        style="background-color:#2e7d56;color:#fff;border:none;padding:12px 24px;border-radius:20px;font-size:14px;font-weight:500;cursor:pointer;" />
+                    <asp:Button ID="btnRejectProposal" runat="server"
+                        Text="Reject Proposal"
+                        OnClick="btnRejectProposal_Click"
+                        OnClientClick="return confirm('Are you sure you want to reject this proposal?');"
+                        style="background-color:#dc3545;color:#fff;border:none;padding:12px 24px;border-radius:20px;font-size:14px;font-weight:500;cursor:pointer;" />
+                    <asp:Button ID="btnBackToProposals" runat="server"
+                        Text="Back to Proposals"
+                        OnClick="btnBackToProposals_Click"
+                        style="background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:12px 24px;border-radius:20px;font-size:14px;cursor:pointer;" />
+                </asp:Panel>
 
             </div>
 
-        </main>
+        </section>
 
     </div>
 
