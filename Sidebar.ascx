@@ -19,28 +19,32 @@
         <a href="BrowseProjects.aspx"
            class="sidebar-item <%= GetActiveClass("BrowseProjects") %>">
             <span class="sidebar-icon">&#128269;</span>
-            <span>Find Work</span>
+            <span>Browse Projects</span>
         </a>
 
+        <% if (CurrentUserType == "Employer") { %>
         <a href="MyProjects.aspx"
            class="sidebar-item <%= GetActiveClass("MyProjects") %>">
             <span class="sidebar-icon">&#128196;</span>
             <span>My Projects</span>
         </a>
-
-        <% if (CurrentUserType == "Freelancer") { %>
-        <a href="SelectProposal.aspx"
-           class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
-            <span class="sidebar-icon">&#128221;</span>
-            <span>My Proposals</span>
+        <a href="PostProject.aspx"
+           class="sidebar-item <%= GetActiveClass("PostProject") %>">
+            <span class="sidebar-icon">&#10133;</span>
+            <span>Post a Project</span>
         </a>
-        <% } %>
-
-        <% if (CurrentUserType == "Employer") { %>
         <a href="SelectProposal.aspx"
            class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
             <span class="sidebar-icon">&#128221;</span>
             <span>Proposals Received</span>
+        </a>
+        <% } %>
+
+        <% if (CurrentUserType == "Freelancer") { %>
+        <a href="SubmitProposal.aspx"
+           class="sidebar-item <%= GetActiveClass("SubmitProposal") %>">
+            <span class="sidebar-icon">&#128221;</span>
+            <span>My Proposals</span>
         </a>
         <% } %>
 
@@ -67,14 +71,6 @@
     <div class="sidebar-heading">PROJECTS</div>
 
     <div class="sidebar-section">
-
-        <% if (CurrentUserType == "Employer") { %>
-        <a href="PostProject.aspx"
-           class="sidebar-item <%= GetActiveClass("PostProject") %>">
-            <span class="sidebar-icon">&#10133;</span>
-            <span>Post a Project</span>
-        </a>
-        <% } %>
 
         <a href="CompletedProjects.aspx"
            class="sidebar-item <%= GetActiveClass("CompletedProjects") %>">

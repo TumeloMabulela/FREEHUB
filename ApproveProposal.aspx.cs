@@ -11,6 +11,14 @@ namespace FreeHubProject
                 Response.Redirect("Login.aspx");
                 return;
             }
+
+            // Role check - Employer only
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("Default.aspx");
+                return;
+            }
         }
 
         protected void btnBackToReview_Click(object sender, EventArgs e)

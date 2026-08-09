@@ -8,6 +8,14 @@ namespace FreeHubProject
         {
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // Role check - Employer only
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("Wallet.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
