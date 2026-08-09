@@ -195,7 +195,7 @@
                                     <asp:LinkButton ID="btnDeleteProject" runat="server"
                                         CommandName="DeleteProject"
                                         CommandArgument='<%# Eval("projectID") %>'
-                                        CssClass="my-project-delete-button"
+                                        style="display:inline-block;color:#fff;background-color:#dc3545;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:20px;"
                                         OnClientClick="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
                                         &#128465; Delete
                                     </asp:LinkButton>
