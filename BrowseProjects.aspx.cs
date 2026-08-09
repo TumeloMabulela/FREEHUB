@@ -95,6 +95,9 @@ namespace FreeHubProject
                 // Store for submit proposal
                 ViewState["SelectedProjectId"] = projectId;
                 lblProjectMessage.Text = "";
+
+                // Load comments
+                LoadComments(projectId);
             }
             catch (Exception ex)
             {
@@ -183,6 +186,60 @@ namespace FreeHubProject
         protected void btnSaveProject_Click(object sender, EventArgs e)
         {
             lblProjectMessage.Text = "Project saved to your list.";
+        }
+
+        protected void btnPostComment_Click(object sender, EventArgs e)
+        {
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
+            if (ViewState["SelectedProjectId"] == null)
+            {
+                lblProjectMessage.Text = "Please select a project first.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtComment.Text))
+            {
+                lblProjectMessage.Text = "Please enter a comment.";
+                return;
+            }
+
+            try
+            {
+                int projectId = Convert.ToInt32(ViewState["SelectedProjectId"]);
+                int userId = Convert.ToInt32(Session["UserID"]);
+
+                DatabaseHelper.AddComment(projectId, userId, txtComment.Text.Trim());
+
+                txtComment.Text = "";
+                LoadComments(projectId);
+                lblProjectMessage.Text = "Comment posted successfully.";
+            }
+            catch (Exception ex)
+            {
+                lblProjectMessage.Text = "Error posting comment: " + ex.Message;
+            }
+        }
+
+        private void LoadComments(int projectId)
+        {
+            try
+            {
+                DataTable comments = DatabaseHelper.GetCommentsByProject(projectId);
+                rptComments.DataSource = comments;
+                rptComments.DataBind();
+                lblCommentCount.Text = comments.Rows.Count.ToString();
+                pnlNoComments.Visible = comments.Rows.Count == 0;
+            }
+            catch
+            {
+                pnlNoComments.Visible = true;
+                lblCommentCount.Text = "0";
+            }
         }
     }
 }

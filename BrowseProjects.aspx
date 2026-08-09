@@ -189,6 +189,37 @@
                                 OnClick="btnSaveProject_Click" />
                         </div>
 
+                        <!-- COMMENTS SECTION (B400) -->
+                        <div class="comments-section">
+                            <h3>Comments (<asp:Label ID="lblCommentCount" runat="server" Text="0" />)</h3>
+
+                            <asp:Repeater ID="rptComments" runat="server">
+                                <ItemTemplate>
+                                    <div class="comment-item">
+                                        <div class="comment-avatar"><%# Eval("authorName").ToString().Length > 0 ? Eval("authorName").ToString().Substring(0,1) : "?" %></div>
+                                        <div class="comment-body">
+                                            <strong><%# Eval("authorName") %></strong>
+                                            <small class="comment-role"><%# Eval("userType") %></small>
+                                            <small class="comment-time"><%# Convert.ToDateTime(Eval("commentDate")).ToString("dd MMM yyyy, HH:mm") %></small>
+                                            <p><%# Eval("commentText") %></p>
+                                        </div>
+                                    </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
+
+                            <asp:Panel ID="pnlNoComments" runat="server" CssClass="no-comments">
+                                <p>No comments yet. Be the first to comment!</p>
+                            </asp:Panel>
+
+                            <!-- Add Comment -->
+                            <div class="add-comment-box">
+                                <asp:TextBox ID="txtComment" runat="server" CssClass="post-textarea"
+                                    TextMode="MultiLine" Rows="3" placeholder="Write your comment..." />
+                                <asp:Button ID="btnPostComment" runat="server" Text="Post Comment"
+                                    CssClass="post-submit-button" OnClick="btnPostComment_Click" />
+                            </div>
+                        </div>
+
                         <asp:Label ID="lblProjectMessage" runat="server" CssClass="project-message" />
 
                     </asp:Panel>

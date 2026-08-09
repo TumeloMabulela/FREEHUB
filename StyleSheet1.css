@@ -13343,3 +13343,81 @@ FREEHUB HOME PAGE
     font-size: 11px;
     font-weight: 400;
 }
+
+
+/* =========================
+   COMMENTS SECTION (B400)
+========================= */
+
+.comments-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #e8ece9;
+}
+
+.comments-section h3 {
+    color: #173f2c;
+    margin-bottom: 15px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f2f0;
+}
+
+.comment-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #2e7d56;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.comment-body strong {
+    color: #173f2c;
+    font-size: 14px;
+}
+
+.comment-role {
+    color: #2e7d56;
+    margin-left: 8px;
+    font-size: 11px;
+    background: #edf5f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.comment-time {
+    color: #999;
+    margin-left: 8px;
+    font-size: 11px;
+}
+
+.comment-body p {
+    margin-top: 4px;
+    color: #444;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.no-comments {
+    color: #888;
+    font-size: 14px;
+    padding: 15px 0;
+}
+
+.add-comment-box {
+    margin-top: 15px;
+}
+
+.add-comment-box .post-textarea {
+    margin-bottom: 10px;
+}

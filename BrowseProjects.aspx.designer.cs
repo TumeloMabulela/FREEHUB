@@ -31,6 +31,11 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblEmployerRating;
         protected global::System.Web.UI.WebControls.Button btnSubmitProposal;
         protected global::System.Web.UI.WebControls.Button btnSaveProject;
+        protected global::System.Web.UI.WebControls.Label lblCommentCount;
+        protected global::System.Web.UI.WebControls.Repeater rptComments;
+        protected global::System.Web.UI.WebControls.Panel pnlNoComments;
+        protected global::System.Web.UI.WebControls.TextBox txtComment;
+        protected global::System.Web.UI.WebControls.Button btnPostComment;
         protected global::System.Web.UI.WebControls.Label lblProjectMessage;
     }
 }

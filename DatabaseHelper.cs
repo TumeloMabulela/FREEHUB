@@ -433,5 +433,34 @@ namespace FreeHubProject
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
+
+        // ============================================================
+        // COMMENT OPERATIONS (B400)
+        // ============================================================
+
+        public static int AddComment(int projectID, int userID, string commentText)
+        {
+            string query = @"INSERT INTO Comment (projectID, userID, commentText)
+                            VALUES (@ProjectID, @UserID, @CommentText);
+                            SELECT SCOPE_IDENTITY();";
+            object result = ExecuteScalar(query,
+                new SqlParameter("@ProjectID", projectID),
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@CommentText", commentText));
+            if (result != null && result != DBNull.Value)
+                return Convert.ToInt32(result);
+            return 0;
+        }
+
+        public static DataTable GetCommentsByProject(int projectID)
+        {
+            string query = @"SELECT c.commentID, c.commentText, c.commentDate,
+                            u.firstName + ' ' + u.lastName AS authorName, u.userType, u.userID
+                            FROM Comment c
+                            INNER JOIN [User] u ON c.userID = u.userID
+                            WHERE c.projectID = @ProjectID
+                            ORDER BY c.commentDate DESC";
+            return ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
+        }
     }
 }
