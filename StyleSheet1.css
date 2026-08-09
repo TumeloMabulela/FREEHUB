@@ -12859,13 +12859,15 @@ FREEHUB HOME PAGE
 .user-nav-info {
     display: flex;
     flex-direction: column;
-    line-height: 1.2;
+    line-height: 1.1;
+    gap: 2px;
 }
 
 .user-nav-role {
     color: #a8d5ba;
     font-size: 11px;
     font-weight: 400;
+    display: block;
 }
 
 .logout-link {
