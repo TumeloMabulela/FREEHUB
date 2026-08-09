@@ -13595,17 +13595,18 @@ FREEHUB HOME PAGE
 
 /* Delete project button */
 .my-project-delete-button {
-    color: #dc3545;
+    color: #ffffff;
     text-decoration: none;
     font-size: 13px;
     font-weight: 500;
-    padding: 8px 14px;
-    border: 1px solid #dc3545;
+    padding: 8px 16px;
+    background-color: #dc3545;
+    border: none;
     border-radius: 6px;
     transition: all 0.2s;
 }
 
 .my-project-delete-button:hover {
-    background-color: #dc3545;
+    background-color: #a71d2a;
     color: #fff;
 }

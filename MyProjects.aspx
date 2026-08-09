@@ -197,7 +197,7 @@
                                         CommandArgument='<%# Eval("projectID") %>'
                                         CssClass="my-project-delete-button"
                                         OnClientClick="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
-                                        Delete
+                                        &#128465; Delete
                                     </asp:LinkButton>
                                 </div>
                             </article>
