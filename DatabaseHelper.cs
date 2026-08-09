@@ -342,5 +342,96 @@ namespace FreeHubProject
                             ORDER BY pr.date DESC";
             return ExecuteQuery(query, new SqlParameter("@UserID", userID));
         }
+
+        // ============================================================
+        // WALLET OPERATIONS
+        // ============================================================
+
+        /// <summary>
+        /// Updates the wallet balance for a given wallet ID.
+        /// </summary>
+        public static void UpdateWalletBalance(int walletID, decimal newBalance)
+        {
+            string query = "UPDATE Wallet SET balance = @Balance WHERE walletID = @WalletID";
+            ExecuteNonQuery(query,
+                new SqlParameter("@Balance", newBalance),
+                new SqlParameter("@WalletID", walletID));
+        }
+
+        /// <summary>
+        /// Adds a transaction record to the Transaction table.
+        /// </summary>
+        public static int AddTransaction(int walletID, string description,
+            string transactionType, decimal amount, string status,
+            string reference, string paymentMethod)
+        {
+            string query = @"
+                INSERT INTO [Transaction]
+                    (walletID, itemDescription, transactionType, transactionAmount,
+                     transactionStatus, reference, paymentMethod)
+                VALUES
+                    (@WalletID, @Description, @Type, @Amount,
+                     @Status, @Reference, @PaymentMethod);
+                SELECT SCOPE_IDENTITY();";
+
+            object result = ExecuteScalar(query,
+                new SqlParameter("@WalletID", walletID),
+                new SqlParameter("@Description", description ?? ""),
+                new SqlParameter("@Type", transactionType),
+                new SqlParameter("@Amount", Math.Abs(amount)),
+                new SqlParameter("@Status", status ?? "Completed"),
+                new SqlParameter("@Reference", reference ?? ""),
+                new SqlParameter("@PaymentMethod", paymentMethod ?? ""));
+
+            if (result != null && result != DBNull.Value)
+                return Convert.ToInt32(result);
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets all transactions for a wallet, ordered by date descending.
+        /// </summary>
+        public static DataTable GetTransactionsByWallet(int walletID)
+        {
+            string query = @"
+                SELECT transactionID, walletID, itemDescription, transactionType,
+                       transactionAmount, transactionDate, transactionStatus,
+                       reference, paymentMethod
+                FROM [Transaction]
+                WHERE walletID = @WalletID
+                ORDER BY transactionDate DESC";
+
+            return ExecuteQuery(query, new SqlParameter("@WalletID", walletID));
+        }
+
+        /// <summary>
+        /// Gets the current wallet balance from the database.
+        /// </summary>
+        public static decimal GetWalletBalance(int walletID)
+        {
+            string query = "SELECT balance FROM Wallet WHERE walletID = @WalletID";
+            object result = ExecuteScalar(query, new SqlParameter("@WalletID", walletID));
+            if (result != null && result != DBNull.Value)
+                return Convert.ToDecimal(result);
+            return 0.00m;
+        }
+
+        /// <summary>
+        /// Gets a single transaction by its ID.
+        /// </summary>
+        public static DataRow GetTransactionById(int transactionID)
+        {
+            string query = @"
+                SELECT transactionID, walletID, itemDescription, transactionType,
+                       transactionAmount, transactionDate, transactionStatus,
+                       reference, paymentMethod
+                FROM [Transaction]
+                WHERE transactionID = @TransactionID";
+            DataTable result = ExecuteQuery(query,
+                new SqlParameter("@TransactionID", transactionID));
+            if (result.Rows.Count > 0) return result.Rows[0];
+            return null;
+        }
     }
 }

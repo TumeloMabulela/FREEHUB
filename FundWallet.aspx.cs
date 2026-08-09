@@ -98,15 +98,49 @@ namespace FreeHubProject
             string paymentMethod =
                 rblPaymentMethod.SelectedValue;
 
+            // Get wallet ID from session
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
+
+            if (walletID == 0)
+            {
+                ShowMessage(
+                    "Wallet not found. Please log in again.",
+                    false
+                );
+                return;
+            }
+
+            // Get current balance from DB
             decimal currentBalance =
-                GetSessionDecimal("AvailableBalance");
+                DatabaseHelper.GetWalletBalance(walletID);
 
             decimal newBalance =
                 currentBalance + amount;
 
-            Session["AvailableBalance"] =
-                newBalance;
+            // Update wallet balance in DB
+            DatabaseHelper.UpdateWalletBalance(
+                walletID, newBalance);
 
+            // Save transaction to DB
+            string reference =
+                TransactionStore.CreateReference("FUND");
+
+            DatabaseHelper.AddTransaction(
+                walletID,
+                "Funds added using " + paymentMethod,
+                "Credit",
+                amount,
+                "Completed",
+                reference,
+                paymentMethod
+            );
+
+            // Update session to reflect new balance
+            Session["AvailableBalance"] = newBalance;
+
+            // Also keep in-memory transaction store in sync
             TransactionStore.AddTransaction(
                 Session,
                 "Wallet Funded",
@@ -114,7 +148,7 @@ namespace FreeHubProject
                 "Credit",
                 amount,
                 "Completed",
-                TransactionStore.CreateReference("FUND"),
+                reference,
                 paymentMethod
             );
 
