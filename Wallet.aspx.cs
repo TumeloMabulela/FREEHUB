@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data;
 using System.Web.UI.WebControls;
 
 namespace FreeHubProject
@@ -121,29 +121,49 @@ namespace FreeHubProject
 
         private void LoadTransactions()
         {
-            List<WalletTransaction> transactions =
-                Session["WalletTransactions"]
-                as List<WalletTransaction>;
+            DataTable allTransactions =
+                TransactionStore.GetTransactions(
+                    Session
+                );
 
-            if (transactions == null)
+            DataView sortedView =
+                allTransactions.DefaultView;
+
+            sortedView.Sort =
+                "TransactionDate DESC";
+
+            DataTable recentTable =
+                allTransactions.Clone();
+
+            int count = 0;
+
+            foreach (DataRowView rowView in sortedView)
             {
-                transactions =
-                    new List<WalletTransaction>();
+                if (count >= 5)
+                {
+                    break;
+                }
+
+                recentTable.ImportRow(
+                    rowView.Row
+                );
+
+                count++;
             }
 
             rptTransactions.DataSource =
-                transactions;
+                recentTable;
 
             rptTransactions.DataBind();
 
             pnlNoTransactions.Visible =
-                transactions.Count == 0;
+                recentTable.Rows.Count == 0;
 
             btnViewAllTransactions.Visible =
-                transactions.Count > 0;
+                recentTable.Rows.Count > 0;
 
             btnViewAllTop.Visible =
-                transactions.Count > 0;
+                recentTable.Rows.Count > 0;
         }
 
 
@@ -369,7 +389,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Payouts.aspx"
+                "Transactions.aspx?type=Debit"
             );
         }
 
@@ -379,7 +399,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Disputes.aspx"
+                "Transactions.aspx"
             );
         }
 
@@ -389,7 +409,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Refunds.aspx"
+                "Transactions.aspx?type=Refund"
             );
         }
 
@@ -406,16 +426,16 @@ namespace FreeHubProject
                 return;
             }
 
-            string transactionReference =
+            string transactionId =
                 Convert.ToString(
                     e.CommandArgument
                 );
 
             if (string.IsNullOrWhiteSpace(
-                transactionReference))
+                transactionId))
             {
                 ShowMessage(
-                    "The selected transaction reference is invalid.",
+                    "The selected transaction is invalid.",
                     false
                 );
 
@@ -423,9 +443,9 @@ namespace FreeHubProject
             }
 
             Response.Redirect(
-                "TransactionDetails.aspx?reference=" +
+                "Transactions.aspx?txn=" +
                 Server.UrlEncode(
-                    transactionReference
+                    transactionId
                 )
             );
         }
@@ -444,47 +464,6 @@ namespace FreeHubProject
                 success
                     ? "wallet-message-panel wallet-success-message"
                     : "wallet-message-panel wallet-warning-message";
-        }
-    }
-
-
-    [Serializable]
-    public class WalletTransaction
-    {
-        public DateTime TransactionDate
-        {
-            get;
-            set;
-        }
-
-        public string Description
-        {
-            get;
-            set;
-        }
-
-        public string Type
-        {
-            get;
-            set;
-        }
-
-        public decimal Amount
-        {
-            get;
-            set;
-        }
-
-        public string Status
-        {
-            get;
-            set;
-        }
-
-        public string Reference
-        {
-            get;
-            set;
         }
     }
 }
