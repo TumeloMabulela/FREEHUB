@@ -97,6 +97,19 @@
                                     <span style="display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;color:<%# Eval("status").ToString() == "Approved" ? "#155724" : Eval("status").ToString() == "Rejected" ? "#721c24" : "#856404" %>;background:<%# Eval("status").ToString() == "Approved" ? "#d4edda" : Eval("status").ToString() == "Rejected" ? "#f8d7da" : "#fff3cd" %>; <%# Eval("status").ToString() == "Pending" ? "display:none;" : "" %>">
                                         <%# Eval("status") %>
                                     </span>
+                                    <asp:Button ID="btnReadAll" runat="server"
+                                        CommandName="ReadAll"
+                                        CommandArgument='<%# Eval("proposalID") %>'
+                                        Text="Read Full Proposal"
+                                        Visible='<%# IsFreelancerView() %>'
+                                        style="background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
+                                    <asp:Button ID="btnDeleteProposal" runat="server"
+                                        CommandName="DeleteProposal"
+                                        CommandArgument='<%# Eval("proposalID") %>'
+                                        Text="Delete"
+                                        Visible='<%# IsFreelancerView() %>'
+                                        OnClientClick="return confirm('Are you sure you want to delete this proposal? It will also be removed from the employer.');"
+                                        style="background-color:#dc3545;color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
                                 </div>
                             </div>
                         </ItemTemplate>

@@ -118,6 +118,25 @@ namespace FreeHubProject
             {
                 Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
+            else if (e.CommandName == "ReadAll")
+            {
+                Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
+            }
+            else if (e.CommandName == "DeleteProposal")
+            {
+                try
+                {
+                    string query = "DELETE FROM Proposal WHERE proposalID = @ID";
+                    DatabaseHelper.ExecuteNonQuery(query,
+                        new SqlParameter("@ID", proposalId));
+                    ShowMessage("Proposal deleted successfully.", true);
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage("Error deleting proposal: " + ex.Message, false);
+                }
+                LoadProposals();
+            }
         }
 
         private void ShowMessage(string message, bool success)
