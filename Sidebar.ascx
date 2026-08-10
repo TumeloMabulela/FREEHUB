@@ -43,8 +43,8 @@
         <% } %>
 
         <% if (CurrentUserType == "Freelancer") { %>
-        <a href="SubmitProposal.aspx"
-           class="sidebar-item <%= GetActiveClass("SubmitProposal") %>">
+        <a href="SelectProposal.aspx"
+           class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
             <span class="sidebar-icon">&#128221;</span>
             <span>My Proposals</span>
         </a>
