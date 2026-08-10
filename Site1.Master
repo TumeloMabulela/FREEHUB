@@ -41,14 +41,14 @@
 
                     <asp:Panel ID="pnlEmployerNav" runat="server" Visible="false" style="display:inline;">
                         <a href="PostProject.aspx">Post a Project</a>
+                        <a href="MyProjects.aspx">My Projects</a>
                     </asp:Panel>
 
                     <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:inline;">
                         <a href="Default.aspx">Dashboard</a>
                         <a href="BrowseProjects.aspx">Browse Projects</a>
-                        <a href="MyProjects.aspx">My Projects</a>
-                        <a href="StartChat.aspx">Messages</a>
                         <a href="Wallet.aspx">Wallet</a>
+                        <a href="StartChat.aspx">Messages</a>
                         <a href="Notifications.aspx">Notifications</a>
                     </asp:Panel>
 

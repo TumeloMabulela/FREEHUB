@@ -25,6 +25,14 @@ namespace FreeHubProject
                 return;
             }
 
+            // Employer only - Freelancers cannot access My Projects
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("Default.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 LoadProjects();
