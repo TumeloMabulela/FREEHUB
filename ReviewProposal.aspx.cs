@@ -24,17 +24,19 @@ namespace FreeHubProject
                 return;
             }
 
-            // Employer only
+            // Freelancers can view their own proposals (read-only), Employers can approve/reject
             string userType = Session["UserType"] as string ?? "";
-            if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
-            {
-                Response.Redirect("SelectProposal.aspx");
-                return;
-            }
+            bool isFreelancer = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
 
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
+                // Hide approve/reject buttons for freelancers
+                if (isFreelancer)
+                {
+                    btnApproveProposal.Visible = false;
+                    btnRejectProposal.Visible = false;
+                }
                 LoadProposal();
             }
         }
