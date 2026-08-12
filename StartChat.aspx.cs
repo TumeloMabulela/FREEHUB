@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -9,54 +10,7 @@ namespace FreeHubProject
 {
     public partial class StartChat : System.Web.UI.Page
     {
-        // Sample users
-
-
-        private List<ChatUser> Users
-        {
-            get
-            {
-                return new List<ChatUser>
-                {
-                    new ChatUser
-                    {
-                        Name = "Thabo Mokoena",
-                        Initials = "TM",
-                        Status = "Online",
-                        Role = "UI/UX Designer",
-                        Location = "Cape Town, South Africa"
-                    },
-
-                    new ChatUser
-                    {
-                        Name = "Aisha Khan",
-                        Initials = "AK",
-                        Status = "Offline",
-                        Role = "Web Developer",
-                        Location = "Johannesburg, South Africa"
-                    },
-
-                    new ChatUser
-                    {
-                        Name = "John Tau",
-                        Initials = "JT",
-                        Status = "Online",
-                        Role = "Software Developer",
-                        Location = "Pretoria, South Africa"
-                    },
-
-                    new ChatUser
-                    {
-                        Name = "Sarah Patel",
-                        Initials = "SP",
-                        Status = "Offline",
-                        Role = "Graphic Designer",
-                        Location = "Durban, South Africa"
-                    }
-                };
-            }
-        }
-
+        private readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -64,636 +18,333 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
-                BindUsers("");
+                BindApprovedChatUsers("");
 
-                // Disable chat buttons when the page first opens
+                string userFromQuery = Request.QueryString["user"];
+                string openChat = Request.QueryString["open"];
 
-                btnViewProfile.Enabled = false;
-
-                btnEndChat.Enabled = false;
-
-                btnSend.Enabled = false;
-
-
-                // Check whether Notifications.aspx
-                // sent a user to StartChat.aspx
-
-                string userFromNotification =
-                    Request.QueryString["user"];
-
-                string openChat =
-                    Request.QueryString["open"];
-
-
-                if (!string.IsNullOrWhiteSpace(
-                    userFromNotification))
+                if (!string.IsNullOrWhiteSpace(userFromQuery))
                 {
-                    ChatUser selectedUser =
-                        Users.FirstOrDefault(
-                            user =>
-                            user.Name.Equals(
-                                userFromNotification,
-                                StringComparison.OrdinalIgnoreCase
-                            )
-                        );
-
-
-                    if (selectedUser != null)
-                    {
-                        // Store the selected user's details
-
-                        Session["SelectedUser"] =
-                            selectedUser.Name;
-
-                        Session["SelectedInitials"] =
-                            selectedUser.Initials;
-
-                        Session["SelectedStatus"] =
-                            selectedUser.Status;
-
-                        Session["SelectedRole"] =
-                            selectedUser.Role;
-
-                        Session["SelectedLocation"] =
-                            selectedUser.Location;
-
-
-                        // Display the selected user
-
-                        LoadSelectedUser();
-
-
-                        // Automatically open the chat
-                        // when open=true is received
-
-                        if (openChat == "true")
-                        {
-                            OpenChatFromNotification();
-                        }
-                        else
-                        {
-                            LoadChat();
-                        }
-                    }
-                    else
-                    {
-                        LoadSelectedUser();
-
-                        LoadChat();
-                    }
+                    SelectUserByName(userFromQuery);
                 }
-                else
+                else if (SelectedOtherUserId > 0)
                 {
-                    LoadSelectedUser();
-
-                    LoadChat();
+                    SelectUserById(SelectedOtherUserId);
                 }
             }
         }
 
-
-        // Display users
-
-        private void BindUsers(string searchText)
+        private int CurrentUserId
         {
-            List<ChatUser> filteredUsers = Users;
-
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                filteredUsers = Users
-                    .Where(user =>
-                        user.Name.IndexOf(
-                            searchText,
-                            StringComparison.OrdinalIgnoreCase
-                        ) >= 0
-                    )
-                    .ToList();
-            }
-
-            rptUsers.DataSource = filteredUsers;
-
-            rptUsers.DataBind();
+            get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
         }
 
+        public int SelectedOtherUserId
+        {
+            get { return Session["SelectedOtherUserId"] != null ? Convert.ToInt32(Session["SelectedOtherUserId"]) : 0; }
+            set { Session["SelectedOtherUserId"] = value; }
+        }
 
-        // Select a user
+        private int ActiveProjectId
+        {
+            get { return Session["ActiveProjectId"] != null ? Convert.ToInt32(Session["ActiveProjectId"]) : 0; }
+            set { Session["ActiveProjectId"] = value; }
+        }
 
-        protected void rptUsers_ItemCommand(
-            object source,
-            RepeaterCommandEventArgs e)
+        private void BindApprovedChatUsers(string searchText)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string query = @"
+                    SELECT DISTINCT 
+                        u.userID AS UserID,
+                        (u.firstName + ' ' + u.lastName) AS Name,
+                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
+                        p.projectID AS ProjectID,
+                        p.title AS ProjectTitle,
+                        ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
+                        ISNULL((SELECT TOP 1 FORMAT(timeStamp, 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON (
+                        CASE 
+                            WHEN e.userID = @CurrentUserID THEN f.userID
+                            WHEN f.userID = @CurrentUserID THEN e.userID
+                        END = u.userID
+                    )
+                    WHERE prop.status = 'Approved' 
+                      AND (e.userID = @CurrentUserID OR f.userID = @CurrentUserID)";
+
+                if (!string.IsNullOrWhiteSpace(searchText))
+                {
+                    query += " AND (u.firstName + ' ' + u.lastName LIKE @Search OR p.title LIKE @Search)";
+                }
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    if (!string.IsNullOrWhiteSpace(searchText))
+                    {
+                        cmd.Parameters.AddWithValue("@Search", "%" + searchText + "%");
+                    }
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+
+            rptUsers.DataSource = dt;
+            rptUsers.DataBind();
+            lblNoUsers.Visible = dt.Rows.Count == 0;
+
+            // Auto-select first user if none selected
+            if (dt.Rows.Count > 0 && SelectedOtherUserId == 0)
+            {
+                SelectUserById(Convert.ToInt32(dt.Rows[0]["UserID"]));
+            }
+        }
+
+        public string GetAvatarClass(string initials)
+        {
+            switch (initials.ToUpper())
+            {
+                case "RT": return "avatar-rt";
+                case "MT": return "avatar-mt";
+                case "MU": return "avatar-mu";
+                default: return "avatar-ml";
+            }
+        }
+
+        protected void rptUsers_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "SelectUser")
             {
-                string selectedName =
-                    e.CommandArgument.ToString();
+                int otherUserId = Convert.ToInt32(e.CommandArgument);
+                SelectUserById(otherUserId);
+            }
+        }
 
-                ChatUser selectedUser =
-                    Users.FirstOrDefault(
-                        user => user.Name == selectedName
-                    );
-
-                if (selectedUser != null)
+        private void SelectUserByName(string userName)
+        {
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string query = @"SELECT TOP 1 userID FROM dbo.[User] WHERE (firstName + ' ' + lastName) = @UserName OR username = @UserName";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    Session["SelectedUser"] =
-                        selectedUser.Name;
-
-                    Session["SelectedInitials"] =
-                        selectedUser.Initials;
-
-                    Session["SelectedStatus"] =
-                        selectedUser.Status;
-
-                    Session["SelectedRole"] =
-                        selectedUser.Role;
-
-                    Session["SelectedLocation"] =
-                        selectedUser.Location;
-
-
-                    LoadSelectedUser();
-
-
-                    ShowStatus(
-                        selectedUser.Name +
-                        " has been selected."
-                    );
+                    cmd.Parameters.AddWithValue("@UserName", userName);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
+                    {
+                        SelectUserById(Convert.ToInt32(result));
+                    }
                 }
             }
         }
 
-
-        // Load selected user information
-
-        private void LoadSelectedUser()
+        private void SelectUserById(int otherUserId)
         {
-            if (Session["SelectedUser"] != null)
+            using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                pnlSelectedUser.Visible = true;
-
-                lblNoUser.Visible = false;
-
-
-                lblSelectedName.Text =
-                    Session["SelectedUser"].ToString();
-
-                lblSelectedInitials.Text =
-                    Session["SelectedInitials"].ToString();
-
-                lblSelectedRole.Text =
-                    Session["SelectedRole"].ToString();
-
-                lblSelectedLocation.Text =
-                    Session["SelectedLocation"].ToString();
-            }
-            else
-            {
-                pnlSelectedUser.Visible = false;
-
-                lblNoUser.Visible = true;
-            }
-        }
-
-
-        // Start the chat normally
-
-        protected void btnStartChat_Click(
-            object sender,
-            EventArgs e)
-        {
-            if (Session["SelectedUser"] == null)
-            {
-                ShowStatus(
-                    "Please select a user first."
-                );
-
-                return;
-            }
-
-
-            Session["ChatActive"] = true;
-
-
-            lblChatName.Text =
-                Session["SelectedUser"].ToString();
-
-            lblChatInitials.Text =
-                Session["SelectedInitials"].ToString();
-
-            lblChatStatus.Text =
-                Session["SelectedStatus"].ToString();
-
-
-            btnViewProfile.Enabled = true;
-
-            btnEndChat.Enabled = true;
-
-            btnSend.Enabled = true;
-
-
-            if (Session["Messages"] == null)
-            {
-                List<ChatMessage> messages =
-                    new List<ChatMessage>();
-
-
-                messages.Add(
-                    new ChatMessage
-                    {
-                        Text =
-                            "Hi, thanks for reaching out! " +
-                            "How can I help you?",
-
-                        Sender = "User"
-                    }
-                );
-
-
-                Session["Messages"] = messages;
-            }
-
-
-            LoadChat();
-
-
-            ShowStatus(
-                "Chat session opened successfully."
-            );
-        }
-
-
-        // Automatically open a chat
-        // when coming from Notifications.aspx
-
-        private void OpenChatFromNotification()
-        {
-            if (Session["SelectedUser"] == null)
-            {
-                return;
-            }
-
-
-            Session["ChatActive"] = true;
-
-
-            lblChatName.Text =
-                Session["SelectedUser"].ToString();
-
-            lblChatInitials.Text =
-                Session["SelectedInitials"].ToString();
-
-            lblChatStatus.Text =
-                Session["SelectedStatus"].ToString();
-
-
-            btnViewProfile.Enabled = true;
-
-            btnEndChat.Enabled = true;
-
-            btnSend.Enabled = true;
-
-
-            // Create the message received
-            // from the notification
-
-            if (Session["Messages"] == null)
-            {
-                List<ChatMessage> messages =
-                    new List<ChatMessage>();
-
-
-                messages.Add(
-                    new ChatMessage
-                    {
-                        Text =
-                            "Hi Mabulela, are you available " +
-                            "to discuss the project update?",
-
-                        Sender = "User"
-                    }
-                );
-
-
-                Session["Messages"] = messages;
-            }
-
-
-            LoadChat();
-
-
-            ShowStatus(
-                "Chat opened from your notification."
-            );
-        }
-
-
-        // Send a message
-
-        protected void btnSend_Click(
-            object sender,
-            EventArgs e)
-        {
-            if (Session["ChatActive"] == null ||
-                !(bool)Session["ChatActive"])
-            {
-                ShowStatus(
-                    "Please start a chat first."
-                );
-
-                return;
-            }
-
-
-            if (string.IsNullOrWhiteSpace(
-                txtMessage.Text))
-            {
-                ShowStatus(
-                    "Please type a message."
-                );
-
-                return;
-            }
-
-
-            List<ChatMessage> messages;
-
-
-            if (Session["Messages"] == null)
-            {
-                messages =
-                    new List<ChatMessage>();
-            }
-            else
-            {
-                messages =
-                    (List<ChatMessage>)
-                    Session["Messages"];
-            }
-
-
-            messages.Add(
-                new ChatMessage
+                string query = @"
+                    SELECT TOP 1 
+                        u.userID AS UserID,
+                        (u.firstName + ' ' + u.lastName) AS Name,
+                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
+                        p.projectID AS ProjectID,
+                        p.projectStatus AS ProjectStatus
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON u.userID = @OtherUserID
+                    WHERE prop.status = 'Approved' 
+                      AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    Text =
-                        txtMessage.Text.Trim(),
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    cmd.Parameters.AddWithValue("@OtherUserID", otherUserId);
+                    conn.Open();
 
-                    Sender = "Me"
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            SelectedOtherUserId = Convert.ToInt32(dr["UserID"]);
+                            ActiveProjectId = Convert.ToInt32(dr["ProjectID"]);
+                            string projectStatus = dr["ProjectStatus"].ToString();
+
+                            lblChatName.Text = dr["Name"].ToString();
+                            lblChatInitials.Text = dr["Initials"].ToString();
+
+                            if (projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                btnSend.Enabled = false;
+                                pnlRatingModal.Visible = true;
+                                ShowStatus("Project Completed. Messaging is closed.");
+                            }
+                            else
+                            {
+                                btnSend.Enabled = true;
+                            }
+
+                            LoadChatMessages();
+                        }
+                    }
                 }
-            );
+            }
+        }
 
+        protected void btnSend_Click(object sender, EventArgs e)
+        {
+            if (SelectedOtherUserId <= 0 || string.IsNullOrWhiteSpace(txtMessage.Text)) return;
 
-            Session["Messages"] = messages;
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string query = @"
+                    INSERT INTO dbo.Message (senderID, receiverID, projectID, content, timeStamp, status)
+                    VALUES (@SenderID, @ReceiverID, @ProjectID, @Content, GETDATE(), 'Sent')";
 
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@SenderID", CurrentUserId);
+                    cmd.Parameters.AddWithValue("@ReceiverID", SelectedOtherUserId);
+                    cmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId > 0 ? (object)ActiveProjectId : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Content", txtMessage.Text.Trim());
+
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            string senderName = Session["FirstName"] != null ? Session["FirstName"].ToString() : "A user";
+            NotificationHelper.CreateNotification(SelectedOtherUserId, "Message", $"{senderName} sent you a message.");
 
             txtMessage.Text = "";
-
-
-            LoadChat();
-
-
-            ShowStatus(
-                "Message sent successfully."
-            );
+            ShowStatus("Message sent successfully.");
+            LoadChatMessages();
+            BindApprovedChatUsers("");
         }
 
-
-        // Display messages
-
-        private void LoadChat()
+        private void LoadChatMessages()
         {
             phMessages.Controls.Clear();
+            if (SelectedOtherUserId <= 0) return;
 
-
-            if (Session["Messages"] == null)
+            using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                phMessages.Controls.Add(
-                    new LiteralControl(
-                        "<div class='empty-chat'>" +
-                        "Select a user and start a chat." +
-                        "</div>"
-                    )
-                );
+                string query = @"
+                    SELECT senderID, content, FORMAT(timeStamp, 'hh:mm tt') AS timeStr
+                    FROM dbo.Message
+                    WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
+                       OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
+                    ORDER BY timeStamp ASC";
 
-                return;
-            }
-
-
-            List<ChatMessage> messages =
-                (List<ChatMessage>)
-                Session["Messages"];
-
-
-            foreach (ChatMessage message
-                in messages)
-            {
-                string messageClass;
-
-
-                if (message.Sender == "Me")
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    messageClass =
-                        "sent-message";
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    cmd.Parameters.AddWithValue("@OtherUserID", SelectedOtherUserId);
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            int senderId = Convert.ToInt32(dr["senderID"]);
+                            string content = HttpUtility.HtmlEncode(dr["content"].ToString());
+                            string timeStr = dr["timeStr"].ToString();
+
+                            bool isMe = (senderId == CurrentUserId);
+                            string rowClass = isMe ? "msg-row sent" : "msg-row received";
+                            string bubbleClass = isMe ? "msg-bubble-sent" : "msg-bubble-received";
+                            string ticksHtml = isMe ? "<span class='ticks-blue'>✓✓</span>" : "";
+                            string initials = isMe ? "ML" : lblChatInitials.Text;
+                            string avatarClass = GetAvatarClass(initials);
+
+                            string html = $@"
+                                <div class='{rowClass}'>
+                                    <div class='avatar-circle {avatarClass}' style='width:32px;height:32px;font-size:11px;'>{initials}</div>
+                                    <div class='{bubbleClass}'>
+                                        <div>{content}</div>
+                                        <div class='msg-meta'><span>{timeStr}</span> {ticksHtml}</div>
+                                    </div>
+                                </div>";
+
+                            phMessages.Controls.Add(new LiteralControl(html));
+                        }
+                    }
                 }
-                else
-                {
-                    messageClass =
-                        "received-message";
-                }
-
-
-                string safeMessage =
-                    HttpUtility.HtmlEncode(
-                        message.Text
-                    );
-
-
-                phMessages.Controls.Add(
-                    new LiteralControl(
-                        "<div class='" +
-                        messageClass +
-                        "'>" +
-
-                        safeMessage +
-
-                        "</div>"
-                    )
-                );
             }
         }
 
-
-        // Search when Search button is clicked
-
-        protected void btnSearch_Click(
-            object sender,
-            EventArgs e)
+        protected void btnSubmitRating_Click(object sender, EventArgs e)
         {
-            BindUsers(
-                txtSearch.Text.Trim()
-            );
-        }
+            if (SelectedOtherUserId <= 0 || ActiveProjectId <= 0) return;
 
+            int score = Convert.ToInt32(ddlRatingStars.SelectedValue);
+            string comment = txtRatingComment.Text.Trim();
+            decimal updatedScore = 0.00m;
 
-        // Search when the search text changes
-
-        protected void txtSearch_TextChanged(
-            object sender,
-            EventArgs e)
-        {
-            BindUsers(
-                txtSearch.Text.Trim()
-            );
-        }
-
-
-        // View selected user's profile
-
-        protected void btnViewProfile_Click(
-            object sender,
-            EventArgs e)
-        {
-            if (Session["SelectedUser"] == null)
+            using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                ShowStatus(
-                    "There is no selected user."
-                );
+                conn.Open();
+                string insertQuery = @"
+                    INSERT INTO dbo.Rating (projectID, raterUserID, ratedUserID, score, ratingComment, ratingDate)
+                    VALUES (@ProjectID, @RaterUserID, @RatedUserID, @Score, @Comment, GETDATE())";
 
-                return;
+                using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId);
+                    cmd.Parameters.AddWithValue("@RaterUserID", CurrentUserId);
+                    cmd.Parameters.AddWithValue("@RatedUserID", SelectedOtherUserId);
+                    cmd.Parameters.AddWithValue("@Score", score);
+                    cmd.Parameters.AddWithValue("@Comment", string.IsNullOrEmpty(comment) ? (object)DBNull.Value : comment);
+                    cmd.ExecuteNonQuery();
+                }
+
+                string updateQuery = @"
+                    UPDATE dbo.[User]
+                    SET ratingScore = (SELECT CAST(AVG(CAST(score AS DECIMAL(3,2))) AS DECIMAL(3,2)) FROM dbo.Rating WHERE ratedUserID = @RatedUserID)
+                    OUTPUT INSERTED.ratingScore WHERE userID = @RatedUserID";
+
+                using (SqlCommand cmdUpdate = new SqlCommand(updateQuery, conn))
+                {
+                    cmdUpdate.Parameters.AddWithValue("@RatedUserID", SelectedOtherUserId);
+                    object res = cmdUpdate.ExecuteScalar();
+                    if (res != null) updatedScore = Convert.ToDecimal(res);
+                }
             }
 
-
-            string userName =
-                Session["SelectedUser"].ToString();
-
-
-            ShowStatus(
-                "Profile details for " +
-                userName +
-                ": " +
-
-                Session["SelectedRole"].ToString() +
-
-                ", " +
-
-                Session["SelectedLocation"].ToString()
-            );
+            pnlRatingModal.Visible = false;
+            ShowStatus($"Rating submitted! Reputation score updated to {updatedScore:F1} / 5.0.");
         }
 
-
-        // End the chat
-
-        protected void btnEndChat_Click(
-            object sender,
-            EventArgs e)
+        protected void btnCloseModal_Click(object sender, EventArgs e)
         {
-            Session.Remove(
-                "ChatActive"
-            );
-
-            Session.Remove(
-                "Messages"
-            );
-
-
-            lblChatName.Text =
-                "No chat selected";
-
-            lblChatInitials.Text =
-                "CH";
-
-            lblChatStatus.Text =
-                "Select a user and click Start Chat";
-
-
-            btnViewProfile.Enabled = false;
-
-            btnEndChat.Enabled = false;
-
-            btnSend.Enabled = false;
-
-
-            txtMessage.Text = "";
-
-
-            LoadChat();
-
-
-            ShowStatus(
-                "The chat session has ended."
-            );
+            pnlRatingModal.Visible = false;
         }
 
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            BindApprovedChatUsers(txtSearch.Text.Trim());
+        }
 
-        // Display a status message
+        protected void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            BindApprovedChatUsers(txtSearch.Text.Trim());
+        }
 
-        private void ShowStatus(
-            string message)
+        private void ShowStatus(string message)
         {
             pnlStatus.Visible = true;
-
             lblStatus.Text = message;
-        }
-    }
-
-
-    // User class
-
-    [Serializable]
-
-    public class ChatUser
-    {
-        public string Name
-        {
-            get;
-            set;
-        }
-
-
-        public string Initials
-        {
-            get;
-            set;
-        }
-
-
-        public string Status
-        {
-            get;
-            set;
-        }
-
-
-        public string Role
-        {
-            get;
-            set;
-        }
-
-
-        public string Location
-        {
-            get;
-            set;
-        }
-    }
-
-
-    // Message class
-
-    [Serializable]
-
-    public class ChatMessage
-    {
-        public string Text
-        {
-            get;
-            set;
-        }
-
-
-        public string Sender
-        {
-            get;
-            set;
         }
     }
 }
