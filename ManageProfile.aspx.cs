@@ -48,6 +48,7 @@ namespace FreeHubProject
         {
             pnlMessage.Visible = false;
             ShowTab("deactivateProfile");
+            SetupDeactivateProfileTab();
         }
 
         protected void btnTabDeactivateAccount_Click(object sender, EventArgs e)
@@ -68,6 +69,39 @@ namespace FreeHubProject
         }
 
         // ============================================================
+        // DEACTIVATE PROFILE TAB SETUP
+        // ============================================================
+
+        private void SetupDeactivateProfileTab()
+        {
+            string userType = GetUserType();
+            int userId = GetUserId();
+            string profileStatus = DatabaseHelper.GetProfileStatus(userId, userType);
+
+            // Set role-specific headings
+            litHeadingRole.Text = userType;
+            litSubtitleRole.Text = userType;
+
+            // Show role-specific warning panel
+            pnlWarningFreelancer.Visible = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+            pnlWarningEmployer.Visible = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+
+            if (profileStatus == "Deactivated")
+            {
+                // Profile already deactivated - show reactivation
+                pnlDeactivateReady.Visible = false;
+                pnlReactivateProfile.Visible = true;
+                litDeactivatedRole.Text = userType;
+            }
+            else
+            {
+                // Profile is active - show deactivation form
+                pnlDeactivateReady.Visible = true;
+                pnlReactivateProfile.Visible = false;
+            }
+        }
+
+        // ============================================================
         // A500: UPDATE PROFILE
         // ============================================================
 
@@ -75,6 +109,9 @@ namespace FreeHubProject
         {
             int userId = GetUserId();
             string userType = GetUserType();
+
+            // Set "Currently logged in as" badge
+            litLoggedInRole.Text = userType;
 
             try
             {
@@ -193,21 +230,23 @@ namespace FreeHubProject
         // A400: DEACTIVATE PROFILE
         // ============================================================
 
+        protected void btnCancelDeactivate_Click(object sender, EventArgs e)
+        {
+            pnlMessage.Visible = false;
+            ShowTab("update");
+            LoadProfileData();
+        }
+
+        protected void btnShowDeactivateConfirm_Click(object sender, EventArgs e) { }
+
         protected void btnDeactivateProfile_Click(object sender, EventArgs e)
         {
-            if (!chkConfirmDeactivateProfile.Checked)
-            {
-                ShowMessage("Please tick the confirmation checkbox before deactivating.", false);
-                ShowTab("deactivateProfile");
-                return;
-            }
-
             int userId = GetUserId();
             string currentRole = GetUserType();
 
             try
             {
-                // Deactivate in ProfileStatus table
+                // Deactivate the profile in ProfileStatus table
                 DatabaseHelper.DeactivateUserProfile(userId, currentRole);
 
                 // Cancel open projects if employer
@@ -237,7 +276,7 @@ namespace FreeHubProject
 
                 Session["AccountStatus"] = "Inactive";
 
-                // Check if there is another active profile to switch to
+                // Check if there's another active profile to switch to
                 string freelancerStatus, employerStatus;
                 DatabaseHelper.GetUserProfileStatuses(userId, out freelancerStatus, out employerStatus);
 
@@ -248,7 +287,7 @@ namespace FreeHubProject
 
                 if (otherStatus == "Active")
                 {
-                    // Switch to other active profile
+                    // Switch to other profile
                     DatabaseHelper.ExecuteNonQuery(
                         "UPDATE [User] SET userType = @UserType, accountStatus = 'Active' WHERE userID = @UserID",
                         new SqlParameter("@UserType", otherRole),
@@ -262,7 +301,7 @@ namespace FreeHubProject
                 }
                 else
                 {
-                    // No other active profile - go to ChooseRole
+                    // No other active profile - redirect to ChooseRole
                     ShowMessage("Your " + currentRole + " profile has been deactivated.", true);
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'ChooseRole.aspx'; }, 2500);", true);
@@ -271,7 +310,26 @@ namespace FreeHubProject
             catch (Exception ex)
             {
                 ShowMessage("Error: " + ex.Message, false);
-                ShowTab("deactivateProfile");
+            }
+        }
+
+        protected void btnReactivateProfile_Click(object sender, EventArgs e)
+        {
+            int userId = GetUserId();
+            string userType = GetUserType();
+
+            try
+            {
+                DatabaseHelper.ReactivateUserProfile(userId, userType);
+                Session["AccountStatus"] = "Active";
+
+                ShowMessage("Your " + userType + " profile has been reactivated successfully!", true);
+                ClientScript.RegisterStartupScript(this.GetType(), "redirect",
+                    "setTimeout(function() { window.location.href = 'Dashboard.aspx'; }, 2000);", true);
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error: " + ex.Message, false);
             }
         }
 
@@ -279,15 +337,17 @@ namespace FreeHubProject
         // A600: DEACTIVATE ACCOUNT
         // ============================================================
 
+        protected void btnCancelDelete_Click(object sender, EventArgs e)
+        {
+            pnlMessage.Visible = false;
+            ShowTab("update");
+            LoadProfileData();
+        }
+
+        protected void btnShowDeleteConfirm_Click(object sender, EventArgs e) { }
+
         protected void btnDeactivateAccount_Click(object sender, EventArgs e)
         {
-            if (!chkConfirmDeactivateAccount.Checked)
-            {
-                ShowMessage("Please tick the confirmation checkbox before deactivating.", false);
-                ShowTab("deactivateAccount");
-                return;
-            }
-
             int userId = GetUserId();
 
             try
@@ -369,7 +429,6 @@ namespace FreeHubProject
             catch (Exception ex)
             {
                 ShowMessage("Error: " + ex.Message, false);
-                ShowTab("deactivateAccount");
             }
         }
 

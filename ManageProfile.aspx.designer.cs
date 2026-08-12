@@ -10,6 +10,7 @@ namespace FreeHubProject
     {
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Label lblMessage;
+        protected global::System.Web.UI.WebControls.Literal litLoggedInRole;
         protected global::System.Web.UI.WebControls.Button btnTabUpdate;
         protected global::System.Web.UI.WebControls.Button btnTabDeactivateProfile;
         protected global::System.Web.UI.WebControls.Button btnTabDeactivateAccount;
@@ -29,10 +30,26 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.TextBox txtUpdateDescription;
         protected global::System.Web.UI.WebControls.Button btnSaveProfile;
         protected global::System.Web.UI.WebControls.Panel pnlDeactivateProfile;
-        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Panel pnlDeactivateReady;
+        protected global::System.Web.UI.WebControls.Literal litHeadingRole;
+        protected global::System.Web.UI.WebControls.Literal litSubtitleRole;
+        protected global::System.Web.UI.WebControls.Panel pnlWarningFreelancer;
+        protected global::System.Web.UI.WebControls.Panel pnlWarningEmployer;
+        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Button btnShowDeactivateConfirm;
+        protected global::System.Web.UI.WebControls.Panel pnlReactivateProfile;
+        protected global::System.Web.UI.WebControls.Literal litDeactivatedRole;
+        protected global::System.Web.UI.WebControls.Button btnReactivateProfile;
+        protected global::System.Web.UI.WebControls.Panel pnlDeactivateConfirm;
         protected global::System.Web.UI.WebControls.Button btnDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Label lblDeactivateEmail;
+        protected global::System.Web.UI.WebControls.Literal litCurrentRole;
         protected global::System.Web.UI.WebControls.Panel pnlDeactivateAccount;
-        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateAccount;
+        protected global::System.Web.UI.WebControls.Panel pnlDeleteReady;
+        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateAccount;
+        protected global::System.Web.UI.WebControls.Button btnShowDeleteConfirm;
+        protected global::System.Web.UI.WebControls.Panel pnlDeleteConfirm;
         protected global::System.Web.UI.WebControls.Button btnDeactivateAccount;
+        protected global::System.Web.UI.WebControls.Label lblDeleteEmail;
     }
 }
