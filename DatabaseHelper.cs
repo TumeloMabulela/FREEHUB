@@ -7,9 +7,10 @@ using System.Text;
 
 namespace FreeHubProject
 {
-
     public static class DatabaseHelper
     {
+        private static readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
+
         private static string GetConnectionString()
         {
             return ConfigurationManager.ConnectionStrings["FreeHubDB"].ConnectionString;
@@ -19,6 +20,10 @@ namespace FreeHubProject
         {
             return new SqlConnection(GetConnectionString());
         }
+
+        // ============================================================
+        // GENERAL EXECUTORS
+        // ============================================================
 
         public static DataTable ExecuteQuery(string query, params SqlParameter[] parameters)
         {
@@ -35,6 +40,19 @@ namespace FreeHubProject
                 }
             }
             return table;
+        }
+
+        // Alias for ExecuteQuery for compatibility across modules
+        public static DataTable GetDataTable(string query, params SqlParameter[] parameters)
+        {
+            return ExecuteQuery(query, parameters);
+        }
+
+        // Returns a single DataRow
+        public static DataRow GetDataRow(string query, params SqlParameter[] parameters)
+        {
+            DataTable dt = GetDataTable(query, parameters);
+            return (dt != null && dt.Rows.Count > 0) ? dt.Rows[0] : null;
         }
 
         public static int ExecuteNonQuery(string query, params SqlParameter[] parameters)
@@ -79,48 +97,8 @@ namespace FreeHubProject
         }
 
         // ============================================================
-        // TEXT FORMATTING HELPERS
+        // USER AUTHENTICATION & REGISTRATION
         // ============================================================
-
-        /// <summary>
-        /// Capitalizes the first letter of each word (for names).
-        /// e.g., "guza guza" -> "Guza Guza"
-        /// </summary>
-        public static string CapitalizeName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return "";
-            string[] words = name.Trim().Split(' ');
-            for (int i = 0; i < words.Length; i++)
-            {
-                if (words[i].Length > 0)
-                    words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
-            }
-            return string.Join(" ", words);
-        }
-
-        /// <summary>
-        /// Forces email to lowercase.
-        /// </summary>
-        public static string FormatEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return "";
-            return email.Trim().ToLower();
-        }
-
-        /// <summary>
-        /// Capitalizes first letter of each skill/word in a comma-separated list.
-        /// e.g., "web design, excel, javascript" -> "Web Design, Excel, Javascript"
-        /// </summary>
-        public static string CapitalizeSkills(string skills)
-        {
-            if (string.IsNullOrWhiteSpace(skills)) return "";
-            string[] items = skills.Split(',');
-            for (int i = 0; i < items.Length; i++)
-            {
-                items[i] = CapitalizeName(items[i].Trim());
-            }
-            return string.Join(", ", items);
-        }
 
         public static bool EmailExists(string email)
         {
@@ -173,7 +151,6 @@ namespace FreeHubProject
         {
             string hashedPassword = HashPassword(password);
 
-            // Try with hashed password first
             string query = @"
                 SELECT userID, firstName, lastName, email, contactNumber, username,
                        accountStatus, userType, ratingScore, dateCreated
@@ -188,7 +165,6 @@ namespace FreeHubProject
 
             if (result.Rows.Count > 0) return result.Rows[0];
 
-            // Try with plain-text password (for existing records)
             result = ExecuteQuery(query,
                 new SqlParameter("@Login", emailOrUsername.Trim()),
                 new SqlParameter("@Password", password)
@@ -196,8 +172,6 @@ namespace FreeHubProject
 
             if (result.Rows.Count > 0) return result.Rows[0];
 
-            // Try without any password check - just find the user to verify connection works
-            // Then compare password in code
             string findQuery = @"
                 SELECT userID, firstName, lastName, email, contactNumber, username,
                        accountStatus, userType, ratingScore, dateCreated, password
@@ -211,7 +185,6 @@ namespace FreeHubProject
             if (findResult.Rows.Count > 0)
             {
                 string storedPassword = Convert.ToString(findResult.Rows[0]["password"]);
-                // Compare stored password with input (plain) or hashed
                 if (storedPassword == password || storedPassword == hashedPassword)
                 {
                     return findResult.Rows[0];
@@ -400,13 +373,9 @@ namespace FreeHubProject
         // PROPOSAL OPERATIONS
         // ============================================================
 
-        /// <summary>
-        /// Submits a proposal. Returns proposalID on success, -1 if already submitted, 0 on error.
-        /// </summary>
         public static int SubmitProposal(int projectID, int userID, string coverLetter,
             decimal proposedRate, string estimatedTime)
         {
-            // First get the freelancerID for this user
             DataRow freelancer = GetFreelancerByUserId(userID);
             int freelancerID;
 
@@ -416,7 +385,6 @@ namespace FreeHubProject
             }
             else
             {
-                // Auto-create a basic freelancer profile if user is registered but hasn't created one
                 string createQuery = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
                                       VALUES (@UserID, 'General', '', '', @Rate);
                                       SELECT SCOPE_IDENTITY();";
@@ -426,7 +394,6 @@ namespace FreeHubProject
                 freelancerID = Convert.ToInt32(newId);
             }
 
-            // Check if already submitted
             string checkQuery = "SELECT COUNT(*) FROM Proposal WHERE projectID = @ProjectID AND freelancerID = @FreelancerID";
             object existsResult = ExecuteScalar(checkQuery,
                 new SqlParameter("@ProjectID", projectID),
@@ -437,7 +404,6 @@ namespace FreeHubProject
                 return -1; // Already submitted
             }
 
-            // Insert proposal
             string insertQuery = @"INSERT INTO Proposal (projectID, freelancerID, coverLetter, proposedRate, estimatedCompletionTime, status)
                                   VALUES (@ProjectID, @FreelancerID, @CoverLetter, @ProposedRate, @EstimatedTime, 'Pending');
                                   SELECT SCOPE_IDENTITY();";
@@ -488,9 +454,6 @@ namespace FreeHubProject
         // WALLET OPERATIONS
         // ============================================================
 
-        /// <summary>
-        /// Updates the wallet balance for a given wallet ID.
-        /// </summary>
         public static void UpdateWalletBalance(int walletID, decimal newBalance)
         {
             string query = "UPDATE Wallet SET balance = @Balance WHERE walletID = @WalletID";
@@ -499,9 +462,6 @@ namespace FreeHubProject
                 new SqlParameter("@WalletID", walletID));
         }
 
-        /// <summary>
-        /// Adds a transaction record to the Transaction table.
-        /// </summary>
         public static int AddTransaction(int walletID, string description,
             string transactionType, decimal amount, string status,
             string reference, string paymentMethod)
@@ -530,9 +490,6 @@ namespace FreeHubProject
             return 0;
         }
 
-        /// <summary>
-        /// Gets all transactions for a wallet, ordered by date descending.
-        /// </summary>
         public static DataTable GetTransactionsByWallet(int walletID)
         {
             string query = @"
@@ -546,9 +503,6 @@ namespace FreeHubProject
             return ExecuteQuery(query, new SqlParameter("@WalletID", walletID));
         }
 
-        /// <summary>
-        /// Gets the current wallet balance from the database.
-        /// </summary>
         public static decimal GetWalletBalance(int walletID)
         {
             string query = "SELECT balance FROM Wallet WHERE walletID = @WalletID";
@@ -558,9 +512,6 @@ namespace FreeHubProject
             return 0.00m;
         }
 
-        /// <summary>
-        /// Gets a single transaction by its ID.
-        /// </summary>
         public static DataRow GetTransactionById(int transactionID)
         {
             string query = @"

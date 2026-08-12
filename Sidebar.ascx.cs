@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using System.Web.UI;
 
 namespace FreeHubProject
 {
-    public partial class Sidebar : System.Web.UI.UserControl
+    public partial class Sidebar : UserControl
     {
         /// <summary>
         /// Gets the current user's role from session for use in the markup.
@@ -21,7 +22,7 @@ namespace FreeHubProject
         }
 
         /// <summary>
-        /// Returns "active-sidebar-item" if the current page matches the given page name
+        /// Returns "active-sidebar-item" if the current page matches the given page name.
         /// </summary>
         public string GetActiveClass(string pageName)
         {
