@@ -211,6 +211,102 @@ namespace FreeHubProject
         }
 
         // ============================================================
+        // PROFILE STATUS MANAGEMENT
+        // ============================================================
+
+        public static void EnsureProfileStatusTable()
+        {
+            string query = @"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'ProfileStatus')
+                BEGIN
+                    CREATE TABLE dbo.ProfileStatus (
+                        profileStatusID INT IDENTITY(1,1) PRIMARY KEY,
+                        userID INT NOT NULL,
+                        profileType NVARCHAR(20) NOT NULL,
+                        status NVARCHAR(20) NOT NULL DEFAULT 'Active',
+                        deactivatedDate DATETIME NULL,
+                        reactivatedDate DATETIME NULL,
+                        CONSTRAINT UQ_ProfileStatus UNIQUE(userID, profileType)
+                    )
+                END";
+            ExecuteNonQuery(query);
+        }
+
+        public static string GetProfileStatus(int userID, string profileType)
+        {
+            bool profileExists = false;
+            if (profileType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+                profileExists = GetFreelancerByUserId(userID) != null;
+            else if (profileType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+                profileExists = GetEmployerByUserId(userID) != null;
+
+            if (!profileExists) return "NotCreated";
+
+            EnsureProfileStatusTable();
+            string query = "SELECT status FROM ProfileStatus WHERE userID = @UserID AND profileType = @ProfileType";
+            object result = ExecuteScalar(query,
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@ProfileType", profileType));
+
+            if (result == null || result == DBNull.Value)
+            {
+                ExecuteNonQuery(
+                    "INSERT INTO ProfileStatus (userID, profileType, status) VALUES (@UserID, @ProfileType, 'Active')",
+                    new SqlParameter("@UserID", userID),
+                    new SqlParameter("@ProfileType", profileType));
+                return "Active";
+            }
+
+            return Convert.ToString(result);
+        }
+
+        public static bool DeactivateUserProfile(int userID, string profileType)
+        {
+            EnsureProfileStatusTable();
+            string query = @"
+                IF EXISTS (SELECT 1 FROM ProfileStatus WHERE userID = @UserID AND profileType = @ProfileType)
+                    UPDATE ProfileStatus SET status = 'Deactivated', deactivatedDate = GETDATE()
+                    WHERE userID = @UserID AND profileType = @ProfileType
+                ELSE
+                    INSERT INTO ProfileStatus (userID, profileType, status, deactivatedDate)
+                    VALUES (@UserID, @ProfileType, 'Deactivated', GETDATE())";
+
+            int rows = ExecuteNonQuery(query,
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@ProfileType", profileType));
+            return rows > 0;
+        }
+
+        public static bool ReactivateUserProfile(int userID, string profileType)
+        {
+            EnsureProfileStatusTable();
+            string query = @"
+                IF EXISTS (SELECT 1 FROM ProfileStatus WHERE userID = @UserID AND profileType = @ProfileType)
+                    UPDATE ProfileStatus SET status = 'Active', reactivatedDate = GETDATE()
+                    WHERE userID = @UserID AND profileType = @ProfileType
+                ELSE
+                    INSERT INTO ProfileStatus (userID, profileType, status, reactivatedDate)
+                    VALUES (@UserID, @ProfileType, 'Active', GETDATE())";
+
+            int rows = ExecuteNonQuery(query,
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@ProfileType", profileType));
+
+            ExecuteNonQuery(
+                "UPDATE [User] SET accountStatus = 'Active', userType = @ProfileType WHERE userID = @UserID",
+                new SqlParameter("@ProfileType", profileType),
+                new SqlParameter("@UserID", userID));
+
+            return rows > 0;
+        }
+
+        public static void GetUserProfileStatuses(int userID, out string freelancerStatus, out string employerStatus)
+        {
+            freelancerStatus = GetProfileStatus(userID, "Freelancer");
+            employerStatus = GetProfileStatus(userID, "Employer");
+        }
+
+        // ============================================================
         // PROJECT OPERATIONS
         // ============================================================
 
