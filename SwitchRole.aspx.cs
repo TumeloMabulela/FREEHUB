@@ -66,8 +66,16 @@ namespace FreeHubProject
                     return;
                 }
 
+                // Check if profile is deactivated
+                string status = DatabaseHelper.GetProfileStatus(userId, "Freelancer");
+                if (status == "Deactivated")
+                {
+                    Response.Redirect("ChooseRole.aspx");
+                    return;
+                }
+
                 SwitchUserRole(userId, "Freelancer");
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {
@@ -91,8 +99,16 @@ namespace FreeHubProject
                     return;
                 }
 
+                // Check if profile is deactivated
+                string status = DatabaseHelper.GetProfileStatus(userId, "Employer");
+                if (status == "Deactivated")
+                {
+                    Response.Redirect("ChooseRole.aspx");
+                    return;
+                }
+
                 SwitchUserRole(userId, "Employer");
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {
@@ -204,3 +220,4 @@ namespace FreeHubProject
         }
     }
 }
+
