@@ -137,8 +137,8 @@
 
                 <!-- A400: DEACTIVATE PROFILE -->
                 <asp:Panel ID="pnlDeactivateProfile" runat="server" CssClass="profile-section" Visible="false">
-                    <h2>Deactivate Profile</h2>
-                    <p>Deactivating your profile will hide it from other users. You can reactivate it anytime.</p>
+                    <h2>Deactivate <asp:Literal ID="litHeadingRole" runat="server" /> Profile</h2>
+                    <p>Deactivating your <asp:Literal ID="litSubtitleRole" runat="server" /> profile will hide it from other users. You can reactivate it anytime.</p>
 
                     <div class="deactivate-warning">
                         <strong>This action will:</strong>
@@ -151,7 +151,8 @@
                     </div>
 
                     <div class="post-field">
-                        <asp:CheckBox ID="chkConfirmDeactivateProfile" runat="server" />
+                        <asp:CheckBox ID="chkConfirmDeactivateProfile" runat="server"
+                            onclick="toggleDeactivateProfileBtn();" />
                         <label style="display:inline; margin-left:8px;">
                             Yes, I understand the consequences of deactivating my profile.
                         </label>
@@ -159,6 +160,7 @@
 
                     <asp:Button ID="btnDeactivateProfile" runat="server" Text="Deactivate Profile"
                         CssClass="deactivate-button"
+                        style="opacity:0.5; cursor:not-allowed;"
                         OnClientClick="return showDeactivateProfileModal();"
                         OnClick="btnDeactivateProfile_Click" />
                 </asp:Panel>
@@ -179,7 +181,8 @@
                     </div>
 
                     <div class="post-field">
-                        <asp:CheckBox ID="chkConfirmDeactivateAccount" runat="server" />
+                        <asp:CheckBox ID="chkConfirmDeactivateAccount" runat="server"
+                            onclick="toggleDeactivateAccountBtn();" />
                         <label style="display:inline; margin-left:8px;">
                             Yes, I understand the consequences of deactivating my account.
                         </label>
@@ -187,6 +190,7 @@
 
                     <asp:Button ID="btnDeactivateAccount" runat="server" Text="Deactivate Account"
                         CssClass="deactivate-button deactivate-account-button"
+                        style="opacity:0.5; cursor:not-allowed;"
                         OnClientClick="return showDeactivateAccountModal();"
                         OnClick="btnDeactivateAccount_Click" />
                 </asp:Panel>
@@ -200,10 +204,35 @@
     <script type="text/javascript">
         var currentUserRole = '<%= Session["UserType"] as string ?? "User" %>';
 
+        // Toggle button state based on checkbox
+        function toggleDeactivateProfileBtn() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
+            var btn = document.getElementById('<%= btnDeactivateProfile.ClientID %>');
+            if (chk.checked) {
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+
+        function toggleDeactivateAccountBtn() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
+            var btn = document.getElementById('<%= btnDeactivateAccount.ClientID %>');
+            if (chk.checked) {
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+
         function showDeactivateProfileModal() {
             // Check checkbox first
             var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
-            if (chk && !chk.checked) {
+            if (!chk.checked) {
                 alert('Please tick the checkbox to confirm you understand the consequences.');
                 return false;
             }
@@ -248,7 +277,7 @@
 
         function showDeactivateAccountModal() {
             var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
-            if (chk && !chk.checked) {
+            if (!chk.checked) {
                 alert('Please tick the checkbox to confirm you understand the consequences.');
                 return false;
             }

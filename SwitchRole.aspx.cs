@@ -70,7 +70,13 @@ namespace FreeHubProject
                 string status = DatabaseHelper.GetProfileStatus(userId, "Freelancer");
                 if (status == "Deactivated")
                 {
-                    Response.Redirect("ChooseRole.aspx");
+                    string script = @"setTimeout(function() {
+                        showConfirmModal(
+                            'Your Freelancer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
+                            function() { window.location.href = 'ChooseRole.aspx'; }
+                        );
+                    }, 100);";
+                    ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
                     return;
                 }
 
@@ -103,7 +109,13 @@ namespace FreeHubProject
                 string status = DatabaseHelper.GetProfileStatus(userId, "Employer");
                 if (status == "Deactivated")
                 {
-                    Response.Redirect("ChooseRole.aspx");
+                    string script = @"setTimeout(function() {
+                        showConfirmModal(
+                            'Your Employer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
+                            function() { window.location.href = 'ChooseRole.aspx'; }
+                        );
+                    }, 100);";
+                    ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
                     return;
                 }
 
