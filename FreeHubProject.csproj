@@ -161,6 +161,7 @@
     <Compile Include="MyProjects.aspx.designer.cs">
       <DependentUpon>MyProjects.aspx</DependentUpon>
     </Compile>
+    <Compile Include="NotificationHelper.cs" />
     <Compile Include="Notifications.aspx.cs">
       <DependentUpon>Notifications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

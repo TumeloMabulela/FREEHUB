@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 
 namespace FreeHubProject
 {
@@ -36,20 +37,41 @@ namespace FreeHubProject
 
             try
             {
+                // 1. Get the freelancer's userID and project title before updating
+                string getDetailsQuery = @"
+            SELECT TOP 1 f.userID AS FreelancerUserID, p.title AS ProjectTitle
+            FROM Proposal prop
+            INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
+            INNER JOIN Project p ON prop.projectID = p.projectID
+            WHERE prop.status = 'Pending' 
+            ORDER BY prop.date DESC";
+
+                DataRow dr = DatabaseHelper.GetDataRow(getDetailsQuery); // Adjust to your DatabaseHelper method
+
+                // 2. Perform the database update
                 string query = @"UPDATE Proposal SET status = 'Approved' 
-                                WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
-                                UPDATE Project SET projectStatus = 'In Progress' 
-                                WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
+                        WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
+                        UPDATE Project SET projectStatus = 'In Progress' 
+                        WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
                 DatabaseHelper.ExecuteNonQuery(query);
+
+                // 3. Send notification to the freelancer
+                if (dr != null)
+                {
+                    int freelancerUserId = Convert.ToInt32(dr["FreelancerUserID"]);
+                    string projectTitle = Convert.ToString(dr["ProjectTitle"]);
+                    string message = $"Your proposal for '{projectTitle}' has been APPROVED! The project is now in progress.";
+
+                    NotificationHelper.CreateNotification(freelancerUserId, "Proposal", message);
+                }
 
                 lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'. The freelancer has been assigned to the project and will be notified.";
             }
-            catch
+            catch (Exception ex)
             {
                 lblApprovalMessage.Text = "Proposal approved successfully! The project is now In Progress and the freelancer has been notified.";
             }
         }
-
         protected void btnCancelApproval_Click(object sender, EventArgs e)
         {
             Response.Redirect("ReviewProposal.aspx");
