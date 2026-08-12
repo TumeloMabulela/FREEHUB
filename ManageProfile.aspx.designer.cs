@@ -42,6 +42,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btnReactivateProfile;
         protected global::System.Web.UI.WebControls.Panel pnlDeactivateConfirm;
         protected global::System.Web.UI.WebControls.Button btnDeactivateProfile;
+        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateProfile;
         protected global::System.Web.UI.WebControls.Label lblDeactivateEmail;
         protected global::System.Web.UI.WebControls.Literal litCurrentRole;
         protected global::System.Web.UI.WebControls.Panel pnlDeactivateAccount;
@@ -50,6 +51,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btnShowDeleteConfirm;
         protected global::System.Web.UI.WebControls.Panel pnlDeleteConfirm;
         protected global::System.Web.UI.WebControls.Button btnDeactivateAccount;
+        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateAccount;
         protected global::System.Web.UI.WebControls.Label lblDeleteEmail;
     }
 }

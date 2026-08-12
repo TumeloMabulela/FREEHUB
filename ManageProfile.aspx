@@ -158,7 +158,9 @@
                     </div>
 
                     <asp:Button ID="btnDeactivateProfile" runat="server" Text="Deactivate Profile"
-                        CssClass="deactivate-button" OnClick="btnDeactivateProfile_Click" />
+                        CssClass="deactivate-button"
+                        OnClientClick="return showDeactivateProfileModal();"
+                        OnClick="btnDeactivateProfile_Click" />
                 </asp:Panel>
 
                 <!-- A600: DEACTIVATE ACCOUNT -->
@@ -185,6 +187,7 @@
 
                     <asp:Button ID="btnDeactivateAccount" runat="server" Text="Deactivate Account"
                         CssClass="deactivate-button deactivate-account-button"
+                        OnClientClick="return showDeactivateAccountModal();"
                         OnClick="btnDeactivateAccount_Click" />
                 </asp:Panel>
 
@@ -193,5 +196,90 @@
         </section>
 
     </div>
+
+    <script type="text/javascript">
+        var currentUserRole = '<%= Session["UserType"] as string ?? "User" %>';
+
+        function showDeactivateProfileModal() {
+            // Check checkbox first
+            var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
+            if (chk && !chk.checked) {
+                alert('Please tick the checkbox to confirm you understand the consequences.');
+                return false;
+            }
+
+            var existing = document.getElementById('fhDeactivateModal');
+            if (existing) existing.remove();
+
+            var title, message;
+            if (currentUserRole === 'Freelancer') {
+                title = 'Deactivate Freelancer Profile';
+                message = 'Your freelancer reputation takes time to build. Employers trust profiles with proven track records and strong ratings.<br/><br/>' +
+                    'If you deactivate now, your proposals will be withdrawn and employers will not be able to discover your skills.<br/><br/>' +
+                    '<strong>Are you sure you want to give up your visibility?</strong>';
+            } else {
+                title = 'Deactivate Employer Profile';
+                message = 'Talented freelancers are actively looking at your projects right now. Deactivating means your open listings will be cancelled and you will lose potential candidates.<br/><br/>' +
+                    'Your project history and team connections will be paused until you return.<br/><br/>' +
+                    '<strong>Are you sure you want to stop hiring?</strong>';
+            }
+
+            var overlay = document.createElement('div');
+            overlay.id = 'fhDeactivateModal';
+            overlay.className = 'fh-modal-overlay';
+            overlay.innerHTML =
+                '<div class="fh-modal">' +
+                    '<div class="fh-modal-icon" style="background:#fee2e2; color:#dc2626;">&#9888;</div>' +
+                    '<h3>' + title + '</h3>' +
+                    '<p>' + message + '</p>' +
+                    '<button type="button" class="fh-modal-btn-primary" id="fhDeactivateYes">Yes, Deactivate</button>' +
+                    '<br/><button type="button" class="fh-modal-btn-cancel" id="fhDeactivateNo">No, keep my profile</button>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+            document.getElementById('fhDeactivateNo').onclick = function () { overlay.remove(); };
+            document.getElementById('fhDeactivateYes').onclick = function () {
+                overlay.remove();
+                __doPostBack('<%= btnDeactivateProfile.UniqueID %>', '');
+            };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+
+        function showDeactivateAccountModal() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
+            if (chk && !chk.checked) {
+                alert('Please tick the checkbox to confirm you understand the consequences.');
+                return false;
+            }
+
+            var existing = document.getElementById('fhDeleteModal');
+            if (existing) existing.remove();
+
+            var overlay = document.createElement('div');
+            overlay.id = 'fhDeleteModal';
+            overlay.className = 'fh-modal-overlay';
+            overlay.innerHTML =
+                '<div class="fh-modal">' +
+                    '<div class="fh-modal-icon" style="background:#fee2e2; color:#dc2626;">&#9888;</div>' +
+                    '<h3>Wait, are you sure?</h3>' +
+                    '<p>Your FreeHUB account holds your entire history: your reputation, ratings, wallet balance, and professional connections.<br/><br/>' +
+                    'Once deactivated, all your projects will be cancelled, your wallet will be frozen, and you will be logged out immediately.<br/><br/>' +
+                    '<strong>You can always take a break by deactivating just your profile instead.</strong><br/><br/>' +
+                    '<span style="color:#dc2626; font-weight:600;">Do you still want to deactivate your entire account?</span></p>' +
+                    '<button type="button" class="fh-modal-btn-primary" id="fhDeleteYes">Yes, Deactivate Account</button>' +
+                    '<br/><button type="button" class="fh-modal-btn-cancel" id="fhDeleteNo">No, keep my account</button>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+            document.getElementById('fhDeleteNo').onclick = function () { overlay.remove(); };
+            document.getElementById('fhDeleteYes').onclick = function () {
+                overlay.remove();
+                __doPostBack('<%= btnDeactivateAccount.UniqueID %>', '');
+            };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+    </script>
 
 </asp:Content>

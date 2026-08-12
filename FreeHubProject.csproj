@@ -69,6 +69,7 @@
   <ItemGroup>
     <Content Include="ApproveProposal.aspx" />
     <Content Include="BrowseProjects.aspx" />
+    <Content Include="ChooseRole.aspx" />
     <Content Include="CompletedProjects.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="EditProject.aspx" />
@@ -109,6 +110,13 @@
     </Compile>
     <Compile Include="BrowseProjects.aspx.designer.cs">
       <DependentUpon>BrowseProjects.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ChooseRole.aspx.cs">
+      <DependentUpon>ChooseRole.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ChooseRole.aspx.designer.cs">
+      <DependentUpon>ChooseRole.aspx</DependentUpon>
     </Compile>
     <Compile Include="CompletedProjects.aspx.cs">
       <DependentUpon>CompletedProjects.aspx</DependentUpon>
