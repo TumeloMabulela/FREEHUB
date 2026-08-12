@@ -87,42 +87,6 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblNoNotifications;
 
         /// <summary>
-        /// lblMessageCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMessageCount;
-
-        /// <summary>
-        /// lblProjectCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblProjectCount;
-
-        /// <summary>
-        /// lblProposalCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblProposalCount;
-
-        /// <summary>
-        /// lblPaymentCount control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblPaymentCount;
-
-        /// <summary>
         /// lblReadStatus control.
         /// </summary>
         /// <remarks>
@@ -195,22 +159,22 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btnViewMessage;
 
         /// <summary>
-        /// btnMarkRead control.
+        /// btnToggleRead control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMarkRead;
+        protected global::System.Web.UI.WebControls.Button btnToggleRead;
 
         /// <summary>
-        /// btnArchive control.
+        /// btnToggleArchive control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnArchive;
+        protected global::System.Web.UI.WebControls.Button btnToggleArchive;
 
         /// <summary>
         /// lblSelectNotification control.
