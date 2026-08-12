@@ -153,7 +153,7 @@ namespace FreeHubProject
 
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@UserID", userId),
-                    new SqlParameter("@Skills", txtSkills.Text.Trim()),
+                    new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtSkills.Text)),
                     new SqlParameter("@Experience", txtExperience.Text.Trim()),
                     new SqlParameter("@PortfolioLinks", txtPortfolio.Text.Trim()),
                     new SqlParameter("@HourlyRate", hourlyRate));

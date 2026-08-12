@@ -48,14 +48,14 @@ namespace FreeHubProject
                     return;
                 }
 
-                string username = txtEmail.Text.Trim();
+                string username = DatabaseHelper.FormatEmail(txtEmail.Text);
                 string userType = hfAccountType.Value;
                 if (string.IsNullOrWhiteSpace(userType)) userType = "Freelancer";
 
                 int newUserID = DatabaseHelper.RegisterUser(
-                    txtFirstName.Text.Trim(),
-                    txtLastName.Text.Trim(),
-                    txtEmail.Text.Trim(),
+                    DatabaseHelper.CapitalizeName(txtFirstName.Text),
+                    DatabaseHelper.CapitalizeName(txtLastName.Text),
+                    DatabaseHelper.FormatEmail(txtEmail.Text),
                     "",
                     username,
                     txtPassword.Text,

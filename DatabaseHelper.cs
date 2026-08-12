@@ -78,6 +78,50 @@ namespace FreeHubProject
             }
         }
 
+        // ============================================================
+        // TEXT FORMATTING HELPERS
+        // ============================================================
+
+        /// <summary>
+        /// Capitalizes the first letter of each word (for names).
+        /// e.g., "guza guza" -> "Guza Guza"
+        /// </summary>
+        public static string CapitalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            string[] words = name.Trim().Split(' ');
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (words[i].Length > 0)
+                    words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
+            }
+            return string.Join(" ", words);
+        }
+
+        /// <summary>
+        /// Forces email to lowercase.
+        /// </summary>
+        public static string FormatEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return "";
+            return email.Trim().ToLower();
+        }
+
+        /// <summary>
+        /// Capitalizes first letter of each skill/word in a comma-separated list.
+        /// e.g., "web design, excel, javascript" -> "Web Design, Excel, Javascript"
+        /// </summary>
+        public static string CapitalizeSkills(string skills)
+        {
+            if (string.IsNullOrWhiteSpace(skills)) return "";
+            string[] items = skills.Split(',');
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = CapitalizeName(items[i].Trim());
+            }
+            return string.Join(", ", items);
+        }
+
         public static bool EmailExists(string email)
         {
             string query = "SELECT COUNT(*) FROM [User] WHERE email = @Email";

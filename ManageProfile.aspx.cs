@@ -183,15 +183,15 @@ namespace FreeHubProject
                                     contactNumber = @ContactNumber WHERE userID = @UserID";
 
                 DatabaseHelper.ExecuteNonQuery(userQuery,
-                    new SqlParameter("@FirstName", txtFirstName.Text.Trim()),
-                    new SqlParameter("@LastName", txtLastName.Text.Trim()),
+                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtFirstName.Text)),
+                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtLastName.Text)),
                     new SqlParameter("@ContactNumber",
                         string.IsNullOrWhiteSpace(txtContactNumber.Text)
                             ? (object)DBNull.Value : txtContactNumber.Text.Trim()),
                     new SqlParameter("@UserID", userId));
 
-                Session["FirstName"] = txtFirstName.Text.Trim();
-                Session["LastName"] = txtLastName.Text.Trim();
+                Session["FirstName"] = DatabaseHelper.CapitalizeName(txtFirstName.Text);
+                Session["LastName"] = DatabaseHelper.CapitalizeName(txtLastName.Text);
 
                 string userType = GetUserType();
 
@@ -203,7 +203,7 @@ namespace FreeHubProject
                     decimal.TryParse(txtUpdateRate.Text, out rate);
 
                     DatabaseHelper.ExecuteNonQuery(flQuery,
-                        new SqlParameter("@Skills", txtUpdateSkills.Text.Trim()),
+                        new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtUpdateSkills.Text)),
                         new SqlParameter("@Experience", txtUpdateExperience.Text.Trim()),
                         new SqlParameter("@Portfolio", txtUpdatePortfolio.Text.Trim()),
                         new SqlParameter("@Rate", rate),
