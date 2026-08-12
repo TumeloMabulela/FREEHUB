@@ -216,6 +216,7 @@
 
                     <div class="wallet-actions-grid">
 
+                        <asp:Panel ID="pnlFundWalletAction" runat="server">
                         <asp:LinkButton
                             ID="btnFundWallet"
                             runat="server"
@@ -245,6 +246,7 @@
                             </span>
 
                         </asp:LinkButton>
+                        </asp:Panel>
 
                         <asp:LinkButton
                             ID="btnWithdrawFunds"
@@ -467,6 +469,7 @@
 
                     </div>
 
+                    <asp:Panel ID="pnlSummaryFundBtn" runat="server">
                     <asp:Button
                         ID="btnSummaryFundWallet"
                         runat="server"
@@ -474,6 +477,7 @@
                         CssClass="wallet-fund-button"
                         CausesValidation="false"
                         OnClick="btnFundWallet_Click" />
+                    </asp:Panel>
 
                 </aside>
 

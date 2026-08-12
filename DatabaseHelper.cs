@@ -7,6 +7,7 @@ using System.Text;
 
 namespace FreeHubProject
 {
+
     public static class DatabaseHelper
     {
         private static string GetConnectionString()
