@@ -11,7 +11,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <link href="<%= ResolveUrl("~/StyleSheet1.css") %>"
+    <link href="<%= ResolveUrl("~/StyleSheet1.css") %>?v=<%= DateTime.Now.Ticks %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -45,7 +45,7 @@
                     </asp:Panel>
 
                     <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:inline;">
-                        <a href="Default.aspx">Dashboard</a>
+                        <a href="Dashboard.aspx">Dashboard</a>
                         <a href="BrowseProjects.aspx">Browse Projects</a>
                         <a href="Wallet.aspx">Wallet</a>
                         <a href="StartChat.aspx">Messages</a>
@@ -63,19 +63,22 @@
 
                     <asp:Panel ID="pnlUserButtons" runat="server" Visible="false">
                         <div class="user-nav-section">
-                            <span class="user-nav-initials">
-                                <asp:Literal ID="litInitials" runat="server" />
-                            </span>
-                            <div class="user-nav-info">
-                                <span class="user-nav-name">
-                                    <asp:Literal ID="litFullName" runat="server" />
+                            <a href="ManageProfile.aspx" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
+                                <span class="user-nav-initials">
+                                    <asp:Literal ID="litInitials" runat="server" />
                                 </span>
-                                <span class="user-nav-role">
-                                    <asp:Literal ID="litUserRole" runat="server" />
-                                </span>
-                            </div>
+                                <div class="user-nav-info">
+                                    <span class="user-nav-name">
+                                        <asp:Literal ID="litFullName" runat="server" />
+                                    </span>
+                                    <span class="user-nav-role">
+                                        <asp:Literal ID="litUserRole" runat="server" />
+                                    </span>
+                                </div>
+                            </a>
                             <asp:LinkButton ID="btnLogout" runat="server"
-                                CssClass="logout-link" OnClick="btnLogout_Click">
+                                CssClass="logout-link" OnClick="btnLogout_Click"
+                                OnClientClick="return showLogoutModal();">
                                 Logout
                             </asp:LinkButton>
                         </div>
@@ -87,6 +90,18 @@
 
         </header>
 
+        <!-- Logout Confirmation Modal -->
+        <div id="logoutModal" class="fh-modal-overlay" style="display:none;">
+            <div class="fh-modal">
+                <div class="fh-modal-icon" style="background:#fee2e2; color:#dc2626;">&#10140;</div>
+                <h3>Logout</h3>
+                <p>Logging out will end your session.<br/>Are you sure you want to logout?</p>
+                <asp:Button ID="btnConfirmLogout" runat="server" Text="Logout"
+                    CssClass="fh-modal-btn-primary" OnClick="btnLogout_Click" CausesValidation="false" />
+                <br />
+                <button type="button" class="fh-modal-btn-cancel" onclick="hideLogoutModal();">Cancel</button>
+            </div>
+        </div>
 
         <!-- Main Page Content -->
         <main class="page-content">
@@ -113,7 +128,7 @@
                     <h4>Quick Links</h4>
                     <a href="BrowseProjects.aspx">Browse Projects</a>
                     <a href="PostProject.aspx">Post a Project</a>
-                    <a href="Default.aspx">Dashboard</a>
+                    <a href="Dashboard.aspx">Dashboard</a>
                 </div>
 
                 <div>
@@ -131,6 +146,146 @@
         </footer>
 
     </form>
+
+    <!-- Modal Styles & Scripts -->
+    <style>
+        .fh-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fh-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 32px 28px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            animation: fhModalIn 0.2s ease;
+        }
+
+        @keyframes fhModalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .fh-modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+        }
+
+        .fh-modal h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .fh-modal p {
+            font-size: 13px;
+            color: #5a5a5a;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .fh-modal-btn-primary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #dc2626;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .fh-modal-btn-primary:hover { background: #b91c1c; }
+
+        .fh-modal-btn-confirm {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #173f2c;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .fh-modal-btn-confirm:hover { background: #1f5438; }
+
+        .fh-modal-btn-cancel {
+            background: none;
+            border: none;
+            color: #5a5a5a;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+
+        .fh-modal-btn-cancel:hover { color: #1a1a1a; }
+    </style>
+
+    <script type="text/javascript">
+        function showLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'flex';
+            return false;
+        }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        // Generic confirmation modal
+        function showConfirmModal(message, onConfirm) {
+            var existing = document.getElementById('fhConfirmModal');
+            if (existing) existing.remove();
+
+            var overlay = document.createElement('div');
+            overlay.id = 'fhConfirmModal';
+            overlay.className = 'fh-modal-overlay';
+            overlay.innerHTML =
+                '<div class="fh-modal">' +
+                    '<div class="fh-modal-icon" style="background:#e8f5e0; color:#173f2c;">?</div>' +
+                    '<h3>Confirm</h3>' +
+                    '<p>' + message + '</p>' +
+                    '<button type="button" class="fh-modal-btn-confirm" id="fhConfirmYes">Yes</button>' +
+                    '<br/><button type="button" class="fh-modal-btn-cancel" id="fhConfirmNo">Cancel</button>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+
+            document.getElementById('fhConfirmNo').onclick = function () { overlay.remove(); };
+            document.getElementById('fhConfirmYes').onclick = function () {
+                overlay.remove();
+                if (onConfirm) onConfirm();
+            };
+            overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+        }
+
+        // Close logout modal on overlay click
+        document.addEventListener('click', function (e) {
+            if (e.target.id === 'logoutModal') hideLogoutModal();
+        });
+    </script>
 
 </body>
 </html>
