@@ -11,7 +11,7 @@ namespace FreeHubProject
 {
 
 
-    public partial class MyProjects
+    public partial class SubmitWork
     {
 
         /// <summary>
@@ -24,102 +24,66 @@ namespace FreeHubProject
         protected global::FreeHubProject.Sidebar SidebarControl;
 
         /// <summary>
-        /// lnkTabActive control.
+        /// pnlStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkTabActive;
+        protected global::System.Web.UI.WebControls.Panel pnlStatus;
 
         /// <summary>
-        /// lblActiveCount control.
+        /// lblStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblActiveCount;
+        protected global::System.Web.UI.WebControls.Label lblStatus;
 
         /// <summary>
-        /// lnkTabCompleted control.
+        /// txtProjectTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkTabCompleted;
+        protected global::System.Web.UI.WebControls.TextBox txtProjectTitle;
 
         /// <summary>
-        /// lblCompletedCount control.
+        /// txtDeliverableLinks control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCompletedCount;
+        protected global::System.Web.UI.WebControls.TextBox txtDeliverableLinks;
 
         /// <summary>
-        /// lnkTabCancelled control.
+        /// txtSubmissionNotes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HyperLink lnkTabCancelled;
+        protected global::System.Web.UI.WebControls.TextBox txtSubmissionNotes;
 
         /// <summary>
-        /// lblCancelledCount control.
+        /// btnSubmitWork control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCancelledCount;
+        protected global::System.Web.UI.WebControls.Button btnSubmitWork;
 
         /// <summary>
-        /// lblSectionTitle control.
+        /// btnCancel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSectionTitle;
-
-        /// <summary>
-        /// ddlSortProjects control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlSortProjects;
-
-        /// <summary>
-        /// pnlProjectList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlProjectList;
-
-        /// <summary>
-        /// rptProjects control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptProjects;
-
-        /// <summary>
-        /// pnlEmptyProjects control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlEmptyProjects;
+        protected global::System.Web.UI.WebControls.Button btnCancel;
     }
 }

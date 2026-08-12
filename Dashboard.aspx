@@ -88,7 +88,7 @@
         .stat-icon.orange { background-color: #fff3e0; color: #c47a1a; }
         .stat-icon.purple { background-color: #f3e8ff; color: #7b2dc4; }
 
-        /* Quick Actions */
+        /* Dashboard Sections */
         .dashboard-section {
             margin-bottom: 35px;
         }
@@ -99,6 +99,60 @@
             margin-bottom: 16px;
         }
 
+        /* Active Projects Panel & Table */
+        .active-projects-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e8ece8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .active-projects-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .active-projects-table th {
+            padding: 12px 10px;
+            border-bottom: 2px solid #e8ece8;
+            color: #5a6e5f;
+            font-weight: 600;
+        }
+
+        .active-projects-table td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #f0f2f0;
+            color: #243328;
+            vertical-align: middle;
+        }
+
+        .active-projects-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .btn-submit-work {
+            background-color: #173f2c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-block;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-submit-work:hover {
+            background-color: #1f5438;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Quick Actions */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -247,6 +301,49 @@
             </div>
 
         </div>
+
+        <!-- Active Projects Section (Freelancer Only) -->
+        <asp:Panel ID="pnlFreelancerActiveProjects" runat="server" Visible="false" CssClass="dashboard-section">
+            <h2>Active Projects In Progress</h2>
+            <div class="active-projects-card">
+                <asp:Repeater ID="rptFreelancerActiveProjects" runat="server">
+                    <HeaderTemplate>
+                        <table class="active-projects-table">
+                            <thead>
+                                <tr>
+                                    <th>Project Title</th>
+                                    <th>Employer</th>
+                                    <th>Agreed Budget</th>
+                                    <th>Deadline</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    </HeaderTemplate>
+                    <ItemTemplate>
+                        <tr>
+                            <td style="font-weight: 600;"><%# Eval("Title") %></td>
+                            <td><%# Eval("EmployerName") %></td>
+                            <td style="font-weight: bold; color: #173f2c;">
+                                R<%# Convert.ToDecimal(Eval("Budget")).ToString("N2") %>
+                            </td>
+                            <td><%# Convert.ToDateTime(Eval("Deadline")).ToString("dd MMM yyyy") %></td>
+                            <td style="text-align: right;">
+                                <a href='SubmitWork.aspx?projectId=<%# Eval("ProjectId") %>' class="btn-submit-work">
+                                    Submit Work 🚀
+                                </a>
+                            </td>
+                        </tr>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                            </tbody>
+                        </table>
+                    </FooterTemplate>
+                </asp:Repeater>
+
+                <asp:Label ID="lblNoActiveProjects" runat="server" Visible="false" Text="You have no active projects currently in progress." Style="color: #5a6e5f; font-size: 14px; display: block; text-align: center; padding: 20px 0;"></asp:Label>
+            </div>
+        </asp:Panel>
 
         <!-- Quick Actions -->
         <div class="dashboard-section">

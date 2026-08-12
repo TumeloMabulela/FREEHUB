@@ -82,6 +82,7 @@
     <Content Include="ProjectDetails.aspx" />
     <Content Include="RateFreelancer.aspx" />
     <Content Include="RateFreelancer.css" />
+    <Content Include="ReviewWork.aspx" />
     <Content Include="Sidebar.ascx" />
     <Content Include="StartChat.aspx" />
     <Content Include="SubmitProposal.aspx" />
@@ -95,6 +96,7 @@
     <Content Include="Transactions.aspx" />
     <Content Include="Wallet.aspx" />
     <Content Include="Web.config" />
+    <Content Include="SubmitWork.aspx" />
     <Content Include="WithdrawFunds.aspx" />
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +192,13 @@
     <Compile Include="RateFreelancer.aspx.designer.cs">
       <DependentUpon>RateFreelancer.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ReviewWork.aspx.cs">
+      <DependentUpon>ReviewWork.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReviewWork.aspx.designer.cs">
+      <DependentUpon>ReviewWork.aspx</DependentUpon>
+    </Compile>
     <Compile Include="StartChat.aspx.cs">
       <DependentUpon>StartChat.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -284,6 +293,13 @@
     </Compile>
     <Compile Include="Wallet.aspx.designer.cs">
       <DependentUpon>Wallet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="SubmitWork.aspx.cs">
+      <DependentUpon>SubmitWork.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SubmitWork.aspx.designer.cs">
+      <DependentUpon>SubmitWork.aspx</DependentUpon>
     </Compile>
     <Compile Include="WithdrawFunds.aspx.cs">
       <DependentUpon>WithdrawFunds.aspx</DependentUpon>

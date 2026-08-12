@@ -45,23 +45,34 @@ namespace FreeHubProject
 
             try
             {
-                // Get counts
+                // Fetch all projects for employer
                 DataTable allProjects = DatabaseHelper.GetProjectsByEmployer(userId);
                 int activeCount = 0, completedCount = 0, cancelledCount = 0;
 
                 foreach (DataRow row in allProjects.Rows)
                 {
                     string status = Convert.ToString(row["projectStatus"]);
-                    if (status == "Open" || status == "In Progress") activeCount++;
-                    else if (status == "Completed") completedCount++;
-                    else if (status == "Cancelled") cancelledCount++;
+
+                    // Include 'Under Review' in Active project counts
+                    if (status == "Open" || status == "In Progress" || status == "Under Review")
+                    {
+                        activeCount++;
+                    }
+                    else if (status == "Completed")
+                    {
+                        completedCount++;
+                    }
+                    else if (status == "Cancelled")
+                    {
+                        cancelledCount++;
+                    }
                 }
 
                 lblActiveCount.Text = activeCount.ToString();
                 lblCompletedCount.Text = completedCount.ToString();
                 lblCancelledCount.Text = cancelledCount.ToString();
 
-                // Filter by selected view
+                // Filter by selected view tab
                 DataTable filtered = allProjects.Clone();
                 foreach (DataRow row in allProjects.Rows)
                 {
@@ -71,27 +82,32 @@ namespace FreeHubProject
                     switch (SelectedView)
                     {
                         case "Completed":
-                            include = status == "Completed";
+                            include = (status == "Completed");
                             break;
+
                         case "Cancelled":
-                            include = status == "Cancelled";
+                            include = (status == "Cancelled");
                             break;
-                        default: // Active
-                            include = status == "Open" || status == "In Progress";
+
+                        default: // Active Projects tab
+                                 // Include Open, In Progress, AND Under Review
+                            include = (status == "Open" || status == "In Progress" || status == "Under Review");
                             break;
                     }
 
-                    if (include) filtered.ImportRow(row);
+                    if (include)
+                    {
+                        filtered.ImportRow(row);
+                    }
                 }
 
                 rptProjects.DataSource = filtered;
                 rptProjects.DataBind();
 
-                // Show/hide panels
-                pnlProjectList.Visible = filtered.Rows.Count > 0;
-                pnlEmptyProjects.Visible = filtered.Rows.Count == 0;
+                // Toggle panel visibility
+                pnlProjectList.Visible = (filtered.Rows.Count > 0);
+                pnlEmptyProjects.Visible = (filtered.Rows.Count == 0);
 
-                // Set section title
                 lblSectionTitle.Text = SelectedView == "Completed" ? "Completed Projects" :
                                        SelectedView == "Cancelled" ? "Cancelled Projects" : "Active Projects";
             }
@@ -105,7 +121,6 @@ namespace FreeHubProject
                 lblCancelledCount.Text = "0";
             }
         }
-
         protected void rptProjects_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "DeleteProject")

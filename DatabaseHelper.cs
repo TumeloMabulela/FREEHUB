@@ -526,6 +526,7 @@ namespace FreeHubProject
             return null;
         }
 
+
         // ============================================================
         // COMMENT OPERATIONS (B400)
         // ============================================================
@@ -553,6 +554,39 @@ namespace FreeHubProject
                             WHERE c.projectID = @ProjectID
                             ORDER BY c.commentDate DESC";
             return ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
+        }
+        public static string FormatEmail(string email)
+        {
+            return string.IsNullOrWhiteSpace(email) ? "" : email.Trim().ToLower();
+        }
+        public static string CapitalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            name = name.Trim();
+            return char.ToUpper(name[0]) + (name.Length > 1 ? name.Substring(1).ToLower() : "");
+        }
+
+        /// <summary>
+        /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
+        /// </summary>
+        /// <summary>
+        /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
+        /// </summary>
+        public static string CapitalizeSkills(string skills)
+        {
+            if (string.IsNullOrWhiteSpace(skills)) return "";
+
+            string[] parts = skills.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                string trimmed = parts[i].Trim();
+                if (trimmed.Length > 0)
+                {
+                    parts[i] = char.ToUpper(trimmed[0]) + (trimmed.Length > 1 ? trimmed.Substring(1) : "");
+                }
+            }
+
+            return string.Join(", ", parts);
         }
     }
 }
