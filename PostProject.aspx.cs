@@ -45,7 +45,6 @@ namespace FreeHubProject
 
             if (employerId == 0)
             {
-                // Auto-create employer profile if user doesn't have one
                 try
                 {
                     int userId = Convert.ToInt32(Session["UserID"]);
@@ -53,15 +52,14 @@ namespace FreeHubProject
                     string email = Session["Email"] as string ?? "";
 
                     string createQuery = @"INSERT INTO Employer (userID, companyName, industry, description, contactEmail)
-                                          VALUES (@UserID, @Company, 'General', 'Employer account', @Email);
-                                          SELECT SCOPE_IDENTITY();";
+                                  VALUES (@UserID, @Company, 'General', 'Employer account', @Email);
+                                  SELECT SCOPE_IDENTITY();";
                     object result = DatabaseHelper.ExecuteScalar(createQuery,
                         new SqlParameter("@UserID", userId),
                         new SqlParameter("@Company", firstName + "'s Projects"),
                         new SqlParameter("@Email", email));
                     employerId = Convert.ToInt32(result);
 
-                    // Update user type to Employer
                     DatabaseHelper.ExecuteNonQuery(
                         "UPDATE [User] SET userType = 'Employer' WHERE userID = @UserID",
                         new SqlParameter("@UserID", userId));
@@ -74,7 +72,7 @@ namespace FreeHubProject
                 }
             }
 
-            // Get skills
+            // Get skills, budget, deadline...
             List<string> selectedSkills = new List<string>();
             foreach (ListItem skill in cblSkills.Items)
             {
@@ -82,7 +80,6 @@ namespace FreeHubProject
             }
             string skills = string.Join(", ", selectedSkills);
 
-            // Parse budget
             decimal budget;
             if (!decimal.TryParse(txtBudget.Text.Trim(), out budget))
             {
@@ -90,7 +87,6 @@ namespace FreeHubProject
                 return;
             }
 
-            // Parse deadline
             DateTime deadline;
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {
@@ -101,10 +97,10 @@ namespace FreeHubProject
             try
             {
                 string query = @"INSERT INTO Project 
-                    (employerID, title, description, category, budget, budgetType, deadline, projectStatus, experienceLevel, skills)
-                    VALUES 
-                    (@EmployerID, @Title, @Description, @Category, @Budget, @BudgetType, @Deadline, 'Open', @Experience, @Skills);
-                    SELECT SCOPE_IDENTITY();";
+            (employerID, title, description, category, budget, budgetType, deadline, projectStatus, experienceLevel, skills)
+            VALUES 
+            (@EmployerID, @Title, @Description, @Category, @Budget, @BudgetType, @Deadline, 'Open', @Experience, @Skills);
+            SELECT SCOPE_IDENTITY();";
 
                 object result = DatabaseHelper.ExecuteScalar(query,
                     new SqlParameter("@EmployerID", employerId),
@@ -119,9 +115,14 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
+                // Notify the employer confirming the post
+                int currentUserId = Convert.ToInt32(Session["UserID"]);
+                string notificationText = $"Your project '{txtProjectTitle.Text.Trim()}' was successfully posted and is now open for proposals.";
+
+                NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
+
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
-                
-                // Clear form after successful post
+
                 ClearProjectForm();
             }
             catch (Exception ex)
@@ -129,7 +130,6 @@ namespace FreeHubProject
                 ShowMessage("Error posting project: " + ex.Message, false);
             }
         }
-
         // EDIT PROJECT - not used for now since projects are in DB
         protected void btnEditProject_Click(object sender, EventArgs e)
         {
