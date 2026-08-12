@@ -18,6 +18,12 @@ namespace FreeHubProject
 
                 LoadWalletInformation();
                 LoadTransactions();
+
+                // Hide Fund Wallet for Freelancers - only Employers can fund
+                string userType = Session["UserType"] as string ?? "";
+                bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+                pnlFundWalletAction.Visible = isEmployer;
+                pnlSummaryFundBtn.Visible = isEmployer;
             }
         }
 

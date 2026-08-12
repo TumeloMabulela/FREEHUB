@@ -86,6 +86,8 @@ namespace FreeHubProject
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton btnFundWallet;
 
+        protected global::System.Web.UI.WebControls.Panel pnlFundWalletAction;
+
         /// <summary>
         /// btnWithdrawFunds control.
         /// </summary>
@@ -175,6 +177,8 @@ namespace FreeHubProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSummaryFundWallet;
+
+        protected global::System.Web.UI.WebControls.Panel pnlSummaryFundBtn;
 
         /// <summary>
         /// btnViewAllTop control.
