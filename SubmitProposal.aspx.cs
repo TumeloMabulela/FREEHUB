@@ -5,6 +5,7 @@ namespace FreeHubProject
 {
     public partial class SubmitProposal : System.Web.UI.Page
     {
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!AuthHelper.RequireRole(this, "Freelancer")) return;

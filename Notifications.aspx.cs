@@ -10,6 +10,7 @@ namespace FreeHubProject
 {
     public partial class Notifications : System.Web.UI.Page
     {
+     
         private List<NotificationItem> NotificationData
         {
             get
