@@ -78,26 +78,29 @@ namespace FreeHubProject
             int userId = GetUserId();
             string profileStatus = DatabaseHelper.GetProfileStatus(userId, userType);
 
-            // Set role-specific headings
-            litHeadingRole.Text = userType;
-            litSubtitleRole.Text = userType;
+            // Set role-specific headings (null-safe)
+            if (litHeadingRole != null) litHeadingRole.Text = userType;
+            if (litSubtitleRole != null) litSubtitleRole.Text = userType;
 
-            // Show role-specific warning panel
-            pnlWarningFreelancer.Visible = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
-            pnlWarningEmployer.Visible = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+            // Show role-specific warning panel (null-safe)
+            if (pnlWarningFreelancer != null)
+                pnlWarningFreelancer.Visible = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+            if (pnlWarningEmployer != null)
+                pnlWarningEmployer.Visible = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
             if (profileStatus == "Deactivated")
             {
-                // Profile already deactivated - show reactivation
-                pnlDeactivateReady.Visible = false;
-                pnlReactivateProfile.Visible = true;
-                litDeactivatedRole.Text = userType;
+                if (pnlDeactivateReady != null) pnlDeactivateReady.Visible = false;
+                if (pnlReactivateProfile != null)
+                {
+                    pnlReactivateProfile.Visible = true;
+                    if (litDeactivatedRole != null) litDeactivatedRole.Text = userType;
+                }
             }
             else
             {
-                // Profile is active - show deactivation form
-                pnlDeactivateReady.Visible = true;
-                pnlReactivateProfile.Visible = false;
+                if (pnlDeactivateReady != null) pnlDeactivateReady.Visible = true;
+                if (pnlReactivateProfile != null) pnlReactivateProfile.Visible = false;
             }
         }
 
@@ -111,7 +114,7 @@ namespace FreeHubProject
             string userType = GetUserType();
 
             // Set "Currently logged in as" badge
-            litLoggedInRole.Text = userType;
+            if (litLoggedInRole != null) litLoggedInRole.Text = userType;
 
             try
             {

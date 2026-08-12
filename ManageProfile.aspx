@@ -25,6 +25,12 @@
                     </div>
                     <h1>Manage Profile</h1>
                     <p>Update your information, deactivate your profile or account.</p>
+                    <p style="margin-top:10px; font-size:15px; color:#243328;">
+                        Currently logged in as:
+                        <span style="display:inline-block; background:#e8f5e0; color:#173f2c; padding:5px 16px; border-radius:12px; font-weight:700; font-size:14px;">
+                            <asp:Literal ID="litLoggedInRole" runat="server" />
+                        </span>
+                    </p>
                 </div>
 
                 <!-- MESSAGE -->
