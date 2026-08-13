@@ -621,3 +621,37 @@ SELECT 'Notifications', COUNT(*) FROM dbo.Notification
 UNION ALL
 SELECT 'Messages', COUNT(*) FROM dbo.Message;
 GO
+
+
+USE FreeHubDB;
+GO
+
+-- 1. Add LastSeen tracking to User table
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.[User]') AND name = 'lastSeen')
+BEGIN
+    ALTER TABLE dbo.[User] ADD lastSeen DATETIME NULL DEFAULT GETDATE();
+END
+GO
+
+-- 2. Add ReadReceipt timestamp tracking to Message table
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Message') AND name = 'readTimestamp')
+BEGIN
+    ALTER TABLE dbo.Message ADD readTimestamp DATETIME NULL;
+END
+GO
+
+GO
+
+-- Add attachment column to Message table
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Message') AND name = 'attachmentUrl')
+BEGIN
+    ALTER TABLE dbo.Message ADD attachmentUrl NVARCHAR(500) NULL;
+END
+GO
+
+-- Add attachment column to Project table
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Project') AND name = 'attachmentUrl')
+BEGIN
+    ALTER TABLE dbo.Project ADD attachmentUrl NVARCHAR(500) NULL;
+END
+GO
