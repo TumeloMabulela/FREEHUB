@@ -514,5 +514,65 @@ namespace FreeHubProject
             string query = "UPDATE Notification SET status = 'Read' WHERE userID = @UserID AND status = 'Unread'";
             ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
         }
+
+        // ============================================================
+        // PROFILE HELPER METHODS (used by team members' pages)
+        // ============================================================
+
+        public static string GetProfileStatus(int userID)
+        {
+            DataRow user = GetUserById(userID);
+            if (user != null) return Convert.ToString(user["accountStatus"]);
+            return "Active";
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID)
+        {
+            string query = @"SELECT u.accountStatus, 
+                            CASE WHEN f.freelancerID IS NOT NULL THEN 'Yes' ELSE 'No' END AS hasFreelancerProfile,
+                            CASE WHEN e.employerID IS NOT NULL THEN 'Yes' ELSE 'No' END AS hasEmployerProfile
+                            FROM [User] u
+                            LEFT JOIN Freelancer f ON u.userID = f.userID
+                            LEFT JOIN Employer e ON u.userID = e.userID
+                            WHERE u.userID = @UserID";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static void ReactivateUserProfile(int userID)
+        {
+            string query = "UPDATE [User] SET accountStatus = 'Active' WHERE userID = @UserID";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static void DeactivateUserProfile(int userID)
+        {
+            string query = "UPDATE [User] SET accountStatus = 'Inactive' WHERE userID = @UserID";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static string CapitalizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "";
+            return char.ToUpper(name[0]) + name.Substring(1).ToLower();
+        }
+
+        public static string CapitalizeSkills(string skills)
+        {
+            if (string.IsNullOrWhiteSpace(skills)) return "";
+            string[] parts = skills.Split(',');
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = parts[i].Trim();
+                if (parts[i].Length > 0)
+                    parts[i] = char.ToUpper(parts[i][0]) + parts[i].Substring(1);
+            }
+            return string.Join(", ", parts);
+        }
+
+        public static string FormatEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return "";
+            return email.Trim().ToLower();
+        }
     }
 }
