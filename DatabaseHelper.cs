@@ -526,6 +526,21 @@ namespace FreeHubProject
             return "Active";
         }
 
+        public static string GetProfileStatus(int userID, string profileType)
+        {
+            if (profileType == "Freelancer")
+            {
+                DataRow fl = GetFreelancerByUserId(userID);
+                return fl != null ? "Active" : "None";
+            }
+            else if (profileType == "Employer")
+            {
+                DataRow em = GetEmployerByUserId(userID);
+                return em != null ? "Active" : "None";
+            }
+            return GetProfileStatus(userID);
+        }
+
         public static DataTable GetUserProfileStatuses(int userID)
         {
             string query = @"SELECT u.accountStatus, 
@@ -538,16 +553,36 @@ namespace FreeHubProject
             return ExecuteQuery(query, new SqlParameter("@UserID", userID));
         }
 
+        public static DataTable GetUserProfileStatuses(int userID, string profileType)
+        {
+            return GetUserProfileStatuses(userID);
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID, string profileType, string status)
+        {
+            return GetUserProfileStatuses(userID);
+        }
+
         public static void ReactivateUserProfile(int userID)
         {
             string query = "UPDATE [User] SET accountStatus = 'Active' WHERE userID = @UserID";
             ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
         }
 
+        public static void ReactivateUserProfile(int userID, string profileType)
+        {
+            ReactivateUserProfile(userID);
+        }
+
         public static void DeactivateUserProfile(int userID)
         {
             string query = "UPDATE [User] SET accountStatus = 'Inactive' WHERE userID = @UserID";
             ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static void DeactivateUserProfile(int userID, string profileType)
+        {
+            DeactivateUserProfile(userID);
         }
 
         public static string CapitalizeName(string name)
