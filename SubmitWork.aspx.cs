@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 
 namespace FreeHubProject
 {
@@ -54,61 +55,131 @@ namespace FreeHubProject
             }
         }
 
+        protected void btnUploadFile_Click(object sender, EventArgs e)
+        {
+            if (fileUploadControl.HasFile)
+            {
+                try
+                {
+                    // 1. Validate File Extension
+                    string extension = Path.GetExtension(fileUploadControl.FileName).ToLower();
+                    string[] allowedExtensions = { ".pdf", ".png", ".jpg", ".jpeg", ".docx", ".zip", ".txt" };
+
+                    if (Array.IndexOf(allowedExtensions, extension) < 0)
+                    {
+                        lblUploadStatus.Text = "Invalid file type. Allowed: PDF, PNG, JPG, DOCX, ZIP, TXT.";
+                        lblUploadStatus.ForeColor = System.Drawing.Color.Red;
+                        return;
+                    }
+
+                    // 2. Validate File Size (Max 10MB = 10,485,760 bytes)
+                    if (fileUploadControl.PostedFile.ContentLength > 10485760)
+                    {
+                        lblUploadStatus.Text = "File size exceeds the 10MB limit.";
+                        lblUploadStatus.ForeColor = System.Drawing.Color.Red;
+                        return;
+                    }
+
+                    // 3. Ensure Upload Directory Exists
+                    string uploadFolder = Server.MapPath("~/Uploads/");
+                    if (!Directory.Exists(uploadFolder))
+                    {
+                        Directory.CreateDirectory(uploadFolder);
+                    }
+
+                    // 4. Generate Unique Filename
+                    string uniqueFileName = Guid.NewGuid().ToString("N") + "_" + Path.GetFileName(fileUploadControl.FileName);
+                    string savePath = Path.Combine(uploadFolder, uniqueFileName);
+
+                    // 5. Save File to Server
+                    fileUploadControl.SaveAs(savePath);
+
+                    // 6. Save Relative Path to HiddenField
+                    string relativePath = "~/Uploads/" + uniqueFileName;
+                    hfUploadedFilePath.Value = relativePath;
+
+                    lblUploadStatus.Text = "File uploaded successfully: " + fileUploadControl.FileName;
+                    lblUploadStatus.ForeColor = System.Drawing.Color.Green;
+                }
+                catch (Exception ex)
+                {
+                    lblUploadStatus.Text = "File upload error: " + ex.Message;
+                    lblUploadStatus.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+            else
+            {
+                lblUploadStatus.Text = "Please select a file to upload.";
+                lblUploadStatus.ForeColor = System.Drawing.Color.Orange;
+            }
+        }
+
         protected void btnSubmitWork_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtDeliverableLinks.Text) || string.IsNullOrWhiteSpace(txtSubmissionNotes.Text))
+            if (ProjectId <= 0)
             {
-                ShowStatus("Please fill in both the deliverable links and submission notes.", false);
+                ShowStatus("Invalid project selection.", false);
                 return;
             }
 
-            int userId = AuthHelper.GetCurrentUserId(this);
+            string notes = txtSubmissionNotes.Text.Trim();
+            string links = txtDeliverableLinks.Text.Trim();
+            string attachmentUrl = hfUploadedFilePath.Value;
+
+            if (string.IsNullOrEmpty(notes))
+            {
+                ShowStatus("Please enter submission notes for the employer.", false);
+                return;
+            }
 
             try
             {
-                // 1. Fetch Employer User ID for this project
-                string getEmployerQuery = @"
-                    SELECT e.userID, e.employerID 
-                    FROM dbo.Project p
-                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                int currentUserId = Convert.ToInt32(Session["UserID"]);
+
+                // 1. Fetch Employer User ID to send message/notification
+                string queryEmployer = @"
+                    SELECT e.userID 
+                    FROM dbo.Project p 
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID 
                     WHERE p.projectID = @ProjectID";
 
-                DataRow employerRow = DatabaseHelper.GetDataRow(getEmployerQuery, new SqlParameter("@ProjectID", ProjectId));
-
-                if (employerRow == null)
+                object employerObj = DatabaseHelper.ExecuteScalar(queryEmployer, new SqlParameter("@ProjectID", ProjectId));
+                if (employerObj == null)
                 {
-                    ShowStatus("Unable to locate project employer.", false);
+                    ShowStatus("Employer details not found.", false);
                     return;
                 }
 
-                int employerUserId = Convert.ToInt32(employerRow["userID"]);
+                int employerUserId = Convert.ToInt32(employerObj);
 
-                // 2. Update Project Status to 'Submitted' / 'Under Review'
+                // 2. Format Submission Message Content
+                string fullContent = "🚀 WORK SUBMISSION FOR REVIEW:\n" + notes;
+                if (!string.IsNullOrEmpty(links))
+                {
+                    fullContent += "\n\n🔗 Deliverable Links:\n" + links;
+                }
+
+                // 3. Send Message to Employer
+                string insertMessageQuery = @"
+                    INSERT INTO dbo.Message (senderID, receiverID, projectID, content, attachmentUrl, timeStamp, status)
+                    VALUES (@SenderID, @ReceiverID, @ProjectID, @Content, @AttachmentUrl, GETDATE(), 'Sent')";
+
+                DatabaseHelper.ExecuteNonQuery(insertMessageQuery,
+                    new SqlParameter("@SenderID", currentUserId),
+                    new SqlParameter("@ReceiverID", employerUserId),
+                    new SqlParameter("@ProjectID", ProjectId),
+                    new SqlParameter("@Content", fullContent),
+                    new SqlParameter("@AttachmentUrl", string.IsNullOrEmpty(attachmentUrl) ? (object)DBNull.Value : attachmentUrl));
+
+                // 4. Update Project Status to 'Under Review'
                 string updateProjectQuery = "UPDATE dbo.Project SET projectStatus = 'Under Review' WHERE projectID = @ProjectID";
                 DatabaseHelper.ExecuteNonQuery(updateProjectQuery, new SqlParameter("@ProjectID", ProjectId));
 
-                // 3. Send Message to Employer with Deliverables
-                string messageContent = string.Format(
-                    "WORK SUBMISSION FOR '{0}':\n\nDeliverable Links:\n{1}\n\nNotes:\n{2}",
-                    txtProjectTitle.Text,
-                    txtDeliverableLinks.Text.Trim(),
-                    txtSubmissionNotes.Text.Trim());
+                // 5. Create Notification for Employer
+                string notificationMsg = string.Format("Work submitted for '{0}'. Please review and approve payment.", txtProjectTitle.Text);
+                NotificationHelper.CreateNotification(employerUserId, "Project", notificationMsg);
 
-                string insertMessageQuery = @"
-                    INSERT INTO dbo.Message (senderID, receiverID, projectID, content, timeStamp, status)
-                    VALUES (@SenderID, @ReceiverID, @ProjectID, @Content, GETDATE(), 'Sent')";
-
-                DatabaseHelper.ExecuteNonQuery(insertMessageQuery,
-                    new SqlParameter("@SenderID", userId),
-                    new SqlParameter("@ReceiverID", employerUserId),
-                    new SqlParameter("@ProjectID", ProjectId),
-                    new SqlParameter("@Content", messageContent));
-
-                // 4. Send Notification to Employer
-                string notificationText = string.Format("The freelancer has submitted completed work for project '{0}'. Please review and approve.", txtProjectTitle.Text);
-                NotificationHelper.CreateNotification(employerUserId, "Project", notificationText);
-
-                ShowStatus("Work submitted successfully! The employer has been notified to review your submission.", true);
+                ShowStatus("Work submitted successfully! The project status is now 'Under Review'.", true);
                 btnSubmitWork.Enabled = false;
             }
             catch (Exception ex)

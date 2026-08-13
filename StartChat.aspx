@@ -31,7 +31,7 @@
             border: 1px solid #c7e8d0;
         }
 
-        /* LEFT PANEL: CONVERSATIONS LIST */
+        /* LEFT PANEL: CONVERSATIONS & USER SEARCH */
         .chat-list-panel {
             border-right: 1px solid #f0f0f0;
             padding-right: 16px;
@@ -40,7 +40,7 @@
         .chat-search-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .chat-search-input {
@@ -52,13 +52,40 @@
             background: #fafafa;
         }
 
-        .chat-filter-btn {
-            background: #ffffff;
-            border: 1px solid #e0e0e0;
+        .chat-search-btn {
+            background: #173f2c;
+            color: #ffffff;
+            border: none;
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 8px 14px;
             cursor: pointer;
-            color: #666;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Search Results Panel */
+        .search-results-box {
+            background: #f9fbf9;
+            border: 1px solid #e0e8e2;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #243328;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .search-result-item:hover {
+            background: #eef5f0;
         }
 
         .chat-item {
@@ -206,7 +233,7 @@
             border-radius: 12px;
         }
 
-        /* Message Bubbles */
+        /* Message Bubbles & Read Receipts */
         .msg-row {
             display: flex;
             gap: 10px;
@@ -250,12 +277,17 @@
             margin-top: 4px;
         }
 
+        /* Blue Ticks Read Receipt Style */
         .ticks-blue {
-            color: #2563eb;
-            font-size: 11px;
+            color: #2563eb !important;
+            font-weight: bold;
         }
 
-        /* Input Area */
+        .ticks-gray {
+            color: #9ca3af;
+        }
+
+        /* File Upload Input Controls */
         .thread-input-container {
             margin-top: 16px;
             border-top: 1px solid #f0f0f0;
@@ -268,8 +300,14 @@
             gap: 10px;
         }
 
-        .attach-btn {
-            background: none;
+        .file-upload-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .attach-btn-label {
+            background: #f0f2f0;
             border: 1px solid #e0e0e0;
             border-radius: 50%;
             width: 38px;
@@ -280,6 +318,15 @@
             color: #6b7280;
             cursor: pointer;
             font-size: 16px;
+            transition: background 0.2s;
+        }
+
+        .attach-btn-label:hover {
+            background: #e2e8e4;
+        }
+
+        .file-upload-hidden {
+            display: none;
         }
 
         .message-input {
@@ -305,25 +352,33 @@
             gap: 6px;
         }
 
-        .status-sent-text {
-            font-size: 11px;
-            color: #9ca3af;
-            text-align: right;
-            margin-top: 4px;
-            padding-right: 8px;
+        .attachment-preview {
+            font-size: 12px;
+            color: #15803d;
+            margin-top: 6px;
+            padding-left: 8px;
         }
     </style>
 
     <script type="text/javascript">
-function handleEnterKey(e, buttonId) {
-    var key = e.keyCode || e.which;
-    if (key === 13) {
-        e.preventDefault();
-        var btn = document.getElementById(buttonId);
-        if (btn) { btn.click(); }
-        return false;
-    }
-    return true;
+        function handleEnterKey(e, buttonId) {
+            var key = e.keyCode || e.which;
+            if (key === 13) {
+                e.preventDefault();
+                var btn = document.getElementById(buttonId);
+                if (btn) { btn.click(); }
+                return false;
+            }
+            return true;
+        }
+
+        function showSelectedFileName(input) {
+            var label = document.getElementById('<%= lblAttachedFileName.ClientID %>');
+            if (input.files && input.files[0]) {
+                label.innerText = "📎 Attached: " + input.files[0].name;
+            } else {
+                label.innerText = "";
+            }
         }
     </script>
 </asp:Content>
@@ -338,13 +393,33 @@ function handleEnterKey(e, buttonId) {
 
     <div class="chat-container">
 
-        <!-- LEFT CONTAINER: CONVERSATION LIST -->
+        <!-- LEFT CONTAINER: CONVERSATION LIST & USER SEARCH -->
         <div class="chat-list-panel">
+            
+            <!-- User Search Control -->
             <div class="chat-search-row">
-                <asp:TextBox ID="txtSearch" runat="server" CssClass="chat-search-input" placeholder="Search conversations..." AutoPostBack="true" OnTextChanged="txtSearch_TextChanged"></asp:TextBox>
-                <button type="button" class="chat-filter-btn">⚙</button>
+                <asp:TextBox ID="txtSearch" runat="server" CssClass="chat-search-input" placeholder="Search system users..." />
+                <asp:Button ID="btnSearchUser" runat="server" Text="Search 🔍" CssClass="chat-search-btn" OnClick="btnSearchUser_Click" />
             </div>
 
+            <!-- Search Results Dropdown List -->
+            <asp:Panel ID="pnlSearchResults" runat="server" CssClass="search-results-box" Visible="false">
+                <div style="padding: 8px 12px; font-size: 11px; font-weight: bold; color: #5a6e5f; background: #eef5f0;">MATCHING SYSTEM USERS:</div>
+                <asp:Repeater ID="rptSearchResults" runat="server" OnItemCommand="rptSearchResults_ItemCommand">
+                    <ItemTemplate>
+                        <asp:LinkButton ID="btnSelectSearchResult" runat="server" CssClass="search-result-item" CommandName="StartChatWithUser" CommandArgument='<%# Eval("userID") %>'>
+                            <div>
+                                <strong style="display: block; font-size: 13px; color: #173f2c;"><%# Eval("firstName") %> <%# Eval("lastName") %></strong>
+                                <small style="color: #6b7280; font-size: 11px;"><%# Eval("email") %></small>
+                            </div>
+                            <span style="background: #e8f5e0; color: #2d6b3f; padding: 2px 6px; border-radius: 8px; font-size: 10px; font-weight: 600;"><%# Eval("userType") %></span>
+                        </asp:LinkButton>
+                    </ItemTemplate>
+                </asp:Repeater>
+                <asp:Label ID="lblNoUsersFound" runat="server" Visible="false" Text="No users found." Style="display: block; padding: 10px; text-align: center; color: #9ca3af; font-size: 12px;" />
+            </asp:Panel>
+
+            <!-- Conversations List Repeater -->
             <asp:Repeater ID="rptUsers" runat="server" OnItemCommand="rptUsers_ItemCommand">
                 <ItemTemplate>
                     <asp:LinkButton ID="btnSelectUser" runat="server" CssClass='<%# Convert.ToInt32(Eval("UserID")) == SelectedOtherUserId ? "chat-item active" : "chat-item" %>' CommandName="SelectUser" CommandArgument='<%# Eval("UserID") %>'>
@@ -362,7 +437,7 @@ function handleEnterKey(e, buttonId) {
                 </ItemTemplate>
             </asp:Repeater>
 
-            <asp:Label ID="lblNoUsers" runat="server" Visible="false" Text="No active conversations." CssClass="chat-item-preview" style="padding:10px; display:block;"></asp:Label>
+            <asp:Label ID="lblNoUsers" runat="server" Visible="false" Text="No active conversations." CssClass="chat-item-preview" Style="padding:10px; display:block;"></asp:Label>
         </div>
 
         <!-- RIGHT CONTAINER: MESSAGES THREAD -->
@@ -370,14 +445,15 @@ function handleEnterKey(e, buttonId) {
             <div class="thread-header">
                 <div class="thread-header-user">
                     <div class="avatar-circle avatar-rt">
-                        <asp:Label ID="lblChatInitials" runat="server" Text="RT"></asp:Label>
+                        <asp:Label ID="lblChatInitials" runat="server" Text="--"></asp:Label>
                     </div>
                     <div>
                         <div class="thread-header-title">
                             <asp:Label ID="lblChatName" runat="server" Text="Select a conversation"></asp:Label>
                         </div>
                         <div class="thread-header-sub">
-                            <span class="status-dot"></span> Online
+                            <span class="status-dot"></span>
+                            <asp:Label ID="lblPartnerStatus" runat="server" Text="Offline"></asp:Label>
                         </div>
                     </div>
                 </div>
@@ -392,17 +468,50 @@ function handleEnterKey(e, buttonId) {
                 <div class="date-divider">
                     <span>Today</span>
                 </div>
-                <asp:PlaceHolder ID="phMessages" runat="server"></asp:PlaceHolder>
+                <asp:Repeater ID="rptMessages" runat="server">
+                    <ItemTemplate>
+                        <div class='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId ? "msg-row sent" : "msg-row received" %>'>
+                            <div class='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId ? "msg-bubble-sent" : "msg-bubble-received" %>'>
+                                <%# Eval("content") %>
+
+                                <!-- Attachment Link (If present) -->
+                                <asp:PlaceHolder ID="phAttachment" runat="server" Visible='<%# Eval("attachmentUrl") != DBNull.Value && !string.IsNullOrEmpty(Eval("attachmentUrl").ToString()) %>'>
+                                    <div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(0,0,0,0.1);">
+                                        <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline; font-size: 11px;">
+                                            📎 View Attached File
+                                        </a>
+                                    </div>
+                                </asp:PlaceHolder>
+
+                                <div class="msg-meta">
+                                    <span><%# Convert.ToDateTime(Eval("timeStamp")).ToString("HH:mm") %></span>
+                                    
+                                    <!-- Double Blue Ticks / Single Gray Tick Read Receipts for Outgoing Messages -->
+                                    <asp:PlaceHolder ID="phReadReceipt" runat="server" Visible='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId %>'>
+                                        <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'>
+                                            <%# Eval("status").ToString() == "Read" ? "✓✓" : "✓" %>
+                                        </span>
+                                    </asp:PlaceHolder>
+                                </div>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
             </div>
 
-            <!-- Input Controls -->
+            <!-- Input Controls with Functional File Attachment -->
             <div class="thread-input-container">
                 <div class="thread-input-row">
-                    <button type="button" class="attach-btn">📎</button>
+                    <div class="file-upload-wrapper">
+                        <label for="<%= fileUploadControl.ClientID %>" class="attach-btn-label" title="Attach file">📎</label>
+                        <asp:FileUpload ID="fileUploadControl" runat="server" CssClass="file-upload-hidden" onchange="showSelectedFileName(this);" />
+                    </div>
+
                     <asp:TextBox ID="txtMessage" runat="server" CssClass="message-input" placeholder="Type your message..." onkeydown="return handleEnterKey(event, '<%= btnSend.ClientID %>');"></asp:TextBox>
                     <asp:Button ID="btnSend" runat="server" Text="Send 🚀" CssClass="send-btn-gradient" OnClick="btnSend_Click" />
                 </div>
-                <div class="status-sent-text">Sent ✓</div>
+                
+                <asp:Label ID="lblAttachedFileName" runat="server" CssClass="attachment-preview"></asp:Label>
             </div>
         </div>
 

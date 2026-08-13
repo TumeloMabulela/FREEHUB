@@ -565,13 +565,89 @@ namespace FreeHubProject
             name = name.Trim();
             return char.ToUpper(name[0]) + (name.Length > 1 ? name.Substring(1).ToLower() : "");
         }
+        public static DataTable SearchRegisteredUsers(string searchTerm, int currentUserId)
+        {
+            string query = @"
+        SELECT userID, firstName, lastName, email, userType 
+        FROM dbo.[User] 
+        WHERE userID != @CurrentUserID 
+          AND accountStatus != 'Deleted'
+          AND (firstName LIKE @Search OR lastName LIKE @Search OR email LIKE @Search OR username LIKE @Search)
+        ORDER BY firstName ASC";
 
+            string formattedSearch = "%" + searchTerm.Trim() + "%";
+
+            return GetDataTable(query,
+                new SqlParameter("@CurrentUserID", currentUserId),
+                new SqlParameter("@Search", formattedSearch));
+        }
         /// <summary>
         /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
         /// </summary>
         /// <summary>
         /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
-        /// </summary>
+        /// </summary>/// <param name="projectId">Optional project ID associated with the conversation.</param>
+        // Updates user's last active / logout timestamp
+        public static void UpdateUserLastSeen(int userId)
+        {
+            string query = "UPDATE dbo.[User] SET lastSeen = GETDATE() WHERE userID = @UserID";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userId));
+        }
+
+        // Formats Last Seen for display
+        public static string GetUserOnlineStatus(int targetUserId)
+        {
+            DataRow user = GetUserById(targetUserId);
+            if (user == null) return "Offline";
+
+            string accountStatus = Convert.ToString(user["accountStatus"]);
+            if (accountStatus == "Inactive" || accountStatus == "Deleted") return "Offline";
+
+            if (user["lastSeen"] == DBNull.Value) return "Last seen long ago";
+
+            DateTime lastSeen = Convert.ToDateTime(user["lastSeen"]);
+            TimeSpan diff = DateTime.Now - lastSeen;
+
+            // Consider online if active within the last 3 minutes
+            if (diff.TotalMinutes < 3)
+            {
+                return "Online 🟢";
+            }
+
+            if (diff.TotalMinutes < 60)
+                return string.Format("Last seen {0}m ago", (int)diff.TotalMinutes);
+
+            if (diff.TotalHours < 24)
+                return string.Format("Last seen today at {0:HH:mm}", lastSeen);
+
+            return string.Format("Last seen {0:dd MMM} at {1:HH:mm}", lastSeen, lastSeen);
+        }
+
+        // Marks unread messages as 'Read' when a chat session is opened
+        public static void MarkMessagesAsRead(int currentUserId, int senderUserId, int? projectId = null)
+        {
+            string query = @"
+        UPDATE dbo.Message 
+        SET status = 'Read', readTimestamp = GETDATE() 
+        WHERE receiverID = @CurrentUserID 
+          AND senderID = @SenderID 
+          AND status != 'Read'";
+
+            if (projectId.HasValue && projectId.Value > 0)
+            {
+                query += " AND projectID = @ProjectID";
+                ExecuteNonQuery(query,
+                    new SqlParameter("@CurrentUserID", currentUserId),
+                    new SqlParameter("@SenderID", senderUserId),
+                    new SqlParameter("@ProjectID", projectId.Value));
+            }
+            else
+            {
+                ExecuteNonQuery(query,
+                    new SqlParameter("@CurrentUserID", currentUserId),
+                    new SqlParameter("@SenderID", senderUserId));
+            }
+        }
         public static string CapitalizeSkills(string skills)
         {
             if (string.IsNullOrWhiteSpace(skills)) return "";

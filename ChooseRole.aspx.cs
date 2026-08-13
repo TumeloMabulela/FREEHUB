@@ -233,6 +233,14 @@ namespace FreeHubProject
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
+            if (Session["UserID"] != null)
+            {
+                int userId = Convert.ToInt32(Session["UserID"]);
+
+                // Log last seen timestamp prior to destroying session
+                DatabaseHelper.UpdateUserLastSeen(userId);
+            }
+
             Session.Clear();
             Session.Abandon();
             FormsAuthentication.SignOut();
