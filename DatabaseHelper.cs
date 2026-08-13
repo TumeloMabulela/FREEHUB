@@ -563,6 +563,17 @@ namespace FreeHubProject
             return GetUserProfileStatuses(userID);
         }
 
+        public static DataTable GetUserProfileStatuses(int userID, out string freelancerStatus, out string employerStatus)
+        {
+            freelancerStatus = "None";
+            employerStatus = "None";
+            DataRow fl = GetFreelancerByUserId(userID);
+            if (fl != null) freelancerStatus = "Active";
+            DataRow em = GetEmployerByUserId(userID);
+            if (em != null) employerStatus = "Active";
+            return GetUserProfileStatuses(userID);
+        }
+
         public static void ReactivateUserProfile(int userID)
         {
             string query = "UPDATE [User] SET accountStatus = 'Active' WHERE userID = @UserID";
@@ -571,6 +582,12 @@ namespace FreeHubProject
 
         public static void ReactivateUserProfile(int userID, string profileType)
         {
+            ReactivateUserProfile(userID);
+        }
+
+        public static void ReactivateUserProfile(int userID, out string message)
+        {
+            message = "Profile reactivated successfully.";
             ReactivateUserProfile(userID);
         }
 
