@@ -126,6 +126,15 @@ namespace FreeHubProject
                 }
                 catch { }
 
+                // Notify self (employer)
+                try
+                {
+                    int userId = Convert.ToInt32(Session["UserID"]);
+                    DatabaseHelper.SendNotification(userId, "Project",
+                        "Your project '" + txtProjectTitle.Text.Trim() + "' was successfully posted and is now open for proposals.");
+                }
+                catch { }
+
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
                 
                 // Clear form after successful post

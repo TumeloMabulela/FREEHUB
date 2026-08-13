@@ -127,6 +127,10 @@ namespace FreeHubProject
                     // Now delete the project
                     DatabaseHelper.ExecuteNonQuery("DELETE FROM Project WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
+
+                    // Notify self about deletion
+                    int userId = Convert.ToInt32(Session["UserID"]);
+                    DatabaseHelper.SendNotification(userId, "Project", "You have deleted a project successfully.");
                 }
                 catch { }
                 LoadProjects();
