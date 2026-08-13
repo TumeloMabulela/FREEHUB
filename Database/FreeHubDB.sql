@@ -623,7 +623,7 @@ SELECT 'Messages', COUNT(*) FROM dbo.Message;
 GO
 
 
-USE FreeHubDB;
+
 GO
 
 -- 1. Add LastSeen tracking to User table
