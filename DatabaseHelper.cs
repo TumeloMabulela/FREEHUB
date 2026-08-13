@@ -462,5 +462,57 @@ namespace FreeHubProject
                             ORDER BY c.commentDate DESC";
             return ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
         }
+
+        // ============================================================
+        // NOTIFICATION OPERATIONS
+        // ============================================================
+
+        public static void SendNotification(int userID, string type, string content)
+        {
+            string query = @"INSERT INTO Notification (userID, type, content, status)
+                            VALUES (@UserID, @Type, @Content, 'Unread')";
+            ExecuteNonQuery(query,
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@Type", type),
+                new SqlParameter("@Content", content));
+        }
+
+        public static void NotifyAllFreelancers(string type, string content)
+        {
+            string query = @"INSERT INTO Notification (userID, type, content, status)
+                            SELECT userID, @Type, @Content, 'Unread'
+                            FROM [User] WHERE userType = 'Freelancer' AND accountStatus = 'Active'";
+            ExecuteNonQuery(query,
+                new SqlParameter("@Type", type),
+                new SqlParameter("@Content", content));
+        }
+
+        public static DataTable GetNotificationsByUser(int userID)
+        {
+            string query = @"SELECT notificationID, type, content, notificationTimestamp, status
+                            FROM Notification
+                            WHERE userID = @UserID
+                            ORDER BY notificationTimestamp DESC";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static int GetUnreadNotificationCount(int userID)
+        {
+            string query = "SELECT COUNT(*) FROM Notification WHERE userID = @UserID AND status = 'Unread'";
+            object result = ExecuteScalar(query, new SqlParameter("@UserID", userID));
+            return Convert.ToInt32(result);
+        }
+
+        public static void MarkNotificationRead(int notificationID)
+        {
+            string query = "UPDATE Notification SET status = 'Read' WHERE notificationID = @ID";
+            ExecuteNonQuery(query, new SqlParameter("@ID", notificationID));
+        }
+
+        public static void MarkAllNotificationsRead(int userID)
+        {
+            string query = "UPDATE Notification SET status = 'Read' WHERE userID = @UserID AND status = 'Unread'";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
     }
 }

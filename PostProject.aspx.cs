@@ -118,6 +118,14 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
+                // Notify all freelancers about new project
+                try
+                {
+                    DatabaseHelper.NotifyAllFreelancers("Project",
+                        "New project posted: " + txtProjectTitle.Text.Trim() + " - Budget: R" + budget.ToString("N0"));
+                }
+                catch { }
+
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
                 
                 // Clear form after successful post
