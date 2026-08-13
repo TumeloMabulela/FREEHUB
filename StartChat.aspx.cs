@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.IO;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -18,12 +19,23 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
+                // Heartbeat: update current user's last seen timestamp
+                DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
+
                 BindApprovedChatUsers("");
 
+                string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
-                string openChat = Request.QueryString["open"];
 
-                if (!string.IsNullOrWhiteSpace(userFromQuery))
+                if (!string.IsNullOrWhiteSpace(queryUserId))
+                {
+                    int uid;
+                    if (int.TryParse(queryUserId, out uid))
+                    {
+                        SelectUserById(uid);
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(userFromQuery))
                 {
                     SelectUserByName(userFromQuery);
                 }
@@ -34,7 +46,7 @@ namespace FreeHubProject
             }
         }
 
-        private int CurrentUserId
+        public int CurrentUserId
         {
             get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
         }
@@ -101,9 +113,8 @@ namespace FreeHubProject
 
             rptUsers.DataSource = dt;
             rptUsers.DataBind();
-            lblNoUsers.Visible = dt.Rows.Count == 0;
+            lblNoUsers.Visible = (dt.Rows.Count == 0);
 
-            // Auto-select first user if none selected
             if (dt.Rows.Count > 0 && SelectedOtherUserId == 0)
             {
                 SelectUserById(Convert.ToInt32(dt.Rows[0]["UserID"]));
@@ -112,6 +123,7 @@ namespace FreeHubProject
 
         public string GetAvatarClass(string initials)
         {
+            if (string.IsNullOrEmpty(initials)) return "avatar-ml";
             switch (initials.ToUpper())
             {
                 case "RT": return "avatar-rt";
@@ -150,20 +162,31 @@ namespace FreeHubProject
 
         private void SelectUserById(int otherUserId)
         {
+            SelectedOtherUserId = otherUserId;
+
+            // Fetch user profile info
+            DataRow user = DatabaseHelper.GetUserById(otherUserId);
+            if (user != null)
+            {
+                string firstName = user["firstName"].ToString();
+                string lastName = user["lastName"].ToString();
+                lblChatName.Text = firstName + " " + lastName;
+                lblChatInitials.Text = (!string.IsNullOrEmpty(firstName) ? firstName[0].ToString() : "") +
+                                       (!string.IsNullOrEmpty(lastName) ? lastName[0].ToString() : "");
+
+                // Update online / last seen status label
+                lblPartnerStatus.Text = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+            }
+
+            // Check if there is an active proposal/project between these two users
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-                    SELECT TOP 1 
-                        u.userID AS UserID,
-                        (u.firstName + ' ' + u.lastName) AS Name,
-                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
-                        p.projectID AS ProjectID,
-                        p.projectStatus AS ProjectStatus
+                    SELECT TOP 1 p.projectID, p.projectStatus
                     FROM dbo.Proposal prop
                     INNER JOIN dbo.Project p ON prop.projectID = p.projectID
                     INNER JOIN dbo.Employer e ON p.employerID = e.employerID
                     INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
-                    INNER JOIN dbo.[User] u ON u.userID = @OtherUserID
                     WHERE prop.status = 'Approved' 
                       AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
 
@@ -177,12 +200,8 @@ namespace FreeHubProject
                     {
                         if (dr.Read())
                         {
-                            SelectedOtherUserId = Convert.ToInt32(dr["UserID"]);
-                            ActiveProjectId = Convert.ToInt32(dr["ProjectID"]);
-                            string projectStatus = dr["ProjectStatus"].ToString();
-
-                            lblChatName.Text = dr["Name"].ToString();
-                            lblChatInitials.Text = dr["Initials"].ToString();
+                            ActiveProjectId = Convert.ToInt32(dr["projectID"]);
+                            string projectStatus = dr["projectStatus"].ToString();
 
                             if (projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase))
                             {
@@ -194,23 +213,58 @@ namespace FreeHubProject
                             {
                                 btnSend.Enabled = true;
                             }
-
-                            LoadChatMessages();
+                        }
+                        else
+                        {
+                            ActiveProjectId = 0;
+                            btnSend.Enabled = true;
                         }
                     }
                 }
             }
+
+            // Mark unread messages as Read
+            DatabaseHelper.MarkMessagesAsRead(CurrentUserId, otherUserId, ActiveProjectId > 0 ? (int?)ActiveProjectId : null);
+
+            LoadChatMessages();
         }
 
         protected void btnSend_Click(object sender, EventArgs e)
         {
-            if (SelectedOtherUserId <= 0 || string.IsNullOrWhiteSpace(txtMessage.Text)) return;
+            if (SelectedOtherUserId <= 0 || (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile)) return;
+
+            string savedAttachmentUrl = null;
+
+            // Handle file attachment upload
+            if (fileUploadControl.HasFile)
+            {
+                try
+                {
+                    string folderPath = Server.MapPath("~/Uploads/");
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+
+                    string fileExt = Path.GetExtension(fileUploadControl.FileName);
+                    string fileName = Guid.NewGuid().ToString("N") + fileExt;
+                    string fullPath = Path.Combine(folderPath, fileName);
+
+                    fileUploadControl.SaveAs(fullPath);
+                    savedAttachmentUrl = "~/Uploads/" + fileName;
+                }
+                catch (Exception ex)
+                {
+                    ShowStatus("Error uploading file: " + ex.Message);
+                    return;
+                }
+            }
 
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-                    INSERT INTO dbo.Message (senderID, receiverID, projectID, content, timeStamp, status)
-                    VALUES (@SenderID, @ReceiverID, @ProjectID, @Content, GETDATE(), 'Sent')";
+                    INSERT INTO dbo.Message (senderID, receiverID, projectID, content, attachmentUrl, timeStamp, status)
+                    VALUES (@SenderID, @ReceiverID, @ProjectID, @Content, @AttachmentUrl, GETDATE(), 'Sent')";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -218,6 +272,7 @@ namespace FreeHubProject
                     cmd.Parameters.AddWithValue("@ReceiverID", SelectedOtherUserId);
                     cmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId > 0 ? (object)ActiveProjectId : DBNull.Value);
                     cmd.Parameters.AddWithValue("@Content", txtMessage.Text.Trim());
+                    cmd.Parameters.AddWithValue("@AttachmentUrl", string.IsNullOrEmpty(savedAttachmentUrl) ? (object)DBNull.Value : savedAttachmentUrl);
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
@@ -228,59 +283,91 @@ namespace FreeHubProject
             NotificationHelper.CreateNotification(SelectedOtherUserId, "Message", $"{senderName} sent you a message.");
 
             txtMessage.Text = "";
+            lblAttachedFileName.Text = "";
             ShowStatus("Message sent successfully.");
+
             LoadChatMessages();
             BindApprovedChatUsers("");
         }
 
         private void LoadChatMessages()
         {
-            phMessages.Controls.Clear();
-            if (SelectedOtherUserId <= 0) return;
+            if (SelectedOtherUserId <= 0)
+            {
+                rptMessages.DataSource = null;
+                rptMessages.DataBind();
+                return;
+            }
 
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-                    SELECT senderID, content, FORMAT(timeStamp, 'hh:mm tt') AS timeStr
-                    FROM dbo.Message
-                    WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
-                       OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
-                    ORDER BY timeStamp ASC";
+            SELECT 
+                messageID, 
+                senderID, 
+                receiverID, 
+                content, 
+                attachmentUrl, 
+                status, 
+                timeStamp
+            FROM dbo.Message
+            WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
+               OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
+            ORDER BY timeStamp ASC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
                     cmd.Parameters.AddWithValue("@OtherUserID", SelectedOtherUserId);
-                    conn.Open();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
-                        while (dr.Read())
-                        {
-                            int senderId = Convert.ToInt32(dr["senderID"]);
-                            string content = HttpUtility.HtmlEncode(dr["content"].ToString());
-                            string timeStr = dr["timeStr"].ToString();
+                        DataTable dt = new DataTable();
+                        da.Fill(dt);
 
-                            bool isMe = (senderId == CurrentUserId);
-                            string rowClass = isMe ? "msg-row sent" : "msg-row received";
-                            string bubbleClass = isMe ? "msg-bubble-sent" : "msg-bubble-received";
-                            string ticksHtml = isMe ? "<span class='ticks-blue'>✓✓</span>" : "";
-                            string initials = isMe ? "ML" : lblChatInitials.Text;
-                            string avatarClass = GetAvatarClass(initials);
-
-                            string html = $@"
-                                <div class='{rowClass}'>
-                                    <div class='avatar-circle {avatarClass}' style='width:32px;height:32px;font-size:11px;'>{initials}</div>
-                                    <div class='{bubbleClass}'>
-                                        <div>{content}</div>
-                                        <div class='msg-meta'><span>{timeStr}</span> {ticksHtml}</div>
-                                    </div>
-                                </div>";
-
-                            phMessages.Controls.Add(new LiteralControl(html));
-                        }
+                        rptMessages.DataSource = dt;
+                        rptMessages.DataBind();
                     }
                 }
+            }
+        }
+
+        protected void btnSearchUser_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                pnlSearchResults.Visible = false;
+                return;
+            }
+
+            DataTable dtUsers = DatabaseHelper.SearchRegisteredUsers(txtSearch.Text.Trim(), CurrentUserId);
+
+            pnlSearchResults.Visible = true;
+
+            if (dtUsers != null && dtUsers.Rows.Count > 0)
+            {
+                rptSearchResults.DataSource = dtUsers;
+                rptSearchResults.DataBind();
+                lblNoUsersFound.Visible = false;
+            }
+            else
+            {
+                rptSearchResults.DataSource = null;
+                rptSearchResults.DataBind();
+                lblNoUsersFound.Visible = true;
+            }
+        }
+
+        protected void rptSearchResults_ItemCommand(object source, RepeaterCommandEventArgs e)
+        {
+            if (e.CommandName == "StartChatWithUser")
+            {
+                int targetUserId = Convert.ToInt32(e.CommandArgument);
+
+                pnlSearchResults.Visible = false;
+                txtSearch.Text = "";
+
+                SelectUserById(targetUserId);
             }
         }
 
