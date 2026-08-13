@@ -67,7 +67,7 @@ namespace FreeHubProject
                 }
 
                 SwitchUserRole(userId, "Freelancer");
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace FreeHubProject
                 }
 
                 SwitchUserRole(userId, "Employer");
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {
@@ -131,7 +131,7 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Freelancer");
                 pnlCreateFreelancerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {
@@ -177,7 +177,7 @@ namespace FreeHubProject
 
                 SwitchUserRole(userId, "Employer");
                 pnlCreateEmployerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {

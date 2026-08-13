@@ -63,17 +63,19 @@
 
                     <asp:Panel ID="pnlUserButtons" runat="server" Visible="false">
                         <div class="user-nav-section">
-                            <span class="user-nav-initials">
-                                <asp:Literal ID="litInitials" runat="server" />
-                            </span>
-                            <div class="user-nav-info">
-                                <span class="user-nav-name">
-                                    <asp:Literal ID="litFullName" runat="server" />
+                            <a href="ManageProfile.aspx" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
+                                <span class="user-nav-initials">
+                                    <asp:Literal ID="litInitials" runat="server" />
                                 </span>
-                                <span class="user-nav-role">
-                                    <asp:Literal ID="litUserRole" runat="server" />
-                                </span>
-                            </div>
+                                <div class="user-nav-info">
+                                    <span class="user-nav-name">
+                                        <asp:Literal ID="litFullName" runat="server" />
+                                    </span>
+                                    <span class="user-nav-role">
+                                        <asp:Literal ID="litUserRole" runat="server" />
+                                    </span>
+                                </div>
+                            </a>
                             <asp:LinkButton ID="btnLogout" runat="server"
                                 CssClass="logout-link" OnClick="btnLogout_Click">
                                 Logout

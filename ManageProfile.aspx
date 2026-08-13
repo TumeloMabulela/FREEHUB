@@ -145,14 +145,18 @@
                     </div>
 
                     <div class="post-field">
-                        <asp:CheckBox ID="chkConfirmDeactivateProfile" runat="server" />
+                        <asp:CheckBox ID="chkConfirmDeactivateProfile" runat="server"
+                            onclick="toggleDeactivateProfileBtn();" />
                         <label style="display:inline; margin-left:8px;">
                             Yes, I understand the consequences of deactivating my profile.
                         </label>
                     </div>
 
                     <asp:Button ID="btnDeactivateProfile" runat="server" Text="Deactivate Profile"
-                        CssClass="deactivate-button" OnClick="btnDeactivateProfile_Click" />
+                        CssClass="deactivate-button"
+                        style="opacity:0.5; cursor:not-allowed;"
+                        OnClientClick="return showDeactivateProfileModal();"
+                        OnClick="btnDeactivateProfile_Click" />
                 </asp:Panel>
 
                 <!-- A600: DEACTIVATE ACCOUNT -->
@@ -171,7 +175,8 @@
                     </div>
 
                     <div class="post-field">
-                        <asp:CheckBox ID="chkConfirmDeactivateAccount" runat="server" />
+                        <asp:CheckBox ID="chkConfirmDeactivateAccount" runat="server"
+                            onclick="toggleDeactivateAccountBtn();" />
                         <label style="display:inline; margin-left:8px;">
                             Yes, I understand the consequences of deactivating my account.
                         </label>
@@ -179,6 +184,8 @@
 
                     <asp:Button ID="btnDeactivateAccount" runat="server" Text="Deactivate Account"
                         CssClass="deactivate-button deactivate-account-button"
+                        style="opacity:0.5; cursor:not-allowed;"
+                        OnClientClick="return showDeactivateAccountModal();"
                         OnClick="btnDeactivateAccount_Click" />
                 </asp:Panel>
 
@@ -187,5 +194,72 @@
         </section>
 
     </div>
+
+    <script type="text/javascript">
+        var currentUserRole = '<%= Session["UserType"] as string ?? "User" %>';
+
+        function toggleDeactivateProfileBtn() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
+            var btn = document.getElementById('<%= btnDeactivateProfile.ClientID %>');
+            btn.style.opacity = chk.checked ? '1' : '0.5';
+            btn.style.cursor = chk.checked ? 'pointer' : 'not-allowed';
+        }
+
+        function toggleDeactivateAccountBtn() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
+            var btn = document.getElementById('<%= btnDeactivateAccount.ClientID %>');
+            btn.style.opacity = chk.checked ? '1' : '0.5';
+            btn.style.cursor = chk.checked ? 'pointer' : 'not-allowed';
+        }
+
+        function showDeactivateProfileModal() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
+            if (!chk.checked) { alert('Please tick the checkbox first.'); return false; }
+
+            var title = currentUserRole === 'Freelancer' ? 'Deactivate Freelancer Profile' : 'Deactivate Employer Profile';
+            var message = currentUserRole === 'Freelancer'
+                ? 'Your freelancer reputation takes time to build. Employers trust profiles with proven track records.<br/><br/>Are you sure you want to give up your visibility?'
+                : 'Talented freelancers are actively looking at your projects. Deactivating means your listings will be cancelled.<br/><br/>Are you sure you want to stop hiring?';
+
+            var overlay = document.createElement('div');
+            overlay.className = 'fh-modal-overlay';
+            overlay.innerHTML =
+                '<div class="fh-modal">' +
+                '<div class="fh-modal-icon" style="background:#fee2e2;color:#dc2626;">&#9888;</div>' +
+                '<h3>' + title + '</h3><p>' + message + '</p>' +
+                '<button type="button" class="fh-modal-btn-primary" id="fhYes">Yes, Deactivate</button><br/>' +
+                '<button type="button" class="fh-modal-btn-cancel" id="fhNo">No, keep my profile</button></div>';
+            document.body.appendChild(overlay);
+
+            document.getElementById('fhNo').onclick = function() { overlay.remove(); };
+            document.getElementById('fhYes').onclick = function() { overlay.remove(); __doPostBack('<%= btnDeactivateProfile.UniqueID %>', ''); };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+
+        function showDeactivateAccountModal() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
+            if (!chk.checked) { alert('Please tick the checkbox first.'); return false; }
+
+            var overlay = document.createElement('div');
+            overlay.className = 'fh-modal-overlay';
+            overlay.innerHTML =
+                '<div class="fh-modal">' +
+                '<div class="fh-modal-icon" style="background:#fee2e2;color:#dc2626;">&#9888;</div>' +
+                '<h3>Wait, are you sure?</h3>' +
+                '<p>Your FreeHUB account holds your entire history: reputation, ratings, wallet balance, and connections.<br/><br/>' +
+                'Once deactivated, all projects will be cancelled and you will be logged out.<br/><br/>' +
+                '<strong>You can always deactivate just your profile instead.</strong><br/><br/>' +
+                '<span style="color:#dc2626;font-weight:600;">Do you still want to deactivate your entire account?</span></p>' +
+                '<button type="button" class="fh-modal-btn-primary" id="fhYes2">Yes, Deactivate Account</button><br/>' +
+                '<button type="button" class="fh-modal-btn-cancel" id="fhNo2">No, keep my account</button></div>';
+            document.body.appendChild(overlay);
+
+            document.getElementById('fhNo2').onclick = function() { overlay.remove(); };
+            document.getElementById('fhYes2').onclick = function() { overlay.remove(); __doPostBack('<%= btnDeactivateAccount.UniqueID %>', ''); };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+    </script>
 
 </asp:Content>
