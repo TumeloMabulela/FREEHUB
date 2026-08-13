@@ -641,6 +641,7 @@ END
 GO
 
 
+
 GO
 
 -- Add attachment column to Message table
