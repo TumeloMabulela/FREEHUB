@@ -80,6 +80,8 @@
            class="sidebar-item <%= GetActiveClass("RateFreelancer") %>">
             <span class="sidebar-icon">&#11088;</span>
             <span>Ratings</span>
+
+
         </a>
 
     </div>
