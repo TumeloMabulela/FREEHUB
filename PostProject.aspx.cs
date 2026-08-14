@@ -118,8 +118,25 @@ namespace FreeHubProject
                 // Notify the employer confirming the post
                 int currentUserId = Convert.ToInt32(Session["UserID"]);
                 string notificationText = $"Your project '{txtProjectTitle.Text.Trim()}' was successfully posted and is now open for proposals.";
-
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
+
+                // Notify all freelancers about new project
+                try
+                {
+                    DatabaseHelper.NotifyAllFreelancers("Project",
+                        "New project posted: " + txtProjectTitle.Text.Trim() + " - Budget: R" + budget.ToString("N0"));
+                }
+                catch { }
+
+                // Notify self (employer)
+                try
+                {
+                    int userId = Convert.ToInt32(Session["UserID"]);
+                    DatabaseHelper.SendNotification(userId, "Project",
+                        "Your project '" + txtProjectTitle.Text.Trim() + "' was successfully posted and is now open for proposals.");
+                }
+                catch { }
+
 
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
 

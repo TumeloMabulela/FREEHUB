@@ -107,6 +107,26 @@ namespace FreeHubProject
 
                     if (result > 0)
                     {
+                        // Notify the employer
+                        try
+                        {
+                            string freelancerName = Session["FirstName"] + " " + Session["LastName"];
+                            System.Data.DataRow project = DatabaseHelper.GetProjectById(projectId);
+                            if (project != null)
+                            {
+                                int employerId = Convert.ToInt32(project["employerID"]);
+                                string empQuery = "SELECT userID FROM Employer WHERE employerID = @EID";
+                                object empUserId = DatabaseHelper.ExecuteScalar(empQuery,
+                                    new System.Data.SqlClient.SqlParameter("@EID", employerId));
+                                if (empUserId != null)
+                                {
+                                    DatabaseHelper.SendNotification(Convert.ToInt32(empUserId), "Proposal",
+                                        "New proposal received from " + freelancerName + " for your project: " + Convert.ToString(project["title"]));
+                                }
+                            }
+                        }
+                        catch { }
+
                         ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
                         btnSubmitProposal.Enabled = false;
                         btnSubmitProposal.Text = "Proposal Submitted";

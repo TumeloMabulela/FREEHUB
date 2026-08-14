@@ -1,8 +1,13 @@
 ﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Linq;
 using System.Web.UI;
+using System.Web.UI.WebControls;
+
 using System.Web.UI.WebControls;
 
 namespace FreeHubProject
@@ -11,17 +16,20 @@ namespace FreeHubProject
     {
         private readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
 
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (!IsPostBack)
             {
+                Session["NotificationData"] = null; // Force reload from DB
                 Session["NotificationFilter"] = "All";
                 BindNotifications();
-            }
-        }
-
         private int CurrentUserId
         {
             get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
@@ -33,6 +41,10 @@ namespace FreeHubProject
             set { Session["NotificationFilter"] = value; }
         }
 
+        }
+
+        private void BindNotifications()
+        {
         private void BindNotifications()
         {
             DataTable dt = new DataTable();
@@ -153,52 +165,6 @@ namespace FreeHubProject
             }
         }
 
-        private void LoadSelectedNotification(int notificationId)
-        {
-            using (SqlConnection conn = new SqlConnection(_connStr))
-            {
-                string query = @"
-                    SELECT notificationID, type, content, FORMAT(notificationTimestamp, 'dd MMM yyyy, hh:mm tt') AS notificationTimestamp, status 
-                    FROM dbo.Notification 
-                    WHERE notificationID = @NotificationID AND userID = @UserID";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@NotificationID", notificationId);
-                    cmd.Parameters.AddWithValue("@UserID", CurrentUserId);
-                    conn.Open();
-
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (dr.Read())
-                        {
-                            pnlSelectedNotification.Visible = true;
-                            lblSelectNotification.Visible = false;
-
-                            string type = dr["type"].ToString();
-                            lblSelectedTitle.Text = type + " Alert";
-                            lblSelectedDescription.Text = dr["content"].ToString();
-                            lblSelectedPreview.Text = dr["content"].ToString();
-                            lblSelectedTime.Text = dr["notificationTimestamp"].ToString();
-
-                            string status = dr["status"].ToString();
-                            lblReadStatus.Text = status;
-
-                            btnToggleRead.Text = (status == "Read") ? "Mark as Unread" : "Mark as Read";
-                            btnToggleArchive.Text = (status == "Archived") ? "Unarchive" : "Archive";
-
-                            switch (type)
-                            {
-                                case "Message": lblSelectedIcon.Text = "✉"; break;
-                                case "Project": lblSelectedIcon.Text = "▣"; break;
-                                case "Proposal": lblSelectedIcon.Text = "▤"; break;
-                                case "Payment": lblSelectedIcon.Text = "R"; break;
-                                default: lblSelectedIcon.Text = "♧"; break;
-                            }
-
-                            btnViewMessage.Visible = (type == "Message");
-                        }
-                    }
                 }
             }
         }
@@ -271,6 +237,8 @@ namespace FreeHubProject
             }
         }
 
+        }
+
         protected void btnAll_Click(object sender, EventArgs e)
         {
             CurrentFilter = "All";
@@ -294,5 +262,6 @@ namespace FreeHubProject
             pnlNotificationStatus.Visible = true;
             lblNotificationStatus.Text = message;
         }
+
     }
 }
