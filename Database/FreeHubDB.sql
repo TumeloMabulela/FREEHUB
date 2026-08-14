@@ -657,3 +657,60 @@ BEGIN
     ALTER TABLE dbo.Project ADD attachmentUrl NVARCHAR(500) NULL;
 END
 GO
+
+GO
+
+-- Add the missing lastSeen column if it doesn't already exist
+IF NOT EXISTS (
+    SELECT * 
+    FROM sys.columns 
+    WHERE object_id = OBJECT_ID('dbo.[User]') 
+      AND name = 'lastSeen'
+)
+BEGIN
+    ALTER TABLE dbo.[User] ADD lastSeen DATETIME NULL;
+    PRINT 'Column lastSeen added successfully to dbo.[User].';
+END
+GO
+GO
+
+-- Create Notification table if it doesn't exist
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Notification')
+BEGIN
+    CREATE TABLE dbo.Notification (
+        notificationID INT IDENTITY(1,1) PRIMARY KEY,
+        userID INT NOT NULL,
+        notificationType NVARCHAR(50) NOT NULL,
+        message NVARCHAR(MAX) NOT NULL,
+        isRead BIT NOT NULL DEFAULT 0,
+        dateCreated DATETIME NOT NULL DEFAULT GETDATE()
+    );
+    PRINT 'Notification table created successfully.';
+END
+ELSE
+BEGIN
+    -- Add missing columns if the table already exists but lacks them
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Notification') AND name = 'notificationType')
+        ALTER TABLE dbo.Notification ADD notificationType NVARCHAR(50) NOT NULL DEFAULT 'General';
+
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Notification') AND name = 'message')
+        ALTER TABLE dbo.Notification ADD message NVARCHAR(MAX) NOT NULL DEFAULT '';
+
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Notification') AND name = 'isRead')
+        ALTER TABLE dbo.Notification ADD isRead BIT NOT NULL DEFAULT 0;
+
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('dbo.Notification') AND name = 'dateCreated')
+        ALTER TABLE dbo.Notification ADD dateCreated DATETIME NOT NULL DEFAULT GETDATE();
+
+    PRINT 'Notification table schema verified and updated.';
+END
+GO
+
+GO
+
+-- If your table uses 'type' instead of 'notificationType':
+IF COL_LENGTH('dbo.Notification', 'type') IS NULL
+BEGIN
+    ALTER TABLE dbo.Notification ADD type NVARCHAR(50) NOT NULL DEFAULT 'Project';
+END
+GO

@@ -1,11 +1,6 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true"
     CodeBehind="Site1.Master.cs"
-    Inherits="FreeHubProject.Site1" %>
-
-<!DOCTYPE html>
-
-<html>
-<head runat="server">
+    Inherits="FreeHubProject.Site1" %><!DOCTYPE html><html><head runat="server">
     <title>FreeHUB</title>
 
     <meta charset="utf-8" />
@@ -17,10 +12,7 @@
 
     <asp:ContentPlaceHolder ID="HeadContent"
         runat="server">
-    </asp:ContentPlaceHolder>
-</head>
-
-<body>
+    </asp:ContentPlaceHolder></head><body>
 
     <form id="form1" runat="server">
 
@@ -49,21 +41,30 @@
                         <a href="BrowseProjects.aspx">Browse Projects</a>
                         <a href="Wallet.aspx">Wallet</a>
                         <a href="StartChat.aspx">Messages</a>
-                        <a href="Notifications.aspx">Notifications</a>
                     </asp:Panel>
 
                 </nav>
 
-                <div class="nav-buttons">
+                <div class="nav-buttons" style="display: flex; align-items: center; gap: 18px;">
 
                     <asp:Panel ID="pnlGuestButtons" runat="server">
                         <a href="Login.aspx" class="login-link">Log In</a>
                         <a href="Register.aspx" class="register-button">Sign Up</a>
                     </asp:Panel>
 
-                    <asp:Panel ID="pnlUserButtons" runat="server" Visible="false">
-                        <div class="user-nav-section">
-                            <a href="ManageProfile.aspx" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px;">
+                    <asp:Panel ID="pnlUserButtons" runat="server" Visible="false" style="display: flex; align-items: center; gap: 16px;">
+                        
+                        <!-- NOTIFICATION BELL ICON -->
+                        <a href="Notifications.aspx" title="Notifications" style="position: relative; text-decoration: none; color: white; display: flex; align-items: center; font-size: 20px;">
+                            🔔
+                            <asp:Literal ID="litUnreadDot" runat="server" />
+                        </a>
+
+                        <!-- PROFILE DROPDOWN CONTAINER -->
+                        <div class="nav-profile-dropdown-container" style="position: relative; display: inline-block;">
+                            
+                            <!-- Clickable Profile Header Trigger -->
+                            <a href="javascript:void(0);" onclick="toggleProfileDropdown();" class="nav-profile-trigger" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; cursor: pointer;">
                                 <span class="user-nav-initials">
                                     <asp:Literal ID="litInitials" runat="server" />
                                 </span>
@@ -75,13 +76,27 @@
                                         <asp:Literal ID="litUserRole" runat="server" />
                                     </span>
                                 </div>
+                                <span style="font-size: 10px; margin-left: 2px; opacity: 0.8;">▼</span>
                             </a>
-                            <asp:LinkButton ID="btnLogout" runat="server"
-                                CssClass="logout-link" OnClick="btnLogout_Click"
-                                OnClientClick="return showLogoutModal();">
-                                Logout
-                            </asp:LinkButton>
+
+                            <!-- Dropdown Menu Items -->
+                            <div id="profileDropdownMenu" style="display: none; position: absolute; right: 0; top: 52px; background: #ffffff; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; z-index: 1000; border: 1px solid #e5e7eb;">
+                                <a href="ManageProfile.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
+                                    👤 Profile
+                                </a>
+                                <a href="ChooseRole.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
+                                    🔄 Switch Role
+                                </a>
+                                <asp:LinkButton ID="btnLogout" runat="server"
+                                    CssClass="logout-dropdown-btn" OnClick="btnLogout_Click"
+                                    OnClientClick="return showLogoutModal();"
+                                    style="display: block; padding: 12px 16px; color: #dc2626; text-decoration: none; font-size: 13px; font-weight: 600; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                                    🚪 Log Out
+                                </asp:LinkButton>
+                            </div>
+
                         </div>
+
                     </asp:Panel>
 
                 </div>
@@ -215,21 +230,6 @@
 
         .fh-modal-btn-primary:hover { background: #b91c1c; }
 
-        .fh-modal-btn-confirm {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            background: #173f2c;
-            color: white;
-            transition: background 0.2s;
-        }
-
-        .fh-modal-btn-confirm:hover { background: #1f5438; }
-
         .fh-modal-btn-cancel {
             background: none;
             border: none;
@@ -242,9 +242,35 @@
         }
 
         .fh-modal-btn-cancel:hover { color: #1a1a1a; }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-4px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-4px); }
+        }
     </style>
 
     <script type="text/javascript">
+        function toggleProfileDropdown() {
+            var menu = document.getElementById('profileDropdownMenu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+            if (!event.target.closest('.nav-profile-dropdown-container')) {
+                var menu = document.getElementById('profileDropdownMenu');
+                if (menu && menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                }
+            }
+        }
+
         function showLogoutModal() {
             document.getElementById('logoutModal').style.display = 'flex';
             return false;
@@ -254,38 +280,56 @@
             document.getElementById('logoutModal').style.display = 'none';
         }
 
-        // Generic confirmation modal
-        function showConfirmModal(message, onConfirm) {
-            var existing = document.getElementById('fhConfirmModal');
-            if (existing) existing.remove();
-
-            var overlay = document.createElement('div');
-            overlay.id = 'fhConfirmModal';
-            overlay.className = 'fh-modal-overlay';
-            overlay.innerHTML =
-                '<div class="fh-modal">' +
-                    '<div class="fh-modal-icon" style="background:#e8f5e0; color:#173f2c;">?</div>' +
-                    '<h3>Confirm</h3>' +
-                    '<p>' + message + '</p>' +
-                    '<button type="button" class="fh-modal-btn-confirm" id="fhConfirmYes">Yes</button>' +
-                    '<br/><button type="button" class="fh-modal-btn-cancel" id="fhConfirmNo">Cancel</button>' +
-                '</div>';
-
-            document.body.appendChild(overlay);
-
-            document.getElementById('fhConfirmNo').onclick = function () { overlay.remove(); };
-            document.getElementById('fhConfirmYes').onclick = function () {
-                overlay.remove();
-                if (onConfirm) onConfirm();
-            };
-            overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
-        }
-
-        // Close logout modal on overlay click
         document.addEventListener('click', function (e) {
             if (e.target.id === 'logoutModal') hideLogoutModal();
         });
-    </script>
 
-</body>
-</html>
+        // Push Notifications & Notification Icon Pop-up Logic
+        document.addEventListener("DOMContentLoaded", function () {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        });
+
+        let lastKnownUnreadCount = -1;
+
+        function checkNotificationPopups() {
+            var badgeElement = document.querySelector('a[href*="Notifications.aspx"] span');
+            let currentCount = badgeElement ? parseInt(badgeElement.innerText) || 0 : 0;
+
+            if (lastKnownUnreadCount !== -1 && currentCount > lastKnownUnreadCount) {
+                showNotificationPopup();
+
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("FreeHUB Notification", {
+                        body: "You have new notification..",
+                        icon: "/favicon.ico"
+                    });
+                }
+            }
+            lastKnownUnreadCount = currentCount;
+        }
+
+        function showNotificationPopup() {
+            var existingPopup = document.getElementById('newNotificationPopupBanner');
+            if (existingPopup) existingPopup.remove();
+
+            var bellIcon = document.querySelector('a[href*="Notifications.aspx"]');
+            if (!bellIcon) return;
+
+            var popup = document.createElement('div');
+            popup.id = 'newNotificationPopupBanner';
+            popup.style.cssText = "position: absolute; top: 45px; right: 0; background: #173f2c; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; white-space: nowrap; animation: fadeInOut 4s forwards;";
+            popup.innerText = "You have new notification..";
+
+            bellIcon.style.position = 'relative';
+            bellIcon.appendChild(popup);
+
+            setTimeout(function () {
+                if (popup) popup.remove();
+            }, 4000);
+        }
+
+        // Run check periodically if user is logged in
+        setInterval(checkNotificationPopups, 15000);
+    </script></body></html>

@@ -186,6 +186,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
         }
 
         .thread-header-title {
@@ -277,7 +280,6 @@
             margin-top: 4px;
         }
 
-        /* Blue Ticks Read Receipt Style */
         .ticks-blue {
             color: #2563eb !important;
             font-weight: bold;
@@ -339,11 +341,11 @@
         }
 
         .send-btn-gradient {
-            background: linear-gradient(135deg, #059669 0%, #2563eb 100%);
+            background: #173f2c;
             color: #ffffff;
             border: none;
             border-radius: 20px;
-            padding: 8px 18px;
+            padding: 10px 20px;
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
@@ -357,6 +359,80 @@
             color: #15803d;
             margin-top: 6px;
             padding-left: 8px;
+        }
+
+        /* WhatsApp Style Details & Shared Files Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-pop-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 480px;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        /* CONSISTENT WEBSITE RATING MODAL STYLES */
+        .rating-dropdown, .rating-comment-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 6px;
+            outline: none;
+            background: #f9fafb;
+        }
+
+        .rating-dropdown:focus, .rating-comment-input:focus {
+            border-color: #173f2c;
+            background: #fff;
+        }
+
+        .submit-rating-button {
+            background-color: #173f2c;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-rating-button:hover {
+            background-color: #112d20;
+        }
+
+        .close-modal-button {
+            background-color: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: background 0.2s;
+        }
+
+        .close-modal-button:hover {
+            background-color: #d1d5db;
         }
     </style>
 
@@ -443,7 +519,8 @@
         <!-- RIGHT CONTAINER: MESSAGES THREAD -->
         <div class="chat-thread-panel">
             <div class="thread-header">
-                <div class="thread-header-user">
+                <!-- CLICKABLE WHATSAPP STYLE HEADER PROFILE -->
+                <asp:LinkButton ID="btnOpenHeaderModal" runat="server" CssClass="thread-header-user" OnClick="btnToggleDetails_Click" title="View Profile & Shared Files">
                     <div class="avatar-circle avatar-rt">
                         <asp:Label ID="lblChatInitials" runat="server" Text="--"></asp:Label>
                     </div>
@@ -456,10 +533,12 @@
                             <asp:Label ID="lblPartnerStatus" runat="server" Text="Offline"></asp:Label>
                         </div>
                     </div>
-                </div>
+                </asp:LinkButton>
+
                 <div class="thread-actions">
-                    <span>⋮</span>
-                    <span>ⓘ</span>
+                    <asp:LinkButton ID="btnInfoIcon" runat="server" OnClick="btnToggleDetails_Click" Style="text-decoration: none; color: inherit;" title="View Profile & Shared Files">
+                        <span>ⓘ</span>
+                    </asp:LinkButton>
                 </div>
             </div>
 
@@ -486,7 +565,6 @@
                                 <div class="msg-meta">
                                     <span><%# Convert.ToDateTime(Eval("timeStamp")).ToString("HH:mm") %></span>
                                     
-                                    <!-- Double Blue Ticks / Single Gray Tick Read Receipts for Outgoing Messages -->
                                     <asp:PlaceHolder ID="phReadReceipt" runat="server" Visible='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId %>'>
                                         <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'>
                                             <%# Eval("status").ToString() == "Read" ? "✓✓" : "✓" %>
@@ -517,15 +595,68 @@
 
     </div>
 
-    <!-- Rating Popup Modal -->
-    <asp:Panel ID="pnlRatingModal" runat="server" CssClass="freehub-modal-overlay" Visible="false">
-        <div class="freehub-modal-card">
-            <div class="modal-header">
-                <h2>Project Completed!</h2>
-                <p>Messaging for this project has ended. Please rate your experience.</p>
+    <!-- WHATSAPP STYLE CONTACT DETAILS & SHARED FILES MODAL -->
+    <asp:Panel ID="pnlUserDetailsModal" runat="server" CssClass="modal-overlay" Visible="false">
+        <div class="modal-pop-card">
+            
+            <!-- Modal Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e8e2; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="margin: 0; color: #173f2c; font-size: 18px;">Contact Info & Shared Files</h3>
+                <asp:LinkButton ID="btnCloseDetails" runat="server" OnClick="btnCloseDetails_Click" Style="color: #888; text-decoration: none; font-size: 20px; font-weight: bold; cursor: pointer;">✕</asp:LinkButton>
             </div>
-            <div class="modal-body">
-                <label>Rating (1 to 5 Stars):</label>
+
+            <!-- User Profile Details -->
+            <div style="background: #f9fbf9; border: 1px solid #e0e8e2; border-radius: 8px; padding: 14px; margin-bottom: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: #243328;">
+                <div><strong>Full Name:</strong> <asp:Label ID="lblDetailName" runat="server" /></div>
+                <div><strong>Account Type:</strong> <asp:Label ID="lblDetailUserType" runat="server" /></div>
+                <div><strong>Email:</strong> <asp:Label ID="lblDetailEmail" runat="server" /></div>
+                <div><strong>Contact:</strong> <asp:Label ID="lblDetailContact" runat="server" /></div>
+                <div style="grid-column: span 2;"><strong>Rating Score:</strong> ⭐ <asp:Label ID="lblDetailRating" runat="server" /> / 5.0</div>
+            </div>
+
+            <!-- Shared Files History -->
+            <div style="border-top: 1px solid #e0e8e2; padding-top: 14px;">
+                <strong style="color: #173f2c; font-size: 14px; display: block; margin-bottom: 8px;">Shared Files History</strong>
+                
+                <div style="max-height: 180px; overflow-y: auto; border: 1px solid #f0f0f0; border-radius: 6px; padding: 8px;">
+                    <asp:Repeater ID="rptSharedFiles" runat="server">
+                        <HeaderTemplate>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                            <li style="padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #243328; font-weight: 500;">📎 <%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></span>
+                                <div>
+                                    <small style="color: #888; margin-right: 10px;"><%# Convert.ToDateTime(Eval("timeStamp")).ToString("dd MMM yyyy, HH:mm") %></small>
+                                    <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Download</a>
+                                </div>
+                            </li>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            </ul>
+                        </FooterTemplate>
+                    </asp:Repeater>
+
+                    <asp:Label ID="lblNoSharedFiles" runat="server" Visible="false" Text="No shared files in this conversation yet." Style="font-size: 13px; color: #888; display: block; text-align: center; padding: 12px 0;" />
+                </div>
+            </div>
+
+            <div style="text-align: right; margin-top: 18px;">
+                <asp:Button ID="btnCloseModalBtn" runat="server" Text="Close" OnClick="btnCloseDetails_Click" CausesValidation="false" Style="background: #173f2c; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-weight: 600; cursor: pointer;" />
+            </div>
+
+        </div>
+    </asp:Panel>
+
+    <!-- Rating Popup Modal -->
+    <asp:Panel ID="pnlRatingModal" runat="server" CssClass="modal-overlay" Visible="false">
+        <div class="modal-pop-card">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; margin-bottom: 16px;">
+                <h3 style="margin: 0; color: #173f2c; font-size: 18px;">Project completed</h3>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #6b7280;">Messaging has ended. Please rate your experience.</p>
+            </div>
+            <div class="modal-body" style="font-size: 13px; color: #374151;">
+                <label style="font-weight: 600; display: block; color: #173f2c;">Rating (1 to 5 Stars):</label>
                 <asp:DropDownList ID="ddlRatingStars" runat="server" CssClass="rating-dropdown">
                     <asp:ListItem Text="5 Stars - Excellent" Value="5" Selected="True" />
                     <asp:ListItem Text="4 Stars - Very Good" Value="4" />
@@ -534,10 +665,10 @@
                     <asp:ListItem Text="1 Star - Poor" Value="1" />
                 </asp:DropDownList>
                 <br /><br />
-                <label>Feedback Comment (Optional):</label>
+                <label style="font-weight: 600; display: block; color: #173f2c;">Feedback Comment (Optional):</label>
                 <asp:TextBox ID="txtRatingComment" runat="server" TextMode="MultiLine" Rows="3" CssClass="rating-comment-input" placeholder="Write a short review..."></asp:TextBox>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="margin-top: 20px; text-align: right;">
                 <asp:Button ID="btnSubmitRating" runat="server" Text="Submit Rating" CssClass="submit-rating-button" OnClick="btnSubmitRating_Click" />
                 <asp:Button ID="btnCloseModal" runat="server" Text="Close" CssClass="close-modal-button" OnClick="btnCloseModal_Click" CausesValidation="false" />
             </div>

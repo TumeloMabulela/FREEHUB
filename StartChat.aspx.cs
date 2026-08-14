@@ -121,6 +121,73 @@ namespace FreeHubProject
             }
         }
 
+        protected void btnToggleDetails_Click(object sender, EventArgs e)
+        {
+            if (SelectedOtherUserId <= 0) return;
+
+            pnlUserDetailsModal.Visible = true;
+            LoadUserDetailsAndSharedFiles(SelectedOtherUserId);
+        }
+
+        protected void btnCloseDetails_Click(object sender, EventArgs e)
+        {
+            pnlUserDetailsModal.Visible = false;
+        }
+
+        private void LoadUserDetailsAndSharedFiles(int targetUserId)
+        {
+            // 1. Load User Profile Details
+            DataRow user = DatabaseHelper.GetUserById(targetUserId);
+            if (user != null)
+            {
+                lblDetailName.Text = Convert.ToString(user["firstName"]) + " " + Convert.ToString(user["lastName"]);
+                lblDetailEmail.Text = Convert.ToString(user["email"]);
+                lblDetailContact.Text = user["contactNumber"] != DBNull.Value ? Convert.ToString(user["contactNumber"]) : "N/A";
+                lblDetailUserType.Text = Convert.ToString(user["userType"]);
+
+                decimal rating = user["ratingScore"] != DBNull.Value ? Convert.ToDecimal(user["ratingScore"]) : 0.0m;
+                lblDetailRating.Text = rating.ToString("F1");
+            }
+
+            // 2. Load Shared File Attachments History
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string query = @"
+                    SELECT attachmentUrl, timeStamp 
+                    FROM dbo.Message 
+                    WHERE ((senderID = @CurrentUserID AND receiverID = @OtherUserID) 
+                        OR (senderID = @OtherUserID AND receiverID = @CurrentUserID))
+                      AND attachmentUrl IS NOT NULL 
+                      AND attachmentUrl != ''
+                    ORDER BY timeStamp DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    cmd.Parameters.AddWithValue("@OtherUserID", targetUserId);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtFiles = new DataTable();
+                        da.Fill(dtFiles);
+
+                        if (dtFiles.Rows.Count > 0)
+                        {
+                            rptSharedFiles.DataSource = dtFiles;
+                            rptSharedFiles.DataBind();
+                            lblNoSharedFiles.Visible = false;
+                        }
+                        else
+                        {
+                            rptSharedFiles.DataSource = null;
+                            rptSharedFiles.DataBind();
+                            lblNoSharedFiles.Visible = true;
+                        }
+                    }
+                }
+            }
+        }
+
         public string GetAvatarClass(string initials)
         {
             if (string.IsNullOrEmpty(initials)) return "avatar-ml";
@@ -174,21 +241,45 @@ namespace FreeHubProject
                 lblChatInitials.Text = (!string.IsNullOrEmpty(firstName) ? firstName[0].ToString() : "") +
                                        (!string.IsNullOrEmpty(lastName) ? lastName[0].ToString() : "");
 
-                // Update online / last seen status label
-                lblPartnerStatus.Text = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                string accountStatus = Convert.ToString(user["accountStatus"]);
+                if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
+                {
+                    lblPartnerStatus.Text = "Account Deactivated 🔴";
+                }
+                else
+                {
+                    lblPartnerStatus.Text = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                }
             }
 
-            // Check if there is an active proposal/project between these two users
+            bool isChatEndedOrDeactivated = false;
+            string lockReasonMessage = string.Empty;
+
+            // 1. Check if partner account status is Deactivated, Deleted, or Inactive
+            if (user != null)
+            {
+                string accountStatus = Convert.ToString(user["accountStatus"]);
+                if (accountStatus.Equals("Deactivated", StringComparison.OrdinalIgnoreCase) ||
+                    accountStatus.Equals("Deleted", StringComparison.OrdinalIgnoreCase) ||
+                    accountStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
+                {
+                    isChatEndedOrDeactivated = true;
+                    lockReasonMessage = "The profile has been deactivated";
+                }
+            }
+
+            // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-                    SELECT TOP 1 p.projectID, p.projectStatus
-                    FROM dbo.Proposal prop
-                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
-                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
-                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
-                    WHERE prop.status = 'Approved' 
-                      AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
+            SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus 
+            FROM dbo.Proposal prop 
+            INNER JOIN dbo.Project p ON prop.projectID = p.projectID 
+            INNER JOIN dbo.Employer e ON p.employerID = e.employerID 
+            INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID 
+            INNER JOIN dbo.[User] u ON e.userID = u.userID 
+            WHERE prop.status = 'Approved' 
+              AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -202,33 +293,59 @@ namespace FreeHubProject
                         {
                             ActiveProjectId = Convert.ToInt32(dr["projectID"]);
                             string projectStatus = dr["projectStatus"].ToString();
+                            string empAccountStatus = dr["EmployerAccountStatus"].ToString();
 
-                            if (projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                            if (projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase) ||
+                                projectStatus.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
                             {
-                                btnSend.Enabled = false;
-                                pnlRatingModal.Visible = true;
-                                ShowStatus("Project Completed. Messaging is closed.");
+                                isChatEndedOrDeactivated = true;
+                                lockReasonMessage = "Project completed";
                             }
-                            else
+                            else if (empAccountStatus.Equals("Deactivated", StringComparison.OrdinalIgnoreCase) ||
+                                     empAccountStatus.Equals("Deleted", StringComparison.OrdinalIgnoreCase) ||
+                                     empAccountStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
                             {
-                                btnSend.Enabled = true;
+                                isChatEndedOrDeactivated = true;
+                                lockReasonMessage = "The profile has been deactivated";
                             }
                         }
                         else
                         {
                             ActiveProjectId = 0;
-                            btnSend.Enabled = true;
                         }
                     }
                 }
             }
 
-            // Mark unread messages as Read
+            // Apply Chat Locking UI Rules (Preserving DB History)
+            if (isChatEndedOrDeactivated)
+            {
+                btnSend.Enabled = false;
+                fileUploadControl.Enabled = false;
+                txtMessage.Enabled = false;
+                txtMessage.Attributes["placeholder"] = "Chat has ended. Messages are read-only.";
+
+                // Display rating prompt if a project was associated
+                if (ActiveProjectId > 0)
+                {
+                    pnlRatingModal.Visible = true;
+                }
+
+                ShowStatus(lockReasonMessage);
+            }
+            else
+            {
+                btnSend.Enabled = true;
+                fileUploadControl.Enabled = true;
+                txtMessage.Enabled = true;
+                txtMessage.Attributes["placeholder"] = "Type your message...";
+            }
+
+            // Mark unread messages as Read without deleting any table rows
             DatabaseHelper.MarkMessagesAsRead(CurrentUserId, otherUserId, ActiveProjectId > 0 ? (int?)ActiveProjectId : null);
 
             LoadChatMessages();
         }
-
         protected void btnSend_Click(object sender, EventArgs e)
         {
             if (SelectedOtherUserId <= 0 || (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile)) return;
@@ -302,18 +419,18 @@ namespace FreeHubProject
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-            SELECT 
-                messageID, 
-                senderID, 
-                receiverID, 
-                content, 
-                attachmentUrl, 
-                status, 
-                timeStamp
-            FROM dbo.Message
-            WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
-               OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
-            ORDER BY timeStamp ASC";
+                    SELECT 
+                        messageID, 
+                        senderID, 
+                        receiverID, 
+                        content, 
+                        attachmentUrl, 
+                        status, 
+                        timeStamp
+                    FROM dbo.Message
+                    WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
+                       OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
+                    ORDER BY timeStamp ASC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {

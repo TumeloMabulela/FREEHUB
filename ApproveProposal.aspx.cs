@@ -60,7 +60,9 @@ namespace FreeHubProject
                 {
                     int freelancerUserId = Convert.ToInt32(dr["FreelancerUserID"]);
                     string projectTitle = Convert.ToString(dr["ProjectTitle"]);
-                    string message = $"Your proposal for '{projectTitle}' has been APPROVED! The project is now in progress.";
+                    int projectId = Convert.ToInt32(dr["ProjectID"] ?? 0); // Make sure projectID is queried
+
+                    string message = $"Your proposal for '{projectTitle}' has been APPROVED! The project is now in progress. <a href='ProjectDetails.aspx?projectId={projectId}' style='color:#059669; font-weight:bold;'>View Details</a>";
 
                     NotificationHelper.CreateNotification(freelancerUserId, "Proposal", message);
                 }

@@ -197,8 +197,8 @@ namespace FreeHubProject
         public static DataRow GetUserById(int userID)
         {
             string query = @"SELECT userID, firstName, lastName, email, contactNumber,
-                            username, accountStatus, userType, ratingScore, dateCreated
-                            FROM [User] WHERE userID = @UserID";
+                    username, accountStatus, userType, ratingScore, dateCreated, lastSeen
+                    FROM [User] WHERE userID = @UserID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@UserID", userID));
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
@@ -588,13 +588,14 @@ namespace FreeHubProject
         /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
         /// </summary>/// <param name="projectId">Optional project ID associated with the conversation.</param>
         // Updates user's last active / logout timestamp
+        // Updates user's last active timestamp
         public static void UpdateUserLastSeen(int userId)
         {
             string query = "UPDATE dbo.[User] SET lastSeen = GETDATE() WHERE userID = @UserID";
             ExecuteNonQuery(query, new SqlParameter("@UserID", userId));
         }
 
-        // Formats Last Seen for display
+        // Formats Last Seen for display next to the chat header
         public static string GetUserOnlineStatus(int targetUserId)
         {
             DataRow user = GetUserById(targetUserId);
@@ -603,7 +604,7 @@ namespace FreeHubProject
             string accountStatus = Convert.ToString(user["accountStatus"]);
             if (accountStatus == "Inactive" || accountStatus == "Deleted") return "Offline";
 
-            if (user["lastSeen"] == DBNull.Value) return "Last seen long ago";
+            if (user["lastSeen"] == DBNull.Value) return "Offline";
 
             DateTime lastSeen = Convert.ToDateTime(user["lastSeen"]);
             TimeSpan diff = DateTime.Now - lastSeen;
@@ -622,7 +623,8 @@ namespace FreeHubProject
 
             return string.Format("Last seen {0:dd MMM} at {1:HH:mm}", lastSeen, lastSeen);
         }
-
+        // Formats Last Seen for display
+        
         // Marks unread messages as 'Read' when a chat session is opened
         public static void MarkMessagesAsRead(int currentUserId, int senderUserId, int? projectId = null)
         {
@@ -648,6 +650,7 @@ namespace FreeHubProject
                     new SqlParameter("@SenderID", senderUserId));
             }
         }
+
         public static string CapitalizeSkills(string skills)
         {
             if (string.IsNullOrWhiteSpace(skills)) return "";
