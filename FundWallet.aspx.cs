@@ -164,7 +164,11 @@ namespace FreeHubProject
                 FormatCurrency(newBalance);
 
             txtAmount.Text = "";
-
+            // Inside btnProceed_Click, right after updating the wallet balance and adding the transaction:
+            string formattedAmount = FormatCurrency(amount);
+            string fundNotification = $"{formattedAmount} has been added into your account";
+            int currentUserId = Convert.ToInt32(Session["UserID"]);
+            NotificationHelper.CreateNotification(currentUserId, "Payment", fundNotification);
             ShowMessage(
                 "Wallet funded successfully with " +
                 FormatCurrency(amount) +

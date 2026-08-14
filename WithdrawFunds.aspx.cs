@@ -328,6 +328,12 @@ namespace FreeHubProject
                 "The withdrawal is pending administrator approval.",
                 true
             );
+
+            // Inside btnContinue_Click right after successful processing:
+            string formattedWithdrawal = FormatCurrency(withdrawalAmount);
+            string withdrawMsg = $"{formattedWithdrawal} has been withdrawn.";
+            int currentUserId = Convert.ToInt32(Session["UserID"]);
+            NotificationHelper.CreateNotification(currentUserId, "Payment", withdrawMsg);
         }
 
 

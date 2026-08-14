@@ -339,6 +339,10 @@ namespace FreeHubProject
                         new SqlParameter("@UserID", userId));
                     Session["AccountStatus"] = "Inactive";
 
+                    //Deactivate all active sessions and notify the user
+                    string deactivateMsg = $"Your \"{currentRole.ToLower()}\" profile has been successfully deactivated.";
+                    NotificationHelper.CreateNotification(userId, "System", deactivateMsg);
+
                     ShowMessage($"Your {currentRole} profile has been deactivated. All profiles are now inactive.", true);
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'ChooseRole.aspx'; }, 2500);", true);
@@ -364,6 +368,9 @@ namespace FreeHubProject
                 // Restore profile status to Active in ProfileStatus and User tables
                 DatabaseHelper.ReactivateUserProfile(userId, userType);
                 Session["AccountStatus"] = "Active";
+                // Restore any associated data if needed (e.g., projects, proposals, etc.)
+                string activateMsg = $"Your \"{userType.ToLower()}\" profile has been successfully activated.";
+                NotificationHelper.CreateNotification(userId, "System", activateMsg);
 
                 ShowMessage("Your " + userType + " profile has been reactivated successfully! All your visibility, posts, and data have been restored.", true);
                 ClientScript.RegisterStartupScript(this.GetType(), "redirect",

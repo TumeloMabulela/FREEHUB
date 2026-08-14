@@ -38,32 +38,39 @@
                             <asp:Button ID="btnArchived" runat="server" Text="Archived" CssClass="notification-tab" OnClick="btnArchived_Click" />
                         </div>
 
-                        <!-- Repeater List -->
-                      <!-- Repeater List -->
-<!-- Repeater List -->
+                        
 <!-- Repeater List -->
 <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
     <ItemTemplate>
-        <asp:LinkButton ID="btnSelectNotification" runat="server" CssClass="notification-item" CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>' Style="display: flex; align-items: center; justify-content: space-between; width: 100%; text-decoration: none; padding: 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;">
+        <asp:LinkButton ID="btnSelectNotification" runat="server" 
+            CssClass='<%# Eval("Status").ToString() == "Unread" ? "notification-item unread-notification" : "notification-item" %>' 
+            CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>' 
+            Style="display: flex; align-items: center; justify-content: space-between; width: 100%; text-decoration: none; padding: 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px;">
             
             <!-- Left Side: Icon and Title -->
             <div style="display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
                 <span class="notification-icon"><%# Eval("Icon") %></span>
                 <span class="notification-information" style="text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #1f2937;">
-    <strong><%# Eval("Title") %></strong>
-</span>
+                    <strong><%# Eval("Title") %></strong>
+                </span>
             </div>
 
-            <!-- Right Side: Timestamp and Arrow -->
+            <!-- Right Side: Timestamp, Unread Badge, and Arrow -->
             <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-left: 12px;">
+                <!-- Unread status tag/dot -->
+                <asp:PlaceHolder ID="phUnreadIndicator" runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
+                    <span style="background-color: #ef4444; color: white; border-radius: 50%; width: 8px; height: 8px; display: inline-block;" title="Unread"></span>
+                </asp:PlaceHolder>
+
                 <span class="notification-time">
                     <small style="color: #6b7280; font-size: 11px;"><%# Eval("Time") %></small>
                 </span>
                 <span class="notification-arrow" style="font-weight: bold; color: #9ca3af;">›</span>
             </div>
+
         </asp:LinkButton>
     </ItemTemplate>
-</asp:Repeater>       
+</asp:Repeater>  
                         <asp:Label ID="lblNoNotifications" runat="server" CssClass="no-notifications" Visible="false" Text="No notifications found."></asp:Label>
                     </div>
 

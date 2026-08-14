@@ -156,7 +156,13 @@ namespace FreeHubProject
             {
                 int notificationId = Convert.ToInt32(e.CommandArgument);
                 Session["SelectedNotificationId"] = notificationId;
+
+                // Automatically mark the notification as Read when clicked/selected
+                UpdateNotificationStatus(notificationId, "Read");
+
+                // Reload the selected notification details and re-bind the list to update badge counts/status
                 LoadSelectedNotification(notificationId);
+                BindNotifications();
             }
         }
 
