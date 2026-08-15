@@ -50,6 +50,7 @@ namespace FreeHubProject
             ORDER BY prop.date DESC";
                 DataRow dr = DatabaseHelper.GetDataRow(getDetailsQuery);
 
+
                 // 2. Perform the database update
                 string query = @"UPDATE Proposal SET status = 'Approved' 
             WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
