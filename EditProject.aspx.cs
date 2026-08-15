@@ -158,6 +158,12 @@ namespace FreeHubProject
                     }
                 }
 
+                // Notify self and freelancers about edit
+                int userId = Convert.ToInt32(Session["UserID"]);
+                DatabaseHelper.SendNotification(userId, "Project", "Your project '" + txtProjectTitle.Text.Trim() + "' has been updated successfully.");
+                try { DatabaseHelper.NotifyAllFreelancers("Project", "Project updated: '" + txtProjectTitle.Text.Trim() + "' - check the latest details."); } catch { }
+
+
                 ShowMessage("Project updated successfully! Your changes have been saved.", true);
             }
             catch (Exception ex)
