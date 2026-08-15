@@ -116,15 +116,10 @@ namespace FreeHubProject
 
                 // Broadcast & Notify Users about the new project post
                 int currentUserId = Convert.ToInt32(Session["UserID"]);
-                string posterName = Session["FirstName"] as string ?? "A user";
-                string projectTitle = txtProjectTitle.Text.Trim();
+                string notificationText = $"Your project '{txtProjectTitle.Text.Trim()}' was successfully posted and is now open for proposals.";
 
-                string notificationText = $"A new project \"{projectTitle}\" has been posted by {posterName}. <a href='ProjectDetails.aspx?projectId={projectId}' style='color:#059669; font-weight:bold;'>View Details</a>";
-
-                // Notify poster and broadcast to all active system users
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
-                NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
-                
+
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
 
                 ClearProjectForm();

@@ -1,10 +1,15 @@
 ﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Text.RegularExpressions;
+
+using System.Web.UI.WebControls;
 
 namespace FreeHubProject
 {
@@ -12,9 +17,14 @@ namespace FreeHubProject
     {
         private readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
 
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!AuthHelper.RequireLogin(this)) return;
+            if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
             if (CurrentUserId <= 0)
             {
@@ -24,11 +34,9 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
+                Session["NotificationData"] = null; // Force reload from DB
                 Session["NotificationFilter"] = "All";
                 BindNotifications();
-            }
-        }
-
         private int CurrentUserId
         {
             get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
@@ -40,6 +48,10 @@ namespace FreeHubProject
             set { Session["NotificationFilter"] = value; }
         }
 
+        }
+
+        private void BindNotifications()
+        {
         private void BindNotifications()
         {
             DataTable dt = new DataTable();
@@ -189,11 +201,9 @@ namespace FreeHubProject
                             lblSelectNotification.Visible = false;
 
                             string type = dr["type"].ToString();
-                            string contentText = dr["content"].ToString();
-
                             lblSelectedTitle.Text = type + " Alert";
-                            lblSelectedDescription.Text = contentText;
-                            lblSelectedPreview.Text = contentText;
+                            lblSelectedDescription.Text = dr["content"].ToString();
+                            lblSelectedPreview.Text = dr["content"].ToString();
                             lblSelectedTime.Text = dr["notificationTimestamp"].ToString();
 
                             string status = dr["status"].ToString();
@@ -211,12 +221,7 @@ namespace FreeHubProject
                                 default: lblSelectedIcon.Text = "♧"; break;
                             }
 
-                            // Show specific action buttons based on notification type
                             btnViewMessage.Visible = (type == "Message");
-
-                            // Check if content has a project ID link pattern
-                            bool hasProjectLink = contentText.Contains("ProjectDetails.aspx?projectId=") || type == "Project" || type == "Proposal";
-                            btnViewProject.Visible = hasProjectLink;
                         }
                     }
                 }
@@ -311,6 +316,8 @@ namespace FreeHubProject
             }
         }
 
+        }
+
         protected void btnAll_Click(object sender, EventArgs e)
         {
             CurrentFilter = "All";
@@ -334,5 +341,6 @@ namespace FreeHubProject
             pnlNotificationStatus.Visible = true;
             lblNotificationStatus.Text = message;
         }
+
     }
 }

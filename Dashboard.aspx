@@ -152,7 +152,6 @@
             transform: translateY(-1px);
         }
 
-        /* Quick Actions */
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
