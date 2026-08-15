@@ -591,7 +591,7 @@ namespace FreeHubProject
         /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
         /// </summary>/// <param name="projectId">Optional project ID associated with the conversation.</param>
         // Updates user's last active / logout timestamp
-        // Updates user's last active timestamp
+// Updates user's last active timestamp
         public static void UpdateUserLastSeen(int userId)
         {
             string query = "UPDATE dbo.[User] SET lastSeen = GETDATE() WHERE userID = @UserID";
