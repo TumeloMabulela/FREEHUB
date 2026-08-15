@@ -11,133 +11,142 @@ namespace FreeHubProject
 {
 
 
-    public partial class Site1
+    public partial class ViewProgress
     {
 
         /// <summary>
-        /// HeadContent control.
+        /// SidebarControl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContent;
+        protected global::FreeHubProject.Sidebar SidebarControl;
 
         /// <summary>
-        /// form1 control.
+        /// litUserRoleHeader control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.Literal litUserRoleHeader;
 
         /// <summary>
-        /// pnlFreelancerNav control.
+        /// pnlMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlFreelancerNav;
+        protected global::System.Web.UI.WebControls.Panel pnlMessage;
 
         /// <summary>
-        /// pnlEmployerNav control.
+        /// lblMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlEmployerNav;
+        protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// pnlLoggedInNav control.
+        /// litStatTotal control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlLoggedInNav;
+        protected global::System.Web.UI.WebControls.Literal litStatTotal;
 
         /// <summary>
-        /// pnlGuestButtons control.
+        /// litStatCompleted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlGuestButtons;
+        protected global::System.Web.UI.WebControls.Literal litStatCompleted;
 
         /// <summary>
-        /// pnlUserButtons control.
+        /// litStatActive control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlUserButtons;
+        protected global::System.Web.UI.WebControls.Literal litStatActive;
 
         /// <summary>
-        /// litUnreadDot control.
+        /// litStatAvgCompletion control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litUnreadDot;
+        protected global::System.Web.UI.WebControls.Literal litStatAvgCompletion;
 
         /// <summary>
-        /// litInitials control.
+        /// rptProgressProjects control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litInitials;
+        protected global::System.Web.UI.WebControls.Repeater rptProgressProjects;
 
         /// <summary>
-        /// litFullName control.
+        /// lblNoProjects control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litFullName;
+        protected global::System.Web.UI.WebControls.Label lblNoProjects;
 
         /// <summary>
-        /// litUserRole control.
+        /// btnViewAllProjects control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litUserRole;
+        protected global::System.Web.UI.WebControls.Button btnViewAllProjects;
 
         /// <summary>
-        /// btnLogout control.
+        /// litPieAvg control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnLogout;
+        protected global::System.Web.UI.WebControls.Literal litPieAvg;
 
         /// <summary>
-        /// btnConfirmLogout control.
+        /// litCountCompleted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConfirmLogout;
+        protected global::System.Web.UI.WebControls.Literal litCountCompleted;
 
         /// <summary>
-        /// MainContent control.
+        /// litCountInProgress control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+        protected global::System.Web.UI.WebControls.Literal litCountInProgress;
+
+        /// <summary>
+        /// rptDeadlines control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptDeadlines;
     }
 }

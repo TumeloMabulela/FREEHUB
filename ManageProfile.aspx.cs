@@ -69,7 +69,7 @@ namespace FreeHubProject
         }
 
         // ============================================================
-        // DEACTIVATE PROFILE TAB SETUP
+        // DEACTIVATE / REACTIVATE PROFILE TAB SETUP
         // ============================================================
 
         private void SetupDeactivateProfileTab()
@@ -78,11 +78,9 @@ namespace FreeHubProject
             int userId = GetUserId();
             string profileStatus = DatabaseHelper.GetProfileStatus(userId, userType);
 
-            // Set role-specific headings (null-safe)
             if (litHeadingRole != null) litHeadingRole.Text = userType;
             if (litSubtitleRole != null) litSubtitleRole.Text = userType;
 
-            // Show role-specific warning panel (null-safe)
             if (pnlWarningFreelancer != null)
                 pnlWarningFreelancer.Visible = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
             if (pnlWarningEmployer != null)
@@ -113,7 +111,6 @@ namespace FreeHubProject
             int userId = GetUserId();
             string userType = GetUserType();
 
-            // Set "Currently logged in as" badge
             if (litLoggedInRole != null) litLoggedInRole.Text = userType;
 
             try
@@ -198,7 +195,7 @@ namespace FreeHubProject
                 if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     string flQuery = @"UPDATE Freelancer SET skills = @Skills, experience = @Experience,
-                                      portfolioLinks = @Portfolio, hourlyRate = @Rate WHERE userID = @UserID";
+                                       portfolioLinks = @Portfolio, hourlyRate = @Rate WHERE userID = @UserID";
                     decimal rate;
                     decimal.TryParse(txtUpdateRate.Text, out rate);
 
@@ -212,7 +209,7 @@ namespace FreeHubProject
                 else if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
                     string emQuery = @"UPDATE Employer SET companyName = @Company, industry = @Industry,
-                                      description = @Description WHERE userID = @UserID";
+                                       description = @Description WHERE userID = @UserID";
 
                     DatabaseHelper.ExecuteNonQuery(emQuery,
                         new SqlParameter("@Company", txtUpdateCompanyName.Text.Trim()),
@@ -230,7 +227,7 @@ namespace FreeHubProject
         }
 
         // ============================================================
-        // A400: DEACTIVATE PROFILE
+        // A400: DEACTIVATE PROFILE & AUTO-SWITCH LOGIC
         // ============================================================
 
         protected void btnCancelDeactivate_Click(object sender, EventArgs e)
@@ -249,37 +246,68 @@ namespace FreeHubProject
 
             try
             {
-                // Deactivate the profile in ProfileStatus table
+                // 1. Mark current profile as Deactivated in ProfileStatus table
                 DatabaseHelper.DeactivateUserProfile(userId, currentRole);
 
-                // Cancel open projects if employer
+                string nameIdentifier = "A user";
+                DataRow userRow = DatabaseHelper.GetUserById(userId);
+                if (userRow != null)
+                {
+                    nameIdentifier = $"{userRow["firstName"]} {userRow["lastName"]}";
+                }
+
+                // Notify active counterparts
+                string notifyMsg = $"⚠️ The {currentRole.ToLower()} profile for {nameIdentifier} has been deactivated. Associated chats are now read-only.";
+
                 if (currentRole.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
+                    // Hide/Cancel open projects when employer profile is deactivated
                     DatabaseHelper.ExecuteNonQuery(
                         @"UPDATE Project SET projectStatus = 'Cancelled'
                           WHERE employerID IN (SELECT employerID FROM Employer WHERE userID = @UserID)
                             AND projectStatus = 'Open'",
                         new SqlParameter("@UserID", userId));
-                }
 
-                // Withdraw pending proposals if freelancer
-                if (currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+                    string stakeholdersQuery = @"
+                        SELECT DISTINCT us.userID 
+                        FROM Project p 
+                        INNER JOIN Employer e ON p.employerID = e.employerID 
+                        INNER JOIN Proposal pr ON p.projectID = pr.projectID 
+                        INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID 
+                        INNER JOIN [User] us ON f.userID = us.userID 
+                        WHERE e.userID = @UserID";
+
+                    DataTable dt = DatabaseHelper.ExecuteQuery(stakeholdersQuery, new SqlParameter("@UserID", userId));
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        NotificationHelper.CreateNotification(Convert.ToInt32(row["userID"]), "System", notifyMsg);
+                    }
+                }
+                else if (currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     DatabaseHelper.ExecuteNonQuery(
                         @"UPDATE Proposal SET status = 'Withdrawn'
                           WHERE freelancerID IN (SELECT freelancerID FROM Freelancer WHERE userID = @UserID)
                             AND status = 'Pending'",
                         new SqlParameter("@UserID", userId));
+
+                    string empQuery = @"
+                        SELECT DISTINCT us.userID 
+                        FROM Proposal pr 
+                        INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID 
+                        INNER JOIN Project p ON pr.projectID = p.projectID 
+                        INNER JOIN Employer e ON p.employerID = e.employerID 
+                        INNER JOIN [User] us ON e.userID = us.userID 
+                        WHERE f.userID = @UserID";
+
+                    DataTable dtEmp = DatabaseHelper.ExecuteQuery(empQuery, new SqlParameter("@UserID", userId));
+                    foreach (DataRow row in dtEmp.Rows)
+                    {
+                        NotificationHelper.CreateNotification(Convert.ToInt32(row["userID"]), "System", notifyMsg);
+                    }
                 }
 
-                // Update user account status
-                DatabaseHelper.ExecuteNonQuery(
-                    "UPDATE [User] SET accountStatus = 'Inactive' WHERE userID = @UserID",
-                    new SqlParameter("@UserID", userId));
-
-                Session["AccountStatus"] = "Inactive";
-
-                // Check if there's another active profile to switch to
+                // 2. Check statuses of both profiles to handle auto-switching
                 string freelancerStatus, employerStatus;
                 DatabaseHelper.GetUserProfileStatuses(userId, out freelancerStatus, out employerStatus);
 
@@ -290,22 +318,32 @@ namespace FreeHubProject
 
                 if (otherStatus == "Active")
                 {
-                    // Switch to other profile
+                    // Automatically switch user session and active role to the alternative profile
                     DatabaseHelper.ExecuteNonQuery(
                         "UPDATE [User] SET userType = @UserType, accountStatus = 'Active' WHERE userID = @UserID",
                         new SqlParameter("@UserType", otherRole),
                         new SqlParameter("@UserID", userId));
+
                     Session["UserType"] = otherRole;
                     Session["AccountStatus"] = "Active";
 
-                    ShowMessage("Your " + currentRole + " profile has been deactivated. Switched to " + otherRole + " profile.", true);
+                    ShowMessage($"Your {currentRole} profile has been deactivated. Automatically switched to your active {otherRole} profile.", true);
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'Dashboard.aspx'; }, 2500);", true);
                 }
                 else
                 {
-                    // No other active profile - redirect to ChooseRole
-                    ShowMessage("Your " + currentRole + " profile has been deactivated.", true);
+                    // If both profiles are deactivated, set account to Inactive
+                    DatabaseHelper.ExecuteNonQuery(
+                        "UPDATE [User] SET accountStatus = 'Inactive' WHERE userID = @UserID",
+                        new SqlParameter("@UserID", userId));
+                    Session["AccountStatus"] = "Inactive";
+
+                    //Deactivate all active sessions and notify the user
+                    string deactivateMsg = $"Your \"{currentRole.ToLower()}\" profile has been successfully deactivated.";
+                    NotificationHelper.CreateNotification(userId, "System", deactivateMsg);
+
+                    ShowMessage($"Your {currentRole} profile has been deactivated. All profiles are now inactive.", true);
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'ChooseRole.aspx'; }, 2500);", true);
                 }
@@ -316,6 +354,10 @@ namespace FreeHubProject
             }
         }
 
+        // ============================================================
+        // REACTIVATE PROFILE (Enforces Reactivation Prompt & Data Restore)
+        // ============================================================
+
         protected void btnReactivateProfile_Click(object sender, EventArgs e)
         {
             int userId = GetUserId();
@@ -323,10 +365,14 @@ namespace FreeHubProject
 
             try
             {
+                // Restore profile status to Active in ProfileStatus and User tables
                 DatabaseHelper.ReactivateUserProfile(userId, userType);
                 Session["AccountStatus"] = "Active";
+                // Restore any associated data if needed (e.g., projects, proposals, etc.)
+                string activateMsg = $"Your \"{userType.ToLower()}\" profile has been successfully activated.";
+                NotificationHelper.CreateNotification(userId, "System", activateMsg);
 
-                ShowMessage("Your " + userType + " profile has been reactivated successfully!", true);
+                ShowMessage("Your " + userType + " profile has been reactivated successfully! All your visibility, posts, and data have been restored.", true);
                 ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                     "setTimeout(function() { window.location.href = 'Dashboard.aspx'; }, 2000);", true);
             }
@@ -355,7 +401,6 @@ namespace FreeHubProject
 
             try
             {
-                // Create DeletedAccount bin table if needed
                 string createBinTable = @"
                     IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'DeletedAccount')
                     BEGIN
@@ -409,6 +454,27 @@ namespace FreeHubProject
                     new SqlParameter("@ProjectCount", Convert.ToInt32(projCount ?? 0)),
                     new SqlParameter("@ProposalCount", Convert.ToInt32(propCount ?? 0)),
                     new SqlParameter("@WalletBalance", walletBalance));
+
+                string shutdownMsg = $"⚠️ The account for {firstName} {lastName} has been deleted/deactivated. Chats are now read-only.";
+
+                string notifyQuery = @"
+                    SELECT DISTINCT us.userID 
+                    FROM Project p 
+                    INNER JOIN Employer e ON p.employerID = e.employerID 
+                    INNER JOIN Proposal pr ON p.projectID = pr.projectID 
+                    INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID 
+                    INNER JOIN [User] us ON (CASE WHEN e.userID = @UserID THEN us.userID ELSE e.userID END) = us.userID
+                    WHERE e.userID = @UserID OR f.userID = @UserID";
+
+                DataTable dtParties = DatabaseHelper.ExecuteQuery(notifyQuery, new SqlParameter("@UserID", userId));
+                foreach (DataRow row in dtParties.Rows)
+                {
+                    int targetUid = Convert.ToInt32(row["userID"]);
+                    if (targetUid != userId)
+                    {
+                        NotificationHelper.CreateNotification(targetUid, "System", shutdownMsg);
+                    }
+                }
 
                 DatabaseHelper.ExecuteNonQuery("UPDATE [User] SET accountStatus = 'Deleted' WHERE userID = @UserID",
                     new SqlParameter("@UserID", userId));

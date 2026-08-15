@@ -8,7 +8,6 @@ namespace FreeHubProject
 {
     public partial class PostProject : System.Web.UI.Page
     {
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!AuthHelper.RequireRole(this, "Employer")) return;
@@ -115,8 +114,17 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
-                // Notify the employer confirming the post
+                // Broadcast & Notify Users about the new project post
                 int currentUserId = Convert.ToInt32(Session["UserID"]);
+                string posterName = Session["FirstName"] as string ?? "A user";
+                string projectTitle = txtProjectTitle.Text.Trim();
+
+                string notificationText = $"A new project \"{projectTitle}\" has been posted by {posterName}. <a href='ProjectDetails.aspx?projectId={projectId}' style='color:#059669; font-weight:bold;'>View Details</a>";
+
+                // Notify poster and broadcast to all active system users
+                NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
+                NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
+                
                 string notificationText = $"Your project '{txtProjectTitle.Text.Trim()}' was successfully posted and is now open for proposals.";
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
 
@@ -147,6 +155,7 @@ namespace FreeHubProject
                 ShowMessage("Error posting project: " + ex.Message, false);
             }
         }
+
         // EDIT PROJECT - not used for now since projects are in DB
         protected void btnEditProject_Click(object sender, EventArgs e)
         {

@@ -394,7 +394,16 @@ FREEHUB HOME PAGE
     background-color: #dfead5;
     ```
 }
+/* Unread notification highlight style */
+.notification-item.unread-notification {
+    background-color: #f0fdf4 !important; /* Light green tint */
+    border-left: 4px solid #059669 !important; /* Green left accent bar */
+}
 
+    .notification-item.unread-notification strong {
+        font-weight: 800 !important;
+        color: #111827;
+    }
 .opportunity-item h4 {
     color: #243328;
     ``` font-size: 16px;

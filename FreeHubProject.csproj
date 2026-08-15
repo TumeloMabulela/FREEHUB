@@ -94,6 +94,7 @@
     <Content Include="SelectProposal.aspx" />
     <Content Include="StyleSheet1.css" />
     <Content Include="Transactions.aspx" />
+    <Content Include="ViewProgress.aspx" />
     <Content Include="Wallet.aspx" />
     <Content Include="Web.config" />
     <Content Include="SubmitWork.aspx" />
@@ -287,6 +288,13 @@
       <DependentUpon>ManageProfile.aspx</DependentUpon>
     </Compile>
     <Compile Include="TransactionStore.cs" />
+    <Compile Include="ViewProgress.aspx.cs">
+      <DependentUpon>ViewProgress.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ViewProgress.aspx.designer.cs">
+      <DependentUpon>ViewProgress.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Wallet.aspx.cs">
       <DependentUpon>Wallet.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

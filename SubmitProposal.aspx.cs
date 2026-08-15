@@ -130,6 +130,10 @@ namespace FreeHubProject
                         ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
                         btnSubmitProposal.Enabled = false;
                         btnSubmitProposal.Text = "Proposal Submitted";
+                        // Inside btnSubmitProposal_Click upon successful database submission (result > 0):
+                     
+                        string proposalMsg = "You have successfully submitted a proposal.";
+                        NotificationHelper.CreateNotification(userId, "Proposal", proposalMsg);
                     }
                     else if (result == -1)
                     {

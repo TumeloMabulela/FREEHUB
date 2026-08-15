@@ -1,8 +1,6 @@
 <%@ Control Language="C#" AutoEventWireup="true"
     CodeBehind="Sidebar.ascx.cs"
-    Inherits="FreeHubProject.Sidebar" %>
-
-<aside class="freehub-sidebar">
+    Inherits="FreeHubProject.Sidebar" %><aside class="freehub-sidebar">
 
     <div class="sidebar-back">
         <% if (!GetActiveClass("Default").Contains("active")) { %>
@@ -40,6 +38,10 @@
             <span class="sidebar-icon">&#128221;</span>
             <span>Proposals Received</span>
         </a>
+        <a href="ViewProgress.aspx" class="sidebar-item <%= GetActiveClass("ViewProgress") %>">
+    <span class="sidebar-icon">📊</span>
+    <span>View Progress</span>
+</a>
         <% } %>
 
         <% if (CurrentUserType == "Freelancer") { %>
@@ -62,12 +64,6 @@
             <span>Wallet</span>
         </a>
 
-        <a href="Notifications.aspx"
-           class="sidebar-item <%= GetActiveClass("Notifications") %>">
-            <span class="sidebar-icon">&#128276;</span>
-            <span>Notifications</span>
-        </a>
-
     </div>
 
     <div class="sidebar-heading">PROJECTS</div>
@@ -84,24 +80,8 @@
            class="sidebar-item <%= GetActiveClass("RateFreelancer") %>">
             <span class="sidebar-icon">&#11088;</span>
             <span>Ratings</span>
-        </a>
 
-    </div>
 
-    <div class="sidebar-heading">ACCOUNT</div>
-
-    <div class="sidebar-section">
-
-        <a href="ManageProfile.aspx"
-           class="sidebar-item <%= GetActiveClass("ManageProfile") %>">
-            <span class="sidebar-icon">&#128100;</span>
-            <span>Profile</span>
-        </a>
-
-        <a href="SwitchRole.aspx"
-           class="sidebar-item <%= GetActiveClass("SwitchRole") %>">
-            <span class="sidebar-icon">&#128260;</span>
-            <span>Switch Role</span>
         </a>
 
     </div>

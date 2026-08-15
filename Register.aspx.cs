@@ -64,10 +64,14 @@ namespace FreeHubProject
 
                 if (newUserID > 0)
                 {
+                    string welcomeMsg = "Welcome to FreeHUB! Your account has been successfully created. Explore available opportunities or post projects to get started.";
+                    NotificationHelper.CreateNotification(newUserID, "System", welcomeMsg);
+
                     lblMessage.CssClass = "register-message success-message";
                     lblMessage.Text = "Account created successfully! Redirecting to login...";
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'Login.aspx'; }, 2000);", true);
+
                 }
                 else
                 {

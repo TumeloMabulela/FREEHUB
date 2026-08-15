@@ -170,9 +170,23 @@ namespace FreeHubProject
                 return;
             }
 
+            int projectId = 0;
+
+            // 1. Try checking ViewState first
             if (ViewState["SelectedProjectId"] != null)
             {
-                Response.Redirect("SubmitProposal.aspx?projectId=" + ViewState["SelectedProjectId"]);
+                int.TryParse(ViewState["SelectedProjectId"].ToString(), out projectId);
+            }
+
+            // 2. Fallback: Check if there's a selected ID in the query string or hidden field if viewstate cleared
+            if (projectId <= 0 && !string.IsNullOrEmpty(Request.QueryString["id"]))
+            {
+                int.TryParse(Request.QueryString["id"], out projectId);
+            }
+
+            if (projectId > 0)
+            {
+                Response.Redirect("SubmitProposal.aspx?projectId=" + projectId);
             }
             else
             {

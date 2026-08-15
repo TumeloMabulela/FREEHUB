@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Text.RegularExpressions;
 
 using System.Web.UI.WebControls;
 
@@ -20,6 +21,12 @@ namespace FreeHubProject
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["UserID"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
+            if (CurrentUserId <= 0)
             {
                 Response.Redirect("Login.aspx");
                 return;
@@ -161,10 +168,69 @@ namespace FreeHubProject
             {
                 int notificationId = Convert.ToInt32(e.CommandArgument);
                 Session["SelectedNotificationId"] = notificationId;
+
+                // Automatically mark the notification as Read when clicked/selected
+                UpdateNotificationStatus(notificationId, "Read");
+
+                // Reload the selected notification details and re-bind the list to update badge counts/status
                 LoadSelectedNotification(notificationId);
+                BindNotifications();
             }
         }
 
+        private void LoadSelectedNotification(int notificationId)
+        {
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string query = @"
+                    SELECT notificationID, type, content, FORMAT(notificationTimestamp, 'dd MMM yyyy, hh:mm tt') AS notificationTimestamp, status 
+                    FROM dbo.Notification 
+                    WHERE notificationID = @NotificationID AND userID = @UserID";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@NotificationID", notificationId);
+                    cmd.Parameters.AddWithValue("@UserID", CurrentUserId);
+                    conn.Open();
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            pnlSelectedNotification.Visible = true;
+                            lblSelectNotification.Visible = false;
+
+                            string type = dr["type"].ToString();
+                            string contentText = dr["content"].ToString();
+
+                            lblSelectedTitle.Text = type + " Alert";
+                            lblSelectedDescription.Text = contentText;
+                            lblSelectedPreview.Text = contentText;
+                            lblSelectedTime.Text = dr["notificationTimestamp"].ToString();
+
+                            string status = dr["status"].ToString();
+                            lblReadStatus.Text = status;
+
+                            btnToggleRead.Text = (status == "Read") ? "Mark as Unread" : "Mark as Read";
+                            btnToggleArchive.Text = (status == "Archived") ? "Unarchive" : "Archive";
+
+                            switch (type)
+                            {
+                                case "Message": lblSelectedIcon.Text = "✉"; break;
+                                case "Project": lblSelectedIcon.Text = "▣"; break;
+                                case "Proposal": lblSelectedIcon.Text = "▤"; break;
+                                case "Payment": lblSelectedIcon.Text = "R"; break;
+                                default: lblSelectedIcon.Text = "♧"; break;
+                            }
+
+                            // Show specific action buttons based on notification type
+                            btnViewMessage.Visible = (type == "Message");
+
+                            // Check if content has a project ID link pattern
+                            bool hasProjectLink = contentText.Contains("ProjectDetails.aspx?projectId=") || type == "Project" || type == "Proposal";
+                            btnViewProject.Visible = hasProjectLink;
+                        }
+                    }
                 }
             }
         }
@@ -178,26 +244,46 @@ namespace FreeHubProject
             Response.Redirect("StartChat.aspx?open=true");
         }
 
+        protected void btnViewProject_Click(object sender, EventArgs e)
+        {
+            if (Session["SelectedNotificationId"] == null) return;
+            int notificationId = Convert.ToInt32(Session["SelectedNotificationId"]);
+            UpdateNotificationStatus(notificationId, "Read");
+
+            // Extract project ID from content string if present
+            string contentText = lblSelectedDescription.Text;
+            Match match = Regex.Match(contentText, @"projectId=(\d+)");
+            if (match.Success)
+            {
+                string projId = match.Groups[1].Value;
+                Response.Redirect($"ProjectDetails.aspx?id={projId}");
+            }
+            else
+            {
+                Response.Redirect("BrowseProjects.aspx");
+            }
+        }
+
         protected void btnToggleRead_Click(object sender, EventArgs e)
         {
             if (Session["SelectedNotificationId"] == null) return;
             int notificationId = Convert.ToInt32(Session["SelectedNotificationId"]);
 
-            if (btnToggleRead.Text == "Mark as Read")
-            {
-                UpdateNotificationStatus(notificationId, "Read");
-                ShowNotificationStatus("Notification marked as read.");
-            }
-            else
-            {
-                UpdateNotificationStatus(notificationId, "Unread");
-                ShowNotificationStatus("Notification marked as unread.");
-            }
+            // Determine target status based on current button text
+            string newStatus = (btnToggleRead.Text == "Mark as Read") ? "Read" : "Unread";
 
+            // Update status in database (Marking as Read decreases unread count; Mark as Unread increases it)
+            UpdateNotificationStatus(notificationId, newStatus);
+
+            string actionText = (newStatus == "Read") ? "marked as read (count decreased)" : "marked as unread (count increased)";
+            ShowNotificationStatus($"Notification {actionText}.");
+
+            // Refresh the notifications list and update current view
             LoadSelectedNotification(notificationId);
             BindNotifications();
-        }
 
+            // Optional: Response.Redirect(Request.RawUrl); to instantly refresh master header badge count across the layout
+        }
         protected void btnToggleArchive_Click(object sender, EventArgs e)
         {
             if (Session["SelectedNotificationId"] == null) return;
