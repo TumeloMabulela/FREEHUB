@@ -114,12 +114,6 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
-                // Broadcast & Notify Users about the new project post
-                int currentUserId = Convert.ToInt32(Session["UserID"]);
-                string notificationText = $"Your project '{txtProjectTitle.Text.Trim()}' was successfully posted and is now open for proposals.";
-
-                NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
-
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
 
                 ClearProjectForm();
@@ -129,7 +123,6 @@ namespace FreeHubProject
                 ShowMessage("Error posting project: " + ex.Message, false);
             }
         }
-
         // EDIT PROJECT - not used for now since projects are in DB
         protected void btnEditProject_Click(object sender, EventArgs e)
         {
