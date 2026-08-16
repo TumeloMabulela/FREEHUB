@@ -146,7 +146,9 @@ namespace FreeHubProject
                 rptProjects.DataBind();
 
                 pnlNoProjects.Visible = results.Rows.Count == 0;
-                lblFilterMessage.Text = results.Rows.Count + " project(s) found";
+                pnlProjectDetails.Visible = false;
+                pnlNoSelection.Visible = true;
+                lblFilterMessage.Text = results.Rows.Count + " project(s) found matching your filters";
             }
             catch (Exception ex)
             {
