@@ -21,7 +21,15 @@ namespace FreeHubProject
                 return;
             }
         }
+        protected void btnHelp_Click(object sender, EventArgs e)
+        {
+            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+        }
 
+        protected void btnSupport_Click(object sender, EventArgs e)
+        {
+            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+        }
         protected void btnBackToReview_Click(object sender, EventArgs e)
         {
             Response.Redirect("ReviewProposal.aspx");
@@ -36,13 +44,52 @@ namespace FreeHubProject
             }
             try
             {
-                string query = @"UPDATE Proposal SET status = 'Approved' 
-                                WHERE proposalID = (SELECT TOP 1 proposalID FROM Proposal WHERE status = 'Pending' ORDER BY date DESC);
-                                UPDATE Project SET projectStatus = 'In Progress' 
-                                WHERE projectID = (SELECT TOP 1 projectID FROM Proposal WHERE status = 'Approved' ORDER BY date DESC)";
-                DatabaseHelper.ExecuteNonQuery(query);
+                // 1. Get the latest pending proposal ID along with user/project details first
+                string getDetailsQuery = @"
+            SELECT TOP 1 prop.proposalID, f.userID AS FreelancerUserID, e.userID AS EmployerUserID, 
+                   u_f.username AS FreelancerUsername, u_e.username AS EmployerUsername, p.title AS ProjectTitle, p.projectID AS ProjectID
+            FROM Proposal prop
+            INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
+            INNER JOIN Project p ON prop.projectID = p.projectID
+            INNER JOIN Employer e ON p.employerID = e.employerID
+            INNER JOIN [User] u_f ON f.userID = u_f.userID
+            INNER JOIN [User] u_e ON e.userID = u_e.userID
+            WHERE prop.status = 'Pending' 
+            ORDER BY prop.date DESC";
 
-                lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'. The freelancer has been assigned to the project and will be notified.";
+                DataRow dr = DatabaseHelper.GetDataRow(getDetailsQuery);
+
+                if (dr == null)
+                {
+                    lblApprovalMessage.Text = "No pending proposal found to approve.";
+                    return;
+                }
+
+                int proposalId = Convert.ToInt32(dr["proposalID"]);
+                int projectId = Convert.ToInt32(dr["ProjectID"]);
+
+                // 2. Perform explicit single updates using the exact proposalID and projectID
+                string updateProposalQuery = "UPDATE Proposal SET status = 'Approved' WHERE proposalID = @ProposalID";
+                DatabaseHelper.ExecuteNonQuery(updateProposalQuery, new System.Data.SqlClient.SqlParameter("@ProposalID", proposalId));
+
+                string updateProjectQuery = "UPDATE Project SET projectStatus = 'In Progress' WHERE projectID = @ProjectID";
+                DatabaseHelper.ExecuteNonQuery(updateProjectQuery, new System.Data.SqlClient.SqlParameter("@ProjectID", projectId));
+
+                // 3. Send the exact required notifications to both parties
+                int freelancerUserId = Convert.ToInt32(dr["FreelancerUserID"]);
+                int employerUserId = Convert.ToInt32(dr["EmployerUserID"]);
+                string projectTitle = Convert.ToString(dr["ProjectTitle"]);
+                string freelancerUsername = Convert.ToString(dr["FreelancerUsername"]);
+
+                // Freelancer notification
+                string freelancerMsg = $"Your \"{projectTitle}\" proposal has been approved. You can start conversation with the employer on the messages. <a href='ProjectDetails.aspx?projectId={projectId}' style='color:#059669; font-weight:bold;'>View Details</a>";
+                NotificationHelper.CreateNotification(freelancerUserId, "Proposal", freelancerMsg);
+
+                // Employer notification
+                string employerMsg = $"You can start conversation with the \"{freelancerUsername}\".";
+                NotificationHelper.CreateNotification(employerUserId, "Proposal", employerMsg);
+
+                lblApprovalMessage.Text = "Proposal approved successfully! The project status has changed to 'In Progress'.";
             }
             catch (Exception ex)
             {

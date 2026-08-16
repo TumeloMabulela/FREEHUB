@@ -38,6 +38,10 @@
             <span class="sidebar-icon">&#128221;</span>
             <span>Proposals Received</span>
         </a>
+        <a href="ViewProgress.aspx" class="sidebar-item <%= GetActiveClass("ViewProgress") %>">
+    <span class="sidebar-icon">📊</span>
+    <span>View Progress</span>
+</a>
         <% } %>
 
         <% if (CurrentUserType == "Freelancer") { %>
@@ -76,6 +80,8 @@
            class="sidebar-item <%= GetActiveClass("RateFreelancer") %>">
             <span class="sidebar-icon">&#11088;</span>
             <span>Ratings</span>
+
+
         </a>
 
     </div>

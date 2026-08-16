@@ -266,27 +266,8 @@ namespace FreeHubProject
             }
 
 
-            Session["ChatActive"] = true;
-
-
-            lblChatName.Text =
-                Session["SelectedUser"].ToString();
-
-            lblChatInitials.Text =
-                Session["SelectedInitials"].ToString();
-
-            lblChatStatus.Text =
-                Session["SelectedStatus"].ToString();
-
-
-            btnViewProfile.Enabled = true;
-
-            btnEndChat.Enabled = true;
-
-            btnSend.Enabled = true;
-
-
-            if (Session["Messages"] == null)
+            // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
+            using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 List<ChatMessage> messages =
                     new List<ChatMessage>();

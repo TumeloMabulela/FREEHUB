@@ -508,10 +508,8 @@ namespace FreeHubProject
         }
 
 
-        public string Title
-        {
-            get;
-            set;
+
+            BindNotifications();
         }
 
 
