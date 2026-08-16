@@ -454,7 +454,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Transactions.aspx?type=Refund"
+                "Refunds.aspx"
             );
         }
 
