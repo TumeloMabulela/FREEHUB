@@ -268,6 +268,7 @@ namespace FreeHubProject
                 }
             }
 
+
             // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
             using (SqlConnection conn = new SqlConnection(_connStr))
             {

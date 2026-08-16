@@ -292,6 +292,7 @@ namespace FreeHubProject
                 ShowNotificationStatus("Notification unarchived successfully.");
             }
 
+
             BindNotifications();
         }
 

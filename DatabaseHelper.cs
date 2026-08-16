@@ -649,6 +649,7 @@ namespace FreeHubProject
                     new SqlParameter("@CurrentUserID", currentUserId),
                     new SqlParameter("@SenderID", senderUserId));
             }
+
         }
 
         public static string CapitalizeSkills(string skills)
