@@ -1,0 +1,6 @@
+{
+    "omnisharp.enableRoslynAnalyzers": false,
+    "omnisharp.enableEditorConfigSupport": false,
+    "csharp.suppressDotnetInstallWarning": true,
+    "omnisharp.disableMSBuildDiagnosticWarning": true
+}
