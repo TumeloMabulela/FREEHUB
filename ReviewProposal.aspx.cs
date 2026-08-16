@@ -108,6 +108,26 @@ namespace FreeHubProject
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
 
+                // Notify the freelancer
+                try
+                {
+                    string flQuery = @"SELECT u.userID, p.title FROM Proposal pr
+                                      INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                                      INNER JOIN [User] u ON f.userID = u.userID
+                                      INNER JOIN Project p ON pr.projectID = p.projectID
+                                      WHERE pr.proposalID = @ID";
+                    System.Data.DataTable flResult = DatabaseHelper.ExecuteQuery(flQuery,
+                        new SqlParameter("@ID", ProposalId));
+                    if (flResult.Rows.Count > 0)
+                    {
+                        int freelancerUserId = Convert.ToInt32(flResult.Rows[0]["userID"]);
+                        string projectTitle = Convert.ToString(flResult.Rows[0]["title"]);
+                        DatabaseHelper.SendNotification(freelancerUserId, "Proposal",
+                            "Your proposal for '" + projectTitle + "' has been APPROVED! The project is now In Progress.");
+                    }
+                }
+                catch { }
+
                 ShowMessage("Proposal approved! The project is now In Progress and the freelancer has been assigned.", true);
                 btnApproveProposal.Visible = false;
                 btnRejectProposal.Visible = false;
@@ -126,6 +146,26 @@ namespace FreeHubProject
                 string query = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = @ID";
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
+
+                // Notify the freelancer
+                try
+                {
+                    string flQuery = @"SELECT u.userID, p.title FROM Proposal pr
+                                      INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
+                                      INNER JOIN [User] u ON f.userID = u.userID
+                                      INNER JOIN Project p ON pr.projectID = p.projectID
+                                      WHERE pr.proposalID = @ID";
+                    System.Data.DataTable flResult = DatabaseHelper.ExecuteQuery(flQuery,
+                        new SqlParameter("@ID", ProposalId));
+                    if (flResult.Rows.Count > 0)
+                    {
+                        int freelancerUserId = Convert.ToInt32(flResult.Rows[0]["userID"]);
+                        string projectTitle = Convert.ToString(flResult.Rows[0]["title"]);
+                        DatabaseHelper.SendNotification(freelancerUserId, "Proposal",
+                            "Your proposal for '" + projectTitle + "' has been rejected.");
+                    }
+                }
+                catch { }
 
                 ShowMessage("Proposal rejected. The freelancer has been notified.", true);
                 btnApproveProposal.Visible = false;

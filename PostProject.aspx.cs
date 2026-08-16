@@ -125,6 +125,22 @@ namespace FreeHubProject
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
                 NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
                 
+                // Notify all freelancers about new project
+                try
+                {
+                    DatabaseHelper.NotifyAllFreelancers("Project",
+                        "New project posted: " + projectTitle + " - Budget: R" + budget.ToString("N0"));
+                }
+                catch { }
+
+                // Notify self (employer)
+                try
+                {
+                    int userId = Convert.ToInt32(Session["UserID"]);
+                    DatabaseHelper.SendNotification(userId, "Project",
+                        "Your project '" + projectTitle + "' was successfully posted and is now open for proposals.");
+                }
+                catch { }
                 ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
 
                 ClearProjectForm();
@@ -134,7 +150,6 @@ namespace FreeHubProject
                 ShowMessage("Error posting project: " + ex.Message, false);
             }
         }
-
         // EDIT PROJECT - not used for now since projects are in DB
         protected void btnEditProject_Click(object sender, EventArgs e)
         {

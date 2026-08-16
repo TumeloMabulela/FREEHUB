@@ -559,12 +559,14 @@ namespace FreeHubProject
         {
             return string.IsNullOrWhiteSpace(email) ? "" : email.Trim().ToLower();
         }
+
         public static string CapitalizeName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "";
             name = name.Trim();
             return char.ToUpper(name[0]) + (name.Length > 1 ? name.Substring(1).ToLower() : "");
         }
+
         public static DataTable SearchRegisteredUsers(string searchTerm, int currentUserId)
         {
             string query = @"
@@ -581,14 +583,15 @@ namespace FreeHubProject
                 new SqlParameter("@CurrentUserID", currentUserId),
                 new SqlParameter("@Search", formattedSearch));
         }
+
         /// <summary>
-        /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
+        /// Updates the user's last active/last seen timestamp.
         /// </summary>
         /// <summary>
         /// Capitalizes comma-separated skill inputs (e.g., "c#, web development" -> "C#, Web Development").
         /// </summary>/// <param name="projectId">Optional project ID associated with the conversation.</param>
         // Updates user's last active / logout timestamp
-        // Updates user's last active timestamp
+// Updates user's last active timestamp
         public static void UpdateUserLastSeen(int userId)
         {
             string query = "UPDATE dbo.[User] SET lastSeen = GETDATE() WHERE userID = @UserID";
@@ -609,7 +612,6 @@ namespace FreeHubProject
             DateTime lastSeen = Convert.ToDateTime(user["lastSeen"]);
             TimeSpan diff = DateTime.Now - lastSeen;
 
-            // Consider online if active within the last 3 minutes
             if (diff.TotalMinutes < 3)
             {
                 return "Online 🟢";
@@ -667,5 +669,145 @@ namespace FreeHubProject
 
             return string.Join(", ", parts);
         }
+
+        // ============================================================
+        // NOTIFICATION OPERATIONS
+        // ============================================================
+
+        public static void SendNotification(int userID, string type, string content)
+        {
+            string query = @"INSERT INTO Notification (userID, type, content, status)
+                            VALUES (@UserID, @Type, @Content, 'Unread')";
+            ExecuteNonQuery(query,
+                new SqlParameter("@UserID", userID),
+                new SqlParameter("@Type", type),
+                new SqlParameter("@Content", content));
+        }
+
+        public static void NotifyAllFreelancers(string type, string content)
+        {
+            string query = @"INSERT INTO Notification (userID, type, content, status)
+                            SELECT userID, @Type, @Content, 'Unread'
+                            FROM [User] WHERE userType = 'Freelancer' AND accountStatus = 'Active'";
+            ExecuteNonQuery(query,
+                new SqlParameter("@Type", type),
+                new SqlParameter("@Content", content));
+        }
+
+        public static DataTable GetNotificationsByUser(int userID)
+        {
+            string query = @"SELECT notificationID, type, content, notificationTimestamp, status
+                            FROM Notification
+                            WHERE userID = @UserID
+                            ORDER BY notificationTimestamp DESC";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static int GetUnreadNotificationCount(int userID)
+        {
+            string query = "SELECT COUNT(*) FROM Notification WHERE userID = @UserID AND status = 'Unread'";
+            object result = ExecuteScalar(query, new SqlParameter("@UserID", userID));
+            return Convert.ToInt32(result);
+        }
+
+        public static void MarkNotificationRead(int notificationID)
+        {
+            string query = "UPDATE Notification SET status = 'Read' WHERE notificationID = @ID";
+            ExecuteNonQuery(query, new SqlParameter("@ID", notificationID));
+        }
+
+        public static void MarkAllNotificationsRead(int userID)
+        {
+            string query = "UPDATE Notification SET status = 'Read' WHERE userID = @UserID AND status = 'Unread'";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        // ============================================================
+        // PROFILE HELPER METHODS (used by team members' pages)
+        // ============================================================
+
+        public static string GetProfileStatus(int userID)
+        {
+            DataRow user = GetUserById(userID);
+            if (user != null) return Convert.ToString(user["accountStatus"]);
+            return "Active";
+        }
+
+        public static string GetProfileStatus(int userID, string profileType)
+        {
+            if (profileType == "Freelancer")
+            {
+                DataRow fl = GetFreelancerByUserId(userID);
+                return fl != null ? "Active" : "None";
+            }
+            else if (profileType == "Employer")
+            {
+                DataRow em = GetEmployerByUserId(userID);
+                return em != null ? "Active" : "None";
+            }
+            return GetProfileStatus(userID);
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID)
+        {
+            string query = @"SELECT u.accountStatus, 
+                            CASE WHEN f.freelancerID IS NOT NULL THEN 'Yes' ELSE 'No' END AS hasFreelancerProfile,
+                            CASE WHEN e.employerID IS NOT NULL THEN 'Yes' ELSE 'No' END AS hasEmployerProfile
+                            FROM [User] u
+                            LEFT JOIN Freelancer f ON u.userID = f.userID
+                            LEFT JOIN Employer e ON u.userID = e.userID
+                            WHERE u.userID = @UserID";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID, string profileType)
+        {
+            return GetUserProfileStatuses(userID);
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID, string profileType, string status)
+        {
+            return GetUserProfileStatuses(userID);
+        }
+
+        public static DataTable GetUserProfileStatuses(int userID, out string freelancerStatus, out string employerStatus)
+        {
+            freelancerStatus = "None";
+            employerStatus = "None";
+            DataRow fl = GetFreelancerByUserId(userID);
+            if (fl != null) freelancerStatus = "Active";
+            DataRow em = GetEmployerByUserId(userID);
+            if (em != null) employerStatus = "Active";
+            return GetUserProfileStatuses(userID);
+        }
+
+        public static void ReactivateUserProfile(int userID)
+        {
+            string query = "UPDATE [User] SET accountStatus = 'Active' WHERE userID = @UserID";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static void ReactivateUserProfile(int userID, string profileType)
+        {
+            ReactivateUserProfile(userID);
+        }
+
+        public static void ReactivateUserProfile(int userID, out string message)
+        {
+            message = "Profile reactivated successfully.";
+            ReactivateUserProfile(userID);
+        }
+
+        public static void DeactivateUserProfile(int userID)
+        {
+            string query = "UPDATE [User] SET accountStatus = 'Inactive' WHERE userID = @UserID";
+            ExecuteNonQuery(query, new SqlParameter("@UserID", userID));
+        }
+
+        public static void DeactivateUserProfile(int userID, string profileType)
+        {
+            DeactivateUserProfile(userID);
+        }
+
     }
 }
