@@ -36,12 +36,15 @@
                         <a href="MyProjects.aspx">My Projects</a>
                     </asp:Panel>
 
-                    <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:inline;">
-                        <a href="Dashboard.aspx">Dashboard</a>
-                        <a href="BrowseProjects.aspx">Browse Projects</a>
-                        <a href="Wallet.aspx">Wallet</a>
-                        <a href="StartChat.aspx">Messages</a>
-                    </asp:Panel>
+                   <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:inline;">
+    <a href="Dashboard.aspx">Dashboard</a>
+    <a href="BrowseProjects.aspx">Browse Projects</a>
+    <a href="Wallet.aspx">Wallet</a>
+    <a href="StartChat.aspx" style="position: relative; display: inline-flex; align-items: center;">
+        Messages 
+        <asp:Literal ID="litUnreadMessageBadge" runat="server" />
+    </a>
+</asp:Panel>
 
                 </nav>
 

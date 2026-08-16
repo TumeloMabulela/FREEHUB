@@ -97,5 +97,9 @@ namespace FreeHubProject
         {
             lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
         }
+        protected void btnHelp_Click(object sender, EventArgs e)
+        {
+            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+        }
     }
 }

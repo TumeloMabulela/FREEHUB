@@ -8,9 +8,8 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
             SetupNavigation();
-           
+
             if (Session["UserID"] != null)
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
@@ -52,8 +51,29 @@ namespace FreeHubProject
                 {
                     litUnreadDot.Text = "";
                 }
+
+                // Fetch count of unread messages for the navigation bar badge
+                try
+                {
+                    string msgUnreadQuery = "SELECT COUNT(*) FROM dbo.Message WHERE receiverID = @UserID AND status != 'Read'";
+                    object msgResult = DatabaseHelper.ExecuteScalar(msgUnreadQuery, new SqlParameter("@UserID", userId));
+                    int unreadMsgCount = msgResult != null ? Convert.ToInt32(msgResult) : 0;
+
+                    if (unreadMsgCount > 0)
+                    {
+                        // Render an overlay badge next to the Messages link
+                        litUnreadMessageBadge.Text = $"<span style='background-color: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 9px; font-weight: bold; margin-left: 6px; display: inline-block; line-height: 1.2;'>{unreadMsgCount}</span>";
+                    }
+                    else
+                    {
+                        litUnreadMessageBadge.Text = "";
+                    }
+                }
+                catch
+                {
+                    litUnreadMessageBadge.Text = "";
+                }
             }
-        
         }
 
         private void SetupNavigation()
