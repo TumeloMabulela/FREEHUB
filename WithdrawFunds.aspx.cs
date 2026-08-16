@@ -33,10 +33,25 @@ namespace FreeHubProject
 
         private void LoadBalances()
         {
-            decimal availableBalance =
-                GetSessionDecimal(
-                    "AvailableBalance"
-                );
+            decimal availableBalance = 0.00m;
+
+            int walletID = 0;
+            if (Session["WalletID"] != null)
+                walletID = Convert.ToInt32(Session["WalletID"]);
+
+            if (walletID > 0)
+            {
+                availableBalance =
+                    DatabaseHelper.GetWalletBalance(walletID);
+
+                Session["AvailableBalance"] =
+                    availableBalance;
+            }
+            else
+            {
+                availableBalance =
+                    GetSessionDecimal("AvailableBalance");
+            }
 
             string formattedBalance =
                 FormatCurrency(
@@ -156,22 +171,6 @@ namespace FreeHubProject
                 return;
             }
 
-            decimal availableBalance =
-                GetSessionDecimal(
-                    "AvailableBalance"
-                );
-
-            if (withdrawalAmount >
-                availableBalance)
-            {
-                ShowMessage(
-                    "You do not have enough available funds.",
-                    false
-                );
-
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(
                 ddlBankAccount.SelectedValue))
             {
@@ -202,7 +201,7 @@ namespace FreeHubProject
                 return;
             }
 
-            // Get current balance from DB
+            // Get current balance from DB (single source of truth)
             decimal dbBalance =
                 DatabaseHelper.GetWalletBalance(walletID);
 
