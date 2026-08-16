@@ -204,7 +204,6 @@
     <script type="text/javascript">
         var currentUserRole = '<%= Session["UserType"] as string ?? "User" %>';
 
-        // Toggle button state based on checkbox
         function toggleDeactivateProfileBtn() {
             var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
             var btn = document.getElementById('<%= btnDeactivateProfile.ClientID %>');
@@ -217,18 +216,11 @@
             }
         }
 
+        }
+
         function toggleDeactivateAccountBtn() {
             var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
             var btn = document.getElementById('<%= btnDeactivateAccount.ClientID %>');
-            if (chk.checked) {
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
-            } else {
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
-            }
-        }
-
         function showDeactivateProfileModal() {
             // Check checkbox first
             var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
@@ -275,6 +267,12 @@
             return false;
         }
 
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+
+        function showDeactivateAccountModal() {
+            var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
         function showDeactivateAccountModal() {
             var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
             if (!chk.checked) {
@@ -306,6 +304,10 @@
                 overlay.remove();
                 __doPostBack('<%= btnDeactivateAccount.UniqueID %>', '');
             };
+            overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+            return false;
+        }
+
             overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
             return false;
         }

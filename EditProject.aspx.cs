@@ -96,7 +96,27 @@ namespace FreeHubProject
                 string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtBudget.Text) ||
                 string.IsNullOrWhiteSpace(txtDeadline.Text))
             {
-                ShowMessage("Please complete all required fields.", false);
+                ShowMessage("Please enter the project title.", false);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(ddlCategory.SelectedValue))
+            {
+                ShowMessage("Please select a category.", false);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtDescription.Text))
+            {
+                ShowMessage("Please enter a description.", false);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtBudget.Text))
+            {
+                ShowMessage("Please enter the budget.", false);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtDeadline.Text))
+            {
+                ShowMessage("Please select a deadline.", false);
                 return;
             }
 
@@ -137,26 +157,6 @@ namespace FreeHubProject
                     new SqlParameter("@Experience", ddlExperience.SelectedValue ?? ""),
                     new SqlParameter("@Skills", txtSkills.Text.Trim()),
                     new SqlParameter("@ProjectID", ProjectId));
-
-                // Send notifications to all freelancers who applied to this project
-                string getApplicantsQuery = @"
-            SELECT DISTINCT f.userID 
-            FROM Proposal prop
-            INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
-            WHERE prop.projectID = @ProjectID";
-
-                DataTable dtApplicants = DatabaseHelper.GetDataTable(getApplicantsQuery, new SqlParameter("@ProjectID", ProjectId));
-
-                if (dtApplicants != null && dtApplicants.Rows.Count > 0)
-                {
-                    foreach (DataRow row in dtApplicants.Rows)
-                    {
-                        int applicantUserId = Convert.ToInt32(row["userID"]);
-                        string notificationText = $"The project '{txtProjectTitle.Text.Trim()}' that you submitted a proposal for has been updated by the employer.";
-
-                        NotificationHelper.CreateNotification(applicantUserId, "Project", notificationText);
-                    }
-                }
 
                 ShowMessage("Project updated successfully! Your changes have been saved.", true);
             }

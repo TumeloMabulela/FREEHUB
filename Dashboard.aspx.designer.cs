@@ -9,8 +9,6 @@
 
 namespace FreeHubProject
 {
-
-
     public partial class Dashboard
     {
 
