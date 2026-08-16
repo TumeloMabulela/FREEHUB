@@ -86,6 +86,12 @@
                                         <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
                                     <p><%# Eval("commentText") %></p>
+                                    <asp:LinkButton ID="btnReply" runat="server"
+                                        CommandName="ReplyComment"
+                                        CommandArgument='<%# Eval("authorName") %>'
+                                        style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
+                                        Reply
+                                    </asp:LinkButton>
                                 </div>
                                 <asp:LinkButton ID="btnDelete" runat="server"
                                     CommandName="DeleteComment"
@@ -107,6 +113,10 @@
                 <!-- RIGHT: ADD COMMENT -->
                 <div class="pd-add-comment">
                     <h3>Add a Comment</h3>
+                    <asp:Panel ID="pnlReplyingTo" runat="server" Visible="false" style="background:#edf5f0; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px; color:#2e7d56;">
+                        Replying to <strong><asp:Label ID="lblReplyingTo" runat="server" /></strong>
+                        <asp:LinkButton ID="btnCancelReply" runat="server" OnClick="btnCancelReply_Click" style="color:#dc3545; margin-left:10px; font-size:12px;">Cancel</asp:LinkButton>
+                    </asp:Panel>
                     <asp:TextBox ID="txtComment" runat="server" CssClass="post-textarea"
                         TextMode="MultiLine" Rows="5" placeholder="Write your comment..." />
                     <asp:Button ID="btnPostComment" runat="server" Text="Post Comment"

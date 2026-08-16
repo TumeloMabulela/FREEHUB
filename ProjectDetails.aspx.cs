@@ -103,6 +103,14 @@ namespace FreeHubProject
                     ShowMessage("Error deleting comment: " + ex.Message, false);
                 }
             }
+            else if (e.CommandName == "ReplyComment")
+            {
+                string authorName = Convert.ToString(e.CommandArgument);
+                pnlReplyingTo.Visible = true;
+                lblReplyingTo.Text = authorName;
+                txtComment.Text = "";
+                txtComment.Focus();
+            }
         }
 
         protected void btnPostComment_Click(object sender, EventArgs e)
@@ -122,8 +130,17 @@ namespace FreeHubProject
             try
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
-                DatabaseHelper.AddComment(ProjectId, userId, txtComment.Text.Trim());
+                string commentText = txtComment.Text.Trim();
+
+                // If replying, prefix with @name
+                if (pnlReplyingTo.Visible && !string.IsNullOrEmpty(lblReplyingTo.Text))
+                {
+                    commentText = "@" + lblReplyingTo.Text + " " + commentText;
+                }
+
+                DatabaseHelper.AddComment(ProjectId, userId, commentText);
                 txtComment.Text = "";
+                pnlReplyingTo.Visible = false;
                 LoadComments();
                 ShowMessage("Comment posted successfully!", true);
             }
@@ -131,6 +148,12 @@ namespace FreeHubProject
             {
                 ShowMessage("Error posting comment: " + ex.Message, false);
             }
+        }
+
+        protected void btnCancelReply_Click(object sender, EventArgs e)
+        {
+            pnlReplyingTo.Visible = false;
+            lblReplyingTo.Text = "";
         }
 
         protected string GetAvatarColor(int index)
