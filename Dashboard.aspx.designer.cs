@@ -147,7 +147,4 @@ namespace FreeHubProject
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNoActivity;
     }
-
-        protected global::System.Web.UI.WebControls.Panel pnlNoActivity;
-    }
 }
