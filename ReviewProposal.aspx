@@ -87,8 +87,8 @@
                             <asp:Button ID="btnRejectProposal" runat="server"
                                 Text="X  Reject Proposal"
                                 OnClick="btnRejectProposal_Click"
-                                style="flex:1;background-color:#fff;color:#dc3545;border:1px solid #dc3545;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;display:none;" />
-                            <button type="button" onclick="showModal('rejectModal')" style="flex:1;background-color:#fff;color:#dc3545;border:1px solid #dc3545;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;">X  Reject Proposal</button>
+                                OnClientClick="return confirm('Are you sure you want to reject this proposal?');"
+                                style="flex:1;background-color:#fff;color:#dc3545;border:1px solid #dc3545;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;" />
                             <asp:Button ID="btnRequestChanges" runat="server"
                                 Text="Request Changes"
                                 OnClick="btnRequestChanges_Click"
@@ -96,8 +96,8 @@
                             <asp:Button ID="btnApproveProposal" runat="server"
                                 Text="&#10003;  Approve Proposal"
                                 OnClick="btnApproveProposal_Click"
-                                style="flex:1;background-color:#2e7d56;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;display:none;" />
-                            <button type="button" onclick="showModal('approveModal')" style="flex:1;background-color:#2e7d56;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;">&#10003;  Approve Proposal</button>
+                                OnClientClick="return confirm('Are you sure you want to approve this proposal? The project will start.');"
+                                style="flex:1;background-color:#2e7d56;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;" />
                         </div>
                     </asp:Panel>
 
@@ -130,42 +130,5 @@
         </section>
 
     </div>
-
-    <!-- CUSTOM MODAL FOR APPROVE -->
-    <div id="approveModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; padding:40px; max-width:400px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="width:60px;height:60px;border-radius:50%;background:#edf5f0;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:28px; color:#2e7d56;">&#10003;</span>
-            </div>
-            <h3 style="color:#173f2c; margin-bottom:10px;">Approve This Proposal</h3>
-            <p style="color:#666; font-size:14px; margin-bottom:10px;">Once approved, the project will start and the freelancer will be assigned to work on it.</p>
-            <p style="color:#444; font-size:13px; margin-bottom:20px;"><strong>Are you sure you want to approve this proposal?</strong></p>
-            <button onclick="document.getElementById('<%= btnApproveProposal.ClientID %>').click();" style="display:block;width:100%;background-color:#2e7d56;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Approve</button>
-            <a href="javascript:void(0)" onclick="closeModal('approveModal')" style="color:#666; font-size:14px; text-decoration:none;">No, go back to review</a>
-        </div>
-    </div>
-
-    <!-- CUSTOM MODAL FOR REJECT -->
-    <div id="rejectModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; display:none; align-items:center; justify-content:center;">
-        <div style="background:#fff; border-radius:16px; padding:40px; max-width:400px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-            <div style="width:60px;height:60px;border-radius:50%;background:#fff0f0;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;">
-                <span style="font-size:28px; color:#dc3545;">&#9888;</span>
-            </div>
-            <h3 style="color:#173f2c; margin-bottom:10px;">Reject This Proposal</h3>
-            <p style="color:#666; font-size:14px; margin-bottom:10px;">The freelancer will be notified that their proposal was not accepted. The project will remain open for other proposals.</p>
-            <p style="color:#444; font-size:13px; margin-bottom:20px;"><strong>Are you sure you want to reject this proposal?</strong></p>
-            <button onclick="document.getElementById('<%= btnRejectProposal.ClientID %>').click();" style="display:block;width:100%;background-color:#dc3545;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Reject</button>
-            <a href="javascript:void(0)" onclick="closeModal('rejectModal')" style="color:#666; font-size:14px; text-decoration:none;">No, keep reviewing</a>
-        </div>
-    </div>
-
-    <script type="text/javascript">
-        function showModal(id) {
-            document.getElementById(id).style.display = 'flex';
-        }
-        function closeModal(id) {
-            document.getElementById(id).style.display = 'none';
-        }
-    </script>
 
 </asp:Content>
