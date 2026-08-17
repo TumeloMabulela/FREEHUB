@@ -111,6 +111,18 @@ namespace FreeHubProject
                 txtComment.Text = "";
                 txtComment.Focus();
             }
+            else if (e.CommandName == "EditComment")
+            {
+                string[] parts = Convert.ToString(e.CommandArgument).Split('|');
+                if (parts.Length >= 2)
+                {
+                    ViewState["EditingCommentID"] = parts[0];
+                    txtComment.Text = parts[1];
+                    pnlReplyingTo.Visible = true;
+                    lblReplyingTo.Text = "Editing your comment";
+                    txtComment.Focus();
+                }
+            }
         }
 
         protected void btnPostComment_Click(object sender, EventArgs e)
@@ -132,17 +144,33 @@ namespace FreeHubProject
                 int userId = Convert.ToInt32(Session["UserID"]);
                 string commentText = txtComment.Text.Trim();
 
-                // If replying, prefix with @name
-                if (pnlReplyingTo.Visible && !string.IsNullOrEmpty(lblReplyingTo.Text))
+                // Check if editing an existing comment
+                if (ViewState["EditingCommentID"] != null)
                 {
-                    commentText = "@" + lblReplyingTo.Text + " " + commentText;
+                    int commentId = Convert.ToInt32(ViewState["EditingCommentID"]);
+                    string updateQuery = "UPDATE Comment SET commentText = @Text WHERE commentID = @ID AND userID = @UserID";
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new System.Data.SqlClient.SqlParameter("@Text", commentText),
+                        new System.Data.SqlClient.SqlParameter("@ID", commentId),
+                        new System.Data.SqlClient.SqlParameter("@UserID", userId));
+                    ViewState["EditingCommentID"] = null;
+                    ShowMessage("Comment updated successfully!", true);
+                }
+                else
+                {
+                    // If replying, prefix with @name
+                    if (pnlReplyingTo.Visible && !string.IsNullOrEmpty(lblReplyingTo.Text) && lblReplyingTo.Text != "Editing your comment")
+                    {
+                        commentText = "@" + lblReplyingTo.Text + " " + commentText;
+                    }
+
+                    DatabaseHelper.AddComment(ProjectId, userId, commentText);
+                    ShowMessage("Comment posted successfully!", true);
                 }
 
-                DatabaseHelper.AddComment(ProjectId, userId, commentText);
                 txtComment.Text = "";
                 pnlReplyingTo.Visible = false;
                 LoadComments();
-                ShowMessage("Comment posted successfully!", true);
             }
             catch (Exception ex)
             {

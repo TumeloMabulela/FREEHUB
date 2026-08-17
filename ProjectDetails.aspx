@@ -92,6 +92,13 @@
                                         style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
                                         Reply
                                     </asp:LinkButton>
+                                    <asp:LinkButton ID="btnEditComment" runat="server"
+                                        CommandName="EditComment"
+                                        CommandArgument='<%# Eval("commentID") + "|" + Eval("commentText") %>'
+                                        Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
+                                        style="color:#856404; font-size:12px; text-decoration:none; cursor:pointer; margin-left:12px;">
+                                        Edit
+                                    </asp:LinkButton>
                                 </div>
                                 <asp:LinkButton ID="btnDelete" runat="server"
                                     CommandName="DeleteComment"
