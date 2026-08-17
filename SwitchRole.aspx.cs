@@ -114,12 +114,8 @@ namespace FreeHubProject
 
         protected void btnConfirmReactivate_Click(object sender, EventArgs e)
         {
-            int userId = GetUserId();
-            string otherRole = OtherRole;
-
-            DatabaseHelper.ReactivateUserProfile(userId, otherRole);
-            SwitchUserRole(userId, otherRole);
-            Response.Redirect("Dashboard.aspx");
+            // Redirect to ChooseRole where they can reactivate the profile
+            Response.Redirect("ChooseRole.aspx");
         }
 
         protected void btnConfirmCreate_Click(object sender, EventArgs e)
