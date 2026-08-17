@@ -9,6 +9,7 @@ namespace FreeHubProject
     public partial class ChooseRole
     {
         protected global::System.Web.UI.WebControls.LinkButton btnLogout;
+        protected global::System.Web.UI.WebControls.Panel pnlProgressIndicator;
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Label lblMessage;
         protected global::System.Web.UI.WebControls.Panel pnlFreelancerActive;

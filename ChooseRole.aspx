@@ -331,7 +331,8 @@
 
         <div class="choose-role-container">
 
-            <!-- Progress Indicator -->
+            <!-- Progress Indicator (only for new users) -->
+            <asp:Panel ID="pnlProgressIndicator" runat="server" Visible="false">
             <div class="progress-steps">
                 <div class="step completed">
                     <div class="step-circle">&#10003;</div>
@@ -348,6 +349,7 @@
                     <span class="step-label">Complete Profile</span>
                 </div>
             </div>
+            </asp:Panel>
 
             <h1>Choose How to Continue</h1>
             <p>Select which profile you'd like to use on FreeHUB.</p>

@@ -34,6 +34,10 @@ namespace FreeHubProject
             string freelancerStatus, employerStatus;
             DatabaseHelper.GetUserProfileStatuses(userId, out freelancerStatus, out employerStatus);
 
+            // Only show progress indicator for new users (no profiles yet)
+            bool isNewUser = (freelancerStatus == "NotCreated" && employerStatus == "NotCreated");
+            pnlProgressIndicator.Visible = isNewUser;
+
             // Freelancer card
             pnlFreelancerActive.Visible = freelancerStatus == "Active";
             pnlFreelancerDeactivated.Visible = freelancerStatus == "Deactivated";
@@ -49,7 +53,7 @@ namespace FreeHubProject
             {
                 ShowMessage("Both your profiles are deactivated. Please reactivate one to continue.", "info");
             }
-            else if (freelancerStatus == "NotCreated" && employerStatus == "NotCreated")
+            else if (isNewUser)
             {
                 ShowMessage("Welcome to FreeHUB! Create a profile to get started.", "info");
             }

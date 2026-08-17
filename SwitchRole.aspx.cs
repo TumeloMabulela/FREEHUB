@@ -6,9 +6,14 @@ namespace FreeHubProject
 {
     public partial class SwitchRole : System.Web.UI.Page
     {
+        private string OtherRole
+        {
+            get { return ViewState["OtherRole"] as string ?? ""; }
+            set { ViewState["OtherRole"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Check login
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -17,9 +22,7 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
-                pnlMessage.Visible = false;
-                lblCurrentRole.Text = Session["UserType"] as string ?? "User";
-                UpdateButtonStates();
+                LoadSwitchView();
             }
         }
 
@@ -28,208 +31,112 @@ namespace FreeHubProject
             return Convert.ToInt32(Session["UserID"]);
         }
 
-        private void UpdateButtonStates()
+        private void LoadSwitchView()
         {
-            string currentRole = Session["UserType"] as string ?? "";
-            lblCurrentRole.Text = currentRole;
+            string currentRole = Session["UserType"] as string ?? "Freelancer";
+            string otherRole = currentRole == "Freelancer" ? "Employer" : "Freelancer";
+            OtherRole = otherRole;
 
-            btnSwitchFreelancer.Enabled = true;
-            btnSwitchFreelancer.Text = "Switch to Freelancer";
-            btnSwitchEmployer.Enabled = true;
-            btnSwitchEmployer.Text = "Switch to Employer";
-
-            if (currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            // Current role display
+            if (currentRole == "Freelancer")
             {
-                btnSwitchFreelancer.Enabled = false;
-                btnSwitchFreelancer.Text = "Currently Freelancer";
+                litCurrentIcon.Text = "&#128187;";
+                litCurrentRole.Text = "Freelancer";
+                litCurrentDesc.Text = "You are finding work and submitting proposals.";
             }
-            else if (currentRole.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+            else
             {
-                btnSwitchEmployer.Enabled = false;
-                btnSwitchEmployer.Text = "Currently Employer";
+                litCurrentIcon.Text = "&#127970;";
+                litCurrentRole.Text = "Employer";
+                litCurrentDesc.Text = "You are posting projects and hiring freelancers.";
+            }
+
+            // Other role display
+            int userId = GetUserId();
+            string otherStatus = DatabaseHelper.GetProfileStatus(userId, otherRole);
+
+            if (otherRole == "Freelancer")
+            {
+                litOtherIcon.Text = "&#128187;";
+                litOtherRole.Text = "Freelancer";
+                litOtherDesc.Text = "Find work and submit proposals.";
+            }
+            else
+            {
+                litOtherIcon.Text = "&#127970;";
+                litOtherRole.Text = "Employer";
+                litOtherDesc.Text = "Post projects and hire freelancers.";
+            }
+
+            // Show status and set button text
+            if (otherStatus == "Active")
+            {
+                litOtherStatus.Text = "";
+                btnSwitch.Text = "Switch to " + otherRole;
+            }
+            else if (otherStatus == "Deactivated")
+            {
+                litOtherStatus.Text = "<br/><span class='status-deactivated'>&#9888; This profile is deactivated</span>";
+                btnSwitch.Text = "Switch to " + otherRole;
+            }
+            else
+            {
+                litOtherStatus.Text = "<br/><span class='status-not-created'>&#43; Profile not yet created</span>";
+                btnSwitch.Text = "Switch to " + otherRole;
             }
         }
 
-        protected void btnSwitchFreelancer_Click(object sender, EventArgs e)
+        protected void btnSwitch_Click(object sender, EventArgs e)
         {
             int userId = GetUserId();
+            string otherRole = OtherRole;
+            string otherStatus = DatabaseHelper.GetProfileStatus(userId, otherRole);
 
-            try
+            if (otherStatus == "Active")
             {
-                DataRow freelancer = DatabaseHelper.GetFreelancerByUserId(userId);
-
-                if (freelancer == null)
-                {
-                    pnlCreateFreelancerProfile.Visible = true;
-                    pnlCreateEmployerProfile.Visible = false;
-                    ShowMessage("Please complete your freelancer profile to switch roles.", false);
-                    return;
-                }
-
-                // Check if profile is deactivated
-                string status = DatabaseHelper.GetProfileStatus(userId, "Freelancer");
-                if (status == "Deactivated")
-                {
-                    string script = @"setTimeout(function() {
-                        showConfirmModal(
-                            'Your Freelancer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
-                            function() { window.location.href = 'ChooseRole.aspx'; }
-                        );
-                    }, 100);";
-                    ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
-                    return;
-                }
-
-                SwitchUserRole(userId, "Freelancer");
+                // Direct switch
+                SwitchUserRole(userId, otherRole);
                 Response.Redirect("Dashboard.aspx");
             }
-            catch (Exception ex)
+            else if (otherStatus == "Deactivated")
             {
-                ShowMessage("Error switching role: " + ex.Message, false);
+                // Show confirmation modal for reactivation
+                string script = "showSwitchModal('deactivated', '" + otherRole + "');";
+                ClientScript.RegisterStartupScript(this.GetType(), "showModal", script, true);
+            }
+            else
+            {
+                // Not created — show confirmation modal for creation
+                string script = "showSwitchModal('notcreated', '" + otherRole + "');";
+                ClientScript.RegisterStartupScript(this.GetType(), "showModal", script, true);
             }
         }
 
-        protected void btnSwitchEmployer_Click(object sender, EventArgs e)
+        protected void btnConfirmReactivate_Click(object sender, EventArgs e)
         {
             int userId = GetUserId();
+            string otherRole = OtherRole;
 
-            try
-            {
-                DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
-
-                if (employer == null)
-                {
-                    pnlCreateEmployerProfile.Visible = true;
-                    pnlCreateFreelancerProfile.Visible = false;
-                    ShowMessage("Please complete your employer profile to switch roles.", false);
-                    return;
-                }
-
-                // Check if profile is deactivated
-                string status = DatabaseHelper.GetProfileStatus(userId, "Employer");
-                if (status == "Deactivated")
-                {
-                    string script = @"setTimeout(function() {
-                        showConfirmModal(
-                            'Your Employer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
-                            function() { window.location.href = 'ChooseRole.aspx'; }
-                        );
-                    }, 100);";
-                    ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
-                    return;
-                }
-
-                SwitchUserRole(userId, "Employer");
-                Response.Redirect("Dashboard.aspx");
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Error switching role: " + ex.Message, false);
-            }
+            DatabaseHelper.ReactivateUserProfile(userId, otherRole);
+            SwitchUserRole(userId, otherRole);
+            Response.Redirect("Dashboard.aspx");
         }
 
-        protected void btnCreateFreelancerProfile_Click(object sender, EventArgs e)
+        protected void btnConfirmCreate_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtSkills.Text))
-            {
-                ShowMessage("Please enter at least one skill.", false);
-                return;
-            }
-
-            decimal hourlyRate;
-            if (!decimal.TryParse(txtHourlyRate.Text, out hourlyRate) || hourlyRate <= 0)
-            {
-                ShowMessage("Please enter a valid hourly rate.", false);
-                return;
-            }
-
-            int userId = GetUserId();
-
-            try
-            {
-                string query = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
-                                VALUES (@UserID, @Skills, @Experience, @PortfolioLinks, @HourlyRate)";
-
-                DatabaseHelper.ExecuteNonQuery(query,
-                    new SqlParameter("@UserID", userId),
-                    new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtSkills.Text)),
-                    new SqlParameter("@Experience", txtExperience.Text.Trim()),
-                    new SqlParameter("@PortfolioLinks", txtPortfolioLinks.Text.Trim()),
-                    new SqlParameter("@HourlyRate", hourlyRate));
-
-                SwitchUserRole(userId, "Freelancer");
-                pnlCreateFreelancerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Error: " + ex.Message, false);
-            }
-        }
-
-        protected void btnCreateEmployerProfile_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
-            {
-                ShowMessage("Please enter your company name.", false);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(ddlIndustry.SelectedValue))
-            {
-                ShowMessage("Please select an industry.", false);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtCompanyDescription.Text))
-            {
-                ShowMessage("Please enter a company description.", false);
-                return;
-            }
-
-            int userId = GetUserId();
-            string contactEmail = string.IsNullOrWhiteSpace(txtContactEmail.Text)
-                ? Session["Email"] as string ?? "" : txtContactEmail.Text.Trim();
-
-            try
-            {
-                string query = @"INSERT INTO Employer (userID, companyName, industry, description, contactEmail)
-                                VALUES (@UserID, @CompanyName, @Industry, @Description, @ContactEmail)";
-
-                DatabaseHelper.ExecuteNonQuery(query,
-                    new SqlParameter("@UserID", userId),
-                    new SqlParameter("@CompanyName", txtCompanyName.Text.Trim()),
-                    new SqlParameter("@Industry", ddlIndustry.SelectedValue),
-                    new SqlParameter("@Description", txtCompanyDescription.Text.Trim()),
-                    new SqlParameter("@ContactEmail", contactEmail));
-
-                SwitchUserRole(userId, "Employer");
-                pnlCreateEmployerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Error: " + ex.Message, false);
-            }
+            // Redirect to ChooseRole where they can create the profile
+            Response.Redirect("ChooseRole.aspx");
         }
 
         private void SwitchUserRole(int userId, string newRole)
         {
-            string query = "UPDATE [User] SET userType = @UserType WHERE userID = @UserID";
-            DatabaseHelper.ExecuteNonQuery(query,
+            DatabaseHelper.ExecuteNonQuery(
+                "UPDATE [User] SET userType = @UserType, accountStatus = 'Active' WHERE userID = @UserID",
                 new SqlParameter("@UserType", newRole),
                 new SqlParameter("@UserID", userId));
 
             Session["UserType"] = newRole;
-            lblCurrentRole.Text = newRole;
-        }
-
-        private void ShowMessage(string message, bool success)
-        {
-            pnlMessage.Visible = true;
-            lblMessage.Text = message;
-            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+            Session["AccountStatus"] = "Active";
         }
     }
 }
-

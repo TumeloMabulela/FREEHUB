@@ -7,14 +7,219 @@
 
 <%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
-<asp:Content ID="SwitchRoleHead"
-    ContentPlaceHolderID="HeadContent"
-    runat="server">
+<asp:Content ID="SwitchRoleHead" ContentPlaceHolderID="HeadContent" runat="server">
+    <style>
+        .switch-container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .switch-container h1 {
+            font-size: 26px;
+            color: #173f2c;
+            margin-bottom: 6px;
+        }
+
+        .switch-container > p {
+            color: #5a6e5f;
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .current-role-card {
+            background: white;
+            border: 2px solid #b7d68c;
+            border-radius: 14px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .current-role-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #e8f5e0;
+            color: #2d6b3f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .current-role-info h3 {
+            font-size: 18px;
+            color: #173f2c;
+            margin-bottom: 4px;
+        }
+
+        .current-role-info p {
+            color: #5a6e5f;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .current-badge {
+            display: inline-block;
+            background: #e8f5e0;
+            color: #16a34a;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .switch-to-card {
+            background: white;
+            border: 2px solid #e8ece8;
+            border-radius: 14px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .switch-to-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .switch-to-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #f0f4f0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+
+        .switch-to-info h3 {
+            font-size: 18px;
+            color: #173f2c;
+            margin-bottom: 4px;
+        }
+
+        .switch-to-info p {
+            color: #5a6e5f;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .switch-btn {
+            padding: 12px 24px;
+            background: #173f2c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .switch-btn:hover { background: #1f5438; }
+
+        /* Confirmation Modal */
+        .sr-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sr-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 32px 28px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            animation: srModalIn 0.2s ease;
+        }
+
+        @keyframes srModalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .sr-modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+        }
+
+        .sr-modal h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .sr-modal p {
+            font-size: 13px;
+            color: #5a5a5a;
+            margin-bottom: 22px;
+            line-height: 1.6;
+        }
+
+        .sr-modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sr-btn-confirm {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #173f2c;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .sr-btn-confirm:hover { background: #1f5438; }
+
+        .sr-btn-cancel {
+            background: none;
+            border: none;
+            color: #5a5a5a;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 10px 16px;
+        }
+
+        .sr-btn-cancel:hover { color: #1a1a1a; }
+
+        .status-deactivated { color: #c47a1a; font-weight: 600; font-size: 12px; }
+        .status-not-created { color: #2563eb; font-weight: 600; font-size: 12px; }
+    </style>
 </asp:Content>
 
-<asp:Content ID="Content1"
-    ContentPlaceHolderID="MainContent"
-    runat="server">
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <div class="freehub-dashboard-layout">
 
@@ -22,139 +227,97 @@
 
         <section class="freehub-main-content">
 
-            <div class="switch-role-page">
+            <div class="switch-container">
 
                 <h1>Switch Role</h1>
-                <p class="switch-role-description">
-                    You are currently acting as: 
-                    <strong><asp:Label ID="lblCurrentRole" runat="server" /></strong>
-                </p>
+                <p>Manage which profile you're currently using on FreeHUB.</p>
 
-                <!-- MESSAGE -->
-                <asp:Panel ID="pnlMessage" runat="server" CssClass="post-status" Visible="false">
-                    <asp:Label ID="lblMessage" runat="server" />
-                </asp:Panel>
-
-                <div class="switch-role-options">
-
-                    <!-- FREELANCER OPTION -->
-                    <div class="role-card">
-                        <div class="role-card-icon">&#128188;</div>
-                        <h2>Freelancer</h2>
-                        <p>Find work, submit proposals, and get hired for projects.</p>
-                        <ul class="role-features">
-                            <li>Browse and apply to projects</li>
-                            <li>Submit proposals to employers</li>
-                            <li>Get rated after completing work</li>
-                            <li>Withdraw earnings to your bank</li>
-                        </ul>
-                        <asp:Button ID="btnSwitchFreelancer" runat="server"
-                            Text="Switch to Freelancer"
-                            CssClass="role-switch-button freelancer-button"
-                            OnClick="btnSwitchFreelancer_Click" />
+                <!-- Current Active Profile -->
+                <div class="current-role-card">
+                    <div class="current-role-icon">
+                        <asp:Literal ID="litCurrentIcon" runat="server" />
                     </div>
-
-                    <!-- EMPLOYER OPTION -->
-                    <div class="role-card">
-                        <div class="role-card-icon">&#128101;</div>
-                        <h2>Employer</h2>
-                        <p>Post projects, hire freelancers, and manage your team.</p>
-                        <ul class="role-features">
-                            <li>Post projects with budgets and deadlines</li>
-                            <li>Review and approve proposals</li>
-                            <li>Rate freelancers after completion</li>
-                            <li>Fund your wallet for payments</li>
-                        </ul>
-                        <asp:Button ID="btnSwitchEmployer" runat="server"
-                            Text="Switch to Employer"
-                            CssClass="role-switch-button employer-button"
-                            OnClick="btnSwitchEmployer_Click" />
+                    <div class="current-role-info">
+                        <h3><asp:Literal ID="litCurrentRole" runat="server" /> <span class="current-badge">Active</span></h3>
+                        <p><asp:Literal ID="litCurrentDesc" runat="server" /></p>
                     </div>
-
                 </div>
 
-                <!-- CREATE PROFILE SECTION (shown when switching to a role without a profile) -->
-                <asp:Panel ID="pnlCreateFreelancerProfile" runat="server" Visible="false" CssClass="create-profile-section">
-                    <h2>Create Freelancer Profile</h2>
-                    <p>Complete your freelancer profile to start finding work.</p>
-
-                    <div class="post-field">
-                        <label>Skills <span>*</span></label>
-                        <asp:TextBox ID="txtSkills" runat="server" CssClass="post-input"
-                            placeholder="e.g. Web Design, JavaScript, React, CSS" />
+                <!-- Switch To Other Role -->
+                <div class="switch-to-card">
+                    <div class="switch-to-left">
+                        <div class="switch-to-icon">
+                            <asp:Literal ID="litOtherIcon" runat="server" />
+                        </div>
+                        <div class="switch-to-info">
+                            <h3><asp:Literal ID="litOtherRole" runat="server" /></h3>
+                            <p>
+                                <asp:Literal ID="litOtherDesc" runat="server" />
+                                <asp:Literal ID="litOtherStatus" runat="server" />
+                            </p>
+                        </div>
                     </div>
+                    <asp:Button ID="btnSwitch" runat="server" CssClass="switch-btn"
+                        OnClick="btnSwitch_Click" CausesValidation="false" />
+                </div>
 
-                    <div class="post-field">
-                        <label>Work Experience</label>
-                        <asp:TextBox ID="txtExperience" runat="server" CssClass="post-textarea"
-                            TextMode="MultiLine" Rows="4"
-                            placeholder="Describe your work experience..." />
-                    </div>
-
-                    <div class="post-field">
-                        <label>Portfolio Links</label>
-                        <asp:TextBox ID="txtPortfolioLinks" runat="server" CssClass="post-input"
-                            placeholder="e.g. https://behance.net/yourname" />
-                    </div>
-
-                    <div class="post-field">
-                        <label>Hourly Rate (ZAR) <span>*</span></label>
-                        <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="post-input"
-                            TextMode="Number" placeholder="350" />
-                    </div>
-
-                    <asp:Button ID="btnCreateFreelancerProfile" runat="server"
-                        Text="Create Freelancer Profile"
-                        CssClass="post-submit-button"
-                        OnClick="btnCreateFreelancerProfile_Click" />
-                </asp:Panel>
-
-                <asp:Panel ID="pnlCreateEmployerProfile" runat="server" Visible="false" CssClass="create-profile-section">
-                    <h2>Create Employer Profile</h2>
-                    <p>Complete your employer profile to start posting projects.</p>
-
-                    <div class="post-field">
-                        <label>Company Name <span>*</span></label>
-                        <asp:TextBox ID="txtCompanyName" runat="server" CssClass="post-input"
-                            placeholder="Your company name" />
-                    </div>
-
-                    <div class="post-field">
-                        <label>Industry <span>*</span></label>
-                        <asp:DropDownList ID="ddlIndustry" runat="server" CssClass="post-input">
-                            <asp:ListItem Text="Select Industry" Value="" />
-                            <asp:ListItem Text="Information Technology" Value="Information Technology" />
-                            <asp:ListItem Text="Finance" Value="Finance" />
-                            <asp:ListItem Text="Marketing" Value="Marketing" />
-                            <asp:ListItem Text="Education" Value="Education" />
-                            <asp:ListItem Text="Healthcare" Value="Healthcare" />
-                            <asp:ListItem Text="Other" Value="Other" />
-                        </asp:DropDownList>
-                    </div>
-
-                    <div class="post-field">
-                        <label>Company Description <span>*</span></label>
-                        <asp:TextBox ID="txtCompanyDescription" runat="server" CssClass="post-textarea"
-                            TextMode="MultiLine" Rows="4"
-                            placeholder="Describe your company..." />
-                    </div>
-
-                    <div class="post-field">
-                        <label>Contact Email</label>
-                        <asp:TextBox ID="txtContactEmail" runat="server" CssClass="post-input"
-                            TextMode="Email" placeholder="contact@company.co.za" />
-                    </div>
-
-                    <asp:Button ID="btnCreateEmployerProfile" runat="server"
-                        Text="Create Employer Profile"
-                        CssClass="post-submit-button"
-                        OnClick="btnCreateEmployerProfile_Click" />
-                </asp:Panel>
+                <!-- Hidden fields for modal postback -->
+                <asp:Button ID="btnConfirmReactivate" runat="server" OnClick="btnConfirmReactivate_Click"
+                    style="display:none;" CausesValidation="false" />
+                <asp:Button ID="btnConfirmCreate" runat="server" OnClick="btnConfirmCreate_Click"
+                    style="display:none;" CausesValidation="false" />
 
             </div>
 
         </section>
 
     </div>
+
+    <script type="text/javascript">
+        function showSwitchModal(type, role) {
+            var existing = document.getElementById('srConfirmModal');
+            if (existing) existing.remove();
+
+            var iconBg, iconText, title, message, btnText, btnAction;
+
+            if (type === 'deactivated') {
+                iconBg = '#fff3e0';
+                iconText = '&#9888;';
+                title = 'Profile Deactivated';
+                message = 'Your <strong>' + role + '</strong> profile is currently deactivated. Would you like to reactivate it?';
+                btnText = 'Yes, Reactivate';
+                btnAction = "document.getElementById('" + '<%= btnConfirmReactivate.ClientID %>' + "').click();";
+            } else {
+                iconBg = '#e0f0ff';
+                iconText = '&#43;';
+                title = 'Profile Not Created';
+                message = 'You don\'t have a <strong>' + role + '</strong> profile yet. Would you like to create one?';
+                btnText = 'Yes, Create Profile';
+                btnAction = "document.getElementById('" + '<%= btnConfirmCreate.ClientID %>' + "').click();";
+            }
+
+            var overlay = document.createElement('div');
+            overlay.id = 'srConfirmModal';
+            overlay.className = 'sr-modal-overlay';
+            overlay.innerHTML =
+                '<div class="sr-modal">' +
+                    '<div class="sr-modal-icon" style="background:' + iconBg + ';">' + iconText + '</div>' +
+                    '<h3>' + title + '</h3>' +
+                    '<p>' + message + '</p>' +
+                    '<div class="sr-modal-actions">' +
+                        '<button type="button" class="sr-btn-confirm" onclick="' + btnAction + '">' + btnText + '</button>' +
+                        '<button type="button" class="sr-btn-cancel" onclick="closeSrModal();">Cancel</button>' +
+                    '</div>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+            overlay.onclick = function(e) { if (e.target === overlay) closeSrModal(); };
+        }
+
+        function closeSrModal() {
+            var m = document.getElementById('srConfirmModal');
+            if (m) m.remove();
+        }
+    </script>
 
 </asp:Content>

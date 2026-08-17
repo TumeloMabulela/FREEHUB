@@ -8,22 +8,15 @@ namespace FreeHubProject
 {
     public partial class SwitchRole
     {
-        protected global::System.Web.UI.WebControls.Label lblCurrentRole;
-        protected global::System.Web.UI.WebControls.Panel pnlMessage;
-        protected global::System.Web.UI.WebControls.Label lblMessage;
-        protected global::System.Web.UI.WebControls.Button btnSwitchFreelancer;
-        protected global::System.Web.UI.WebControls.Button btnSwitchEmployer;
-        protected global::System.Web.UI.WebControls.Panel pnlCreateFreelancerProfile;
-        protected global::System.Web.UI.WebControls.TextBox txtSkills;
-        protected global::System.Web.UI.WebControls.TextBox txtExperience;
-        protected global::System.Web.UI.WebControls.TextBox txtPortfolioLinks;
-        protected global::System.Web.UI.WebControls.TextBox txtHourlyRate;
-        protected global::System.Web.UI.WebControls.Button btnCreateFreelancerProfile;
-        protected global::System.Web.UI.WebControls.Panel pnlCreateEmployerProfile;
-        protected global::System.Web.UI.WebControls.TextBox txtCompanyName;
-        protected global::System.Web.UI.WebControls.DropDownList ddlIndustry;
-        protected global::System.Web.UI.WebControls.TextBox txtCompanyDescription;
-        protected global::System.Web.UI.WebControls.TextBox txtContactEmail;
-        protected global::System.Web.UI.WebControls.Button btnCreateEmployerProfile;
+        protected global::System.Web.UI.WebControls.Literal litCurrentIcon;
+        protected global::System.Web.UI.WebControls.Literal litCurrentRole;
+        protected global::System.Web.UI.WebControls.Literal litCurrentDesc;
+        protected global::System.Web.UI.WebControls.Literal litOtherIcon;
+        protected global::System.Web.UI.WebControls.Literal litOtherRole;
+        protected global::System.Web.UI.WebControls.Literal litOtherDesc;
+        protected global::System.Web.UI.WebControls.Literal litOtherStatus;
+        protected global::System.Web.UI.WebControls.Button btnSwitch;
+        protected global::System.Web.UI.WebControls.Button btnConfirmReactivate;
+        protected global::System.Web.UI.WebControls.Button btnConfirmCreate;
     }
 }
