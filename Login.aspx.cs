@@ -62,9 +62,18 @@ namespace FreeHubProject
                 FormsAuthentication.SetAuthCookie(
                     Convert.ToString(user["email"]), false);
 
+                // Check if user has no profile yet (new user with userType = 'None')
+                string userType = Convert.ToString(user["userType"]);
+                bool hasNoProfile = string.IsNullOrWhiteSpace(userType) || userType == "None";
+
                 // Redirect to return URL or default
                 string returnUrl = Request.QueryString["ReturnUrl"];
-                if (!string.IsNullOrWhiteSpace(returnUrl))
+                if (hasNoProfile)
+                {
+                    // New user — must choose a role and create first profile
+                    Response.Redirect("ChooseRole.aspx");
+                }
+                else if (!string.IsNullOrWhiteSpace(returnUrl))
                 {
                     Response.Redirect(returnUrl);
                 }

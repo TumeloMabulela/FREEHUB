@@ -111,73 +111,8 @@
                     </h2>
 
                     <p>
-                        Choose how you want to use FreeHUB.
+                        Get started with FreeHUB in seconds.
                     </p>
-
-                </div>
-
-
-                <!-- ACCOUNT TYPE -->
-
-                <div class="account-type-section">
-
-                    <label class="form-label">
-                        I want to:
-                    </label>
-
-                    <div class="account-options">
-
-                        <button type="button"
-                            class="account-option active-account"
-                            onclick="selectAccount('freelancer')">
-
-                            <span class="account-option-icon">
-                                💼
-                            </span>
-
-                            <span>
-
-                                <strong>
-                                    Find Work
-                                </strong>
-
-                                <small>
-                                    Join as a Freelancer
-                                </small>
-
-                            </span>
-
-                        </button>
-
-
-                        <button type="button"
-                            class="account-option"
-                            onclick="selectAccount('employer')">
-
-                            <span class="account-option-icon">
-                                👥
-                            </span>
-
-                            <span>
-
-                                <strong>
-                                    Hire Talent
-                                </strong>
-
-                                <small>
-                                    Join as an Employer
-                                </small>
-
-                            </span>
-
-                        </button>
-
-                    </div>
-
-                    <asp:HiddenField
-                        ID="hfAccountType"
-                        runat="server"
-                        Value="Freelancer" />
 
                 </div>
 
@@ -185,42 +120,6 @@
                 <!-- FORM -->
 
                 <div class="register-form">
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label>
-                                First Name
-                            </label>
-
-                            <asp:TextBox
-                                ID="txtFirstName"
-                                runat="server"
-                                CssClass="form-input"
-                                placeholder="Enter your first name">
-                            </asp:TextBox>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Last Name
-                            </label>
-
-                            <asp:TextBox
-                                ID="txtLastName"
-                                runat="server"
-                                CssClass="form-input"
-                                placeholder="Enter your last name">
-                            </asp:TextBox>
-
-                        </div>
-
-                    </div>
-
 
                     <div class="form-group">
 
@@ -327,55 +226,6 @@
     </section>
 
 
-    <script type="text/javascript">
 
-        function selectAccount(accountType) {
-
-            var options =
-                document.querySelectorAll(
-                    ".account-option"
-                );
-
-            for (
-                var i = 0;
-                i < options.length;
-                i++
-            ) {
-
-                options[i].classList.remove(
-                    "active-account"
-                );
-
-            }
-
-
-            if (
-                accountType === "freelancer"
-            ) {
-
-                options[0].classList.add(
-                    "active-account"
-                );
-
-                document.getElementById(
-                    "<%= hfAccountType.ClientID %>"
-                ).value = "Freelancer";
-
-            }
-            else {
-
-                options[1].classList.add(
-                    "active-account"
-                );
-
-                document.getElementById(
-                    "<%= hfAccountType.ClientID %>"
-                ).value = "Employer";
-
-            }
-
-        }
-
-    </script>
 
 </asp:Content>

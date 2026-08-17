@@ -344,6 +344,19 @@
                 <div class="create-form">
                     <h3>Create Freelancer Profile</h3>
 
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>First Name <span>*</span></label>
+                            <asp:TextBox ID="txtFreelancerFirstName" runat="server" CssClass="form-input"
+                                placeholder="Enter your first name" />
+                        </div>
+                        <div class="form-field">
+                            <label>Last Name <span>*</span></label>
+                            <asp:TextBox ID="txtFreelancerLastName" runat="server" CssClass="form-input"
+                                placeholder="Enter your last name" />
+                        </div>
+                    </div>
+
                     <div class="form-field">
                         <label>Skills <span>*</span></label>
                         <asp:TextBox ID="txtSkills" runat="server" CssClass="form-input"
@@ -380,6 +393,19 @@
             <asp:Panel ID="pnlCreateEmployer" runat="server" Visible="false">
                 <div class="create-form">
                     <h3>Create Employer Profile</h3>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>First Name <span>*</span></label>
+                            <asp:TextBox ID="txtEmployerFirstName" runat="server" CssClass="form-input"
+                                placeholder="Enter your first name" />
+                        </div>
+                        <div class="form-field">
+                            <label>Last Name <span>*</span></label>
+                            <asp:TextBox ID="txtEmployerLastName" runat="server" CssClass="form-input"
+                                placeholder="Enter your last name" />
+                        </div>
+                    </div>
 
                     <div class="form-field">
                         <label>Company Name <span>*</span></label>

@@ -12,9 +12,7 @@ namespace FreeHubProject
         {
             lblMessage.CssClass = "register-message error-message";
 
-            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
-                string.IsNullOrWhiteSpace(txtLastName.Text) ||
-                string.IsNullOrWhiteSpace(txtEmail.Text) ||
+            if (string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtPassword.Text) ||
                 string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
             {
@@ -48,30 +46,29 @@ namespace FreeHubProject
                     return;
                 }
 
-                string username = DatabaseHelper.FormatEmail(txtEmail.Text);
-                string userType = hfAccountType.Value;
-                if (string.IsNullOrWhiteSpace(userType)) userType = "Freelancer";
+                string email = DatabaseHelper.FormatEmail(txtEmail.Text);
+                string username = email;
 
+                // Register with no name and no role — user will set these on first login
                 int newUserID = DatabaseHelper.RegisterUser(
-                    DatabaseHelper.CapitalizeName(txtFirstName.Text),
-                    DatabaseHelper.CapitalizeName(txtLastName.Text),
-                    DatabaseHelper.FormatEmail(txtEmail.Text),
+                    "",
+                    "",
+                    email,
                     "",
                     username,
                     txtPassword.Text,
-                    userType
+                    "None"
                 );
 
                 if (newUserID > 0)
                 {
-                    string welcomeMsg = "Welcome to FreeHUB! Your account has been successfully created. Explore available opportunities or post projects to get started.";
+                    string welcomeMsg = "Welcome to FreeHUB! Your account has been created. Please log in and choose your role to get started.";
                     NotificationHelper.CreateNotification(newUserID, "System", welcomeMsg);
 
                     lblMessage.CssClass = "register-message success-message";
                     lblMessage.Text = "Account created successfully! Redirecting to login...";
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
                         "setTimeout(function() { window.location.href = 'Login.aspx'; }, 2000);", true);
-
                 }
                 else
                 {

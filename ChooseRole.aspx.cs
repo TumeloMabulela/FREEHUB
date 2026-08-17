@@ -129,6 +129,14 @@ namespace FreeHubProject
 
         protected void btnSubmitFreelancer_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtFreelancerFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtFreelancerLastName.Text))
+            {
+                ShowMessage("Please enter your first and last name.", "error");
+                pnlCreateFreelancer.Visible = true;
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtSkills.Text))
             {
                 ShowMessage("Please enter at least one skill.", "error");
@@ -148,6 +156,13 @@ namespace FreeHubProject
 
             try
             {
+                // Update the user's first name and last name
+                DatabaseHelper.ExecuteNonQuery(
+                    "UPDATE [User] SET firstName = @FirstName, lastName = @LastName WHERE userID = @UserID",
+                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtFreelancerFirstName.Text.Trim())),
+                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtFreelancerLastName.Text.Trim())),
+                    new SqlParameter("@UserID", userId));
+
                 string query = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
                                 VALUES (@UserID, @Skills, @Experience, @PortfolioLinks, @HourlyRate)";
 
@@ -161,6 +176,8 @@ namespace FreeHubProject
                 // Set profile status to Active
                 DatabaseHelper.ReactivateUserProfile(userId, "Freelancer");
 
+                Session["FirstName"] = DatabaseHelper.CapitalizeName(txtFreelancerFirstName.Text.Trim());
+                Session["LastName"] = DatabaseHelper.CapitalizeName(txtFreelancerLastName.Text.Trim());
                 Session["UserType"] = "Freelancer";
                 Session["AccountStatus"] = "Active";
 
@@ -175,6 +192,14 @@ namespace FreeHubProject
 
         protected void btnSubmitEmployer_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtEmployerFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtEmployerLastName.Text))
+            {
+                ShowMessage("Please enter your first and last name.", "error");
+                pnlCreateEmployer.Visible = true;
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
             {
                 ShowMessage("Please enter your company name.", "error");
@@ -202,6 +227,13 @@ namespace FreeHubProject
 
             try
             {
+                // Update the user's first name and last name
+                DatabaseHelper.ExecuteNonQuery(
+                    "UPDATE [User] SET firstName = @FirstName, lastName = @LastName WHERE userID = @UserID",
+                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtEmployerFirstName.Text.Trim())),
+                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtEmployerLastName.Text.Trim())),
+                    new SqlParameter("@UserID", userId));
+
                 string query = @"INSERT INTO Employer (userID, companyName, industry, description, contactEmail)
                                 VALUES (@UserID, @CompanyName, @Industry, @Description, @ContactEmail)";
 
@@ -215,6 +247,8 @@ namespace FreeHubProject
                 // Set profile status to Active
                 DatabaseHelper.ReactivateUserProfile(userId, "Employer");
 
+                Session["FirstName"] = DatabaseHelper.CapitalizeName(txtEmployerFirstName.Text.Trim());
+                Session["LastName"] = DatabaseHelper.CapitalizeName(txtEmployerLastName.Text.Trim());
                 Session["UserType"] = "Employer";
                 Session["AccountStatus"] = "Active";
 

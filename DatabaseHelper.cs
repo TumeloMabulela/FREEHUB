@@ -119,14 +119,15 @@ namespace FreeHubProject
         {
             string hashedPassword = HashPassword(password);
 
+            // Allow empty firstName/lastName for account-only registration
             string query = @"
                 INSERT INTO [User] (firstName, lastName, email, contactNumber, username, password, accountStatus, userType, ratingScore)
                 VALUES (@FirstName, @LastName, @Email, @ContactNumber, @Username, @Password, 'Active', @UserType, 0.00);
                 SELECT SCOPE_IDENTITY();";
 
             object result = ExecuteScalar(query,
-                new SqlParameter("@FirstName", firstName),
-                new SqlParameter("@LastName", lastName),
+                new SqlParameter("@FirstName", string.IsNullOrEmpty(firstName) ? (object)DBNull.Value : firstName),
+                new SqlParameter("@LastName", string.IsNullOrEmpty(lastName) ? (object)DBNull.Value : lastName),
                 new SqlParameter("@Email", email),
                 new SqlParameter("@ContactNumber", string.IsNullOrEmpty(contactNumber) ? (object)DBNull.Value : contactNumber),
                 new SqlParameter("@Username", username),
