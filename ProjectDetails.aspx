@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="comment-body">
                                     <div>
-                                        <strong><%# Eval("authorName") %></strong>
+                                        <a href='ViewProfile.aspx?id=<%# Eval("userID") %>' style="color:#173f2c; text-decoration:none; font-weight:bold;"><%# Eval("authorName") %></a>
                                         <small class="comment-role"><%# Eval("userType") %></small>
                                         <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
