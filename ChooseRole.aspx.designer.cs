@@ -26,6 +26,10 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlCreateFreelancer;
         protected global::System.Web.UI.WebControls.TextBox txtFreelancerFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtFreelancerLastName;
+        protected global::System.Web.UI.WebControls.FileUpload fuFreelancerPicture;
+        protected global::System.Web.UI.WebControls.TextBox txtFreelancerBio;
+        protected global::System.Web.UI.WebControls.TextBox txtFreelancerLocation;
+        protected global::System.Web.UI.WebControls.DropDownList ddlFreelancerLanguage;
         protected global::System.Web.UI.WebControls.TextBox txtSkills;
         protected global::System.Web.UI.WebControls.TextBox txtExperience;
         protected global::System.Web.UI.WebControls.TextBox txtPortfolio;
@@ -35,6 +39,10 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlCreateEmployer;
         protected global::System.Web.UI.WebControls.TextBox txtEmployerFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtEmployerLastName;
+        protected global::System.Web.UI.WebControls.FileUpload fuEmployerPicture;
+        protected global::System.Web.UI.WebControls.TextBox txtEmployerBio;
+        protected global::System.Web.UI.WebControls.TextBox txtEmployerLocation;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEmployerLanguage;
         protected global::System.Web.UI.WebControls.TextBox txtCompanyName;
         protected global::System.Web.UI.WebControls.DropDownList ddlIndustry;
         protected global::System.Web.UI.WebControls.TextBox txtContactEmail;

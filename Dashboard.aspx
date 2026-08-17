@@ -428,4 +428,193 @@
 
     </div>
 
+    <!-- Onboarding Walkthrough Modal -->
+    <div id="onboardingOverlay" class="onboarding-overlay" style="display:none;">
+        <div class="onboarding-modal">
+            <div class="onboarding-step" id="onboardStep1">
+                <div class="onboarding-icon">&#127881;</div>
+                <h2>Welcome to FreeHUB!</h2>
+                <p>Your profile has been created successfully. Let us show you around so you can get the most out of the platform.</p>
+                <div class="onboarding-actions">
+                    <button type="button" class="onboarding-btn-primary" onclick="nextOnboardStep(2)">Get Started</button>
+                    <button type="button" class="onboarding-btn-skip" onclick="closeOnboarding()">Skip Tour</button>
+                </div>
+                <div class="onboarding-dots">
+                    <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+            </div>
+
+            <div class="onboarding-step" id="onboardStep2" style="display:none;">
+                <div class="onboarding-icon">&#128204;</div>
+                <h2>Browse & Post Projects</h2>
+                <p>As a <strong>Freelancer</strong>, browse available projects and submit proposals. As an <strong>Employer</strong>, post projects and find talented freelancers.</p>
+                <div class="onboarding-actions">
+                    <button type="button" class="onboarding-btn-secondary" onclick="nextOnboardStep(1)">Back</button>
+                    <button type="button" class="onboarding-btn-primary" onclick="nextOnboardStep(3)">Next</button>
+                </div>
+                <div class="onboarding-dots">
+                    <span class="dot"></span><span class="dot active"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+            </div>
+
+            <div class="onboarding-step" id="onboardStep3" style="display:none;">
+                <div class="onboarding-icon">&#128176;</div>
+                <h2>Wallet & Payments</h2>
+                <p>Fund your wallet to pay for projects or receive payments for completed work. All transactions are tracked securely.</p>
+                <div class="onboarding-actions">
+                    <button type="button" class="onboarding-btn-secondary" onclick="nextOnboardStep(2)">Back</button>
+                    <button type="button" class="onboarding-btn-primary" onclick="nextOnboardStep(4)">Next</button>
+                </div>
+                <div class="onboarding-dots">
+                    <span class="dot"></span><span class="dot"></span><span class="dot active"></span><span class="dot"></span>
+                </div>
+            </div>
+
+            <div class="onboarding-step" id="onboardStep4" style="display:none;">
+                <div class="onboarding-icon">&#11088;</div>
+                <h2>Build Your Reputation</h2>
+                <p>Complete projects, get rated by clients or freelancers, and build a strong reputation on the platform. Good luck!</p>
+                <div class="onboarding-actions">
+                    <button type="button" class="onboarding-btn-secondary" onclick="nextOnboardStep(3)">Back</button>
+                    <button type="button" class="onboarding-btn-primary" onclick="closeOnboarding()">Start Exploring</button>
+                </div>
+                <div class="onboarding-dots">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot active"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .onboarding-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .onboarding-modal {
+            background: white;
+            border-radius: 18px;
+            padding: 44px 36px 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .onboarding-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .onboarding-modal h2 {
+            color: #173f2c;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .onboarding-modal p {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .onboarding-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .onboarding-btn-primary {
+            background: #173f2c;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .onboarding-btn-primary:hover { background: #1f5438; }
+
+        .onboarding-btn-secondary {
+            background: none;
+            border: 1px solid #d1d9d3;
+            color: #555;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .onboarding-btn-secondary:hover { border-color: #173f2c; color: #173f2c; }
+
+        .onboarding-btn-skip {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 12px 16px;
+        }
+
+        .onboarding-btn-skip:hover { color: #333; }
+
+        .onboarding-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .onboarding-dots .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: background 0.2s;
+        }
+
+        .onboarding-dots .dot.active { background: #173f2c; }
+    </style>
+
+    <script type="text/javascript">
+        // Show onboarding if welcome=1 in URL
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('welcome') === '1') {
+                var overlay = document.getElementById('onboardingOverlay');
+                if (overlay) overlay.style.display = 'flex';
+                // Clean URL without reload
+                history.replaceState(null, '', window.location.pathname);
+            }
+        })();
+
+        function nextOnboardStep(step) {
+            for (var i = 1; i <= 4; i++) {
+                var el = document.getElementById('onboardStep' + i);
+                if (el) el.style.display = (i === step) ? 'block' : 'none';
+            }
+        }
+
+        function closeOnboarding() {
+            var overlay = document.getElementById('onboardingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+    </script>
+
 </asp:Content>

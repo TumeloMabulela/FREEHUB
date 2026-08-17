@@ -12,7 +12,9 @@ namespace FreeHubProject
         {
             lblMessage.CssClass = "register-message error-message";
 
-            if (string.IsNullOrWhiteSpace(txtEmail.Text) ||
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+                string.IsNullOrWhiteSpace(txtLastName.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtPassword.Text) ||
                 string.IsNullOrWhiteSpace(txtConfirmPassword.Text))
             {
@@ -48,13 +50,14 @@ namespace FreeHubProject
 
                 string email = DatabaseHelper.FormatEmail(txtEmail.Text);
                 string username = email;
+                string phone = txtPhone.Text.Trim();
 
-                // Register with no name and no role — user will set these on first login
+                // Register with name but no role — user will choose role on first login
                 int newUserID = DatabaseHelper.RegisterUser(
-                    "",
-                    "",
+                    DatabaseHelper.CapitalizeName(txtFirstName.Text),
+                    DatabaseHelper.CapitalizeName(txtLastName.Text),
                     email,
-                    "",
+                    phone,
                     username,
                     txtPassword.Text,
                     "None"
@@ -62,13 +65,23 @@ namespace FreeHubProject
 
                 if (newUserID > 0)
                 {
-                    string welcomeMsg = "Welcome to FreeHUB! Your account has been created. Please log in and choose your role to get started.";
+                    // Generate and save verification token
+                    string token = EmailHelper.GenerateToken();
+                    DatabaseHelper.ExecuteNonQuery(
+                        "UPDATE [User] SET verificationToken = @Token, emailVerified = 0 WHERE userID = @UserID",
+                        new System.Data.SqlClient.SqlParameter("@Token", token),
+                        new System.Data.SqlClient.SqlParameter("@UserID", newUserID));
+
+                    // Send verification email
+                    EmailHelper.SendVerificationEmail(email, token);
+
+                    string welcomeMsg = "Welcome to FreeHUB! Your account has been created. Please verify your email and choose your role to get started.";
                     NotificationHelper.CreateNotification(newUserID, "System", welcomeMsg);
 
                     lblMessage.CssClass = "register-message success-message";
-                    lblMessage.Text = "Account created successfully! Redirecting to login...";
+                    lblMessage.Text = "Account created! Please check your email to verify your account.";
                     ClientScript.RegisterStartupScript(this.GetType(), "redirect",
-                        "setTimeout(function() { window.location.href = 'Login.aspx'; }, 2000);", true);
+                        "setTimeout(function() { window.location.href = 'Login.aspx'; }, 3000);", true);
                 }
                 else
                 {

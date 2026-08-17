@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.Security;
@@ -156,12 +157,36 @@ namespace FreeHubProject
 
             try
             {
-                // Update the user's first name and last name
-                DatabaseHelper.ExecuteNonQuery(
-                    "UPDATE [User] SET firstName = @FirstName, lastName = @LastName WHERE userID = @UserID",
+                // Save profile picture if uploaded
+                string profilePicPath = "";
+                if (fuFreelancerPicture.HasFile)
+                {
+                    string fileName = userId + "_" + System.IO.Path.GetFileName(fuFreelancerPicture.FileName);
+                    string savePath = Server.MapPath("~/Uploads/" + fileName);
+                    fuFreelancerPicture.SaveAs(savePath);
+                    profilePicPath = "Uploads/" + fileName;
+                }
+
+                // Update the user's name, bio, location, language, profile pic
+                string updateQuery = @"UPDATE [User] SET firstName = @FirstName, lastName = @LastName, 
+                    bio = @Bio, location = @Location, preferredLanguage = @Language" +
+                    (string.IsNullOrEmpty(profilePicPath) ? "" : ", profilePicture = @ProfilePic") +
+                    " WHERE userID = @UserID";
+
+                var updateParams = new System.Collections.Generic.List<SqlParameter>
+                {
                     new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtFreelancerFirstName.Text.Trim())),
                     new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtFreelancerLastName.Text.Trim())),
-                    new SqlParameter("@UserID", userId));
+                    new SqlParameter("@Bio", txtFreelancerBio.Text.Trim()),
+                    new SqlParameter("@Location", txtFreelancerLocation.Text.Trim()),
+                    new SqlParameter("@Language", ddlFreelancerLanguage.SelectedValue),
+                    new SqlParameter("@UserID", userId)
+                };
+
+                if (!string.IsNullOrEmpty(profilePicPath))
+                    updateParams.Add(new SqlParameter("@ProfilePic", profilePicPath));
+
+                DatabaseHelper.ExecuteNonQuery(updateQuery, updateParams.ToArray());
 
                 string query = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
                                 VALUES (@UserID, @Skills, @Experience, @PortfolioLinks, @HourlyRate)";
@@ -181,7 +206,7 @@ namespace FreeHubProject
                 Session["UserType"] = "Freelancer";
                 Session["AccountStatus"] = "Active";
 
-                Response.Redirect("Dashboard.aspx");
+                Response.Redirect("Dashboard.aspx?welcome=1");
             }
             catch (Exception ex)
             {
@@ -227,12 +252,36 @@ namespace FreeHubProject
 
             try
             {
-                // Update the user's first name and last name
-                DatabaseHelper.ExecuteNonQuery(
-                    "UPDATE [User] SET firstName = @FirstName, lastName = @LastName WHERE userID = @UserID",
+                // Save profile picture if uploaded
+                string profilePicPath = "";
+                if (fuEmployerPicture.HasFile)
+                {
+                    string fileName = userId + "_" + System.IO.Path.GetFileName(fuEmployerPicture.FileName);
+                    string savePath = Server.MapPath("~/Uploads/" + fileName);
+                    fuEmployerPicture.SaveAs(savePath);
+                    profilePicPath = "Uploads/" + fileName;
+                }
+
+                // Update the user's name, bio, location, language, profile pic
+                string updateQuery = @"UPDATE [User] SET firstName = @FirstName, lastName = @LastName, 
+                    bio = @Bio, location = @Location, preferredLanguage = @Language" +
+                    (string.IsNullOrEmpty(profilePicPath) ? "" : ", profilePicture = @ProfilePic") +
+                    " WHERE userID = @UserID";
+
+                var updateParams = new System.Collections.Generic.List<SqlParameter>
+                {
                     new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtEmployerFirstName.Text.Trim())),
                     new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtEmployerLastName.Text.Trim())),
-                    new SqlParameter("@UserID", userId));
+                    new SqlParameter("@Bio", txtEmployerBio.Text.Trim()),
+                    new SqlParameter("@Location", txtEmployerLocation.Text.Trim()),
+                    new SqlParameter("@Language", ddlEmployerLanguage.SelectedValue),
+                    new SqlParameter("@UserID", userId)
+                };
+
+                if (!string.IsNullOrEmpty(profilePicPath))
+                    updateParams.Add(new SqlParameter("@ProfilePic", profilePicPath));
+
+                DatabaseHelper.ExecuteNonQuery(updateQuery, updateParams.ToArray());
 
                 string query = @"INSERT INTO Employer (userID, companyName, industry, description, contactEmail)
                                 VALUES (@UserID, @CompanyName, @Industry, @Description, @ContactEmail)";
@@ -252,7 +301,7 @@ namespace FreeHubProject
                 Session["UserType"] = "Employer";
                 Session["AccountStatus"] = "Active";
 
-                Response.Redirect("Dashboard.aspx");
+                Response.Redirect("Dashboard.aspx?welcome=1");
             }
             catch (Exception ex)
             {

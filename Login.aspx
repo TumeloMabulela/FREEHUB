@@ -98,7 +98,7 @@
                         </label>
 
 
-                        <a href="#"
+                        <a href="ForgotPassword.aspx"
                             class="fssb-forgot-password">
 
                             Forgot Password?

@@ -126,8 +126,8 @@ namespace FreeHubProject
                 SELECT SCOPE_IDENTITY();";
 
             object result = ExecuteScalar(query,
-                new SqlParameter("@FirstName", string.IsNullOrEmpty(firstName) ? (object)DBNull.Value : firstName),
-                new SqlParameter("@LastName", string.IsNullOrEmpty(lastName) ? (object)DBNull.Value : lastName),
+                new SqlParameter("@FirstName", string.IsNullOrEmpty(firstName) ? "" : firstName),
+                new SqlParameter("@LastName", string.IsNullOrEmpty(lastName) ? "" : lastName),
                 new SqlParameter("@Email", email),
                 new SqlParameter("@ContactNumber", string.IsNullOrEmpty(contactNumber) ? (object)DBNull.Value : contactNumber),
                 new SqlParameter("@Username", username),

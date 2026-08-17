@@ -254,6 +254,70 @@
         }
 
         .form-cancel:hover { border-color: #173f2c; }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 36px;
+            gap: 0;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e8ece8;
+            color: #888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            border: 2px solid #d1d9d3;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background: #173f2c;
+            color: white;
+            border-color: #173f2c;
+        }
+
+        .step.completed .step-circle {
+            background: #16a34a;
+            color: white;
+            border-color: #16a34a;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .step.active .step-label { color: #173f2c; font-weight: 600; }
+        .step.completed .step-label { color: #16a34a; font-weight: 600; }
+
+        .step-line {
+            width: 60px;
+            height: 3px;
+            background: #e0e0e0;
+            margin: 0 8px;
+            margin-bottom: 28px;
+            border-radius: 2px;
+        }
+
+        .step-line.completed { background: #16a34a; }
     </style>
 </head>
 <body>
@@ -266,6 +330,24 @@
         </div>
 
         <div class="choose-role-container">
+
+            <!-- Progress Indicator -->
+            <div class="progress-steps">
+                <div class="step completed">
+                    <div class="step-circle">&#10003;</div>
+                    <span class="step-label">Create Account</span>
+                </div>
+                <div class="step-line completed"></div>
+                <div class="step active">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Choose Role</span>
+                </div>
+                <div class="step-line"></div>
+                <div class="step">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Complete Profile</span>
+                </div>
+            </div>
 
             <h1>Choose How to Continue</h1>
             <p>Select which profile you'd like to use on FreeHUB.</p>
@@ -358,6 +440,42 @@
                     </div>
 
                     <div class="form-field">
+                        <label>Profile Picture</label>
+                        <asp:FileUpload ID="fuFreelancerPicture" runat="server" CssClass="form-input" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Bio / About Me</label>
+                        <asp:TextBox ID="txtFreelancerBio" runat="server" CssClass="form-textarea"
+                            TextMode="MultiLine" Rows="3" placeholder="Tell employers about yourself..." />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Location / City</label>
+                            <asp:TextBox ID="txtFreelancerLocation" runat="server" CssClass="form-input"
+                                placeholder="e.g. Johannesburg, SA" />
+                        </div>
+                        <div class="form-field">
+                            <label>Preferred Language</label>
+                            <asp:DropDownList ID="ddlFreelancerLanguage" runat="server" CssClass="form-input">
+                                <asp:ListItem Text="Select Language" Value="" />
+                                <asp:ListItem Text="English" Value="English" />
+                                <asp:ListItem Text="Afrikaans" Value="Afrikaans" />
+                                <asp:ListItem Text="Zulu" Value="Zulu" />
+                                <asp:ListItem Text="Xhosa" Value="Xhosa" />
+                                <asp:ListItem Text="Sotho" Value="Sotho" />
+                                <asp:ListItem Text="Tswana" Value="Tswana" />
+                                <asp:ListItem Text="Tsonga" Value="Tsonga" />
+                                <asp:ListItem Text="Venda" Value="Venda" />
+                                <asp:ListItem Text="Ndebele" Value="Ndebele" />
+                                <asp:ListItem Text="Swati" Value="Swati" />
+                                <asp:ListItem Text="Other" Value="Other" />
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
                         <label>Skills <span>*</span></label>
                         <asp:TextBox ID="txtSkills" runat="server" CssClass="form-input"
                             placeholder="e.g. Web Design, JavaScript, React" />
@@ -404,6 +522,42 @@
                             <label>Last Name <span>*</span></label>
                             <asp:TextBox ID="txtEmployerLastName" runat="server" CssClass="form-input"
                                 placeholder="Enter your last name" />
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Profile Picture</label>
+                        <asp:FileUpload ID="fuEmployerPicture" runat="server" CssClass="form-input" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Bio / About Me</label>
+                        <asp:TextBox ID="txtEmployerBio" runat="server" CssClass="form-textarea"
+                            TextMode="MultiLine" Rows="3" placeholder="Tell freelancers about yourself..." />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Location / City</label>
+                            <asp:TextBox ID="txtEmployerLocation" runat="server" CssClass="form-input"
+                                placeholder="e.g. Cape Town, SA" />
+                        </div>
+                        <div class="form-field">
+                            <label>Preferred Language</label>
+                            <asp:DropDownList ID="ddlEmployerLanguage" runat="server" CssClass="form-input">
+                                <asp:ListItem Text="Select Language" Value="" />
+                                <asp:ListItem Text="English" Value="English" />
+                                <asp:ListItem Text="Afrikaans" Value="Afrikaans" />
+                                <asp:ListItem Text="Zulu" Value="Zulu" />
+                                <asp:ListItem Text="Xhosa" Value="Xhosa" />
+                                <asp:ListItem Text="Sotho" Value="Sotho" />
+                                <asp:ListItem Text="Tswana" Value="Tswana" />
+                                <asp:ListItem Text="Tsonga" Value="Tsonga" />
+                                <asp:ListItem Text="Venda" Value="Venda" />
+                                <asp:ListItem Text="Ndebele" Value="Ndebele" />
+                                <asp:ListItem Text="Swati" Value="Swati" />
+                                <asp:ListItem Text="Other" Value="Other" />
+                            </asp:DropDownList>
                         </div>
                     </div>
 
@@ -566,6 +720,25 @@
 
             return false;
         }
+
+        // Update progress indicator when create form is visible (Step 3)
+        (function() {
+            var freelancerForm = document.getElementById('<%= pnlCreateFreelancer.ClientID %>');
+            var employerForm = document.getElementById('<%= pnlCreateEmployer.ClientID %>');
+            
+            if ((freelancerForm && freelancerForm.style.display !== 'none' && freelancerForm.offsetParent !== null) ||
+                (employerForm && employerForm.style.display !== 'none' && employerForm.offsetParent !== null)) {
+                // Move to step 3
+                var steps = document.querySelectorAll('.step');
+                var lines = document.querySelectorAll('.step-line');
+                if (steps.length >= 3 && lines.length >= 2) {
+                    steps[1].className = 'step completed';
+                    steps[1].querySelector('.step-circle').innerHTML = '&#10003;';
+                    lines[1].className = 'step-line completed';
+                    steps[2].className = 'step active';
+                }
+            }
+        })();
     </script>
 </body>
 </html>

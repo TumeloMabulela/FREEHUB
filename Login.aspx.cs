@@ -38,6 +38,19 @@ namespace FreeHubProject
                     return;
                 }
 
+                // Check if email is verified
+                bool emailVerified = true;
+                if (user.Table.Columns.Contains("emailVerified"))
+                {
+                    emailVerified = user["emailVerified"] != DBNull.Value && Convert.ToBoolean(user["emailVerified"]);
+                }
+
+                if (!emailVerified)
+                {
+                    lblLoginMessage.Text = "Please verify your email address before logging in. Check your inbox for the verification link.";
+                    return;
+                }
+
                 // Store user info in session
                 Session["UserID"] = Convert.ToInt32(user["userID"]);
                 Session["FirstName"] = Convert.ToString(user["firstName"]);

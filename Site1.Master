@@ -50,6 +50,12 @@
 
                 <div class="nav-buttons" style="display: flex; align-items: center; gap: 18px;">
 
+                    <!-- Dark Mode Toggle -->
+                    <button type="button" id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
+                        <span class="dm-sun">&#9728;</span>
+                        <span class="dm-moon" style="display:none;">&#9790;</span>
+                    </button>
+
                     <asp:Panel ID="pnlGuestButtons" runat="server">
                         <a href="Login.aspx" class="login-link">Log In</a>
                         <a href="Register.aspx" class="register-button">Sign Up</a>
@@ -246,6 +252,107 @@
 
         .fh-modal-btn-cancel:hover { color: #1a1a1a; }
 
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        /* Dark Mode CSS Variables */
+        body.dark-mode {
+            background-color: #1a1a2e !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.dark-mode .main-header,
+        body.dark-mode .choose-nav {
+            background-color: #0f1923 !important;
+        }
+
+        body.dark-mode .page-content {
+            background-color: #1a1a2e !important;
+        }
+
+        body.dark-mode .main-footer {
+            background-color: #0f1923 !important;
+            color: #aaa !important;
+        }
+
+        body.dark-mode .main-footer h3,
+        body.dark-mode .main-footer h4 {
+            color: #e0e0e0 !important;
+        }
+
+        body.dark-mode .main-footer a { color: #b7d68c !important; }
+
+        /* Cards and containers */
+        body.dark-mode .dashboard-container,
+        body.dark-mode .register-card,
+        body.dark-mode .fssb-login-form,
+        body.dark-mode .role-card,
+        body.dark-mode .create-form {
+            background-color: #16213e !important;
+            border-color: #2a2a4a !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 {
+            color: #e8f5e0 !important;
+        }
+
+        body.dark-mode p, body.dark-mode label, body.dark-mode span {
+            color: #ccc !important;
+        }
+
+        body.dark-mode .form-input,
+        body.dark-mode .form-textarea,
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="email"],
+        body.dark-mode input[type="password"],
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #1a1a2e !important;
+            border-color: #3a3a5a !important;
+            color: #e0e0e0 !important;
+        }
+
+        body.dark-mode .form-input::placeholder,
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #777 !important;
+        }
+
+        body.dark-mode .register-information {
+            color: #ccc !important;
+        }
+
+        body.dark-mode .register-information h1 {
+            color: #e8f5e0 !important;
+        }
+
+        body.dark-mode .fssb-brand-card {
+            background-color: #0f1923 !important;
+        }
+
+        body.dark-mode .dark-mode-toggle {
+            border-color: rgba(255,255,255,0.4);
+        }
+
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translateY(-4px); }
             15% { opacity: 1; transform: translateY(0); }
@@ -335,4 +442,32 @@
 
         // Run check periodically if user is logged in
         setInterval(checkNotificationPopups, 15000);
+
+        // ============================================================
+        // DARK MODE
+        // ============================================================
+        function toggleDarkMode() {
+            var body = document.body;
+            var isDark = body.classList.toggle('dark-mode');
+            localStorage.setItem('freehub-dark-mode', isDark ? 'true' : 'false');
+            updateDarkModeIcon(isDark);
+        }
+
+        function updateDarkModeIcon(isDark) {
+            var sun = document.querySelector('.dm-sun');
+            var moon = document.querySelector('.dm-moon');
+            if (sun && moon) {
+                sun.style.display = isDark ? 'none' : 'inline';
+                moon.style.display = isDark ? 'inline' : 'none';
+            }
+        }
+
+        // Apply saved preference on load
+        (function() {
+            var saved = localStorage.getItem('freehub-dark-mode');
+            if (saved === 'true') {
+                document.body.classList.add('dark-mode');
+                updateDarkModeIcon(true);
+            }
+        })();
     </script></body></html>
