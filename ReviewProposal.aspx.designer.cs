@@ -21,6 +21,9 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlActions;
         protected global::System.Web.UI.WebControls.Button btnApproveProposal;
         protected global::System.Web.UI.WebControls.Button btnRejectProposal;
-        protected global::System.Web.UI.WebControls.Button btnBackToProposals;
+        protected global::System.Web.UI.WebControls.Button btnRequestChanges;
+        protected global::System.Web.UI.WebControls.Label lblProjectSummary;
+        protected global::System.Web.UI.WebControls.Label lblProjectBudget;
+        protected global::System.Web.UI.WebControls.Label lblProjectDeadline;
     }
 }

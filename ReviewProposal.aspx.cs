@@ -84,6 +84,26 @@ namespace FreeHubProject
                 lblCoverLetter.Text = Convert.ToString(proposal["coverLetter"]);
                 lblStatus.Text = Convert.ToString(proposal["status"]);
 
+                // Load project summary for sidebar
+                try
+                {
+                    string projQuery = "SELECT projectID FROM Proposal WHERE proposalID = @ID";
+                    object projIdObj = DatabaseHelper.ExecuteScalar(projQuery, new SqlParameter("@ID", ProposalId));
+                    if (projIdObj != null)
+                    {
+                        DataRow project = DatabaseHelper.GetProjectById(Convert.ToInt32(projIdObj));
+                        if (project != null)
+                        {
+                            lblProjectSummary.Text = Convert.ToString(project["description"]).Length > 100
+                                ? Convert.ToString(project["description"]).Substring(0, 100) + "..."
+                                : Convert.ToString(project["description"]);
+                            lblProjectBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N0");
+                            lblProjectDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
+                        }
+                    }
+                }
+                catch { }
+
                 // Hide action buttons if already approved/rejected
                 string status = Convert.ToString(proposal["status"]);
                 if (status != "Pending")
@@ -141,6 +161,11 @@ namespace FreeHubProject
         protected void btnBackToProposals_Click(object sender, EventArgs e)
         {
             Response.Redirect("SelectProposal.aspx");
+        }
+
+        protected void btnRequestChanges_Click(object sender, EventArgs e)
+        {
+            ShowMessage("A request for changes has been sent to the freelancer. They will be notified to update their proposal.", true);
         }
 
         private string GetInitials(string name)
