@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Submit Project Work"
+<%@ Page Title="Submit Project Work"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -37,7 +37,7 @@
                     <label style="font-weight: bold; display: block; margin-bottom: 6px;">Attach Work Document / Zip File</label>
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <asp:FileUpload ID="fileUploadControl" runat="server" Style="padding: 6px; border: 1px solid #ccc; border-radius: 6px; flex: 1;" />
-                        <asp:Button ID="btnUploadFile" runat="server" Text="Upload File 📎" OnClick="btnUploadFile_Click" CausesValidation="false" Style="background: #276738; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;" />
+                        <asp:Button ID="btnUploadFile" runat="server" Text="Upload File ??" OnClick="btnUploadFile_Click" CausesValidation="false" Style="background: #276738; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;" />
                     </div>
                     <asp:Label ID="lblUploadStatus" runat="server" Style="display: block; margin-top: 6px; font-size: 13px;"></asp:Label>
                     <asp:HiddenField ID="hfUploadedFilePath" runat="server" />
@@ -49,7 +49,7 @@
                 </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <asp:Button ID="btnSubmitWork" runat="server" Text="Submit Work for Review 🚀" OnClick="btnSubmitWork_Click" Style="background: #173f2c; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer;" />
+                    <asp:Button ID="btnSubmitWork" runat="server" Text="Submit Work for Review ??" OnClick="btnSubmitWork_Click" Style="background: #173f2c; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; cursor: pointer;" />
                     <asp:Button ID="btnCancel" runat="server" Text="Cancel" OnClick="btnCancel_Click" CausesValidation="false" Style="background: #ccc; color: #333; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer;" />
                 </div>
 

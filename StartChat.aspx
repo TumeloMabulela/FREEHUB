@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Messages"
+<%@ Page Title="Messages"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -451,7 +451,7 @@
         function showSelectedFileName(input) {
             var label = document.getElementById('<%= lblAttachedFileName.ClientID %>');
             if (input.files && input.files[0]) {
-                label.innerText = "📎 Attached: " + input.files[0].name;
+                label.innerText = "?? Attached: " + input.files[0].name;
             } else {
                 label.innerText = "";
             }
@@ -463,7 +463,7 @@
     
     <!-- Success Alert Panel -->
     <asp:Panel ID="pnlStatus" runat="server" CssClass="chat-alert-success" Visible="false">
-        <span>✔</span>
+        <span>?</span>
         <asp:Label ID="lblStatus" runat="server"></asp:Label>
     </asp:Panel>
 
@@ -475,7 +475,7 @@
             <!-- User Search Control -->
             <div class="chat-search-row">
                 <asp:TextBox ID="txtSearch" runat="server" CssClass="chat-search-input" placeholder="Search system users..." />
-                <asp:Button ID="btnSearchUser" runat="server" Text="Search 🔍" CssClass="chat-search-btn" OnClick="btnSearchUser_Click" />
+                <asp:Button ID="btnSearchUser" runat="server" Text="Search ??" CssClass="chat-search-btn" OnClick="btnSearchUser_Click" />
             </div>
 
             <!-- Search Results Dropdown List -->
@@ -537,7 +537,7 @@
 
                 <div class="thread-actions">
                     <asp:LinkButton ID="btnInfoIcon" runat="server" OnClick="btnToggleDetails_Click" Style="text-decoration: none; color: inherit;" title="View Profile & Shared Files">
-                        <span>ⓘ</span>
+                        <span>?</span>
                     </asp:LinkButton>
                 </div>
             </div>
@@ -557,7 +557,7 @@
                                 <asp:PlaceHolder ID="phAttachment" runat="server" Visible='<%# Eval("attachmentUrl") != DBNull.Value && !string.IsNullOrEmpty(Eval("attachmentUrl").ToString()) %>'>
                                     <div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(0,0,0,0.1);">
                                         <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline; font-size: 11px;">
-                                            📎 View Attached File
+                                            ?? View Attached File
                                         </a>
                                     </div>
                                 </asp:PlaceHolder>
@@ -567,7 +567,7 @@
                                     
                                     <asp:PlaceHolder ID="phReadReceipt" runat="server" Visible='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId %>'>
                                         <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'>
-                                            <%# Eval("status").ToString() == "Read" ? "✓✓" : "✓" %>
+                                            <%# Eval("status").ToString() == "Read" ? "??" : "?" %>
                                         </span>
                                     </asp:PlaceHolder>
                                 </div>
@@ -581,12 +581,12 @@
             <div class="thread-input-container">
                 <div class="thread-input-row">
                     <div class="file-upload-wrapper">
-                        <label for="<%= fileUploadControl.ClientID %>" class="attach-btn-label" title="Attach file">📎</label>
+                        <label for="<%= fileUploadControl.ClientID %>" class="attach-btn-label" title="Attach file">??</label>
                         <asp:FileUpload ID="fileUploadControl" runat="server" CssClass="file-upload-hidden" onchange="showSelectedFileName(this);" />
                     </div>
 
                     <asp:TextBox ID="txtMessage" runat="server" CssClass="message-input" placeholder="Type your message..." onkeydown="return handleEnterKey(event, '<%= btnSend.ClientID %>');"></asp:TextBox>
-                    <asp:Button ID="btnSend" runat="server" Text="Send 🚀" CssClass="send-btn-gradient" OnClick="btnSend_Click" />
+                    <asp:Button ID="btnSend" runat="server" Text="Send ??" CssClass="send-btn-gradient" OnClick="btnSend_Click" />
                 </div>
                 
                 <asp:Label ID="lblAttachedFileName" runat="server" CssClass="attachment-preview"></asp:Label>
@@ -602,7 +602,7 @@
             <!-- Modal Header -->
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e8e2; padding-bottom: 12px; margin-bottom: 16px;">
                 <h3 style="margin: 0; color: #173f2c; font-size: 18px;">Contact Info & Shared Files</h3>
-                <asp:LinkButton ID="btnCloseDetails" runat="server" OnClick="btnCloseDetails_Click" Style="color: #888; text-decoration: none; font-size: 20px; font-weight: bold; cursor: pointer;">✕</asp:LinkButton>
+                <asp:LinkButton ID="btnCloseDetails" runat="server" OnClick="btnCloseDetails_Click" Style="color: #888; text-decoration: none; font-size: 20px; font-weight: bold; cursor: pointer;">?</asp:LinkButton>
             </div>
 
             <!-- User Profile Details -->
@@ -611,7 +611,7 @@
                 <div><strong>Account Type:</strong> <asp:Label ID="lblDetailUserType" runat="server" /></div>
                 <div><strong>Email:</strong> <asp:Label ID="lblDetailEmail" runat="server" /></div>
                 <div><strong>Contact:</strong> <asp:Label ID="lblDetailContact" runat="server" /></div>
-                <div style="grid-column: span 2;"><strong>Rating Score:</strong> ⭐ <asp:Label ID="lblDetailRating" runat="server" /> / 5.0</div>
+                <div style="grid-column: span 2;"><strong>Rating Score:</strong> ? <asp:Label ID="lblDetailRating" runat="server" /> / 5.0</div>
             </div>
 
             <!-- Shared Files History -->
@@ -625,7 +625,7 @@
                         </HeaderTemplate>
                         <ItemTemplate>
                             <li style="padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: #243328; font-weight: 500;">📎 <%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></span>
+                                <span style="color: #243328; font-weight: 500;">?? <%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></span>
                                 <div>
                                     <small style="color: #888; margin-right: 10px;"><%# Convert.ToDateTime(Eval("timeStamp")).ToString("dd MMM yyyy, HH:mm") %></small>
                                     <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Download</a>

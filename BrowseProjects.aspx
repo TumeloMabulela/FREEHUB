@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Browse Projects"
+<%@ Page Title="Browse Projects"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -127,9 +127,9 @@
                     <!-- Project details (hidden until selected) -->
                     <asp:Panel ID="pnlProjectDetails" runat="server" Visible="false">
 
-                        <asp:Button ID="btnReturnToList" runat="server" Text="← Return to List"
+                        <asp:Button ID="btnReturnToList" runat="server" Text="? Return to List"
                             OnClick="btnReturnToList_Click"
-                            style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;border:none;cursor:pointer;margin-bottom:15px;" />
+                            style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;border:none;cursor:pointer;margin-bottom:15px;" />
 
                         <p class="posted-information">
                             <asp:Label ID="lblPosted" runat="server" />

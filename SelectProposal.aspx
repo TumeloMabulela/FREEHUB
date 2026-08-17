@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Select Proposal"
+<%@ Page Title="Select Proposal"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -29,7 +29,7 @@
                         <%= IsFreelancerView() ? "View your submitted proposals and their status." : "Review proposals received and select the best fit for your project." %>
                     </p>
                 </div>
-                <a href="MyProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Project</a>
+                <a href="MyProjects.aspx" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Project</a>
             </div>
 
             <!-- MESSAGE -->

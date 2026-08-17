@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Review Work - FreeHUB"
+<%@ Page Title="Review Work - FreeHUB"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -52,11 +52,11 @@
                     <div style="margin-bottom: 16px;">
                         <label style="font-weight: 600; font-size: 13px; color: #374638; display: block; margin-bottom: 6px;">Star Rating (1 - 5)</label>
                         <asp:DropDownList ID="ddlRatingScore" runat="server" Style="padding: 10px; border-radius: 8px; border: 1px solid #d1d9d3; width: 100%; max-width: 200px;">
-                            <asp:ListItem Text="⭐⭐⭐⭐⭐ (5 - Excellent)" Value="5" Selected="True" />
-                            <asp:ListItem Text="⭐⭐⭐⭐ (4 - Good)" Value="4" />
-                            <asp:ListItem Text="⭐⭐⭐ (3 - Average)" Value="3" />
-                            <asp:ListItem Text="⭐⭐ (2 - Poor)" Value="2" />
-                            <asp:ListItem Text="⭐ (1 - Terrible)" Value="1" />
+                            <asp:ListItem Text="????? (5 - Excellent)" Value="5" Selected="True" />
+                            <asp:ListItem Text="???? (4 - Good)" Value="4" />
+                            <asp:ListItem Text="??? (3 - Average)" Value="3" />
+                            <asp:ListItem Text="?? (2 - Poor)" Value="2" />
+                            <asp:ListItem Text="? (1 - Terrible)" Value="1" />
                         </asp:DropDownList>
                     </div>
 
@@ -68,7 +68,7 @@
 
                 <!-- Actions -->
                 <div style="display: flex; gap: 12px;">
-                    <asp:Button ID="btnApproveWork" runat="server" Text="Approve Work & Release Payment 💳" OnClick="btnApproveWork_Click" Style="background-color: #173f2c; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" />
+                    <asp:Button ID="btnApproveWork" runat="server" Text="Approve Work & Release Payment ??" OnClick="btnApproveWork_Click" Style="background-color: #173f2c; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" />
                     <asp:Button ID="btnRequestRevision" runat="server" Text="Request Revision / Reject" OnClick="btnRequestRevision_Click" Style="background-color: #d97706; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" />
                     <asp:Button ID="btnCancel" runat="server" Text="Back to My Projects" OnClick="btnCancel_Click" CausesValidation="false" Style="background: none; border: 1px solid #d1d9d3; padding: 12px 24px; border-radius: 8px; cursor: pointer;" />
                 </div>
