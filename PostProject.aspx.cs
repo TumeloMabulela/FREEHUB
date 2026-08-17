@@ -125,7 +125,7 @@ namespace FreeHubProject
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
                 NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
                 
-                ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
+                ShowMessage("Project posted successfully! Your project is now visible to freelancers.", true);
 
                 ClearProjectForm();
             }
@@ -253,8 +253,16 @@ namespace FreeHubProject
         private void ShowMessage(string message, bool success)
         {
             pnlProjectStatus.Visible = true;
-            lblProjectStatus.Text = message;
-            pnlProjectStatus.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success)
+            {
+                lblProjectStatus.Text = "<span style='display:flex;align-items:center;gap:10px;'><span style='background:#2e7d56;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;'>&#10003;</span> " + message + "</span>";
+                pnlProjectStatus.CssClass = "post-status post-success";
+            }
+            else
+            {
+                lblProjectStatus.Text = message;
+                pnlProjectStatus.CssClass = "post-status post-error";
+            }
         }
     }
 }
