@@ -22,7 +22,7 @@
         /* Minimal nav */
         .choose-nav {
             width: 100%;
-            background-color: #173f2c;
+            background: linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%);
             padding: 0 30px;
             display: flex;
             align-items: center;
@@ -323,10 +323,13 @@
 <body>
     <form id="form1" runat="server">
 
-        <!-- Minimal Navigation: Logo + Logout only -->
+        <!-- Minimal Navigation: Logo + Back + Logout -->
         <div class="choose-nav">
             <a href="ChooseRole.aspx" class="logo">Free<span>HUB</span></a>
-            <asp:LinkButton ID="btnLogout" runat="server" CssClass="logout-btn" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <a href="javascript:history.back();" class="logout-btn" style="font-size: 13px;">&#8592; Back</a>
+                <asp:LinkButton ID="btnLogout" runat="server" CssClass="logout-btn" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+            </div>
         </div>
 
         <div class="choose-role-container">
@@ -432,12 +435,12 @@
                         <div class="form-field">
                             <label>First Name <span>*</span></label>
                             <asp:TextBox ID="txtFreelancerFirstName" runat="server" CssClass="form-input"
-                                placeholder="Enter your first name" />
+                                placeholder="Enter your first name" ReadOnly="true" style="background-color: #f5f5f5; cursor: not-allowed;" />
                         </div>
                         <div class="form-field">
                             <label>Last Name <span>*</span></label>
                             <asp:TextBox ID="txtFreelancerLastName" runat="server" CssClass="form-input"
-                                placeholder="Enter your last name" />
+                                placeholder="Enter your last name" ReadOnly="true" style="background-color: #f5f5f5; cursor: not-allowed;" />
                         </div>
                     </div>
 
@@ -518,12 +521,12 @@
                         <div class="form-field">
                             <label>First Name <span>*</span></label>
                             <asp:TextBox ID="txtEmployerFirstName" runat="server" CssClass="form-input"
-                                placeholder="Enter your first name" />
+                                placeholder="Enter your first name" ReadOnly="true" style="background-color: #f5f5f5; cursor: not-allowed;" />
                         </div>
                         <div class="form-field">
                             <label>Last Name <span>*</span></label>
                             <asp:TextBox ID="txtEmployerLastName" runat="server" CssClass="form-input"
-                                placeholder="Enter your last name" />
+                                placeholder="Enter your last name" ReadOnly="true" style="background-color: #f5f5f5; cursor: not-allowed;" />
                         </div>
                     </div>
 

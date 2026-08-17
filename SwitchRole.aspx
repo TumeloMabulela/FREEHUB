@@ -229,6 +229,10 @@
 
             <div class="switch-container">
 
+                <a href="javascript:history.back();" style="display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 20px;">
+                    &#8592; Back
+                </a>
+
                 <h1>Switch Role</h1>
                 <p>Manage which profile you're currently using on FreeHUB.</p>
 
@@ -258,6 +262,7 @@
                         </div>
                     </div>
                     <asp:Button ID="btnSwitch" runat="server" CssClass="switch-btn"
+                        OnClientClick="return showSwitchConfirm();"
                         OnClick="btnSwitch_Click" CausesValidation="false" />
                 </div>
 
@@ -274,6 +279,38 @@
     </div>
 
     <script type="text/javascript">
+        var pendingSwitchBtn = null;
+
+        function showSwitchConfirm() {
+            var existing = document.getElementById('srConfirmModal');
+            if (existing) existing.remove();
+
+            var otherRole = document.querySelector('.switch-to-info h3').innerText.trim();
+
+            var overlay = document.createElement('div');
+            overlay.id = 'srConfirmModal';
+            overlay.className = 'sr-modal-overlay';
+            overlay.innerHTML =
+                '<div class="sr-modal">' +
+                    '<div class="sr-modal-icon" style="background:#e8f5e0; color:#173f2c;">&#128260;</div>' +
+                    '<h3>Switch Role?</h3>' +
+                    '<p>Are you sure you want to switch to <strong>' + otherRole + '</strong>?</p>' +
+                    '<div class="sr-modal-actions">' +
+                        '<button type="button" class="sr-btn-confirm" onclick="confirmSwitch();">Yes, Switch</button>' +
+                        '<button type="button" class="sr-btn-cancel" onclick="closeSrModal();">Cancel</button>' +
+                    '</div>' +
+                '</div>';
+
+            document.body.appendChild(overlay);
+            overlay.onclick = function(e) { if (e.target === overlay) closeSrModal(); };
+            return false;
+        }
+
+        function confirmSwitch() {
+            closeSrModal();
+            __doPostBack('<%= btnSwitch.UniqueID %>', '');
+        }
+
         function showSwitchModal(type, role) {
             var existing = document.getElementById('srConfirmModal');
             if (existing) existing.remove();

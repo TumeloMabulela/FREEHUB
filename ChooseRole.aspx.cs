@@ -118,12 +118,24 @@ namespace FreeHubProject
         {
             pnlCreateFreelancer.Visible = true;
             pnlCreateEmployer.Visible = false;
+
+            // Pre-fill names from session
+            string firstName = Session["FirstName"] as string ?? "";
+            string lastName = Session["LastName"] as string ?? "";
+            txtFreelancerFirstName.Text = firstName;
+            txtFreelancerLastName.Text = lastName;
         }
 
         protected void btnShowCreateEmployer_Click(object sender, EventArgs e)
         {
             pnlCreateEmployer.Visible = true;
             pnlCreateFreelancer.Visible = false;
+
+            // Pre-fill names from session
+            string firstName = Session["FirstName"] as string ?? "";
+            string lastName = Session["LastName"] as string ?? "";
+            txtEmployerFirstName.Text = firstName;
+            txtEmployerLastName.Text = lastName;
         }
 
         protected void btnCancelCreate_Click(object sender, EventArgs e)
@@ -134,8 +146,11 @@ namespace FreeHubProject
 
         protected void btnSubmitFreelancer_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtFreelancerFirstName.Text) ||
-                string.IsNullOrWhiteSpace(txtFreelancerLastName.Text))
+            // Get names from session (fields are read-only)
+            string firstName = Session["FirstName"] as string ?? "";
+            string lastName = Session["LastName"] as string ?? "";
+
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
             {
                 ShowMessage("Please enter your first and last name.", "error");
                 pnlCreateFreelancer.Visible = true;
@@ -179,8 +194,8 @@ namespace FreeHubProject
 
                 var updateParams = new System.Collections.Generic.List<SqlParameter>
                 {
-                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtFreelancerFirstName.Text.Trim())),
-                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtFreelancerLastName.Text.Trim())),
+                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(firstName)),
+                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(lastName)),
                     new SqlParameter("@Bio", txtFreelancerBio.Text.Trim()),
                     new SqlParameter("@Location", txtFreelancerLocation.Text.Trim()),
                     new SqlParameter("@Language", ddlFreelancerLanguage.SelectedValue),
@@ -205,8 +220,8 @@ namespace FreeHubProject
                 // Set profile status to Active
                 DatabaseHelper.ReactivateUserProfile(userId, "Freelancer");
 
-                Session["FirstName"] = DatabaseHelper.CapitalizeName(txtFreelancerFirstName.Text.Trim());
-                Session["LastName"] = DatabaseHelper.CapitalizeName(txtFreelancerLastName.Text.Trim());
+                Session["FirstName"] = DatabaseHelper.CapitalizeName(firstName);
+                Session["LastName"] = DatabaseHelper.CapitalizeName(lastName);
                 Session["UserType"] = "Freelancer";
                 Session["AccountStatus"] = "Active";
 
@@ -221,8 +236,11 @@ namespace FreeHubProject
 
         protected void btnSubmitEmployer_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtEmployerFirstName.Text) ||
-                string.IsNullOrWhiteSpace(txtEmployerLastName.Text))
+            // Get names from session (fields are read-only)
+            string firstName = Session["FirstName"] as string ?? "";
+            string lastName = Session["LastName"] as string ?? "";
+
+            if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
             {
                 ShowMessage("Please enter your first and last name.", "error");
                 pnlCreateEmployer.Visible = true;
@@ -274,8 +292,8 @@ namespace FreeHubProject
 
                 var updateParams = new System.Collections.Generic.List<SqlParameter>
                 {
-                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(txtEmployerFirstName.Text.Trim())),
-                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(txtEmployerLastName.Text.Trim())),
+                    new SqlParameter("@FirstName", DatabaseHelper.CapitalizeName(firstName)),
+                    new SqlParameter("@LastName", DatabaseHelper.CapitalizeName(lastName)),
                     new SqlParameter("@Bio", txtEmployerBio.Text.Trim()),
                     new SqlParameter("@Location", txtEmployerLocation.Text.Trim()),
                     new SqlParameter("@Language", ddlEmployerLanguage.SelectedValue),
@@ -300,8 +318,8 @@ namespace FreeHubProject
                 // Set profile status to Active
                 DatabaseHelper.ReactivateUserProfile(userId, "Employer");
 
-                Session["FirstName"] = DatabaseHelper.CapitalizeName(txtEmployerFirstName.Text.Trim());
-                Session["LastName"] = DatabaseHelper.CapitalizeName(txtEmployerLastName.Text.Trim());
+                Session["FirstName"] = DatabaseHelper.CapitalizeName(firstName);
+                Session["LastName"] = DatabaseHelper.CapitalizeName(lastName);
                 Session["UserType"] = "Employer";
                 Session["AccountStatus"] = "Active";
 
