@@ -87,6 +87,7 @@
     <Content Include="StartChat.aspx" />
     <Content Include="SubmitProposal.aspx" />
     <Content Include="SwitchRole.aspx" />
+    <Content Include="ViewProfile.aspx" />
     <Content Include="ManageProfile.aspx" />
     <Content Include="Register.aspx" />
     <Content Include="RejectProposal.aspx" />
@@ -286,6 +287,13 @@
     </Compile>
     <Compile Include="ManageProfile.aspx.designer.cs">
       <DependentUpon>ManageProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ViewProfile.aspx.cs">
+      <DependentUpon>ViewProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ViewProfile.aspx.designer.cs">
+      <DependentUpon>ViewProfile.aspx</DependentUpon>
     </Compile>
     <Compile Include="TransactionStore.cs" />
     <Compile Include="ViewProgress.aspx.cs">
