@@ -87,7 +87,6 @@
                             <asp:Button ID="btnRejectProposal" runat="server"
                                 Text="X  Reject Proposal"
                                 OnClick="btnRejectProposal_Click"
-                                OnClientClick="return confirm('Are you sure you want to reject this proposal?');"
                                 style="flex:1;background-color:#fff;color:#dc3545;border:1px solid #dc3545;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;" />
                             <asp:Button ID="btnRequestChanges" runat="server"
                                 Text="Request Changes"
@@ -96,7 +95,6 @@
                             <asp:Button ID="btnApproveProposal" runat="server"
                                 Text="&#10003;  Approve Proposal"
                                 OnClick="btnApproveProposal_Click"
-                                OnClientClick="return confirm('Are you sure you want to approve this proposal? The project will start.');"
                                 style="flex:1;background-color:#2e7d56;color:#fff;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;" />
                         </div>
                     </asp:Panel>
