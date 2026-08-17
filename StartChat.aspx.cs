@@ -271,15 +271,7 @@ namespace FreeHubProject
             // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                string query = @"
-            SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus 
-            FROM dbo.Proposal prop 
-            INNER JOIN dbo.Project p ON prop.projectID = p.projectID 
-            INNER JOIN dbo.Employer e ON p.employerID = e.employerID 
-            INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID 
-            INNER JOIN dbo.[User] u ON e.userID = u.userID 
-            WHERE prop.status = 'Approved' 
-              AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
+                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus FROM dbo.Proposal prop INNER JOIN dbo.Project p ON prop.projectID = p.projectID INNER JOIN dbo.Employer e ON p.employerID = e.employerID INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID INNER JOIN dbo.[User] u ON e.userID = u.userID WHERE prop.status = 'Approved' AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -300,6 +292,29 @@ namespace FreeHubProject
                             {
                                 isChatEndedOrDeactivated = true;
                                 lockReasonMessage = "Project completed";
+
+                                // Close data reader so we can execute a scalar check safely on the same connection
+                                dr.Close();
+
+                                // Check if the current user has already rated this project
+                                string checkRatingQuery = "SELECT COUNT(*) FROM dbo.Rating WHERE projectID = @ProjectID AND raterUserID = @RaterUserID";
+                                int existingRatings = 0;
+                                using (SqlCommand ratingCmd = new SqlCommand(checkRatingQuery, conn))
+                                {
+                                    ratingCmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId);
+                                    ratingCmd.Parameters.AddWithValue("@RaterUserID", CurrentUserId);
+                                    existingRatings = Convert.ToInt32(ratingCmd.ExecuteScalar());
+                                }
+
+                                // Only show rating modal if completed AND the current user hasn't rated yet
+                                if (ActiveProjectId > 0 && existingRatings == 0 && projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    pnlRatingModal.Visible = true;
+                                }
+                                else
+                                {
+                                    pnlRatingModal.Visible = false;
+                                }
                             }
                             else if (empAccountStatus.Equals("Deactivated", StringComparison.OrdinalIgnoreCase) ||
                                      empAccountStatus.Equals("Deleted", StringComparison.OrdinalIgnoreCase) ||
@@ -324,12 +339,6 @@ namespace FreeHubProject
                 fileUploadControl.Enabled = false;
                 txtMessage.Enabled = false;
                 txtMessage.Attributes["placeholder"] = "Chat has ended. Messages are read-only.";
-
-                // Display rating prompt if a project was associated
-                if (ActiveProjectId > 0)
-                {
-                    pnlRatingModal.Visible = true;
-                }
 
                 ShowStatus(lockReasonMessage);
             }

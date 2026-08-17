@@ -119,6 +119,16 @@
                         <h3>Select a project</h3>
                         <p>Click on a project from the list to view its full details, budget, deadline and employer information.</p>
                     </asp:Panel>
+                   <!-- RIGHT: PROJECT DETAILS -->
+                <section class="details-column">
+
+                    <asp:HiddenField ID="hfSelectedProjectId" runat="server" />
+
+                    <!-- Empty state -->
+                    <asp:Panel ID="Panel1" runat="server" CssClass="no-selection-panel">
+                        <h3>Select a project</h3>
+                        <p>Click on a project from the list to view its full details, budget, deadline and employer information.</p>
+                    </asp:Panel>
 
                     <!-- Project details (hidden until selected) -->
                     <asp:Panel ID="pnlProjectDetails" runat="server" Visible="false">

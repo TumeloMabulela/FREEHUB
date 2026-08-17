@@ -71,9 +71,9 @@ namespace FreeHubProject
                 lblProjectTitle.Text = Convert.ToString(project["title"]);
                 lblPosted.Text = "Posted " + Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
                 lblDescription.Text = Convert.ToString(project["description"]);
-                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " - " + 
-                    (Convert.ToString(project["budgetType"]) == "Fixed" ? "Fixed Price" : 
-                     Convert.ToString(project["budgetType"]) == "Hourly" ? "Hourly Rate" : 
+                lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " - " +
+                    (Convert.ToString(project["budgetType"]) == "Fixed" ? "Fixed Price" :
+                     Convert.ToString(project["budgetType"]) == "Hourly" ? "Hourly Rate" :
                      Convert.ToString(project["budgetType"]));
                 lblDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
                 lblCategory.Text = Convert.ToString(project["category"]);
@@ -92,8 +92,13 @@ namespace FreeHubProject
                 }
                 lblEmployerInitials.Text = initials.ToUpper();
 
-                // Store for submit proposal
+                // Store securely in both ViewState and HiddenField
                 ViewState["SelectedProjectId"] = projectId;
+                if (hfSelectedProjectId != null)
+                {
+                    hfSelectedProjectId.Value = projectId.ToString();
+                }
+
                 lblProjectMessage.Text = "";
             }
             catch (Exception ex)
@@ -101,7 +106,6 @@ namespace FreeHubProject
                 lblProjectMessage.Text = "Error: " + ex.Message;
             }
         }
-
         protected void btnFilter_Click(object sender, EventArgs e)
         {
             try
@@ -172,13 +176,19 @@ namespace FreeHubProject
 
             int projectId = 0;
 
-            // 1. Try checking ViewState first
-            if (ViewState["SelectedProjectId"] != null)
+            // 1. Check HiddenField
+            if (!string.IsNullOrEmpty(hfSelectedProjectId.Value))
+            {
+                int.TryParse(hfSelectedProjectId.Value, out projectId);
+            }
+
+            // 2. Check ViewState
+            if (projectId <= 0 && ViewState["SelectedProjectId"] != null)
             {
                 int.TryParse(ViewState["SelectedProjectId"].ToString(), out projectId);
             }
 
-            // 2. Fallback: Check if there's a selected ID in the query string or hidden field if viewstate cleared
+            // 3. Check QueryString
             if (projectId <= 0 && !string.IsNullOrEmpty(Request.QueryString["id"]))
             {
                 int.TryParse(Request.QueryString["id"], out projectId);
@@ -190,15 +200,25 @@ namespace FreeHubProject
             }
             else
             {
-                lblProjectMessage.Text = "Please select a project first.";
+                // If it still can't find it, show the error message on the page instead of redirecting away
+                lblProjectMessage.Text = "Please select a project from the list first before submitting a proposal.";
             }
         }
-
         protected void btnViewDetails_Click(object sender, EventArgs e)
         {
-            if (ViewState["SelectedProjectId"] != null)
+            int projectId = 0;
+            if (!string.IsNullOrEmpty(hfSelectedProjectId.Value))
             {
-                Response.Redirect("ProjectDetails.aspx?id=" + ViewState["SelectedProjectId"]);
+                int.TryParse(hfSelectedProjectId.Value, out projectId);
+            }
+            else if (ViewState["SelectedProjectId"] != null)
+            {
+                int.TryParse(ViewState["SelectedProjectId"].ToString(), out projectId);
+            }
+
+            if (projectId > 0)
+            {
+                Response.Redirect("ProjectDetails.aspx?id=" + projectId);
             }
             else
             {

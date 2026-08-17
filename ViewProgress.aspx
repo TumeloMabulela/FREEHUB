@@ -105,7 +105,7 @@
                                             style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;" />
 
                                         <!-- EMPLOYER: Review Work / Approve / Reject Buttons -->
-                                        <asp:Button ID="btnReview" runat="server" Text="🔍 Review Work & Approve/Reject" CommandName="ReviewWork" CommandArgument='<%# Eval("ProjectId") %>'
+                                        <asp:Button ID="btnReview" runat="server" Text="🔍 Review Work" CommandName="ReviewWork" CommandArgument='<%# Eval("ProjectId") %>'
                                             Visible='<%# UserType == "Employer" && Eval("Status").ToString() == "Under Review" %>'
                                             style="background: #d97706; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;" />
 

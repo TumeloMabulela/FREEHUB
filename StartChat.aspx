@@ -674,5 +674,16 @@
             </div>
         </div>
     </asp:Panel>
-
+    <script type="text/javascript">
+        function handleEnterKey(e, buttonId) {
+            var key = e.keyCode || e.which;
+            if (key === 13) { // Enter key code
+                e.preventDefault();
+                var btn = document.getElementById(buttonId);
+                if (btn) { btn.click(); }
+                return false;
+            }
+            return true;
+        }
+    </script>
 </asp:Content>
