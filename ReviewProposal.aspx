@@ -26,7 +26,7 @@
                     <h1 style="color:#173f2c;">Review Proposal</h1>
                     <p style="color:#666; font-size:14px;">Review the proposal details before making your decision.</p>
                 </div>
-                <a href="SelectProposal.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;">&#8592; Back to Proposals</a>
+                <a href="SelectProposal.aspx" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;">&#8592; Back to Proposals</a>
             </div>
 
             <!-- MESSAGE -->
