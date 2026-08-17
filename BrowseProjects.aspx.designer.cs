@@ -16,8 +16,10 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblFilterMessage;
         protected global::System.Web.UI.WebControls.Panel pnlNoProjects;
         protected global::System.Web.UI.WebControls.Repeater rptProjects;
+        protected global::System.Web.UI.WebControls.Button btnLoadMore;
         protected global::System.Web.UI.WebControls.Panel pnlNoSelection;
         protected global::System.Web.UI.WebControls.Panel pnlProjectDetails;
+        protected global::System.Web.UI.WebControls.Button btnReturnToList;
         protected global::System.Web.UI.WebControls.Label lblPosted;
         protected global::System.Web.UI.WebControls.Label lblProjectTitle;
         protected global::System.Web.UI.WebControls.Label lblDescription;

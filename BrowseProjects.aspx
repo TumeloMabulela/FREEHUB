@@ -109,6 +109,10 @@
                         </ItemTemplate>
                     </asp:Repeater>
 
+                    <asp:Button ID="btnLoadMore" runat="server" Text="Load More Projects"
+                        OnClick="btnLoadMore_Click"
+                        style="display:block;margin:15px auto;color:#173f2c;background:#fff;border:1px solid #ccc;padding:10px 24px;border-radius:20px;font-size:13px;cursor:pointer;" />
+
                 </section>
 
                 <!-- RIGHT: PROJECT DETAILS -->
@@ -122,6 +126,10 @@
 
                     <!-- Project details (hidden until selected) -->
                     <asp:Panel ID="pnlProjectDetails" runat="server" Visible="false">
+
+                        <asp:Button ID="btnReturnToList" runat="server" Text="← Return to List"
+                            OnClick="btnReturnToList_Click"
+                            style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;border:none;cursor:pointer;margin-bottom:15px;" />
 
                         <p class="posted-information">
                             <asp:Label ID="lblPosted" runat="server" />
