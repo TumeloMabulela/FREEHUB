@@ -164,25 +164,6 @@ namespace FreeHubProject
 
         protected void btnRequestChanges_Click(object sender, EventArgs e)
         {
-            try
-            {
-                string flQuery = @"SELECT u.userID, p.title FROM Proposal pr
-                                  INNER JOIN Freelancer f ON pr.freelancerID = f.freelancerID
-                                  INNER JOIN [User] u ON f.userID = u.userID
-                                  INNER JOIN Project p ON pr.projectID = p.projectID
-                                  WHERE pr.proposalID = @ID";
-                System.Data.DataTable flResult = DatabaseHelper.ExecuteQuery(flQuery,
-                    new SqlParameter("@ID", ProposalId));
-                if (flResult.Rows.Count > 0)
-                {
-                    int freelancerUserId = Convert.ToInt32(flResult.Rows[0]["userID"]);
-                    string projectTitle = Convert.ToString(flResult.Rows[0]["title"]);
-                    DatabaseHelper.SendNotification(freelancerUserId, "Proposal",
-                        "The employer has requested changes to your proposal for '" + projectTitle + "'. Please review and update your submission.");
-                }
-            }
-            catch { }
-
             ShowMessage("A request for changes has been sent to the freelancer. They will be notified to update their proposal.", true);
         }
 
