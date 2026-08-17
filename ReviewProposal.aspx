@@ -140,7 +140,7 @@
             <h3 style="color:#173f2c; margin-bottom:10px;">Approve This Proposal</h3>
             <p style="color:#666; font-size:14px; margin-bottom:10px;">Once approved, the project will start and the freelancer will be assigned to work on it.</p>
             <p style="color:#444; font-size:13px; margin-bottom:20px;"><strong>Are you sure you want to approve this proposal?</strong></p>
-            <button onclick="document.getElementById('<%= btnApproveProposal.ClientID %>').click(); closeModal('approveModal');" style="display:block;width:100%;background-color:#2e7d56;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Approve</button>
+            <button onclick="document.getElementById('<%= btnApproveProposal.ClientID %>').click();" style="display:block;width:100%;background-color:#2e7d56;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Approve</button>
             <a href="javascript:void(0)" onclick="closeModal('approveModal')" style="color:#666; font-size:14px; text-decoration:none;">No, go back to review</a>
         </div>
     </div>
@@ -154,7 +154,7 @@
             <h3 style="color:#173f2c; margin-bottom:10px;">Reject This Proposal</h3>
             <p style="color:#666; font-size:14px; margin-bottom:10px;">The freelancer will be notified that their proposal was not accepted. The project will remain open for other proposals.</p>
             <p style="color:#444; font-size:13px; margin-bottom:20px;"><strong>Are you sure you want to reject this proposal?</strong></p>
-            <button onclick="document.getElementById('<%= btnRejectProposal.ClientID %>').click(); closeModal('rejectModal');" style="display:block;width:100%;background-color:#dc3545;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Reject</button>
+            <button onclick="document.getElementById('<%= btnRejectProposal.ClientID %>').click();" style="display:block;width:100%;background-color:#dc3545;color:#fff;border:none;padding:14px;border-radius:25px;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:12px;">Yes, Reject</button>
             <a href="javascript:void(0)" onclick="closeModal('rejectModal')" style="color:#666; font-size:14px; text-decoration:none;">No, keep reviewing</a>
         </div>
     </div>
