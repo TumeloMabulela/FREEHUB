@@ -13054,12 +13054,14 @@ FREEHUB HOME PAGE
 .switch-role-page h1 {
     color: #173f2c;
     margin-bottom: 8px;
+    text-align: center;
 }
 
 .switch-role-description {
     color: #555;
     margin-bottom: 25px;
     font-size: 15px;
+    text-align: center;
 }
 
 .switch-role-options {
@@ -13067,6 +13069,9 @@ FREEHUB HOME PAGE
     grid-template-columns: 1fr 1fr;
     gap: 25px;
     margin-top: 20px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .role-card {
