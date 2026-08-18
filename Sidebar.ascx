@@ -102,11 +102,38 @@
             <span>Switch Role</span>
         </a>
 
-        <asp:LinkButton ID="btnSidebarLogout" runat="server" CssClass="sidebar-item" OnClick="btnSidebarLogout_Click">
+        <asp:LinkButton ID="btnSidebarLogout" runat="server" CssClass="sidebar-item"
+            OnClientClick="return showSidebarLogoutConfirm();" OnClick="btnSidebarLogout_Click">
             <span class="sidebar-icon">&#128682;</span>
             <span>Logout</span>
         </asp:LinkButton>
 
     </div>
+
+    <!-- Sidebar Logout Confirmation Modal -->
+    <div id="sidebarLogoutModal" class="fh-modal-overlay" style="display:none;">
+        <div class="fh-modal">
+            <div class="fh-modal-icon" style="background:#fee2e2; color:#dc2626;">&#10140;</div>
+            <h3>Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <button type="button" class="fh-modal-btn-confirm" style="background:#dc2626;" onclick="confirmSidebarLogout();">Yes, Logout</button>
+            <br />
+            <button type="button" class="fh-modal-btn-cancel" onclick="hideSidebarLogoutModal();">Cancel</button>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function showSidebarLogoutConfirm() {
+            document.getElementById('sidebarLogoutModal').style.display = 'flex';
+            return false;
+        }
+        function hideSidebarLogoutModal() {
+            document.getElementById('sidebarLogoutModal').style.display = 'none';
+        }
+        function confirmSidebarLogout() {
+            hideSidebarLogoutModal();
+            __doPostBack('<%= btnSidebarLogout.UniqueID %>', '');
+        }
+    </script>
 
 </aside>
