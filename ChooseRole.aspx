@@ -323,13 +323,15 @@
 <body>
     <form id="form1" runat="server">
 
-        <!-- Minimal Navigation: Logo + Back + Logout -->
+        <!-- Minimal Navigation: Logo + Back/Logout -->
         <div class="choose-nav">
-            <a href="ChooseRole.aspx" class="logo">Free<span>HUB</span></a>
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <a href="javascript:history.back();" class="logout-btn" style="font-size: 13px;">&#8592; Back</a>
-                <asp:LinkButton ID="btnLogout" runat="server" CssClass="logout-btn" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <asp:Panel ID="pnlBackButton" runat="server" Visible="false" style="display:inline;">
+                    <a href="Dashboard.aspx" class="logout-btn" style="font-size: 13px;">&#8592; Back</a>
+                </asp:Panel>
+                <a href="ChooseRole.aspx" class="logo">Free<span>HUB</span></a>
             </div>
+            <asp:LinkButton ID="btnLogout" runat="server" CssClass="logout-btn" OnClick="btnLogout_Click">Logout</asp:LinkButton>
         </div>
 
         <div class="choose-role-container">

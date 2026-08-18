@@ -229,10 +229,6 @@
 
             <div class="switch-container">
 
-                <a href="javascript:history.back();" style="display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 20px;">
-                    &#8592; Back
-                </a>
-
                 <h1>Switch Role</h1>
                 <p>Manage which profile you're currently using on FreeHUB.</p>
 

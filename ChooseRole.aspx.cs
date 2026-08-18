@@ -38,6 +38,11 @@ namespace FreeHubProject
             bool isNewUser = (freelancerStatus == "NotCreated" && employerStatus == "NotCreated");
             pnlProgressIndicator.Visible = isNewUser;
 
+            // Show back button only if user has at least one active profile
+            // (meaning they came from SwitchRole to create/reactivate the other)
+            bool hasActiveProfile = (freelancerStatus == "Active" || employerStatus == "Active");
+            pnlBackButton.Visible = hasActiveProfile;
+
             // Freelancer card
             pnlFreelancerActive.Visible = freelancerStatus == "Active";
             pnlFreelancerDeactivated.Visible = freelancerStatus == "Deactivated";
