@@ -38,6 +38,7 @@ runat="server">
 
         </p>
 
+        <% if (Session["UserID"] == null) { %>
         <div class="hero-buttons">
 
             <a href="BrowseProjects.aspx"
@@ -55,6 +56,7 @@ runat="server">
             </a>
 
         </div>
+        <% } %>
 
     </div>
 
