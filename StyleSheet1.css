@@ -3114,6 +3114,7 @@ FREEHUB HOME PAGE
     border: 1px solid #e1e6e7;
     border-radius: 7px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
     .freelancer-proposal.selected-proposal {
@@ -3197,11 +3198,14 @@ FREEHUB HOME PAGE
     }
 
 .proposal-preview {
-    max-width: 310px;
+    max-width: 100%;
     margin: 0 0 7px;
     color: #657078;
-    font-size: 7px;
+    font-size: 13px;
     line-height: 1.55;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .freelancer-proposal-info a {
@@ -3925,12 +3929,18 @@ FREEHUB HOME PAGE
 
 .cover-letter-content {
     color: #5f6a71;
-    font-size: 8px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
     .cover-letter-content p {
         margin: 0 0 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
 
@@ -7300,6 +7310,11 @@ FREEHUB HOME PAGE
 .post-textarea {
     resize: vertical;
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 140px;
+    line-height: 1.5;
+    font-size: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 
