@@ -69,6 +69,8 @@ namespace FreeHubProject
                 // Account not active — block login
                 if (accountStatus != "Active" && !string.IsNullOrWhiteSpace(accountStatus))
                 {
+                    lblLoginMessage.CssClass = "fssb-login-message";
+                    lblLoginMessage.ForeColor = System.Drawing.Color.FromArgb(220, 38, 38);
                     lblLoginMessage.Text = "Your account has been deactivated. Please contact admin at support@freehub.co.za to reactivate your account.";
                     Session.Clear();
                     Session.Abandon();
