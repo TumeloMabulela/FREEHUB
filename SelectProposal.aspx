@@ -54,15 +54,15 @@
 
                     <asp:Repeater ID="rptProposals" runat="server" OnItemCommand="rptProposals_ItemCommand">
                         <ItemTemplate>
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:12px; overflow:hidden;">
                                 <!-- LEFT: Avatar + Info -->
-                                <div style="display:flex; gap:15px; flex:1;">
+                                <div style="display:flex; gap:15px; flex:1; min-width:0;">
                                     <div style="width:45px;height:45px;border-radius:50%;background-color:#2e7d56;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;flex-shrink:0;">
                                         <%# Eval("freelancerName").ToString().Substring(0,1).ToUpper() %><%# Eval("freelancerName").ToString().Contains(" ") ? Eval("freelancerName").ToString().Split(' ')[1].Substring(0,1).ToUpper() : "" %>
                                     </div>
-                                    <div>
+                                    <div style="min-width:0; overflow:hidden;">
                                         <strong style="color:#173f2c; font-size:15px;"><%# Eval("freelancerName") %></strong>
-                                        <p style="color:#555; font-size:13px; margin-top:6px; line-height:1.5;">
+                                        <p style="color:#555; font-size:13px; margin-top:6px; line-height:1.5; word-wrap:break-word; overflow-wrap:break-word; word-break:break-word;">
                                             <%# Eval("coverLetter").ToString().Length > 180 ? Eval("coverLetter").ToString().Substring(0, 180) + "..." : Eval("coverLetter") %>
                                         </p>
                                         <small style="color:#2e7d56; font-size:12px;">Project: <%# Eval("projectTitle") %></small>
