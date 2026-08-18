@@ -358,6 +358,20 @@ namespace FreeHubProject
             return ExecuteQuery(query);
         }
 
+        public static DataTable GetOpenProjectsExcludingUser(int excludeUserId)
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
+                            p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
+                            p.experienceLevel, p.skills, e.companyName,
+                            u.firstName + ' ' + u.lastName AS employerName
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            INNER JOIN [User] u ON e.userID = u.userID
+                            WHERE p.projectStatus = 'Open' AND e.userID != @ExcludeUserID
+                            ORDER BY p.dateCreated DESC";
+            return ExecuteQuery(query, new SqlParameter("@ExcludeUserID", excludeUserId));
+        }
+
         public static DataTable GetProjectsByEmployer(int userID)
         {
             string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,

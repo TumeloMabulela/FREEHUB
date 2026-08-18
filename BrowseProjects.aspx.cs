@@ -19,7 +19,18 @@ namespace FreeHubProject
         {
             try
             {
-                DataTable projects = DatabaseHelper.GetOpenProjects();
+                DataTable projects;
+
+                // Exclude own projects if user is logged in
+                if (Session["UserID"] != null)
+                {
+                    int userId = Convert.ToInt32(Session["UserID"]);
+                    projects = DatabaseHelper.GetOpenProjectsExcludingUser(userId);
+                }
+                else
+                {
+                    projects = DatabaseHelper.GetOpenProjects();
+                }
 
                 if (projects.Rows.Count == 0)
                 {
@@ -114,6 +125,12 @@ namespace FreeHubProject
                                 INNER JOIN Employer e ON p.employerID = e.employerID
                                 INNER JOIN [User] u ON e.userID = u.userID
                                 WHERE p.projectStatus = 'Open'";
+
+                // Exclude own projects if logged in
+                if (Session["UserID"] != null)
+                {
+                    query += " AND e.userID != " + Convert.ToInt32(Session["UserID"]);
+                }
 
                 // Category filter
                 if (!string.IsNullOrEmpty(ddlCategory.SelectedValue))
