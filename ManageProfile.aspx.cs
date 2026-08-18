@@ -476,7 +476,7 @@ namespace FreeHubProject
                     }
                 }
 
-                DatabaseHelper.ExecuteNonQuery("UPDATE [User] SET accountStatus = 'Deleted' WHERE userID = @UserID",
+                DatabaseHelper.ExecuteNonQuery("UPDATE [User] SET accountStatus = 'Deactivated' WHERE userID = @UserID",
                     new SqlParameter("@UserID", userId));
 
                 DatabaseHelper.ExecuteNonQuery(

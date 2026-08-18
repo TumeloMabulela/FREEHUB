@@ -66,8 +66,8 @@ namespace FreeHubProject
                 string userType = Convert.ToString(user["userType"]);
                 string accountStatus = Convert.ToString(user["accountStatus"]);
 
-                // Account fully deactivated — block login
-                if (accountStatus == "Deactivated" || accountStatus == "Inactive")
+                // Account not active — block login
+                if (accountStatus != "Active" && !string.IsNullOrWhiteSpace(accountStatus))
                 {
                     lblLoginMessage.Text = "Your account has been deactivated. Please contact admin at support@freehub.co.za to reactivate your account.";
                     Session.Clear();
@@ -81,6 +81,11 @@ namespace FreeHubProject
                 if (string.IsNullOrWhiteSpace(userType) || userType == "None")
                 {
                     // New user — no profile created yet, must choose role
+                    Response.Redirect("ChooseRole.aspx");
+                }
+                else if (accountStatus == "Deactivated")
+                {
+                    // Profile deactivated — let them in to ChooseRole to reactivate
                     Response.Redirect("ChooseRole.aspx");
                 }
                 else if (!string.IsNullOrWhiteSpace(returnUrl))
