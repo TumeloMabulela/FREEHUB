@@ -50,12 +50,6 @@
 
                 <div class="nav-buttons" style="display: flex; align-items: center; gap: 18px;">
 
-                    <!-- Dark Mode Toggle -->
-                    <button type="button" id="darkModeToggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode">
-                        <span class="dm-sun">&#9728;</span>
-                        <span class="dm-moon" style="display:none;">&#9790;</span>
-                    </button>
-
                     <asp:Panel ID="pnlGuestButtons" runat="server">
                         <a href="Login.aspx" class="login-link">Log In</a>
                         <a href="Register.aspx" class="register-button">Sign Up</a>
@@ -85,7 +79,7 @@
                                         <asp:Literal ID="litUserRole" runat="server" />
                                     </span>
                                 </div>
-                                <span style="font-size: 10px; margin-left: 2px; opacity: 0.8;">▼</span>
+                                <span style="font-size: 12px; margin-left: 4px; opacity: 0.8; display: inline-block; transform: translateY(-1px);">&#9662;</span>
                             </a>
 
                             <!-- Dropdown Menu Items -->
