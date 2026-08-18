@@ -86,4 +86,27 @@
 
     </div>
 
+    <div class="sidebar-heading">ACCOUNT</div>
+
+    <div class="sidebar-section">
+
+        <a href="ManageProfile.aspx"
+           class="sidebar-item <%= GetActiveClass("ManageProfile") %>">
+            <span class="sidebar-icon">&#128100;</span>
+            <span>Profile</span>
+        </a>
+
+        <a href="SwitchRole.aspx"
+           class="sidebar-item <%= GetActiveClass("SwitchRole") %>">
+            <span class="sidebar-icon">&#128260;</span>
+            <span>Switch Role</span>
+        </a>
+
+        <asp:LinkButton ID="btnSidebarLogout" runat="server" CssClass="sidebar-item" OnClick="btnSidebarLogout_Click">
+            <span class="sidebar-icon">&#128682;</span>
+            <span>Logout</span>
+        </asp:LinkButton>
+
+    </div>
+
 </aside>

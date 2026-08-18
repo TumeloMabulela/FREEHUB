@@ -47,5 +47,13 @@ namespace FreeHubProject
 
             return "";
         }
+
+        protected void btnSidebarLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            System.Web.Security.FormsAuthentication.SignOut();
+            Response.Redirect("Login.aspx");
+        }
     }
 }
