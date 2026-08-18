@@ -59,7 +59,7 @@
 
         <div class="top-nav">
             <a href="ChooseRole.aspx" class="logo">Free<span>HUB</span></a>
-            <a href="ChooseRole.aspx" class="nav-btn">&#8592; Back</a>
+            <asp:LinkButton ID="btnLogout" runat="server" CssClass="nav-btn" OnClick="btnLogout_Click">Logout</asp:LinkButton>
         </div>
 
         <div class="container">
@@ -76,6 +76,8 @@
             <p>Fill in your details to start finding work on FreeHUB.</p>
 
             <div class="create-form">
+
+                <a href="ChooseRole.aspx" style="display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 20px;">&#8592; Back to Choose Role</a>
 
                 <div class="form-row">
                     <div class="form-field">

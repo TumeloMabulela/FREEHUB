@@ -8,6 +8,7 @@ namespace FreeHubProject
 {
     public partial class CreateEmployerProfile
     {
+        protected global::System.Web.UI.WebControls.LinkButton btnLogout;
         protected global::System.Web.UI.WebControls.TextBox txtFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
         protected global::System.Web.UI.WebControls.FileUpload fuProfilePic;

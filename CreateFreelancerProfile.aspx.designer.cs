@@ -8,6 +8,7 @@ namespace FreeHubProject
 {
     public partial class CreateFreelancerProfile
     {
+        protected global::System.Web.UI.WebControls.LinkButton btnLogout;
         protected global::System.Web.UI.WebControls.TextBox txtFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
         protected global::System.Web.UI.WebControls.FileUpload fuProfilePic;
@@ -18,7 +19,6 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.TextBox txtExperience;
         protected global::System.Web.UI.WebControls.TextBox txtPortfolio;
         protected global::System.Web.UI.WebControls.TextBox txtHourlyRate;
-        protected global::System.Web.UI.WebControls.FileUpload fuProfilePicture;
         protected global::System.Web.UI.WebControls.Button btnSubmit;
         protected global::System.Web.UI.WebControls.Label lblMessage;
     }

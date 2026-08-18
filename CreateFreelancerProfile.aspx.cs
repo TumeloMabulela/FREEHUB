@@ -100,5 +100,13 @@ namespace FreeHubProject
                 lblMessage.CssClass = "msg msg-error";
             }
         }
+
+        protected void btnLogout_Click(object sender, EventArgs e)
+        {
+            Session.Clear();
+            Session.Abandon();
+            System.Web.Security.FormsAuthentication.SignOut();
+            Response.Redirect("Login.aspx");
+        }
     }
 }
