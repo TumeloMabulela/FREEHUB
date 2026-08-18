@@ -3926,12 +3926,18 @@ FREEHUB HOME PAGE
 
 .cover-letter-content {
     color: #5f6a71;
-    font-size: 8px;
-    line-height: 1.8;
+    font-size: 14px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
     .cover-letter-content p {
         margin: 0 0 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
 
@@ -13683,6 +13689,7 @@ FREEHUB HOME PAGE
     display: flex;
     gap: 15px;
     flex: 1;
+    min-width: 0;
 }
 
 .proposal-info h3 {
@@ -13702,6 +13709,10 @@ FREEHUB HOME PAGE
     font-size: 14px;
     line-height: 1.5;
     margin-bottom: 6px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 500px;
 }
 
 .proposal-card-right {
