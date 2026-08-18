@@ -3,15 +3,15 @@
     Inherits="FreeHubProject.Sidebar" %><aside class="freehub-sidebar">
 
     <div class="sidebar-back">
-        <% if (!GetActiveClass("Default").Contains("active")) { %>
-        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
+        <% if (!GetActiveClass("Dashboard").Contains("active")) { %>
+        <a href="Dashboard.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
         <% } %>
     </div>
 
     <div class="sidebar-section">
 
-        <a href="Default.aspx"
-           class="sidebar-item <%= GetActiveClass("Default") %>">
+        <a href="Dashboard.aspx"
+           class="sidebar-item <%= GetActiveClass("Dashboard") %>">
             <span class="sidebar-icon">&#127968;</span>
             <span>Dashboard</span>
         </a>

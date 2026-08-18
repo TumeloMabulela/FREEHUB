@@ -36,6 +36,31 @@ namespace FreeHubProject
                 DataRow project = DatabaseHelper.GetProjectById(Convert.ToInt32(projectId));
                 if (project != null)
                 {
+                    // Block if this project belongs to the same user account
+                    int currentUserId = Convert.ToInt32(Session["UserID"]);
+                    int projectEmployerUserId = 0;
+                    if (project.Table.Columns.Contains("employerUserID"))
+                    {
+                        projectEmployerUserId = Convert.ToInt32(project["employerUserID"]);
+                    }
+                    else
+                    {
+                        // Look up the employer's userID from the project
+                        object empUserId = DatabaseHelper.ExecuteScalar(
+                            "SELECT e.userID FROM Employer e INNER JOIN Project p ON p.employerID = e.employerID WHERE p.projectID = @ProjectID",
+                            new System.Data.SqlClient.SqlParameter("@ProjectID", Convert.ToInt32(projectId)));
+                        if (empUserId != null)
+                            projectEmployerUserId = Convert.ToInt32(empUserId);
+                    }
+
+                    if (projectEmployerUserId == currentUserId)
+                    {
+                        ShowMessage("You cannot submit a proposal for your own project.", false);
+                        btnSubmitProposal.Enabled = false;
+                        btnSubmitProposal.Visible = false;
+                        return;
+                    }
+
                     lblProjectTitle.Text = Convert.ToString(project["title"]);
                     lblProjectBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2");
                     lblProjectDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
