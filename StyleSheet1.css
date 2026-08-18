@@ -12683,18 +12683,23 @@ FREEHUB HOME PAGE
 .my-project-information {
     min-width: 0;
     flex: 1;
+    overflow: hidden;
 }
 
 .my-project-title-row {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
 }
 
     .my-project-title-row h3 {
         margin: 0;
         color: #39474e;
         font-size: 14px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
 .my-project-status {
@@ -12723,6 +12728,11 @@ FREEHUB HOME PAGE
     margin: 8px 0 11px;
     color: #77848a;
     font-size: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 500px;
+    white-space: normal;
 }
 
 .my-project-meta {
