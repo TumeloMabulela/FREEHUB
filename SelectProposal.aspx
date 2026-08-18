@@ -62,7 +62,7 @@
                                     </div>
                                     <div>
                                         <strong style="color:#173f2c; font-size:15px;"><%# Eval("freelancerName") %></strong>
-                                        <p style="color:#555; font-size:13px; margin-top:6px; line-height:1.5;">
+                                        <p style="color:#555; font-size:13px; margin-top:6px; line-height:1.5; word-break:break-word; overflow-wrap:break-word; max-width:500px;">
                                             <%# Eval("coverLetter").ToString().Length > 180 ? Eval("coverLetter").ToString().Substring(0, 180) + "..." : Eval("coverLetter") %>
                                         </p>
                                         <small style="color:#2e7d56; font-size:12px;">Project: <%# Eval("projectTitle") %></small>

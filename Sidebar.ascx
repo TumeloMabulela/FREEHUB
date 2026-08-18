@@ -4,7 +4,7 @@
 
     <div class="sidebar-back">
         <% if (!GetActiveClass("Default").Contains("active")) { %>
-        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
+        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
         <% } %>
     </div>
 
