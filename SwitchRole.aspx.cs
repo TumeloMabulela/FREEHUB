@@ -122,12 +122,12 @@ namespace FreeHubProject
         // Hidden buttons for modal confirmations
         protected void btnConfirmCreateFreelancer_Click(object sender, EventArgs e)
         {
-            Response.Redirect("CreateFreelancerProfile.aspx");
+            Response.Redirect("ChooseRole.aspx");
         }
 
         protected void btnConfirmCreateEmployer_Click(object sender, EventArgs e)
         {
-            Response.Redirect("CreateEmployerProfile.aspx");
+            Response.Redirect("ChooseRole.aspx");
         }
 
         protected void btnConfirmReactivateFreelancer_Click(object sender, EventArgs e)
