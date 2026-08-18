@@ -39,7 +39,7 @@
             <span>Proposals Received</span>
         </a>
         <a href="ViewProgress.aspx" class="sidebar-item <%= GetActiveClass("ViewProgress") %>">
-    <span class="sidebar-icon">📊</span>
+    <span class="sidebar-icon">&#128202;</span>
     <span>View Progress</span>
 </a>
         <% } %>
