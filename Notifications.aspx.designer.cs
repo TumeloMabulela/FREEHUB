@@ -159,16 +159,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btnViewMessage;
 
         /// <summary>
-        /// btnViewProject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewProject;
-
-        /// <summary>
-        /// btnToggleRead control.
+        /// btnMarkRead control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
