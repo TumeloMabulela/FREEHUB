@@ -15,7 +15,6 @@ runat="server">
 ContentPlaceHolderID="MainContent"
 runat="server">
 
-```
 <!-- HERO SECTION -->
 
 <section class="home-hero">
@@ -421,6 +420,5 @@ runat="server">
     </a>
 
 </section>
-```
 
 </asp:Content>
