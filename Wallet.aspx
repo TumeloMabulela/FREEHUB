@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Wallet.css?v=4") %>"
+    <link href="<%= ResolveUrl("~/Wallet.css?v=5") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -39,9 +39,11 @@
 
                     <div class="wallet-breadcrumb">
 
-                        Wallet
+                        <a href="Wallet.aspx" class="breadcrumb-link">
+                            Wallet
+                        </a>
 
-                        <span>›</span>
+                        <span>&#8250;</span>
 
                         <strong>
                             Manage Wallet
@@ -242,7 +244,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -273,7 +275,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -303,7 +305,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -333,7 +335,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -363,7 +365,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -393,7 +395,7 @@
                             </span>
 
                             <span class="wallet-action-arrow">
-                                �
+                                &#8250;
                             </span>
 
                         </asp:LinkButton>
@@ -658,7 +660,7 @@
                 <asp:Button
                     ID="btnViewAllTransactions"
                     runat="server"
-                    Text="View All Transactions ›"
+                    Text="View All Transactions &#8250;"
                     CssClass="wallet-bottom-view-button"
                     CausesValidation="false"
                     OnClick="btnViewTransactions_Click" />

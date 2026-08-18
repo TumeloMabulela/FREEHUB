@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/WithdrawFunds.css?v=1") %>"
+    <link href="<%= ResolveUrl("~/WithdrawFunds.css?v=2") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -44,7 +44,7 @@
                             Wallet
                         </a>
 
-                        <span>›</span>
+                        <span>&#8250;</span>
 
                         <strong>
                             Withdraw Funds
@@ -297,7 +297,7 @@
 
                             <li>
                                 Approved withdrawals are processed
-                                within 1�3 business days.
+                                within 1-3 business days.
                             </li>
 
                             <li>

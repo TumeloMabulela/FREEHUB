@@ -1,0 +1,789 @@
+FREEHUB TRANSACTION RECEIPT
+--------------------------------
+Transaction ID: 2
+Reference: REF-A055B1E0
+Date: 17 Aug 2026, 04:40 pm
+Type: Refund
+Amount: + R457,00
+Status: Pending
+Payment Method: Wallet Credit
+Description: Refund for FUND-D13BD593 - Incorrect amount charged (vch)
+<!DOCTYPE html><html><head><title>
+	View Transactions
+</title><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="/StyleSheet1.css?v=639226026509430003"
+          rel="stylesheet"
+          type="text/css" />
+
+    
+
+    <link href="/Transactions.css?v=21"
+          rel="stylesheet"
+          type="text/css" />
+
+</head><body>
+
+    <form method="post" action="./Transactions.aspx?type=Refund" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="" />
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="" />
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="3JIHeWmlLeqtM2vwDHZ4iyUdx0Sd2m4EVSOGpAzGuNd6hwP2g0K8zuLWTzlX+3fI1ni9kMOHq089JXSEg5hJyp5VaDt4abHjNyXWJ5qMgwD+2BsbZSk5hvhXi5f8WtU1+tVD07vYUR6Pz6JQxLGctR5hZ1CS5fJlB4bwSss+ETQs9zWw0Ya1eT3mGKacJzlzlVMovgpMW4HWKTr7vEnCqOtuhlYidaJD0Tkyc7k5eulT8inF/RW4r/hY03WuOMBrulD9YQahnQgsP1xbM98fewqOxdt+uOGLGlrlntGlqiphGEwaTnEQTQvvSHMtkVn8VcN/fE914XLtcn3cz8efYSmvHZK0CT6ESxdtAua21/HyLM47JaYNBaq4KqyIfZxk9WUnWFtvkvdes8b+DOXBTlszNC1mzdiU3bOhwtjhS0PVlR8KX+V24NGUkhs1QE2NpCKHLgf2JZTEpoc3XruTxUbJSt+2bA9ZPPLUIjdTU5YduH/Usk6LAmmOS29AMkcalP7u8cmqwV5AsLwpPTuKBpN2Uagcu4bB+cFX4NokhdXp550rKhrRutnf0GQC3F+QgHCNK1oeWKXdJ0KaACbqeSXRIUdkx9/27Yw4BX6Rn2jdMdKBGo93HbonYqxPoRAzXORMCfzMgoJGElbajx+pBVYW3pBdJya9GvCHBx1KF9tvqBe4ktVUKI9j3O9FLe2FUXiWQLk3QlXWxXSoy/KllLYnPJ0fSBVkFAa7hRPszN15gFooqNvlZR8DpxCpPKr1v/QoJESD6XyvBviUDBUKsindcPRZAw3b86tFVEEi2FO1eBZo+HocNJEvSw2Ez9UyPgo6Lexx70PlfGLQwg02KXSp9eCeH6QIe6RK2HEFbv62dVs7wU+8WbiK3AUb4xhY1PjS+fanTvTgW9GXi+UuddgBUU30q1m1Y/EeIHCAGtTfHEVYZBfmVcsfTwcPCb1F9cnSf+e3F/PsBvA4itvMjGKTLJ+9tCIlbxiZq/1pKwNrBBv6H7yeewW3Ab3Oh5du9ZgGH1yIBeN9TWpvylvxvhjJWNsGfHiUpWmSVfAxhTZw1VTCou+zfyu+7TBe++NFOj/9CffeVt8ADlv0bpjKwKa2KjxIeU1+u+bezc8aDp8i2ty4tUQz+/s6vszHMHodrl5kEDbUTw9ka01+NbvTtUoA3sDOojAmRc1c2wOqSKOMm4YIbNYuiegNhhwFWjzBfOeT0GG0LL6RWSTT7VQkKslnR+q5/KgnzpvIV/4vWhHcbhl2ojouYhaKM9m2a02GYqeVOax2f7ajqOWaLznZgDQndyTH0RovPu4X/VcYtSV8WK/t0jqpgTMCh59t0Y/UNt5hRydczJIsgvle7BRU48ncQMmEG8MrnYP41hmbHiNuggGwGa947FyXsrcYSn6sifkTTJg+9w/ewHk5T5gR0x9OCRMPO3m23EWLoteOQxY5WTP5i73pHCDE4w9+n2TpO8N3w3xOa1oWeggu+38uz9kUSYXw4AVm7cpN6r0JkDnpyd9GOswKrWQ0poXZML3IAZHh3hUfOBDV+Zv+D4o6kJtbFTcpg4ojpaOAlihttSHcrPCIjHHy7NSNnpdFkdwkVAaITsYpMbQr48BjL8ZYB5Y2RdhphnMi7eiL4krVxRtbzEYVntOXJiqtaRuSJ7zI" />
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="CEAC9C08" />
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="FgjCPkfFxmP7FVz22ubHgYKsdlWnvLA/U/W8QoRMqfRVKNBAkUajPnTIX+kzC/gPvgRv7TjLXz65xdgClpS5hK8Q8U2J8RNT3vheRqlvzm0eNorR25/bWxNGLfF1QTkJ/TF2KJRzk04h5T19zQoIuFIx7TBahoqEZTSuKX7w/98yU8m2QHay2R3bt5Lr4SID7FFWInHq4yC3/FIw6j4WdWhTcE9BUIvzkUsYHZehctxU2c9D70CfqsNMhhTPvarfNKK8nsqTbTd01lvSfyMNu0vSABcJPjlPBOAcSZ3ycFzElI92cI1QMMJv2qltYh52uHxr33rYyJmQHK8oewdp/YzVm5qRGkPoGlE5iL/ZFOnajJ/Rmt9i5OGAflSZ3SnusQXvOap1ZxgyKyqWtImuqA==" />
+</div>
+
+        <!-- Navigation Bar -->
+        <header class="main-header">
+
+            <div class="nav-container">
+
+                <a href="Default.aspx" class="logo">
+                    Free<span>HUB</span>
+                </a>
+
+                <nav class="main-navigation">
+
+                    <div id="pnlFreelancerNav" style="display:inline;">
+	
+                        <a href="SelectProposal.aspx">My Proposals</a>
+                    
+</div>
+
+                    
+
+                   <div id="pnlLoggedInNav" style="display:inline;">
+	
+    <a href="Dashboard.aspx">Dashboard</a>
+    <a href="BrowseProjects.aspx">Browse Projects</a>
+    <a href="Wallet.aspx">Wallet</a>
+    <a href="StartChat.aspx" style="position: relative; display: inline-flex; align-items: center;">
+        Messages 
+        
+    </a>
+
+</div>
+
+                </nav>
+
+                <div class="nav-buttons" style="display: flex; align-items: center; gap: 18px;">
+
+                    
+
+                    <div id="pnlUserButtons" style="display: flex; align-items: center; gap: 16px;">
+	
+                        
+                        <!-- NOTIFICATION BELL ICON -->
+                        <a href="Notifications.aspx" title="Notifications" style="position: relative; text-decoration: none; color: white; display: flex; align-items: center; font-size: 20px;">
+                            🔔
+                            <span style='position: absolute; top: -6px; right: -8px; background-color: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; line-height: 1;'>3</span>
+                        </a>
+
+                        <!-- PROFILE DROPDOWN CONTAINER -->
+                        <div class="nav-profile-dropdown-container" style="position: relative; display: inline-block;">
+                            
+                            <!-- Clickable Profile Header Trigger -->
+                            <a href="javascript:void(0);" onclick="toggleProfileDropdown();" class="nav-profile-trigger" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; cursor: pointer;">
+                                <span class="user-nav-initials">
+                                    TR
+                                </span>
+                                <div class="user-nav-info">
+                                    <span class="user-nav-name">
+                                        TUMELO RAMETSI
+                                    </span>
+                                    <span class="user-nav-role">
+                                        Freelancer
+                                    </span>
+                                </div>
+                                <span style="font-size: 10px; margin-left: 2px; opacity: 0.8;">▼</span>
+                            </a>
+
+                            <!-- Dropdown Menu Items -->
+                            <div id="profileDropdownMenu" style="display: none; position: absolute; right: 0; top: 52px; background: #ffffff; min-width: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden; z-index: 1000; border: 1px solid #e5e7eb;">
+                                <a href="ManageProfile.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
+                                    👤 Profile
+                                </a>
+                                <a href="ChooseRole.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
+                                    🔄 Switch Role
+                                </a>
+                                <a onclick="return showLogoutModal();" id="btnLogout" class="logout-dropdown-btn" href="javascript:__doPostBack(&#39;ctl00$btnLogout&#39;,&#39;&#39;)" style="display: block; padding: 12px 16px; color: #dc2626; text-decoration: none; font-size: 13px; font-weight: 600; background: none; border: none; width: 100%; text-align: left; cursor: pointer;">
+                                    🚪 Log Out
+                                </a>
+                            </div>
+
+                        </div>
+
+                    
+</div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <!-- Logout Confirmation Modal -->
+        <div id="logoutModal" class="fh-modal-overlay" style="display:none;">
+            <div class="fh-modal">
+                <div class="fh-modal-icon" style="background:#fee2e2; color:#dc2626;">&#10140;</div>
+                <h3>Logout</h3>
+                <p>Logging out will end your session.<br/>Are you sure you want to logout?</p>
+                <input type="submit" name="ctl00$btnConfirmLogout" value="Logout" id="btnConfirmLogout" class="fh-modal-btn-primary" />
+                <br />
+                <button type="button" class="fh-modal-btn-cancel" onclick="hideLogoutModal();">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Main Page Content -->
+        <main class="page-content">
+
+            
+
+    <div class="transactions-page">
+
+        <!-- SIDEBAR -->
+        <aside class="freehub-sidebar">
+
+    <div class="sidebar-back">
+        
+        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
+        
+    </div>
+
+    <div class="sidebar-section">
+
+        <a href="Default.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#127968;</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="BrowseProjects.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#128269;</span>
+            <span>Browse Projects</span>
+        </a>
+
+        
+        <a href="SelectProposal.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#128221;</span>
+            <span>My Proposals</span>
+        </a>
+        
+
+        <a href="StartChat.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#128172;</span>
+            <span>Messages</span>
+        </a>
+
+        <a href="Wallet.aspx"
+           class="sidebar-item active-sidebar-item">
+            <span class="sidebar-icon">&#128176;</span>
+            <span>Wallet</span>
+        </a>
+
+    </div>
+
+    <div class="sidebar-heading">PROJECTS</div>
+
+    <div class="sidebar-section">
+
+        <a href="CompletedProjects.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#9989;</span>
+            <span>Completed Projects</span>
+        </a>
+
+        <a href="RateFreelancer.aspx"
+           class="sidebar-item ">
+            <span class="sidebar-icon">&#11088;</span>
+            <span>Ratings</span>
+
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+        <!-- MAIN -->
+        <main class="transactions-main">
+
+            <div class="transactions-header">
+
+                <div>
+
+                    <h1>
+                        View Transactions
+                    </h1>
+
+                    <div class="transactions-breadcrumb">
+
+                        <a href="Wallet.aspx" class="breadcrumb-link">
+                            Wallet
+                        </a>
+
+                        <span>â€º</span>
+
+                        <strong>
+                            Transactions
+                        </strong>
+
+                    </div>
+
+                    <p>
+                        View and track all your wallet transactions.
+                    </p>
+
+                </div>
+
+
+                <section class="transactions-balance-card">
+
+                    <div>
+
+                        <small>
+                            Current Wallet Balance
+                        </small>
+
+                        <span id="MainContent_lblCurrentBalance" class="transactions-balance-value">R43 678,00</span>
+
+                    </div>
+
+                    <span class="transactions-wallet-icon">
+                        &#128176;
+                    </span>
+
+                </section>
+
+            </div>
+
+
+            
+
+
+            <!-- FILTER -->
+            <section class="transactions-filter-card">
+
+                <div class="transactions-filter-field">
+
+                    <label>
+                        Transaction Type
+                    </label>
+
+                    <select name="ctl00$MainContent$ddlTransactionType" id="MainContent_ddlTransactionType" class="transactions-filter-control">
+	<option value="All">All Transactions</option>
+	<option value="Credit">Credit</option>
+	<option value="Withdrawal">Withdrawal</option>
+	<option value="Debit">Debit</option>
+	<option selected="selected" value="Refund">Refund</option>
+
+</select>
+
+                </div>
+
+
+                <div class="transactions-filter-field">
+
+                    <label>
+                        From Date
+                    </label>
+
+                    <input name="ctl00$MainContent$txtFromDate" type="date" id="MainContent_txtFromDate" class="transactions-filter-control" />
+
+                </div>
+
+
+                <div class="transactions-filter-field">
+
+                    <label>
+                        To Date
+                    </label>
+
+                    <input name="ctl00$MainContent$txtToDate" type="date" id="MainContent_txtToDate" class="transactions-filter-control" />
+
+                </div>
+
+
+                <input type="submit" name="ctl00$MainContent$btnFilter" value="Filter" id="MainContent_btnFilter" class="transactions-filter-button" />
+
+
+                <input type="submit" name="ctl00$MainContent$btnClear" value="Clear" id="MainContent_btnClear" class="transactions-clear-button" />
+
+            </section>
+
+
+            <div class="transactions-content-grid">
+
+                <!-- HISTORY -->
+                <section class="transactions-history-card">
+
+                    <div class="transactions-history-heading">
+
+                        <h2>
+                            Transaction History
+                        </h2>
+
+                        <span id="MainContent_lblTransactionCount">1 transaction</span>
+
+                    </div>
+
+
+                    <div class="transactions-table-wrapper">
+
+                        <table class="transactions-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                
+
+                                        <tr>
+
+                                            <td>
+                                                17 Aug 2026, 04:40 pm
+                                            </td>
+
+                                            <td>
+                                                Refund for FUND-D13BD593 - Incorrect amount charged (vch)
+                                            </td>
+
+                                            <td>
+
+                                                <span class='transaction-type transaction-refund-type'>
+
+                                                    Refund
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class='transaction-credit-amount'>
+
+                                                    + R457,00
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <span class='transaction-status transaction-pending'>
+
+                                                    Pending
+
+                                                </span>
+
+                                            </td>
+
+                                            <td>
+
+                                                <a id="MainContent_rptTransactions_btnViewDetails_0" class="transaction-view-button" href="javascript:__doPostBack(&#39;ctl00$MainContent$rptTransactions$ctl00$btnViewDetails&#39;,&#39;&#39;)">👁</a>
+
+                                            </td>
+
+                                        </tr>
+
+                                    
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    
+
+                </section>
+
+
+                <!-- DETAILS -->
+                <aside class="transactions-details-card">
+
+                    <div class="transactions-details-heading">
+
+                        <h3>
+                            Transaction Details
+                        </h3>
+
+                        <a id="MainContent_btnCloseDetails" class="transactions-close-button" href="javascript:__doPostBack(&#39;ctl00$MainContent$btnCloseDetails&#39;,&#39;&#39;)">✕</a>
+
+                    </div>
+
+
+                    
+
+
+                    <div id="MainContent_pnlSelectedDetails">
+	
+
+                        <div class="transactions-selected-summary">
+
+                            <span id="MainContent_detailsIcon" class="transactions-details-icon transaction-debit-icon">↑</span>
+
+                            <div>
+
+                                <strong>
+
+                                    <span id="MainContent_lblDetailsTitle">Refund for FUND-D13BD593 - Incorrect amount charged (vch)</span>
+
+                                </strong>
+
+                                <span id="MainContent_lblDetailsType" class="transactions-details-type">Refund</span>
+
+                            </div>
+
+                            <span id="MainContent_lblDetailsStatus" class="transaction-status transaction-pending">Pending</span>
+
+                        </div>
+
+
+                        <div class="transactions-detail-row">
+
+                            <span>Amount</span>
+
+                            <span id="MainContent_lblDetailsAmount" class="transaction-credit-amount">+ R457,00</span>
+
+                        </div>
+
+
+                        <div class="transactions-detail-row">
+
+                            <span>Date</span>
+
+                            <span id="MainContent_lblDetailsDate">17 Aug 2026, 04:40 pm</span>
+
+                        </div>
+
+
+                        <div class="transactions-detail-row">
+
+                            <span>Transaction ID</span>
+
+                            <span id="MainContent_lblDetailsId">2</span>
+
+                        </div>
+
+
+                        <div class="transactions-detail-row">
+
+                            <span>Reference</span>
+
+                            <span id="MainContent_lblDetailsReference">REF-A055B1E0</span>
+
+                        </div>
+
+
+                        <div class="transactions-detail-row">
+
+                            <span>Payment Method</span>
+
+                            <span id="MainContent_lblDetailsPaymentMethod">Wallet Credit</span>
+
+                        </div>
+
+
+                        <div class="transactions-description-row">
+
+                            <span>Description</span>
+
+                            <span id="MainContent_lblDetailsDescription">Refund for FUND-D13BD593 - Incorrect amount charged (vch)</span>
+
+                        </div>
+
+
+                        <input type="submit" name="ctl00$MainContent$btnDownloadReceipt" value="↓ Download Receipt" id="MainContent_btnDownloadReceipt" class="transactions-download-button" />
+
+                    
+</div>
+
+                </aside>
+
+            </div>
+
+
+            <section class="transactions-help-card">
+
+                <div class="transactions-help-icon">
+                    i
+                </div>
+
+                <div>
+
+
+
+
+                    <strong>
+                        Need help?
+                    </strong>
+
+                    <p>
+                        Contact support if you have questions
+                        about a transaction.
+                    </p>
+
+                </div>
+
+                <a href="Default.aspx"
+                   class="transactions-support-button">
+
+                    Contact Support
+
+                </a>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+
+        </main>
+
+
+        <!-- Footer -->
+        <footer class="main-footer">
+
+            <div class="footer-container">
+
+                <div>
+                    <h3>Free<span>HUB</span></h3>
+                    <p>Connecting skilled freelancers with employers and opportunities.</p>
+                </div>
+
+                <div>
+                    <h4>Quick Links</h4>
+                    <a href="BrowseProjects.aspx">Browse Projects</a>
+                    <a href="PostProject.aspx">Post a Project</a>
+                    <a href="Dashboard.aspx">Dashboard</a>
+                </div>
+
+                <div>
+                    <h4>Contact</h4>
+                    <p>support@freehub.co.za</p>
+                    <p>South Africa</p>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                &copy; 2026 FreeHUB. All rights reserved.
+            </div>
+
+        </footer>
+
+    </form>
+
+    <!-- Modal Styles & Scripts -->
+    <style>
+        .fh-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fh-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 36px 32px 28px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            animation: fhModalIn 0.2s ease;
+        }
+
+        @keyframes fhModalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .fh-modal-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 16px;
+        }
+
+        .fh-modal h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .fh-modal p {
+            font-size: 13px;
+            color: #5a5a5a;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .fh-modal-btn-primary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #dc2626;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        .fh-modal-btn-primary:hover { background: #b91c1c; }
+
+        .fh-modal-btn-cancel {
+            background: none;
+            border: none;
+            color: #5a5a5a;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+
+        .fh-modal-btn-cancel:hover { color: #1a1a1a; }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-4px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-4px); }
+        }
+    </style>
+
+    <script type="text/javascript">
+        function toggleProfileDropdown() {
+            var menu = document.getElementById('profileDropdownMenu');
+            if (menu.style.display === 'block') {
+                menu.style.display = 'none';
+            } else {
+                menu.style.display = 'block';
+            }
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function (event) {
+            if (!event.target.closest('.nav-profile-dropdown-container')) {
+                var menu = document.getElementById('profileDropdownMenu');
+                if (menu && menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                }
+            }
+        }
+
+        function showLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'flex';
+            return false;
+        }
+
+        function hideLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.id === 'logoutModal') hideLogoutModal();
+        });
+
+        // Push Notifications & Notification Icon Pop-up Logic
+        document.addEventListener("DOMContentLoaded", function () {
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        });
+
+        let lastKnownUnreadCount = -1;
+
+        function checkNotificationPopups() {
+            var badgeElement = document.querySelector('a[href*="Notifications.aspx"] span');
+            let currentCount = badgeElement ? parseInt(badgeElement.innerText) || 0 : 0;
+
+            if (lastKnownUnreadCount !== -1 && currentCount > lastKnownUnreadCount) {
+                showNotificationPopup();
+
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("FreeHUB Notification", {
+                        body: "You have new notification..",
+                        icon: "/favicon.ico"
+                    });
+                }
+            }
+            lastKnownUnreadCount = currentCount;
+        }
+
+        function showNotificationPopup() {
+            var existingPopup = document.getElementById('newNotificationPopupBanner');
+            if (existingPopup) existingPopup.remove();
+
+            var bellIcon = document.querySelector('a[href*="Notifications.aspx"]');
+            if (!bellIcon) return;
+
+            var popup = document.createElement('div');
+            popup.id = 'newNotificationPopupBanner';
+            popup.style.cssText = "position: absolute; top: 45px; right: 0; background: #173f2c; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 10000; white-space: nowrap; animation: fadeInOut 4s forwards;";
+            popup.innerText = "You have new notification..";
+
+            bellIcon.style.position = 'relative';
+            bellIcon.appendChild(popup);
+
+            setTimeout(function () {
+                if (popup) popup.remove();
+            }, 4000);
+        }
+
+        // Run check periodically if user is logged in
+        setInterval(checkNotificationPopups, 15000);
+    </script></body></html>

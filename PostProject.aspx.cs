@@ -95,6 +95,33 @@ namespace FreeHubProject
 
             try
             {
+                // === WALLET BALANCE CHECK ===
+                // Get the employer's wallet and check available balance
+                int userId = Convert.ToInt32(Session["UserID"]);
+                DataRow wallet = DatabaseHelper.GetWalletByUserId(userId);
+
+                if (wallet == null)
+                {
+                    ShowMessage("Wallet not found. Please contact support.", false);
+                    return;
+                }
+
+                int walletID = Convert.ToInt32(wallet["walletID"]);
+                decimal availableBalance = DatabaseHelper.GetWalletBalance(walletID);
+
+                if (budget > availableBalance)
+                {
+                    ShowMessage(
+                        "Insufficient funds. Your available balance is R" +
+                        availableBalance.ToString("N2") +
+                        " but this project requires R" +
+                        budget.ToString("N2") +
+                        ". Please <a href='FundWallet.aspx'>fund your wallet</a> before posting.",
+                        false);
+                    return;
+                }
+
+                // === INSERT PROJECT ===
                 string query = @"INSERT INTO Project 
             (employerID, title, description, category, budget, budgetType, deadline, projectStatus, experienceLevel, skills)
             VALUES 
@@ -114,6 +141,26 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
+                // === ESCROW: HOLD FUNDS ===
+                // Deduct budget from available balance
+                decimal newBalance = availableBalance - budget;
+                DatabaseHelper.UpdateWalletBalance(walletID, newBalance);
+
+                // Record escrow hold transaction
+                string escrowRef = TransactionStore.CreateReference("ESC");
+                DatabaseHelper.AddTransaction(
+                    walletID,
+                    "Escrow hold for project: " + txtProjectTitle.Text.Trim(),
+                    "Escrow",
+                    budget,
+                    "Held",
+                    escrowRef,
+                    "Project #" + projectId
+                );
+
+                // Update session balance
+                Session["AvailableBalance"] = newBalance;
+
                 // Broadcast & Notify Users about the new project post
                 int currentUserId = Convert.ToInt32(Session["UserID"]);
                 string posterName = Session["FirstName"] as string ?? "A user";
@@ -125,7 +172,7 @@ namespace FreeHubProject
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
                 NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
                 
-                ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
+                ShowMessage("Project posted successfully! R" + budget.ToString("N2") + " has been held in escrow until the project is completed. (Project ID: " + projectId + ")", true);
 
                 ClearProjectForm();
             }

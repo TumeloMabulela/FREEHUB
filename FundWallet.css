@@ -1,0 +1,337 @@
+/* =========================================
+   FREEHUB - FUND WALLET PAGE
+   Overrides compressed styles from StyleSheet1.css
+   to match Disputes page visual scale
+========================================= */
+
+/* MAIN - match Disputes padding */
+.fw-main {
+    padding: 32px 36px 45px;
+}
+
+/* HEADER - match Disputes scale */
+.fw-header {
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.fw-header h1 {
+    font-size: 26px;
+    color: #1a2233;
+    margin: 0 0 4px;
+}
+
+.fw-header p {
+    font-size: 14px;
+    color: #6b7a8a;
+    margin: 6px 0 0;
+}
+
+/* BREADCRUMB */
+.fw-breadcrumb {
+    font-size: 13px;
+    color: #8a949a;
+    margin-bottom: 2px;
+}
+
+.fw-breadcrumb .breadcrumb-link {
+    color: #2983e0;
+    text-decoration: none;
+}
+
+.fw-breadcrumb .breadcrumb-link:hover {
+    text-decoration: underline;
+}
+
+.fw-breadcrumb span {
+    margin: 0 4px;
+}
+
+.fw-breadcrumb strong {
+    color: #1a2233;
+}
+
+/* BALANCE CARD */
+.fw-balance-card {
+    min-width: auto;
+    padding: 16px 22px;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+    gap: 14px;
+}
+
+.fw-balance-card small {
+    font-size: 12px;
+    color: #8a949a;
+    margin-bottom: 2px;
+}
+
+.fw-balance-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2233;
+}
+
+.fw-wallet-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 22px;
+    background: #e8f4fd;
+    color: #2983e0;
+}
+
+/* MESSAGE */
+.fw-message {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.5;
+}
+
+.fw-success {
+    background: #e6f9ed;
+    color: #157a3b;
+    border: 1px solid #b6ecc8;
+}
+
+.fw-error {
+    background: #fdeaea;
+    color: #b22a2a;
+    border: 1px solid #f5c2c2;
+}
+
+/* LAYOUT */
+.fw-layout {
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+}
+
+/* FORM CARD */
+.fw-form-card {
+    padding: 28px;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+}
+
+.fw-section {
+    margin-bottom: 28px;
+}
+
+.fw-section h2 {
+    font-size: 16px;
+    color: #1a2233;
+    margin: 0 0 6px;
+}
+
+.fw-section > p {
+    font-size: 13px;
+    color: #6b7a8a;
+    margin: 0 0 14px;
+}
+
+.fw-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2233;
+    margin-bottom: 6px;
+}
+
+/* AMOUNT INPUT */
+.fw-amount-box {
+    height: auto;
+    padding: 0;
+    border: 1px solid #d1d9e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.fw-amount-box:focus-within {
+    border-color: #2983e0;
+    box-shadow: 0 0 0 3px rgba(41, 131, 224, 0.1);
+}
+
+.fw-amount-box > span {
+    padding: 12px 14px;
+    margin-right: 0;
+    background: #f5f7f8;
+    color: #6b7a8a;
+    font-size: 14px;
+    font-weight: 600;
+    border-right: 1px solid #d1d9e0;
+}
+
+.fw-amount-input {
+    height: auto;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #1a2233;
+}
+
+/* QUICK BUTTONS */
+.fw-quick-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.fw-quick-button {
+    height: auto;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a2233;
+    border: 1px solid #e3e8ea;
+    border-radius: 6px;
+    background: #f5f7f8;
+}
+
+.fw-quick-button:hover {
+    background: #e8f4fd;
+    border-color: #2983e0;
+    color: #2983e0;
+}
+
+/* PAYMENT LIST */
+.fw-payment-list span {
+    min-height: auto;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+}
+
+.fw-payment-list label {
+    font-size: 14px;
+    color: #1a2233;
+}
+
+.fw-payment-list input {
+    accent-color: #2983e0;
+}
+
+/* PROCEED BUTTON */
+.fw-proceed-button {
+    height: auto;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #2983e0;
+}
+
+.fw-proceed-button:hover {
+    background: #1d6bbf;
+    opacity: 1;
+}
+
+.fw-secure-text {
+    font-size: 12px;
+    color: #8a949a;
+    margin-top: 12px;
+}
+
+/* RIGHT COLUMN */
+.fw-side-card {
+    padding: 20px 22px;
+    margin-bottom: 20px;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+}
+
+.fw-side-heading h3 {
+    font-size: 15px;
+    color: #1a2233;
+}
+
+.fw-side-heading > span {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    color: #2983e0;
+    border: 1px solid #e3e8ea;
+    background: #e8f4fd;
+}
+
+.fw-step-row {
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f2f4;
+}
+
+.fw-step-row:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.fw-step-row > span {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #2983e0;
+}
+
+.fw-step-row p {
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.5;
+}
+
+.fw-view-all {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2983e0;
+}
+
+/* EMPTY STATE */
+.fw-empty-topups {
+    padding: 24px 10px;
+}
+
+.fw-empty-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.fw-empty-topups strong {
+    font-size: 14px;
+    color: #1a2233;
+}
+
+.fw-empty-topups p {
+    font-size: 12px;
+    color: #8a949a;
+}
+
+/* RESPONSIVE */
+@media screen and (max-width: 950px) {
+    .fw-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 780px) {
+    .fw-header {
+        flex-direction: column;
+    }
+    .fw-balance-card {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .fw-main {
+        padding: 20px 16px 40px;
+    }
+    .fw-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

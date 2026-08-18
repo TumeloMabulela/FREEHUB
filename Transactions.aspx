@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Transactions.css?v=20") %>"
+    <link href="<%= ResolveUrl("~/Transactions.css?v=21") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -44,7 +44,7 @@
                             Wallet
                         </a>
 
-                        <span>›</span>
+                        <span>&#8250;</span>
 
                         <strong>
                             Transactions
@@ -346,7 +346,7 @@
                         <asp:LinkButton
                             ID="btnCloseDetails"
                             runat="server"
-                            Text="�"
+                            Text="&#10005;"
                             CssClass="transactions-close-button"
                             CausesValidation="false"
                             OnClick="btnCloseDetails_Click">
@@ -494,7 +494,7 @@
                         <asp:Button
                             ID="btnDownloadReceipt"
                             runat="server"
-                            Text="? Download Receipt"
+                            Text="&#8595; Download Receipt"
                             CssClass="transactions-download-button"
                             CausesValidation="false"
                             OnClick="btnDownloadReceipt_Click" />

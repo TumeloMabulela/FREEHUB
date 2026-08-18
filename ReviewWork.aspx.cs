@@ -136,7 +136,41 @@ namespace FreeHubProject
                         "Escrow Release");
                 }
 
-                // 4. Record Admin / System Commission Entry (10%)
+                // 4. Release Employer's Escrow Hold
+                // Find the employer's wallet and mark escrow as released
+                DataRow project = DatabaseHelper.GetProjectById(ProjectId);
+                if (project != null)
+                {
+                    int empId = Convert.ToInt32(project["employerID"]);
+                    string getEmpUserQuery = "SELECT userID FROM Employer WHERE employerID = @EmpID";
+                    object empUserResult = DatabaseHelper.ExecuteScalar(getEmpUserQuery,
+                        new SqlParameter("@EmpID", empId));
+
+                    if (empUserResult != null && empUserResult != DBNull.Value)
+                    {
+                        int empUserId = Convert.ToInt32(empUserResult);
+                        DataRow empWallet = DatabaseHelper.GetWalletByUserId(empUserId);
+                        if (empWallet != null)
+                        {
+                            int empWalletId = Convert.ToInt32(empWallet["walletID"]);
+
+                            // Mark the escrow transaction as Released
+                            string releaseEscrowQuery = @"
+                                UPDATE [Transaction]
+                                SET transactionStatus = 'Released'
+                                WHERE walletID = @WalletID
+                                  AND transactionType = 'Escrow'
+                                  AND transactionStatus = 'Held'
+                                  AND paymentMethod LIKE '%Project #' + CAST(@ProjectID AS VARCHAR) + '%'";
+
+                            DatabaseHelper.ExecuteNonQuery(releaseEscrowQuery,
+                                new SqlParameter("@WalletID", empWalletId),
+                                new SqlParameter("@ProjectID", ProjectId));
+                        }
+                    }
+                }
+
+                // 5. Record Admin / System Commission Entry (10%)
                 DataRow adminWallet = DatabaseHelper.GetWalletByUserId(1); // Admin UserID = 1
                 if (adminWallet != null)
                 {
@@ -159,7 +193,7 @@ namespace FreeHubProject
                         "Platform Fee");
                 }
 
-                // 5. Save Rating for Freelancer
+                // 6. Save Rating for Freelancer
                 int score = Convert.ToInt32(ddlRatingScore.SelectedValue);
                 string comment = txtRatingComment.Text.Trim();
 

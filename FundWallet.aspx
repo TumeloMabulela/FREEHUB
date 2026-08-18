@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/FundWallet.css?v=10") %>"
+    <link href="<%= ResolveUrl("~/FundWallet.css?v=11") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -42,7 +42,7 @@
                             Wallet
                         </a>
 
-                        <span>›</span>
+                        <span>&#8250;</span>
 
                         <strong>Fund Wallet</strong>
 
@@ -139,6 +139,7 @@
                                 Text="R500"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
+                                OnClientClick="setQuickAmount(500); return false;"
                                 OnClick="btn500_Click" />
 
                             <asp:Button
@@ -147,6 +148,7 @@
                                 Text="R1,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
+                                OnClientClick="setQuickAmount(1000); return false;"
                                 OnClick="btn1000_Click" />
 
                             <asp:Button
@@ -155,6 +157,7 @@
                                 Text="R2,500"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
+                                OnClientClick="setQuickAmount(2500); return false;"
                                 OnClick="btn2500_Click" />
 
                             <asp:Button
@@ -163,6 +166,7 @@
                                 Text="R5,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
+                                OnClientClick="setQuickAmount(5000); return false;"
                                 OnClick="btn5000_Click" />
 
                             <asp:Button
@@ -171,6 +175,7 @@
                                 Text="Other"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
+                                OnClientClick="setOtherAmount(); return false;"
                                 OnClick="btnOther_Click" />
 
                         </div>
@@ -230,7 +235,7 @@
                         OnClick="btnProceed_Click" />
 
                     <div class="fw-secure-text">
-                        ? Your payment details are secure and encrypted.
+                        Your payment details are secure and encrypted.
                     </div>
 
                 </section>
@@ -336,5 +341,29 @@
         </main>
 
     </div>
+
+    <script type="text/javascript">
+
+        function getAmountInput() {
+            return document.getElementById('<%= txtAmount.ClientID %>');
+        }
+
+        function setQuickAmount(amount) {
+            var input = getAmountInput();
+            if (input) {
+                input.value = amount.toFixed(2);
+                input.focus();
+            }
+        }
+
+        function setOtherAmount() {
+            var input = getAmountInput();
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+        }
+
+    </script>
 
 </asp:Content>
