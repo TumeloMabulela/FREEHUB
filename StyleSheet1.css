@@ -6390,6 +6390,7 @@ FREEHUB HOME PAGE
     text-decoration: none;
     border: 1px solid #e4e8ee;
     border-radius: 8px;
+    overflow: hidden;
 }
 
 
@@ -6416,12 +6417,16 @@ FREEHUB HOME PAGE
     display: flex;
     flex: 1;
     flex-direction: column;
+    min-width: 0;
 }
 
 
     .notification-information strong {
         font-size: 13px;
         margin-bottom: 4px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
 
@@ -6554,8 +6559,11 @@ FREEHUB HOME PAGE
 .selected-notification p {
     margin: 6px 0;
     color: #687588;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 
@@ -6571,8 +6579,11 @@ FREEHUB HOME PAGE
     color: #687487;
     background: #f4f6f9;
     border-radius: 7px;
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 
