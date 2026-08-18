@@ -121,26 +121,12 @@ namespace FreeHubProject
 
         protected void btnShowCreateFreelancer_Click(object sender, EventArgs e)
         {
-            pnlCreateFreelancer.Visible = true;
-            pnlCreateEmployer.Visible = false;
-
-            // Pre-fill names from session
-            string firstName = Session["FirstName"] as string ?? "";
-            string lastName = Session["LastName"] as string ?? "";
-            txtFreelancerFirstName.Text = firstName;
-            txtFreelancerLastName.Text = lastName;
+            Response.Redirect("CreateFreelancerProfile.aspx");
         }
 
         protected void btnShowCreateEmployer_Click(object sender, EventArgs e)
         {
-            pnlCreateEmployer.Visible = true;
-            pnlCreateFreelancer.Visible = false;
-
-            // Pre-fill names from session
-            string firstName = Session["FirstName"] as string ?? "";
-            string lastName = Session["LastName"] as string ?? "";
-            txtEmployerFirstName.Text = firstName;
-            txtEmployerLastName.Text = lastName;
+            Response.Redirect("CreateEmployerProfile.aspx");
         }
 
         protected void btnCancelCreate_Click(object sender, EventArgs e)

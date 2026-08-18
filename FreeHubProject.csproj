@@ -70,6 +70,8 @@
     <Content Include="ApproveProposal.aspx" />
     <Content Include="BrowseProjects.aspx" />
     <Content Include="ChooseRole.aspx" />
+    <Content Include="CreateFreelancerProfile.aspx" />
+    <Content Include="CreateEmployerProfile.aspx" />
     <Content Include="CompletedProjects.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Default.aspx" />
@@ -124,6 +126,20 @@
     </Compile>
     <Compile Include="ChooseRole.aspx.designer.cs">
       <DependentUpon>ChooseRole.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CreateFreelancerProfile.aspx.cs">
+      <DependentUpon>CreateFreelancerProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CreateFreelancerProfile.aspx.designer.cs">
+      <DependentUpon>CreateFreelancerProfile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CreateEmployerProfile.aspx.cs">
+      <DependentUpon>CreateEmployerProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CreateEmployerProfile.aspx.designer.cs">
+      <DependentUpon>CreateEmployerProfile.aspx</DependentUpon>
     </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
