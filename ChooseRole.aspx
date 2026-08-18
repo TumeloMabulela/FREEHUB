@@ -166,7 +166,7 @@
             text-align: left;
         }
 
-        .choose-message.info { background-color: #fff3e0; border: 1px solid #f59e0b; color: #92400e; }
+        .choose-message.info { background-color: #fff3e0; border: 1px solid #f59e0b; color: #92400e; text-align: center; }
         .choose-message.success { background-color: #e8f5e0; border: 1px solid #86efac; color: #166534; }
         .choose-message.error { background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
 
