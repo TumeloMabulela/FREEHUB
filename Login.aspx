@@ -161,7 +161,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: rgba(255,255,255,0.7);
+            color: #353a40;
             padding: 4px;
             display: flex;
             align-items: center;
@@ -169,7 +169,7 @@
         }
 
         .password-eye:hover {
-            color: white;
+            color: #173f2c;
         }
     </style>
 
