@@ -22,7 +22,7 @@
         /* Minimal nav */
         .choose-nav {
             width: 100%;
-            background-color: #173f2c;
+            background: linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%);
             padding: 0 30px;
             display: flex;
             align-items: center;

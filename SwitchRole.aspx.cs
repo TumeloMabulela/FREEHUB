@@ -8,7 +8,6 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Check login
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -60,26 +59,22 @@ namespace FreeHubProject
 
                 if (freelancer == null)
                 {
-                    pnlCreateFreelancerProfile.Visible = true;
-                    pnlCreateEmployerProfile.Visible = false;
-                    ShowMessage("Please complete your freelancer profile to switch roles.", false);
+                    // Profile not created — show modal asking to create
+                    string script = "showSwitchModal('notcreated', 'Freelancer');";
+                    ClientScript.RegisterStartupScript(this.GetType(), "notCreatedModal", script, true);
                     return;
                 }
 
-                // Check if profile is deactivated
                 string status = DatabaseHelper.GetProfileStatus(userId, "Freelancer");
                 if (status == "Deactivated")
                 {
-                    string script = @"setTimeout(function() {
-                        showConfirmModal(
-                            'Your Freelancer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
-                            function() { window.location.href = 'ChooseRole.aspx'; }
-                        );
-                    }, 100);";
+                    // Profile deactivated — show modal asking to reactivate
+                    string script = "showSwitchModal('deactivated', 'Freelancer');";
                     ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
                     return;
                 }
 
+                // Active profile — switch directly
                 SwitchUserRole(userId, "Freelancer");
                 Response.Redirect("Dashboard.aspx");
             }
@@ -99,26 +94,22 @@ namespace FreeHubProject
 
                 if (employer == null)
                 {
-                    pnlCreateEmployerProfile.Visible = true;
-                    pnlCreateFreelancerProfile.Visible = false;
-                    ShowMessage("Please complete your employer profile to switch roles.", false);
+                    // Profile not created — show modal asking to create
+                    string script = "showSwitchModal('notcreated', 'Employer');";
+                    ClientScript.RegisterStartupScript(this.GetType(), "notCreatedModal", script, true);
                     return;
                 }
 
-                // Check if profile is deactivated
                 string status = DatabaseHelper.GetProfileStatus(userId, "Employer");
                 if (status == "Deactivated")
                 {
-                    string script = @"setTimeout(function() {
-                        showConfirmModal(
-                            'Your Employer profile is currently deactivated.<br/><br/>Would you like to reactivate it first?',
-                            function() { window.location.href = 'ChooseRole.aspx'; }
-                        );
-                    }, 100);";
+                    // Profile deactivated — show modal asking to reactivate
+                    string script = "showSwitchModal('deactivated', 'Employer');";
                     ClientScript.RegisterStartupScript(this.GetType(), "deactivatedModal", script, true);
                     return;
                 }
 
+                // Active profile — switch directly
                 SwitchUserRole(userId, "Employer");
                 Response.Redirect("Dashboard.aspx");
             }
@@ -128,100 +119,36 @@ namespace FreeHubProject
             }
         }
 
-        protected void btnCreateFreelancerProfile_Click(object sender, EventArgs e)
+        // Hidden buttons for modal confirmations
+        protected void btnConfirmCreateFreelancer_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtSkills.Text))
-            {
-                ShowMessage("Please enter at least one skill.", false);
-                return;
-            }
-
-            decimal hourlyRate;
-            if (!decimal.TryParse(txtHourlyRate.Text, out hourlyRate) || hourlyRate <= 0)
-            {
-                ShowMessage("Please enter a valid hourly rate.", false);
-                return;
-            }
-
-            int userId = GetUserId();
-
-            try
-            {
-                string query = @"INSERT INTO Freelancer (userID, skills, experience, portfolioLinks, hourlyRate)
-                                VALUES (@UserID, @Skills, @Experience, @PortfolioLinks, @HourlyRate)";
-
-                DatabaseHelper.ExecuteNonQuery(query,
-                    new SqlParameter("@UserID", userId),
-                    new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtSkills.Text)),
-                    new SqlParameter("@Experience", txtExperience.Text.Trim()),
-                    new SqlParameter("@PortfolioLinks", txtPortfolioLinks.Text.Trim()),
-                    new SqlParameter("@HourlyRate", hourlyRate));
-
-                SwitchUserRole(userId, "Freelancer");
-                pnlCreateFreelancerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Error: " + ex.Message, false);
-            }
+            Response.Redirect("CreateFreelancerProfile.aspx");
         }
 
-        protected void btnCreateEmployerProfile_Click(object sender, EventArgs e)
+        protected void btnConfirmCreateEmployer_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
-            {
-                ShowMessage("Please enter your company name.", false);
-                return;
-            }
+            Response.Redirect("CreateEmployerProfile.aspx");
+        }
 
-            if (string.IsNullOrWhiteSpace(ddlIndustry.SelectedValue))
-            {
-                ShowMessage("Please select an industry.", false);
-                return;
-            }
+        protected void btnConfirmReactivateFreelancer_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("ChooseRole.aspx");
+        }
 
-            if (string.IsNullOrWhiteSpace(txtCompanyDescription.Text))
-            {
-                ShowMessage("Please enter a company description.", false);
-                return;
-            }
-
-            int userId = GetUserId();
-            string contactEmail = string.IsNullOrWhiteSpace(txtContactEmail.Text)
-                ? Session["Email"] as string ?? "" : txtContactEmail.Text.Trim();
-
-            try
-            {
-                string query = @"INSERT INTO Employer (userID, companyName, industry, description, contactEmail)
-                                VALUES (@UserID, @CompanyName, @Industry, @Description, @ContactEmail)";
-
-                DatabaseHelper.ExecuteNonQuery(query,
-                    new SqlParameter("@UserID", userId),
-                    new SqlParameter("@CompanyName", txtCompanyName.Text.Trim()),
-                    new SqlParameter("@Industry", ddlIndustry.SelectedValue),
-                    new SqlParameter("@Description", txtCompanyDescription.Text.Trim()),
-                    new SqlParameter("@ContactEmail", contactEmail));
-
-                SwitchUserRole(userId, "Employer");
-                pnlCreateEmployerProfile.Visible = false;
-                Response.Redirect("SwitchRole.aspx");
-            }
-            catch (Exception ex)
-            {
-                ShowMessage("Error: " + ex.Message, false);
-            }
+        protected void btnConfirmReactivateEmployer_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("ChooseRole.aspx");
         }
 
         private void SwitchUserRole(int userId, string newRole)
         {
-            string query = "UPDATE [User] SET userType = @UserType WHERE userID = @UserID";
+            string query = "UPDATE [User] SET userType = @UserType, accountStatus = 'Active' WHERE userID = @UserID";
             DatabaseHelper.ExecuteNonQuery(query,
                 new SqlParameter("@UserType", newRole),
                 new SqlParameter("@UserID", userId));
 
             Session["UserType"] = newRole;
-            lblCurrentRole.Text = newRole;
+            Session["AccountStatus"] = "Active";
         }
 
         private void ShowMessage(string message, bool success)
@@ -232,4 +159,3 @@ namespace FreeHubProject
         }
     }
 }
-

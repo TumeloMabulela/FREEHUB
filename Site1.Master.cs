@@ -80,6 +80,20 @@ namespace FreeHubProject
         {
             bool loggedIn = Session["UserID"] != null;
             string userType = Session["UserType"] as string ?? "";
+            string accountStatus = Session["AccountStatus"] as string ?? "";
+
+            // Redirect deactivated/inactive/new users away from main pages to ChooseRole
+            if (loggedIn)
+            {
+                string currentPage = System.IO.Path.GetFileName(Request.Url.AbsolutePath).ToLower();
+                bool isChooseRolePage = currentPage == "chooserole.aspx" || currentPage == "createfreelancerprofile.aspx" || currentPage == "createemployerprofile.aspx";
+
+                if (!isChooseRolePage && (userType == "None" || string.IsNullOrWhiteSpace(userType) || accountStatus == "Deactivated" || accountStatus == "Inactive"))
+                {
+                    Response.Redirect("ChooseRole.aspx");
+                    return;
+                }
+            }
 
             if (loggedIn)
             {

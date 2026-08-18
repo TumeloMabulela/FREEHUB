@@ -111,14 +111,12 @@ namespace FreeHubProject
 
         protected void btnShowCreateFreelancer_Click(object sender, EventArgs e)
         {
-            pnlCreateFreelancer.Visible = true;
-            pnlCreateEmployer.Visible = false;
+            Response.Redirect("CreateFreelancerProfile.aspx");
         }
 
         protected void btnShowCreateEmployer_Click(object sender, EventArgs e)
         {
-            pnlCreateEmployer.Visible = true;
-            pnlCreateFreelancer.Visible = false;
+            Response.Redirect("CreateEmployerProfile.aspx");
         }
 
         protected void btnCancelCreate_Click(object sender, EventArgs e)

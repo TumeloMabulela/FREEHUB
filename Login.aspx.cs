@@ -62,15 +62,29 @@ namespace FreeHubProject
                 FormsAuthentication.SetAuthCookie(
                     Convert.ToString(user["email"]), false);
 
-                // Redirect to return URL or default
+                // Determine where to redirect
+                string userType = Convert.ToString(user["userType"]);
+                string accountStatus = Convert.ToString(user["accountStatus"]);
+
                 string returnUrl = Request.QueryString["ReturnUrl"];
-                if (!string.IsNullOrWhiteSpace(returnUrl))
+
+                if (string.IsNullOrWhiteSpace(userType) || userType == "None")
+                {
+                    // New user — no profile created yet, must choose role
+                    Response.Redirect("ChooseRole.aspx");
+                }
+                else if (accountStatus == "Deactivated" || accountStatus == "Inactive")
+                {
+                    // Account deactivated/inactive — send to ChooseRole to reactivate
+                    Response.Redirect("ChooseRole.aspx");
+                }
+                else if (!string.IsNullOrWhiteSpace(returnUrl))
                 {
                     Response.Redirect(returnUrl);
                 }
                 else
                 {
-                    Response.Redirect("Default.aspx");
+                    Response.Redirect("Dashboard.aspx");
                 }
             }
             catch (Exception ex)
