@@ -11918,6 +11918,9 @@ FREEHUB HOME PAGE
     padding: 16px;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
 }
 
     .pd-description-area h2 {
@@ -13477,10 +13480,12 @@ FREEHUB HOME PAGE
     border-radius: 10px;
     padding: 25px;
     margin-bottom: 25px;
+    overflow: hidden;
 }
 
 .pd-description {
     flex: 1;
+    min-width: 0;
 }
 
 .pd-description h3 {
@@ -13495,6 +13500,8 @@ FREEHUB HOME PAGE
     line-height: 1.6;
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 .pd-meta-row {

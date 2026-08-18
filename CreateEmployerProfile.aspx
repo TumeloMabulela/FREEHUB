@@ -76,7 +76,7 @@
 
             <div class="create-form">
 
-                <a href="ChooseRole.aspx" style="display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 500; margin-bottom: 20px;">&#8592; Back to Choose Role</a>
+                <a href="ChooseRole.aspx" style="display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 600; margin-bottom: 24px; padding: 10px 18px; border: 1px solid #d1d9d3; border-radius: 8px; transition: all 0.2s;">&#8592; Back to Choose Role</a>
 
                 <div class="form-row">
                     <div class="form-field">
