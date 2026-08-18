@@ -6795,6 +6795,9 @@ FREEHUB HOME PAGE
 .project-description {
     resize: vertical;
     font-family: Arial, Helvetica, sans-serif;
+    min-height: 140px;
+    line-height: 1.5;
+    font-size: 14px;
 }
 
 
@@ -11913,18 +11916,20 @@ FREEHUB HOME PAGE
 
 .pd-description-area {
     padding: 16px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
     .pd-description-area h2 {
         margin: 0 0 8px;
         color: #445158;
-        font-size: 8px;
+        font-size: 18px;
     }
 
     .pd-description-area > p {
         margin: 0;
         color: #68757b;
-        font-size: 7px;
+        font-size: 14px;
         line-height: 1.7;
     }
 
@@ -13433,6 +13438,8 @@ FREEHUB HOME PAGE
 
 .add-comment-box .post-textarea {
     margin-bottom: 10px;
+    width: 100%;
+    min-height: 120px;
 }
 
 
@@ -13486,6 +13493,8 @@ FREEHUB HOME PAGE
     color: #444;
     font-size: 14px;
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .pd-meta-row {
