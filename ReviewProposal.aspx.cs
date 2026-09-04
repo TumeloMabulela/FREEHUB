@@ -31,11 +31,10 @@ namespace FreeHubProject
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
-                // Hide approve/reject buttons for freelancers
+                // Hide ALL action buttons for freelancers (read-only view)
                 if (isFreelancer)
                 {
-                    btnApproveProposal.Visible = false;
-                    btnRejectProposal.Visible = false;
+                    pnlActions.Visible = false;
                 }
                 LoadProposal();
             }
