@@ -1,0 +1,433 @@
+/* =========================================
+   FREEHUB - MANAGE WALLET PAGE
+   Overrides compressed styles from StyleSheet1.css
+   to match Disputes page visual scale
+========================================= */
+
+/* MAIN CONTENT - match Disputes padding/scale */
+.wallet-main-content {
+    padding: 32px 36px 45px;
+}
+
+/* PAGE HEADING - match Disputes h1 */
+.wallet-heading-row {
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.wallet-heading-row h1 {
+    font-size: 26px;
+    color: #1a2233;
+}
+
+.wallet-heading-row p {
+    font-size: 14px;
+    color: #6b7a8a;
+    margin: 6px 0 0;
+}
+
+/* BREADCRUMB - match Disputes 13px */
+.wallet-breadcrumb {
+    font-size: 13px;
+    color: #8a949a;
+    margin-bottom: 2px;
+}
+
+.wallet-breadcrumb .breadcrumb-link {
+    color: #2983e0;
+    text-decoration: none;
+}
+
+.wallet-breadcrumb .breadcrumb-link:hover {
+    text-decoration: underline;
+}
+
+.wallet-breadcrumb span {
+    margin: 0 4px;
+}
+
+.wallet-breadcrumb strong {
+    color: #1a2233;
+}
+
+/* BALANCE CARD - match Disputes balance card */
+.wallet-current-balance {
+    min-width: auto;
+    padding: 16px 22px;
+    background: #ffffff;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+    gap: 14px;
+}
+
+.wallet-current-balance small {
+    font-size: 12px;
+    color: #8a949a;
+}
+
+.wallet-current-balance-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2233;
+    margin-top: 2px;
+}
+
+.wallet-balance-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 22px;
+    background: #e8f4fd;
+    color: #2983e0;
+}
+
+/* MESSAGE - match Disputes message panel */
+.wallet-message-panel {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.5;
+}
+
+.wallet-success-message {
+    background: #e6f9ed;
+    color: #157a3b;
+    border: 1px solid #b6ecc8;
+}
+
+.wallet-warning-message {
+    background: #fdeaea;
+    color: #b22a2a;
+    border: 1px solid #f5c2c2;
+}
+
+/* CARDS - match Disputes card sizing */
+.wallet-card {
+    padding: 24px 28px;
+    margin-bottom: 24px;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.wallet-card h2 {
+    font-size: 18px;
+    color: #1a2233;
+    margin: 0 0 16px;
+}
+
+.wallet-card-description {
+    font-size: 13px;
+    color: #6b7a8a;
+    margin: -8px 0 18px;
+}
+
+/* OVERVIEW - match Disputes summary cards scale */
+.wallet-overview-card h2 {
+    margin-bottom: 18px;
+}
+
+.wallet-overview-grid {
+    gap: 16px;
+}
+
+.wallet-overview-item {
+    gap: 14px;
+    padding: 14px 18px;
+    border-right: none;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #f0f2f4;
+}
+
+.wallet-overview-item:first-child {
+    padding-left: 18px;
+}
+
+.overview-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 20px;
+}
+
+.wallet-overview-item small {
+    font-size: 12px;
+    color: #8a949a;
+    margin-bottom: 2px;
+}
+
+.wallet-overview-amount {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* MIDDLE LAYOUT - match Disputes 2-col grid */
+.wallet-middle-layout {
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+}
+
+/* ACTIONS - match Disputes form card scale */
+.wallet-actions-card {
+    padding: 24px 28px;
+}
+
+.wallet-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.wallet-action-item {
+    gap: 14px;
+    min-height: auto;
+    padding: 16px 18px;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+}
+
+.wallet-action-item:hover {
+    border-color: #2983e0;
+    box-shadow: 0 2px 8px rgba(41, 131, 224, 0.08);
+}
+
+.wallet-action-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    font-size: 18px;
+}
+
+.wallet-action-information strong {
+    font-size: 14px;
+    color: #1a2233;
+    margin-bottom: 3px;
+}
+
+.wallet-action-information small {
+    font-size: 12px;
+    color: #6b7a8a;
+    line-height: 1.4;
+}
+
+.wallet-action-arrow {
+    font-size: 18px;
+    color: #8a949a;
+}
+
+/* SUMMARY CARD - match Disputes right panel */
+.wallet-summary-card {
+    padding: 22px 24px;
+}
+
+.wallet-summary-card h2 {
+    margin-bottom: 16px;
+}
+
+.wallet-summary-line {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f2f4;
+}
+
+.wallet-summary-line > span:first-child {
+    font-size: 13px;
+    color: #4a5568;
+}
+
+.wallet-summary-line .summary-green,
+.wallet-summary-line .summary-orange,
+.wallet-summary-line .summary-blue {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.summary-green {
+    color: #157a3b;
+}
+
+.summary-orange {
+    color: #e68a00;
+}
+
+.summary-blue {
+    color: #2983e0;
+}
+
+.wallet-summary-total {
+    margin-top: 4px;
+    padding: 14px 0 10px;
+    border-top: 1px solid #e3e8ea;
+}
+
+.wallet-summary-total > span:first-child {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a2233;
+}
+
+.summary-total-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2233;
+}
+
+.wallet-fund-button {
+    width: 100%;
+    height: auto;
+    padding: 12px 20px;
+    margin-top: 16px;
+    background: #2983e0;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.wallet-fund-button:hover {
+    background: #1d6bbf;
+}
+
+/* TRANSACTIONS TABLE - match Disputes scale */
+.wallet-transactions-card {
+    padding: 24px 28px;
+}
+
+.wallet-transactions-heading {
+    margin-bottom: 16px;
+}
+
+.wallet-transactions-heading h2 {
+    margin-bottom: 0;
+}
+
+.wallet-view-all-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2983e0;
+}
+
+.wallet-transactions-table th {
+    padding: 12px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8a949a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e3e8ea;
+}
+
+.wallet-transactions-table td {
+    padding: 14px 12px;
+    font-size: 13px;
+    color: #4a5568;
+    border-bottom: 1px solid #f0f2f4;
+    white-space: normal;
+}
+
+.transaction-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.transaction-type,
+.transaction-status {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.transaction-view-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #f5f7f8;
+    color: #2983e0;
+}
+
+.transaction-view-button:hover {
+    background: #e8f4fd;
+}
+
+.wallet-bottom-view-button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    margin: 16px 0 0;
+    background: #f5f7f8;
+    color: #2983e0;
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+}
+
+.wallet-bottom-view-button:hover {
+    background: #e8f4fd;
+}
+
+/* EMPTY STATE */
+.wallet-empty-transactions {
+    padding: 40px 20px;
+    border-top: none;
+}
+
+.wallet-empty-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 22px;
+}
+
+.wallet-empty-transactions strong {
+    font-size: 15px;
+    color: #1a2233;
+    margin-bottom: 6px;
+}
+
+.wallet-empty-transactions p {
+    font-size: 13px;
+    color: #6b7a8a;
+}
+
+/* RESPONSIVE - keep Disputes breakpoints */
+@media screen and (max-width: 1050px) {
+    .wallet-middle-layout {
+        grid-template-columns: 1fr;
+    }
+    .wallet-actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .wallet-overview-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 780px) {
+    .wallet-heading-row {
+        flex-direction: column;
+    }
+    .wallet-current-balance {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 580px) {
+    .wallet-main-content {
+        padding: 20px 16px 40px;
+    }
+    .wallet-overview-grid,
+    .wallet-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

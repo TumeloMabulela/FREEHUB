@@ -84,6 +84,16 @@
     <Content Include="ProjectDetails.aspx" />
     <Content Include="RateFreelancer.aspx" />
     <Content Include="RateFreelancer.css" />
+    <Content Include="Refunds.aspx" />
+    <Content Include="Refunds.css" />
+    <Content Include="Disputes.aspx" />
+    <Content Include="Disputes.css" />
+    <Content Include="Payouts.aspx" />
+    <Content Include="Payouts.css" />
+    <Content Include="Wallet.css" />
+    <Content Include="FundWallet.css" />
+    <Content Include="WithdrawFunds.css" />
+    <Content Include="Transactions.css" />
     <Content Include="ReviewWork.aspx" />
     <Content Include="Sidebar.ascx" />
     <Content Include="StartChat.aspx" />
@@ -331,6 +341,27 @@
     </Compile>
     <Compile Include="WithdrawFunds.aspx.designer.cs">
       <DependentUpon>WithdrawFunds.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Refunds.aspx.cs">
+      <DependentUpon>Refunds.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Refunds.aspx.designer.cs">
+      <DependentUpon>Refunds.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Disputes.aspx.cs">
+      <DependentUpon>Disputes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Disputes.aspx.designer.cs">
+      <DependentUpon>Disputes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Payouts.aspx.cs">
+      <DependentUpon>Payouts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Payouts.aspx.designer.cs">
+      <DependentUpon>Payouts.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,681 @@
+/* =========================================
+   FREEHUB - PAYOUTS PAGE
+========================================= */
+
+.payouts-page {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7f8;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.payouts-main {
+    flex: 1;
+    padding: 32px 36px;
+    max-width: 1100px;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.payouts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.payouts-header h1 {
+    font-size: 26px;
+    margin: 0 0 4px;
+    color: #1a2233;
+}
+
+.payouts-header p {
+    color: #6b7a8a;
+    margin: 6px 0 0;
+    font-size: 14px;
+}
+
+.payouts-breadcrumb {
+    font-size: 13px;
+    color: #8a949a;
+    margin-bottom: 2px;
+}
+
+.payouts-breadcrumb .breadcrumb-link {
+    color: #2983e0;
+    text-decoration: none;
+}
+
+.payouts-breadcrumb .breadcrumb-link:hover {
+    text-decoration: underline;
+}
+
+.payouts-breadcrumb strong {
+    color: #1a2233;
+}
+
+.payouts-balance-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+    padding: 16px 22px;
+}
+
+.payouts-balance-card small {
+    color: #8a949a;
+    font-size: 12px;
+}
+
+.payouts-balance-value {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2233;
+    margin-top: 2px;
+}
+
+.payouts-wallet-icon {
+    font-size: 28px;
+}
+
+
+/* =========================================
+   MESSAGE
+========================================= */
+
+.payouts-message {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.payouts-success {
+    background: #e6f9ed;
+    color: #157a3b;
+    border: 1px solid #b6ecc8;
+}
+
+.payouts-error {
+    background: #fdeaea;
+    color: #b22a2a;
+    border: 1px solid #f5c2c2;
+}
+
+
+/* =========================================
+   SUMMARY CARDS
+========================================= */
+
+.payouts-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.payouts-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+
+.payouts-summary-icon {
+    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.payouts-total-icon {
+    background: #e8f4fd;
+    color: #2983e0;
+}
+
+.payouts-escrow-icon {
+    background: #fff4e5;
+    color: #e68a00;
+}
+
+.payouts-completed-icon {
+    background: #e6f9ed;
+    color: #157a3b;
+}
+
+.payouts-summary-item small {
+    color: #8a949a;
+    font-size: 12px;
+}
+
+.payouts-summary-value {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a2233;
+    margin-top: 2px;
+}
+
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.payouts-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+
+/* =========================================
+   TABLE CARD
+========================================= */
+
+.payouts-table-card {
+    background: #ffffff;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+    padding: 24px 28px;
+}
+
+.payouts-table-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.payouts-table-heading h2 {
+    font-size: 18px;
+    margin: 0;
+    color: #1a2233;
+}
+
+.payouts-count-label {
+    font-size: 13px;
+    color: #8a949a;
+}
+
+.payouts-table-wrapper {
+    overflow-x: auto;
+}
+
+.payouts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.payouts-table thead th {
+    text-align: left;
+    padding: 12px 12px;
+    color: #8a949a;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e3e8ea;
+}
+
+.payouts-table tbody tr {
+    border-bottom: 1px solid #f0f2f4;
+    transition: background 0.1s;
+}
+
+.payouts-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.payouts-table tbody td {
+    padding: 14px 12px;
+    color: #4a5568;
+    vertical-align: middle;
+}
+
+.payouts-type-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.payouts-type-held {
+    background: #fff4e5;
+    color: #e68a00;
+}
+
+.payouts-type-released {
+    background: #e6f9ed;
+    color: #157a3b;
+}
+
+.payouts-amount-held {
+    color: #e68a00;
+    font-weight: 600;
+}
+
+.payouts-amount-released {
+    color: #157a3b;
+    font-weight: 600;
+}
+
+.payouts-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.payouts-status-held {
+    background: #fff4e5;
+    color: #e68a00;
+}
+
+.payouts-status-released {
+    background: #e6f9ed;
+    color: #157a3b;
+}
+
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.payouts-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8a949a;
+}
+
+.payouts-empty-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #2983e0;
+}
+
+.payouts-empty-state strong {
+    display: block;
+    color: #1a2233;
+    font-size: 15px;
+    margin-bottom: 6px;
+}
+
+.payouts-empty-state p {
+    font-size: 13px;
+    color: #6b7a8a;
+    margin: 0;
+}
+
+
+/* =========================================
+   RIGHT COLUMN
+========================================= */
+
+.payouts-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.payouts-side-card {
+    background: #ffffff;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+    padding: 20px 22px;
+}
+
+.payouts-side-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.payouts-side-heading h3 {
+    font-size: 15px;
+    margin: 0;
+    color: #1a2233;
+}
+
+.payouts-side-heading span {
+    font-size: 18px;
+    color: #8a949a;
+}
+
+
+/* ESCROW PROJECTS */
+
+.payouts-escrow-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f2f4;
+}
+
+.payouts-escrow-item:last-child {
+    border-bottom: none;
+}
+
+.payouts-escrow-item strong {
+    display: block;
+    font-size: 13px;
+    color: #1a2233;
+}
+
+.payouts-escrow-item small {
+    display: block;
+    font-size: 12px;
+    color: #8a949a;
+    margin-top: 2px;
+}
+
+.payouts-escrow-right {
+    text-align: right;
+}
+
+.payouts-escrow-right strong {
+    color: #e68a00;
+    font-size: 13px;
+}
+
+.payouts-escrow-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #fff4e5;
+    color: #e68a00;
+    margin-top: 4px;
+}
+
+.payouts-empty-escrow {
+    text-align: center;
+    padding: 20px 10px;
+    color: #8a949a;
+}
+
+.payouts-empty-escrow strong {
+    display: block;
+    font-size: 14px;
+    color: #1a2233;
+    margin-bottom: 4px;
+}
+
+.payouts-empty-escrow p {
+    font-size: 12px;
+    color: #8a949a;
+    margin: 0;
+}
+
+
+/* INFO LIST */
+
+.payouts-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.payouts-info-list li {
+    padding: 8px 0;
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.5;
+    border-bottom: 1px solid #f0f2f4;
+    position: relative;
+    padding-left: 16px;
+}
+
+.payouts-info-list li:last-child {
+    border-bottom: none;
+}
+
+.payouts-info-list li::before {
+    content: "\2022";
+    position: absolute;
+    left: 0;
+    color: #2983e0;
+    font-weight: bold;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 900px) {
+
+    .payouts-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .payouts-header {
+        flex-direction: column;
+    }
+
+    .payouts-summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+
+    .payouts-main {
+        padding: 20px 16px;
+    }
+
+    .payouts-table-card {
+        padding: 16px;
+    }
+}
+
+
+/* RELEASE BUTTON */
+.payouts-release-button {
+    display: inline-block;
+    padding: 6px 14px;
+    margin-top: 6px;
+    background: #2983e0;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.payouts-release-button:hover {
+    background: #1d6bbf;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+
+/* =========================================
+   RELEASE FUNDS MODAL
+========================================= */
+
+.payouts-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payouts-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 440px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.payouts-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f2f4;
+}
+
+.payouts-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a2233;
+}
+
+.payouts-modal-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #8a949a;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.payouts-modal-close:hover {
+    background: #f5f7f8;
+    color: #b22a2a;
+}
+
+.payouts-modal-body {
+    padding: 24px;
+    text-align: center;
+}
+
+.payouts-modal-icon {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f4fd;
+    color: #2983e0;
+    border-radius: 50%;
+    font-size: 24px;
+}
+
+.payouts-modal-text {
+    font-size: 14px;
+    color: #6b7a8a;
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.payouts-modal-details {
+    background: #f9fafb;
+    border: 1px solid #f0f2f4;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: left;
+}
+
+.payouts-modal-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f2f4;
+    font-size: 13px;
+}
+
+.payouts-modal-row:last-child {
+    border-bottom: none;
+}
+
+.payouts-modal-row span {
+    color: #8a949a;
+}
+
+.payouts-modal-row strong {
+    color: #1a2233;
+}
+
+.payouts-modal-total {
+    padding-top: 10px;
+    margin-top: 4px;
+    border-top: 1px solid #e3e8ea;
+    border-bottom: none;
+}
+
+.payouts-modal-total strong {
+    color: #157a3b;
+    font-size: 14px;
+}
+
+.payouts-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid #f0f2f4;
+    background: #f9fafb;
+}
+
+.payouts-modal-cancel {
+    padding: 10px 20px;
+    background: #ffffff;
+    color: #4a5568;
+    border: 1px solid #e3e8ea;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.payouts-modal-cancel:hover {
+    background: #f5f7f8;
+}
+
+.payouts-modal-confirm {
+    padding: 10px 20px;
+    background: #2983e0;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.payouts-modal-confirm:hover {
+    background: #1d6bbf;
+}

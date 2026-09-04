@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.Web.UI.WebControls;
 
 namespace FreeHubProject
@@ -35,6 +36,8 @@ namespace FreeHubProject
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
             decimal availableBalance = 0.00m;
+            decimal pendingWithdrawals = 0.00m;
+            decimal onHoldBalance = 0.00m;
 
             if (walletID > 0)
             {
@@ -43,13 +46,41 @@ namespace FreeHubProject
 
                 Session["AvailableBalance"] =
                     availableBalance;
+
+                // Load pending withdrawals from database
+                string pendingQuery = @"
+                    SELECT ISNULL(SUM(transactionAmount), 0)
+                    FROM [Transaction]
+                    WHERE walletID = @WalletID
+                      AND transactionType = 'Withdrawal'
+                      AND transactionStatus = 'Pending'";
+
+                object pendingResult = DatabaseHelper.ExecuteScalar(
+                    pendingQuery,
+                    new System.Data.SqlClient.SqlParameter("@WalletID", walletID));
+
+                if (pendingResult != null && pendingResult != System.DBNull.Value)
+                    pendingWithdrawals = Convert.ToDecimal(pendingResult);
+
+                Session["PendingWithdrawals"] = pendingWithdrawals;
+
+                // Load on-hold (escrow) balance from database
+                string holdQuery = @"
+                    SELECT ISNULL(SUM(transactionAmount), 0)
+                    FROM [Transaction]
+                    WHERE walletID = @WalletID
+                      AND transactionType = 'Escrow'
+                      AND transactionStatus = 'Held'";
+
+                object holdResult = DatabaseHelper.ExecuteScalar(
+                    holdQuery,
+                    new SqlParameter("@WalletID", walletID));
+
+                if (holdResult != null && holdResult != System.DBNull.Value)
+                    onHoldBalance = Convert.ToDecimal(holdResult);
+
+                Session["OnHoldBalance"] = onHoldBalance;
             }
-
-            decimal onHoldBalance =
-                GetSessionAmount("OnHoldBalance");
-
-            decimal pendingWithdrawals =
-                GetSessionAmount("PendingWithdrawals");
 
             decimal totalBalance =
                 availableBalance +
@@ -434,7 +465,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Transactions.aspx?type=Debit"
+                "Payouts.aspx"
             );
         }
 
@@ -444,7 +475,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Transactions.aspx"
+                "Disputes.aspx"
             );
         }
 
@@ -454,7 +485,7 @@ namespace FreeHubProject
             EventArgs e)
         {
             Response.Redirect(
-                "Transactions.aspx?type=Refund"
+                "Refunds.aspx"
             );
         }
 
