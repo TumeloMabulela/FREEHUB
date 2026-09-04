@@ -23,6 +23,9 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblCommentCount;
         protected global::System.Web.UI.WebControls.Repeater rptComments;
         protected global::System.Web.UI.WebControls.Panel pnlNoComments;
+        protected global::System.Web.UI.WebControls.Panel pnlReplyingTo;
+        protected global::System.Web.UI.WebControls.Label lblReplyingTo;
+        protected global::System.Web.UI.WebControls.LinkButton btnCancelReply;
         protected global::System.Web.UI.WebControls.TextBox txtComment;
         protected global::System.Web.UI.WebControls.Button btnPostComment;
     }

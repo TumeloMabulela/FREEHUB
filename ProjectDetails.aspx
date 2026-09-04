@@ -75,17 +75,62 @@
 
                     <asp:Repeater ID="rptComments" runat="server" OnItemCommand="rptComments_ItemCommand">
                         <ItemTemplate>
-                            <div class="comment-item">
+                            <div class="comment-item" style="border-bottom:1px solid #f0f2f0; padding:12px 0;">
                                 <div class="comment-avatar" style="background-color:<%# GetAvatarColor(Container.ItemIndex) %>">
                                     <%# Eval("authorName").ToString().Length > 0 ? Eval("authorName").ToString().Substring(0,1).ToUpper() : "?" %>
                                 </div>
-                                <div class="comment-body">
+                                <div class="comment-body" style="flex:1;">
                                     <div>
-                                        <strong><%# Eval("authorName") %></strong>
+                                        <a href='ViewProfile.aspx?id=<%# Eval("userID") %>' style="color:#173f2c; text-decoration:none; font-weight:bold;"><%# Eval("authorName") %></a>
                                         <small class="comment-role"><%# Eval("userType") %></small>
                                         <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
-                                    <p><%# Eval("commentText") %></p>
+                                    <p style="margin:6px 0;"><%# Eval("commentText") %></p>
+
+                                    <!-- Emoji Reactions -->
+                                    <div style="display:flex; gap:6px; margin:6px 0; flex-wrap:wrap;">
+                                        <asp:LinkButton ID="btnReact1" runat="server"
+                                            CommandName="ReactComment"
+                                            CommandArgument='<%# Eval("commentID") + "|👍" %>'
+                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
+                                            👍
+                                        </asp:LinkButton>
+                                        <asp:LinkButton ID="btnReact2" runat="server"
+                                            CommandName="ReactComment"
+                                            CommandArgument='<%# Eval("commentID") + "|❤️" %>'
+                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
+                                            ❤️
+                                        </asp:LinkButton>
+                                        <asp:LinkButton ID="btnReact3" runat="server"
+                                            CommandName="ReactComment"
+                                            CommandArgument='<%# Eval("commentID") + "|😊" %>'
+                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
+                                            😊
+                                        </asp:LinkButton>
+                                        <asp:LinkButton ID="btnReact4" runat="server"
+                                            CommandName="ReactComment"
+                                            CommandArgument='<%# Eval("commentID") + "|🔥" %>'
+                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
+                                            🔥
+                                        </asp:LinkButton>
+                                    </div>
+
+                                    <!-- Reply and Edit actions -->
+                                    <div style="display:flex; gap:12px; margin-top:4px;">
+                                        <asp:LinkButton ID="btnReply" runat="server"
+                                            CommandName="ReplyComment"
+                                            CommandArgument='<%# Eval("authorName") %>'
+                                            style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
+                                            💬 Reply
+                                        </asp:LinkButton>
+                                        <asp:LinkButton ID="btnEditComment" runat="server"
+                                            CommandName="EditComment"
+                                            CommandArgument='<%# Eval("commentID") + "|" + Eval("commentText") %>'
+                                            Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
+                                            style="color:#856404; font-size:12px; text-decoration:none; cursor:pointer;">
+                                            ✏️ Edit
+                                        </asp:LinkButton>
+                                    </div>
                                 </div>
                                 <asp:LinkButton ID="btnDelete" runat="server"
                                     CommandName="DeleteComment"
@@ -107,6 +152,10 @@
                 <!-- RIGHT: ADD COMMENT -->
                 <div class="pd-add-comment">
                     <h3>Add a Comment</h3>
+                    <asp:Panel ID="pnlReplyingTo" runat="server" Visible="false" style="background:#edf5f0; padding:8px 12px; border-radius:6px; margin-bottom:10px; font-size:13px; color:#2e7d56;">
+                        Replying to <strong><asp:Label ID="lblReplyingTo" runat="server" /></strong>
+                        <asp:LinkButton ID="btnCancelReply" runat="server" OnClick="btnCancelReply_Click" style="color:#dc3545; margin-left:10px; font-size:12px;">Cancel</asp:LinkButton>
+                    </asp:Panel>
                     <asp:TextBox ID="txtComment" runat="server" CssClass="post-textarea"
                         TextMode="MultiLine" Rows="5" placeholder="Write your comment..." />
                     <asp:Button ID="btnPostComment" runat="server" Text="Post Comment"

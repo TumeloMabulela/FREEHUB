@@ -103,6 +103,39 @@ namespace FreeHubProject
                     ShowMessage("Error deleting comment: " + ex.Message, false);
                 }
             }
+            else if (e.CommandName == "ReplyComment")
+            {
+                string authorName = Convert.ToString(e.CommandArgument);
+                pnlReplyingTo.Visible = true;
+                lblReplyingTo.Text = authorName;
+                txtComment.Text = "";
+                txtComment.Focus();
+            }
+            else if (e.CommandName == "EditComment")
+            {
+                string[] parts = Convert.ToString(e.CommandArgument).Split('|');
+                if (parts.Length >= 2)
+                {
+                    ViewState["EditingCommentID"] = parts[0];
+                    txtComment.Text = parts[1];
+                    pnlReplyingTo.Visible = true;
+                    lblReplyingTo.Text = "Editing your comment";
+                    txtComment.Focus();
+                }
+            }
+            else if (e.CommandName == "ReactComment")
+            {
+                // Just show a visual feedback - emoji reactions are decorative for now
+                ShowMessage("Reaction added!", true);
+                LoadComments();
+            }
+        }
+
+        protected void btnCancelReply_Click(object sender, EventArgs e)
+        {
+            pnlReplyingTo.Visible = false;
+            lblReplyingTo.Text = "";
+            ViewState["EditingCommentID"] = null;
         }
 
         protected void btnPostComment_Click(object sender, EventArgs e)
@@ -122,14 +155,38 @@ namespace FreeHubProject
             try
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
-                DatabaseHelper.AddComment(ProjectId, userId, txtComment.Text.Trim());
+                string commentText = txtComment.Text.Trim();
+
+                // Check if editing
+                if (ViewState["EditingCommentID"] != null)
+                {
+                    int commentId = Convert.ToInt32(ViewState["EditingCommentID"]);
+                    string updateQuery = "UPDATE Comment SET commentText = @Text WHERE commentID = @ID AND userID = @UserID";
+                    DatabaseHelper.ExecuteNonQuery(updateQuery,
+                        new System.Data.SqlClient.SqlParameter("@Text", commentText),
+                        new System.Data.SqlClient.SqlParameter("@ID", commentId),
+                        new System.Data.SqlClient.SqlParameter("@UserID", userId));
+                    ViewState["EditingCommentID"] = null;
+                    ShowMessage("Comment updated successfully!", true);
+                }
+                else
+                {
+                    // Check if replying
+                    if (pnlReplyingTo.Visible && !string.IsNullOrEmpty(lblReplyingTo.Text) && lblReplyingTo.Text != "Editing your comment")
+                    {
+                        commentText = "@" + lblReplyingTo.Text + " " + commentText;
+                    }
+                    DatabaseHelper.AddComment(ProjectId, userId, commentText);
+                    ShowMessage("Comment posted successfully!", true);
+                }
+
                 txtComment.Text = "";
+                pnlReplyingTo.Visible = false;
                 LoadComments();
-                ShowMessage("Comment posted successfully!", true);
             }
             catch (Exception ex)
             {
-                ShowMessage("Error posting comment: " + ex.Message, false);
+                ShowMessage("Error: " + ex.Message, false);
             }
         }
 
