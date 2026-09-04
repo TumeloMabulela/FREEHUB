@@ -87,34 +87,6 @@
                                     </div>
                                     <p style="margin:6px 0;"><%# Eval("commentText") %></p>
 
-                                    <!-- Emoji Reactions -->
-                                    <div style="display:flex; gap:6px; margin:6px 0; flex-wrap:wrap;">
-                                        <asp:LinkButton ID="btnReact1" runat="server"
-                                            CommandName="ReactComment"
-                                            CommandArgument='<%# Eval("commentID") + "|👍" %>'
-                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
-                                            👍
-                                        </asp:LinkButton>
-                                        <asp:LinkButton ID="btnReact2" runat="server"
-                                            CommandName="ReactComment"
-                                            CommandArgument='<%# Eval("commentID") + "|❤️" %>'
-                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
-                                            ❤️
-                                        </asp:LinkButton>
-                                        <asp:LinkButton ID="btnReact3" runat="server"
-                                            CommandName="ReactComment"
-                                            CommandArgument='<%# Eval("commentID") + "|😊" %>'
-                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
-                                            😊
-                                        </asp:LinkButton>
-                                        <asp:LinkButton ID="btnReact4" runat="server"
-                                            CommandName="ReactComment"
-                                            CommandArgument='<%# Eval("commentID") + "|🔥" %>'
-                                            style="padding:3px 8px;border:1px solid #e8ece9;border-radius:12px;font-size:13px;text-decoration:none;background:#f9f9f9;">
-                                            🔥
-                                        </asp:LinkButton>
-                                    </div>
-
                                     <!-- Reply and Edit actions -->
                                     <div style="display:flex; gap:12px; margin-top:4px;">
                                         <asp:LinkButton ID="btnReply" runat="server"
