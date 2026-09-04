@@ -3,3 +3,6 @@ bin/
 obj/
 *.user
 *.suo
+# Secrets - real connection string with DB password (keep out of git)
+ConnectionStrings.config
+!ConnectionStrings.config.example
