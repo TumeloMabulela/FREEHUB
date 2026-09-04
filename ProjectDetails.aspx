@@ -93,14 +93,14 @@
                                             CommandName="ReplyComment"
                                             CommandArgument='<%# Eval("authorName") %>'
                                             style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
-                                            💬 Reply
+                                            Reply
                                         </asp:LinkButton>
                                         <asp:LinkButton ID="btnEditComment" runat="server"
                                             CommandName="EditComment"
                                             CommandArgument='<%# Eval("commentID") + "|" + Eval("commentText") %>'
                                             Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
                                             style="color:#856404; font-size:12px; text-decoration:none; cursor:pointer;">
-                                            ✏️ Edit
+                                            Edit
                                         </asp:LinkButton>
                                     </div>
                                 </div>

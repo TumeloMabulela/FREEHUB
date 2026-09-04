@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Template for ConnectionStrings.config
+	Copy this file to "ConnectionStrings.config" and fill in the real password.
+	The real ConnectionStrings.config is gitignored and must NOT be committed.
+-->
+<connectionStrings>
+	<add name="FreeHubDB"
+		 connectionString="Server=tcp:freehub-team-sql.database.windows.net,1433;Initial Catalog=FreeHubDB;User ID=freehubadmin;Password=YOUR_PASSWORD_HERE;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+		 providerName="System.Data.SqlClient" />
+</connectionStrings>

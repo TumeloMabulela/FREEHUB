@@ -137,9 +137,9 @@ namespace FreeHubProject
             }
         }
 
-        protected void btnBackToProposals_Click(object sender, EventArgs e)
+        protected void btnRequestChanges_Click(object sender, EventArgs e)
         {
-            Response.Redirect("SelectProposal.aspx");
+            ShowMessage("Change request noted. Please contact the freelancer to discuss the required changes.", true);
         }
 
         private string GetInitials(string name)
