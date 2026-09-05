@@ -121,12 +121,19 @@
 
                 <div class="register-form">
 
+                    <p class="required-note">
+                        Fields marked with
+                        <span class="required-star">*</span>
+                        are required.
+                    </p>
+
                     <div class="form-row">
 
                         <div class="form-group">
 
                             <label>
                                 First Name
+                                <span class="required-star">*</span>
                             </label>
 
                             <asp:TextBox
@@ -143,6 +150,7 @@
 
                             <label>
                                 Last Name
+                                <span class="required-star">*</span>
                             </label>
 
                             <asp:TextBox
@@ -161,6 +169,7 @@
 
                         <label>
                             Email Address
+                            <span class="required-star">*</span>
                         </label>
 
                         <asp:TextBox
@@ -178,6 +187,7 @@
 
                         <label>
                             Password
+                            <span class="required-star">*</span>
                         </label>
 
                         <div style="position:relative;">
@@ -202,6 +212,7 @@
 
                         <label>
                             Confirm Password
+                            <span class="required-star">*</span>
                         </label>
 
                         <div style="position:relative;">
@@ -237,6 +248,7 @@
                             <a href="PrivacyPolicy.aspx" target="_blank">
                                 Privacy Policy
                             </a>.
+                            <span class="required-star">*</span>
                         </span>
 
                     </div>
@@ -276,6 +288,19 @@
     </section>
 
     <style>
+        /* Red asterisk marking compulsory fields */
+        .required-star {
+            color: #dc3545;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+
+        .required-note {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
         .reg-eye-toggle {
             position: absolute;
             right: 12px;
