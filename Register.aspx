@@ -230,11 +230,11 @@
 
                         <span>
                             I agree to the
-                            <a href="#">
+                            <a href="TermsAndConditions.aspx" target="_blank">
                                 Terms and Conditions
                             </a>
                             and
-                            <a href="#">
+                            <a href="PrivacyPolicy.aspx" target="_blank">
                                 Privacy Policy
                             </a>.
                         </span>

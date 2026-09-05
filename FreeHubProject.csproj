@@ -103,6 +103,8 @@
     <Content Include="Register.aspx" />
     <Content Include="RejectProposal.aspx" />
     <Content Include="ReviewProposal.aspx" />
+    <Content Include="TermsAndConditions.aspx" />
+    <Content Include="PrivacyPolicy.aspx" />
     <Content Include="SelectProposal.aspx" />
     <Content Include="StyleSheet1.css" />
     <Content Include="Transactions.aspx" />
@@ -240,6 +242,20 @@
     </Compile>
     <Compile Include="Register.aspx.designer.cs">
       <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TermsAndConditions.aspx.cs">
+      <DependentUpon>TermsAndConditions.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TermsAndConditions.aspx.designer.cs">
+      <DependentUpon>TermsAndConditions.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PrivacyPolicy.aspx.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PrivacyPolicy.aspx.designer.cs">
+      <DependentUpon>PrivacyPolicy.aspx</DependentUpon>
     </Compile>
     <Compile Include="RejectProposal.aspx.cs">
       <DependentUpon>RejectProposal.aspx</DependentUpon>
