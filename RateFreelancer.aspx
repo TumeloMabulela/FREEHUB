@@ -35,11 +35,11 @@
 
                 My Projects
 
-                <span>�</span>
+                <span>&#8250;</span>
 
                 Completed Projects
 
-                <span>�</span>
+                <span>&#8250;</span>
 
                 <strong>
                     E-commerce Website Redesign

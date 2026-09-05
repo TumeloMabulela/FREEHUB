@@ -28,7 +28,7 @@
 
                 My Projects
 
-                <span>�</span>
+                <span>&#8250;</span>
 
                 <strong>
 

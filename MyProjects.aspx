@@ -28,7 +28,7 @@
 
             <div class="project-breadcrumb">
                 <a href="Default.aspx">Dashboard</a>
-                <span>›</span>
+                <span>&#8250;</span>
                 <strong>My Projects</strong>
             </div>
 

@@ -24,15 +24,15 @@
 
                 Dashboard
 
-                <span>›</span>
+                <span>&#8250;</span>
 
                 My Projects
 
-                <span>›</span>
+                <span>&#8250;</span>
 
                 Review Proposal
 
-                <span>›</span>
+                <span>&#8250;</span>
 
                 <strong>Reject Proposal</strong>
 
