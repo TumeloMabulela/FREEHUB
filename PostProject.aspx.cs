@@ -80,9 +80,22 @@ namespace FreeHubProject
             string skills = string.Join(", ", selectedSkills);
 
             decimal budget;
-            if (!decimal.TryParse(txtBudget.Text.Trim(), out budget))
+            if (!decimal.TryParse(txtBudget.Text.Trim(),
+                    System.Globalization.NumberStyles.Number,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out budget))
             {
-                ShowMessage("Please enter a valid budget amount.", false);
+                // Fall back to current-culture parsing for values like "1 000,50".
+                if (!decimal.TryParse(txtBudget.Text.Trim(), out budget))
+                {
+                    ShowMessage("Please enter a valid budget amount.", false);
+                    return;
+                }
+            }
+
+            if (budget <= 0)
+            {
+                ShowMessage("Please enter a budget greater than zero.", false);
                 return;
             }
 
@@ -90,6 +103,46 @@ namespace FreeHubProject
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {
                 ShowMessage("Please enter a valid deadline date.", false);
+                return;
+            }
+
+            // Ensure the employer has enough funds in their wallet to cover the
+            // project budget before allowing the post. The budget is held in escrow.
+            int postingUserId = Convert.ToInt32(Session["UserID"]);
+            int walletID = 0;
+            decimal walletBalance = 0m;
+            try
+            {
+                DataRow wallet = DatabaseHelper.GetWalletByUserId(postingUserId);
+                if (wallet != null)
+                {
+                    walletID = Convert.ToInt32(wallet["walletID"]);
+                    if (wallet["balance"] != DBNull.Value)
+                        walletBalance = Convert.ToDecimal(wallet["balance"]);
+                }
+            }
+            catch
+            {
+                walletID = 0;
+                walletBalance = 0m;
+            }
+
+            if (walletID == 0)
+            {
+                ShowMessage(
+                    "No wallet was found for your account. Please log in again.",
+                    false);
+                return;
+            }
+
+            if (walletBalance < budget)
+            {
+                ShowMessage(
+                    "Insufficient wallet funds to post this project. " +
+                    "Your available balance is R" + walletBalance.ToString("N2") +
+                    " but the project budget is R" + budget.ToString("N2") +
+                    ". Please fund your wallet before posting.",
+                    false);
                 return;
             }
 
@@ -114,6 +167,25 @@ namespace FreeHubProject
 
                 int projectId = Convert.ToInt32(result);
 
+                // Deduct the project budget from the employer's wallet and hold it
+                // in escrow until the freelancer completes the project.
+                decimal newBalance = walletBalance - budget;
+                DatabaseHelper.UpdateWalletBalance(walletID, newBalance);
+
+                string escrowReference = TransactionStore.CreateReference("ESCROW");
+                DatabaseHelper.AddTransaction(
+                    walletID,
+                    "Funds held in escrow for project: " + txtProjectTitle.Text.Trim() +
+                        " (Project ID: " + projectId + ")",
+                    "Escrow",
+                    budget,
+                    "Held",
+                    escrowReference,
+                    "Wallet");
+
+                // Keep the session balance in sync so other pages reflect the deduction.
+                Session["AvailableBalance"] = newBalance;
+
                 // Broadcast & Notify Users about the new project post
                 int currentUserId = Convert.ToInt32(Session["UserID"]);
                 string posterName = Session["FirstName"] as string ?? "A user";
@@ -124,8 +196,19 @@ namespace FreeHubProject
                 // Notify poster and broadcast to all active system users
                 NotificationHelper.CreateNotification(currentUserId, "Project", notificationText);
                 NotificationHelper.BroadcastNotification(currentUserId, "Project", notificationText);
-                
-                ShowMessage("Project posted successfully! Your project is now visible to freelancers on Browse Projects. (Project ID: " + projectId + ")", true);
+
+                // Notify the employer that funds were removed from their wallet and held.
+                string fundsHeldNotification =
+                    "R" + budget.ToString("N2") + " has been removed from your wallet " +
+                    "and held in escrow for your project \"" + projectTitle + "\".";
+                NotificationHelper.CreateNotification(currentUserId, "Payment", fundsHeldNotification);
+
+                ShowMessage(
+                    "Project posted successfully! R" + budget.ToString("N2") +
+                    " has been removed from your wallet and is held in escrow until the " +
+                    "freelancer completes the project. Your remaining wallet balance is R" +
+                    newBalance.ToString("N2") + ". (Project ID: " + projectId + ")",
+                    true);
 
                 ClearProjectForm();
             }
