@@ -126,6 +126,9 @@
                                 runat="server"
                                 CssClass="fw-amount-input"
                                 TextMode="Number"
+                                min="0"
+                                max="20000000"
+                                step="0.01"
                                 placeholder="0.00">
                             </asp:TextBox>
 
@@ -344,6 +347,8 @@
 
     <script type="text/javascript">
 
+        var FW_MAX_DEPOSIT = 20000000;
+
         function getAmountInput() {
             return document.getElementById('<%= txtAmount.ClientID %>');
         }
@@ -351,6 +356,11 @@
         function setQuickAmount(amount) {
             var input = getAmountInput();
             if (input) {
+                if (amount > FW_MAX_DEPOSIT) {
+                    amount = FW_MAX_DEPOSIT;
+                }
+                // HTML5 number inputs require a dot decimal separator and no
+                // thousands separators, so format with a fixed invariant style.
                 input.value = amount.toFixed(2);
                 input.focus();
             }
@@ -363,6 +373,20 @@
                 input.focus();
             }
         }
+
+        // Keep the typed value within the allowed range so the browser never
+        // reports an "incorrect value" on a number input that exceeds max.
+        (function () {
+            var input = getAmountInput();
+            if (!input) return;
+            input.addEventListener('input', function () {
+                var raw = input.value.replace(/,/g, '.');
+                var val = parseFloat(raw);
+                if (!isNaN(val) && val > FW_MAX_DEPOSIT) {
+                    input.value = FW_MAX_DEPOSIT.toFixed(2);
+                }
+            });
+        })();
 
     </script>
 
