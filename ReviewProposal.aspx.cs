@@ -90,6 +90,10 @@ namespace FreeHubProject
                     btnApproveProposal.Visible = false;
                     btnRejectProposal.Visible = false;
                 }
+                else
+                {
+                    WarnIfInsufficientFunds();
+                }
             }
             catch (Exception ex)
             {
@@ -97,17 +101,159 @@ namespace FreeHubProject
             }
         }
 
+        // Warns the employer upfront and disables approval when the proposed rate
+        // exceeds what their wallet can cover, so they aren't left guessing.
+        private void WarnIfInsufficientFunds()
+        {
+            string userType = Session["UserType"] as string ?? "";
+            if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            DataRow details = GetProposalFinancials();
+            if (details == null) return;
+
+            decimal proposedRate = 0m;
+            if (details["proposedRate"] != DBNull.Value)
+                proposedRate = Convert.ToDecimal(details["proposedRate"]);
+
+            decimal projectBudget = 0m;
+            if (details["projectBudget"] != DBNull.Value)
+                projectBudget = Convert.ToDecimal(details["projectBudget"]);
+
+            decimal availableBalance = 0m;
+            DataRow wallet = DatabaseHelper.GetWalletByUserId(
+                Convert.ToInt32(details["employerUserID"]));
+            if (wallet != null && wallet["balance"] != DBNull.Value)
+                availableBalance = Convert.ToDecimal(wallet["balance"]);
+
+            decimal additionalRequired = proposedRate - projectBudget;
+            if (additionalRequired < 0m) additionalRequired = 0m;
+
+            if (additionalRequired > availableBalance)
+            {
+                ShowMessage(
+                    "This proposal cannot be approved. The proposed rate of R" +
+                    proposedRate.ToString("N2") + " exceeds your available funds. " +
+                    "R" + projectBudget.ToString("N2") + " is already held in escrow for this project, " +
+                    "so an additional R" + additionalRequired.ToString("N2") +
+                    " is required but your wallet balance is only R" +
+                    availableBalance.ToString("N2") + ". Please fund your wallet to approve it.",
+                    false);
+                btnApproveProposal.Enabled = false;
+            }
+        }
+
+        // Fetches the financial context for this proposal: the freelancer's proposed
+        // rate, the project budget already held in escrow, and the owning employer.
+        private DataRow GetProposalFinancials()
+        {
+            string query = @"SELECT prop.proposalID, prop.proposedRate,
+                                    p.projectID, p.title AS projectTitle,
+                                    p.budget AS projectBudget,
+                                    e.userID AS employerUserID
+                             FROM Proposal prop
+                             INNER JOIN Project p ON prop.projectID = p.projectID
+                             INNER JOIN Employer e ON p.employerID = e.employerID
+                             WHERE prop.proposalID = @ProposalID";
+
+            return DatabaseHelper.GetDataRow(query,
+                new SqlParameter("@ProposalID", ProposalId));
+        }
+
         protected void btnApproveProposal_Click(object sender, EventArgs e)
         {
             try
             {
+                DataRow details = GetProposalFinancials();
+                if (details == null)
+                {
+                    ShowMessage("Proposal not found. It may have been removed.", false);
+                    return;
+                }
+
+                int employerUserId = Convert.ToInt32(details["employerUserID"]);
+                int projectId = Convert.ToInt32(details["projectID"]);
+                string projectTitle = Convert.ToString(details["projectTitle"]);
+
+                decimal proposedRate = 0m;
+                if (details["proposedRate"] != DBNull.Value)
+                    proposedRate = Convert.ToDecimal(details["proposedRate"]);
+
+                decimal projectBudget = 0m;
+                if (details["projectBudget"] != DBNull.Value)
+                    projectBudget = Convert.ToDecimal(details["projectBudget"]);
+
+                // Look up the employer's wallet. The project budget was already held in
+                // escrow when the project was posted, so only the shortfall above that
+                // still needs to be covered by the available balance.
+                int walletID = 0;
+                decimal availableBalance = 0m;
+                DataRow wallet = DatabaseHelper.GetWalletByUserId(employerUserId);
+                if (wallet != null)
+                {
+                    walletID = Convert.ToInt32(wallet["walletID"]);
+                    if (wallet["balance"] != DBNull.Value)
+                        availableBalance = Convert.ToDecimal(wallet["balance"]);
+                }
+
+                if (walletID == 0)
+                {
+                    ShowMessage("No wallet was found for your account. Cannot approve this proposal.", false);
+                    return;
+                }
+
+                decimal additionalRequired = proposedRate - projectBudget;
+                if (additionalRequired < 0m) additionalRequired = 0m;
+
+                // Block approval when the proposed rate cannot be covered.
+                if (additionalRequired > availableBalance)
+                {
+                    ShowMessage(
+                        "Cannot approve this proposal. The freelancer proposed R" +
+                        proposedRate.ToString("N2") + ", which is more than you can cover. " +
+                        "R" + projectBudget.ToString("N2") + " is already held in escrow for this project, " +
+                        "so an additional R" + additionalRequired.ToString("N2") +
+                        " is required but your available wallet balance is only R" +
+                        availableBalance.ToString("N2") + ". Please fund your wallet before approving.",
+                        false);
+                    return;
+                }
+
+                // Hold any amount above the original budget in escrow.
+                if (additionalRequired > 0m)
+                {
+                    decimal newBalance = availableBalance - additionalRequired;
+                    DatabaseHelper.UpdateWalletBalance(walletID, newBalance);
+
+                    string escrowReference = TransactionStore.CreateReference("ESCROW");
+                    DatabaseHelper.AddTransaction(
+                        walletID,
+                        "Additional funds held in escrow for approved proposal on project: " +
+                            projectTitle + " (Project ID: " + projectId + ")",
+                        "Escrow",
+                        additionalRequired,
+                        "Held",
+                        escrowReference,
+                        "Wallet");
+
+                    Session["AvailableBalance"] = newBalance;
+                }
+
                 string query = @"UPDATE Proposal SET status = 'Approved' WHERE proposalID = @ID;
                                 UPDATE Project SET projectStatus = 'In Progress'
                                 WHERE projectID = (SELECT projectID FROM Proposal WHERE proposalID = @ID)";
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
 
-                ShowMessage("Proposal approved! The project is now In Progress and the freelancer has been assigned.", true);
+                string successMessage =
+                    "Proposal approved! The project is now In Progress and the freelancer has been assigned.";
+                if (additionalRequired > 0m)
+                {
+                    successMessage += " An additional R" + additionalRequired.ToString("N2") +
+                        " has been removed from your wallet and held in escrow to cover the proposed rate.";
+                }
+
+                ShowMessage(successMessage, true);
                 btnApproveProposal.Visible = false;
                 btnRejectProposal.Visible = false;
                 lblStatus.Text = "Approved";
