@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <!-- RIGHT: Rate + Buttons -->
-                                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width:150px;">
+                                <div style="display:flex; flex-direction:column; align-items:stretch; gap:8px; width:180px; flex-shrink:0; text-align:center;">
                                     <div>
                                         <small style="color:#888; font-size:11px;">Proposed Rate</small><br/>
                                         <strong style="color:#173f2c;">R<%# Convert.ToDecimal(Eval("proposedRate")).ToString("N0") %></strong>
@@ -82,34 +82,34 @@
                                         <small style="color:#888; font-size:11px;">Submitted</small><br/>
                                         <small><%# Convert.ToDateTime(Eval("date")).ToString("dd MMM yyyy") %></small>
                                     </div>
+                                    <span style="display:block;width:100%;box-sizing:border-box;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:600;text-align:center;color:<%# Eval("status").ToString() == "Approved" ? "#155724" : Eval("status").ToString() == "Rejected" ? "#721c24" : "#856404" %>;background:<%# Eval("status").ToString() == "Approved" ? "#d4edda" : Eval("status").ToString() == "Rejected" ? "#f8d7da" : "#fff3cd" %>; <%# Eval("status").ToString() == "Pending" ? "display:none;" : "" %>">
+                                        <%# Eval("status") %>
+                                    </span>
                                     <asp:Button ID="btnSelect" runat="server"
                                         CommandName="ApproveProposal"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="Select Proposal"
                                         Visible='<%# Eval("status").ToString() == "Pending" && !IsFreelancerView() %>'
-                                        style="background-color:#2e7d56;color:#fff;border:none;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px;" />
+                                        style="width:100%;box-sizing:border-box;background-color:#2e7d56;color:#fff;border:none;padding:9px 12px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;text-align:center;" />
                                     <asp:Button ID="btnViewDetails" runat="server"
                                         CommandName="ViewDetails"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="View Details"
                                         Visible='<%# !IsFreelancerView() %>'
-                                        style="background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
-                                    <span style="display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;color:<%# Eval("status").ToString() == "Approved" ? "#155724" : Eval("status").ToString() == "Rejected" ? "#721c24" : "#856404" %>;background:<%# Eval("status").ToString() == "Approved" ? "#d4edda" : Eval("status").ToString() == "Rejected" ? "#f8d7da" : "#fff3cd" %>; <%# Eval("status").ToString() == "Pending" ? "display:none;" : "" %>">
-                                        <%# Eval("status") %>
-                                    </span>
+                                        style="width:100%;box-sizing:border-box;background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:9px 12px;border-radius:20px;font-size:12px;cursor:pointer;text-align:center;" />
                                     <asp:Button ID="btnReadAll" runat="server"
                                         CommandName="ReadAll"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="Read Full Proposal"
                                         Visible='<%# IsFreelancerView() %>'
-                                        style="background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
+                                        style="width:100%;box-sizing:border-box;background-color:#fff;color:#173f2c;border:1px solid #ccc;padding:9px 12px;border-radius:20px;font-size:12px;cursor:pointer;text-align:center;" />
                                     <asp:Button ID="btnDeleteProposal" runat="server"
                                         CommandName="DeleteProposal"
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="Delete"
                                         Visible='<%# IsFreelancerView() %>'
                                         OnClientClick="return confirm('Are you sure you want to delete this proposal? It will also be removed from the employer.');"
-                                        style="background-color:#dc3545;color:#fff;border:none;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer;" />
+                                        style="width:100%;box-sizing:border-box;background-color:#dc3545;color:#fff;border:none;padding:9px 12px;border-radius:20px;font-size:12px;cursor:pointer;text-align:center;" />
                                 </div>
                             </div>
                         </ItemTemplate>
