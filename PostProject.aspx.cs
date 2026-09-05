@@ -203,14 +203,15 @@ namespace FreeHubProject
                     "and held in escrow for your project \"" + projectTitle + "\".";
                 NotificationHelper.CreateNotification(currentUserId, "Payment", fundsHeldNotification);
 
-                ShowMessage(
+                ClearProjectForm();
+
+                // Redirect to the Dashboard, carrying a one-time success message.
+                Session["DashboardMessage"] =
                     "Project posted successfully! R" + budget.ToString("N2") +
                     " has been removed from your wallet and is held in escrow until the " +
                     "freelancer completes the project. Your remaining wallet balance is R" +
-                    newBalance.ToString("N2") + ". (Project ID: " + projectId + ")",
-                    true);
-
-                ClearProjectForm();
+                    newBalance.ToString("N2") + ". (Project ID: " + projectId + ")";
+                Response.Redirect("Dashboard.aspx");
             }
             catch (Exception ex)
             {

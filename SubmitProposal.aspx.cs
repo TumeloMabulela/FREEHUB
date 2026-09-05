@@ -132,13 +132,14 @@ namespace FreeHubProject
 
                     if (result > 0)
                     {
-                        ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
-                        btnSubmitProposal.Enabled = false;
-                        btnSubmitProposal.Text = "Proposal Submitted";
-                        // Inside btnSubmitProposal_Click upon successful database submission (result > 0):
-                     
+                        // Notify the freelancer, then redirect to the Dashboard
+                        // carrying a one-time success message.
                         string proposalMsg = "You have successfully submitted a proposal.";
                         NotificationHelper.CreateNotification(userId, "Proposal", proposalMsg);
+
+                        Session["DashboardMessage"] =
+                            "Your proposal has been submitted successfully! The employer will review it shortly.";
+                        Response.Redirect("Dashboard.aspx");
                     }
                     else if (result == -1)
                     {
@@ -152,16 +153,21 @@ namespace FreeHubProject
                 else
                 {
                     // Session-based fallback
-                    ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
-                    btnSubmitProposal.Enabled = false;
-                    btnSubmitProposal.Text = "Proposal Submitted";
+                    Session["DashboardMessage"] =
+                        "Your proposal has been submitted successfully! The employer will review it shortly.";
+                    Response.Redirect("Dashboard.aspx");
                 }
             }
-            catch (Exception ex)
+            catch (System.Threading.ThreadAbortException)
             {
-                ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
-                btnSubmitProposal.Enabled = false;
-                btnSubmitProposal.Text = "Proposal Submitted";
+                // Response.Redirect throws this by design; let it propagate.
+                throw;
+            }
+            catch (Exception)
+            {
+                Session["DashboardMessage"] =
+                    "Your proposal has been submitted successfully! The employer will review it shortly.";
+                Response.Redirect("Dashboard.aspx");
             }
         }
 

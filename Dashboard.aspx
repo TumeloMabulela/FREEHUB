@@ -253,6 +253,18 @@
             margin-top: 8px;
             font-size: 14px;
         }
+        /* Success/info banner shown after posting a project or submitting a proposal */
+        .dashboard-banner {
+            background-color: #e8f5e0;
+            color: #1f5130;
+            border: 1px solid #b7dfc0;
+            border-left: 4px solid #2d6b3f;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
     </style>
 </asp:Content>
 
@@ -261,6 +273,12 @@
     runat="server">
 
     <div class="dashboard-container">
+
+        <!-- Success/Info banner (shown after posting a project or submitting a proposal) -->
+        <asp:Panel ID="pnlDashboardMessage" runat="server" Visible="false"
+            CssClass="dashboard-banner">
+            <asp:Literal ID="litDashboardMessage" runat="server" />
+        </asp:Panel>
 
         <!-- Welcome Section -->
         <div class="dashboard-welcome">

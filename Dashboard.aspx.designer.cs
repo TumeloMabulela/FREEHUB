@@ -15,6 +15,24 @@ namespace FreeHubProject
     {
 
         /// <summary>
+        /// pnlDashboardMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlDashboardMessage;
+
+        /// <summary>
+        /// litDashboardMessage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litDashboardMessage;
+
+        /// <summary>
         /// litFirstName control.
         /// </summary>
         /// <remarks>

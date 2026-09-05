@@ -17,7 +17,21 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
+                ShowDashboardMessage();
                 LoadDashboard();
+            }
+        }
+
+        // Display a one-time success/info message passed via Session
+        // (e.g. after posting a project or submitting a proposal), then clear it.
+        private void ShowDashboardMessage()
+        {
+            string message = Session["DashboardMessage"] as string;
+            if (!string.IsNullOrEmpty(message))
+            {
+                litDashboardMessage.Text = message;
+                pnlDashboardMessage.Visible = true;
+                Session.Remove("DashboardMessage");
             }
         }
 
