@@ -263,7 +263,8 @@
             padding: 16px 20px;
             margin-bottom: 25px;
             font-size: 15px;
-            line-height: 1.5;
+            line-height: 1.6;
+            max-width: 420px;
         }
     </style>
 </asp:Content>
