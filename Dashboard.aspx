@@ -258,13 +258,13 @@
             background-color: #e8f5e0;
             color: #1f5130;
             border: 1px solid #b7dfc0;
-            border-left: 4px solid #2d6b3f;
             border-radius: 10px;
             padding: 16px 20px;
-            margin-bottom: 25px;
+            margin: 0 auto 25px;
             font-size: 15px;
             line-height: 1.6;
             max-width: 420px;
+            text-align: center;
         }
     </style>
 </asp:Content>
