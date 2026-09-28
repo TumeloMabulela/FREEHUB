@@ -136,6 +136,22 @@ namespace FreeHubProject
                 return;
             }
 
+            if (budget <= 0)
+            {
+                ShowMessage("Please enter a budget greater than zero.", false);
+                return;
+            }
+
+            // Enforce a maximum budget so unrealistic amounts can't be saved.
+            const decimal MaxBudget = 10000000m; // R10,000,000
+            if (budget > MaxBudget)
+            {
+                ShowMessage(
+                    "The budget cannot exceed R" + MaxBudget.ToString("N0") + ".",
+                    false);
+                return;
+            }
+
             DateTime deadline;
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {

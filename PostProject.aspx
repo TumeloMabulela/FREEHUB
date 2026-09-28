@@ -331,8 +331,12 @@
                                     ID="txtBudget"
                                     runat="server"
                                     CssClass="budget-input"
-                                    TextMode="Number"
-                                    placeholder="25000">
+                                    TextMode="SingleLine"
+                                    MaxLength="10"
+                                    placeholder="25000"
+                                    inputmode="numeric"
+                                    onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46;"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '');">
                                 </asp:TextBox>
 
                             </div>

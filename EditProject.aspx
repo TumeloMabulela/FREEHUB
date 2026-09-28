@@ -84,7 +84,10 @@
                             <label>Budget Amount (ZAR) <span>*</span></label>
                             <div class="budget-input-box">
                                 <span>R</span>
-                                <asp:TextBox ID="txtBudget" runat="server" CssClass="budget-input" TextMode="Number" />
+                                <asp:TextBox ID="txtBudget" runat="server" CssClass="budget-input" TextMode="SingleLine"
+                                    MaxLength="10" inputmode="numeric"
+                                    onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 46;"
+                                    oninput="this.value = this.value.replace(/[^0-9.]/g, '');" />
                             </div>
                         </div>
                     </div>
