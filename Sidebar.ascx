@@ -59,8 +59,9 @@
         </a>
 
         <a href="Wallet.aspx"
-           class="sidebar-item <%= GetActiveClass("Wallet") %>">
-            <span class="sidebar-icon">&#128176;</span>
+           class="sidebar-item <%= GetActiveClass("Wallet") %>"
+           title="Wallet - view balance, fund, withdraw and transactions">
+            <span class="sidebar-icon">&#128091;</span>
             <span>Wallet</span>
         </a>
 

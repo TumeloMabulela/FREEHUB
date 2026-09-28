@@ -233,7 +233,7 @@
             // Check checkbox first
             var chk = document.getElementById('<%= chkConfirmDeactivateProfile.ClientID %>');
             if (!chk.checked) {
-                alert('Please tick the checkbox to confirm you understand the consequences.');
+                fhAlert('Please tick the checkbox to confirm you understand the consequences.', 'Confirmation Required');
                 return false;
             }
 
@@ -278,7 +278,7 @@
         function showDeactivateAccountModal() {
             var chk = document.getElementById('<%= chkConfirmDeactivateAccount.ClientID %>');
             if (!chk.checked) {
-                alert('Please tick the checkbox to confirm you understand the consequences.');
+                fhAlert('Please tick the checkbox to confirm you understand the consequences.', 'Confirmation Required');
                 return false;
             }
 
