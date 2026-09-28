@@ -33,6 +33,9 @@ namespace FreeHubProject
                 return;
             }
 
+            // Prevent selecting a past deadline in the date picker.
+            txtDeadline.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
+
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -70,7 +73,21 @@ namespace FreeHubProject
                 // Fill form
                 txtProjectTitle.Text = Convert.ToString(project["title"]);
                 txtDescription.Text = Convert.ToString(project["description"]);
-                ddlCategory.SelectedValue = Convert.ToString(project["category"]);
+
+                // Select the category. If the saved category isn't one of the
+                // predefined options, treat it as a custom "Other" value.
+                string savedCategory = Convert.ToString(project["category"]);
+                if (ddlCategory.Items.FindByValue(savedCategory) != null)
+                {
+                    ddlCategory.SelectedValue = savedCategory;
+                }
+                else if (!string.IsNullOrWhiteSpace(savedCategory))
+                {
+                    ddlCategory.SelectedValue = "Other";
+                    txtOtherCategory.Text = savedCategory;
+                    pnlOtherCategory.Style["display"] = "block";
+                }
+
                 txtBudget.Text = Convert.ToDecimal(project["budget"]).ToString("0");
                 rblBudgetType.SelectedValue = Convert.ToString(project["budgetType"]);
                 txtDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("yyyy-MM-dd");
@@ -100,6 +117,18 @@ namespace FreeHubProject
                 return;
             }
 
+            // When "Other" is selected, the specify field is required.
+            if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
+                && string.IsNullOrWhiteSpace(txtOtherCategory.Text))
+            {
+                ShowMessage("Please specify the category.", false);
+                return;
+            }
+
+            string selectedCategory = ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
+                ? txtOtherCategory.Text.Trim()
+                : ddlCategory.SelectedValue;
+
             decimal budget;
             if (!decimal.TryParse(txtBudget.Text, out budget))
             {
@@ -111,6 +140,12 @@ namespace FreeHubProject
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {
                 ShowMessage("Please enter a valid deadline.", false);
+                return;
+            }
+
+            if (deadline.Date < DateTime.Today)
+            {
+                ShowMessage("The deadline cannot be in the past. Please choose today or a future date.", false);
                 return;
             }
 
@@ -130,7 +165,7 @@ namespace FreeHubProject
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@Title", txtProjectTitle.Text.Trim()),
                     new SqlParameter("@Description", txtDescription.Text.Trim()),
-                    new SqlParameter("@Category", ddlCategory.SelectedValue),
+                    new SqlParameter("@Category", selectedCategory),
                     new SqlParameter("@Budget", budget),
                     new SqlParameter("@BudgetType", rblBudgetType.SelectedValue),
                     new SqlParameter("@Deadline", deadline),

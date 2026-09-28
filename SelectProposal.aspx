@@ -108,7 +108,7 @@
                                         CommandArgument='<%# Eval("proposalID") %>'
                                         Text="Delete"
                                         Visible='<%# IsFreelancerView() %>'
-                                        OnClientClick="return confirm('Are you sure you want to delete this proposal? It will also be removed from the employer.');"
+                                        OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this proposal? It will also be removed from the employer.', 'Delete Proposal');"
                                         style="width:100%;box-sizing:border-box;background-color:#dc3545;color:#fff;border:none;padding:9px 12px;border-radius:20px;font-size:12px;cursor:pointer;text-align:center;" />
                                 </div>
                             </div>

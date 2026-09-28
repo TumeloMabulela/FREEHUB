@@ -105,7 +105,7 @@
                                     CommandArgument='<%# Eval("commentID") %>'
                                     CssClass="delete-comment-btn"
                                     Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
-                                    OnClientClick="return confirm('Are you sure you want to delete this comment?');">
+                                    OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this comment?', 'Delete Comment');">
                                     &#128465;
                                 </asp:LinkButton>
                             </div>

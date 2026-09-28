@@ -42,7 +42,8 @@
                         </div>
                         <div class="post-field">
                             <label>Category <span>*</span></label>
-                            <asp:DropDownList ID="ddlCategory" runat="server" CssClass="post-input">
+                            <asp:DropDownList ID="ddlCategory" runat="server" CssClass="post-input"
+                                onchange="toggleOtherCategory();">
                                 <asp:ListItem Text="Select a category" Value="" />
                                 <asp:ListItem Text="Web Development" Value="Web Development" />
                                 <asp:ListItem Text="Software Development" Value="Software Development" />
@@ -50,7 +51,15 @@
                                 <asp:ListItem Text="UI/UX Design" Value="UI/UX Design" />
                                 <asp:ListItem Text="Graphic Design" Value="Graphic Design" />
                                 <asp:ListItem Text="Digital Marketing" Value="Digital Marketing" />
+                                <asp:ListItem Text="Other" Value="Other" />
                             </asp:DropDownList>
+                            <asp:Panel ID="pnlOtherCategory" runat="server"
+                                CssClass="post-other-category"
+                                style="margin-top:10px; display:none;">
+                                <asp:TextBox ID="txtOtherCategory" runat="server"
+                                    CssClass="post-input"
+                                    placeholder="Please specify the category" />
+                            </asp:Panel>
                         </div>
                     </div>
 
@@ -143,5 +152,22 @@
         </section>
 
     </div>
+
+    <script type="text/javascript">
+
+        function toggleOtherCategory() {
+            var ddl = document.getElementById('<%= ddlCategory.ClientID %>');
+            var panel = document.getElementById('<%= pnlOtherCategory.ClientID %>');
+            if (!ddl || !panel) return;
+            panel.style.display = (ddl.value === 'Other') ? 'block' : 'none';
+        }
+
+        if (window.addEventListener) {
+            window.addEventListener('load', toggleOtherCategory);
+        } else {
+            window.attachEvent('onload', toggleOtherCategory);
+        }
+
+    </script>
 
 </asp:Content>

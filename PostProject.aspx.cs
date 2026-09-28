@@ -12,6 +12,10 @@ namespace FreeHubProject
         {
             if (!AuthHelper.RequireRole(this, "Employer")) return;
 
+            // Prevent selecting a past deadline: the browser date picker will not
+            // allow anything earlier than today.
+            txtDeadline.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
+
             if (!IsPostBack)
             {
                 pnlPreview.Visible = false;
@@ -114,6 +118,12 @@ namespace FreeHubProject
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {
                 ShowMessage("Please enter a valid deadline date.", false);
+                return;
+            }
+
+            if (deadline.Date < DateTime.Today)
+            {
+                ShowMessage("The deadline cannot be in the past. Please choose today or a future date.", false);
                 return;
             }
 
