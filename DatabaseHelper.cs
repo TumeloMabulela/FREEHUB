@@ -369,6 +369,29 @@ namespace FreeHubProject
             return ExecuteQuery(query, new SqlParameter("@UserID", userID));
         }
 
+        // Returns completed projects for an employer, including the assigned
+        // freelancer (the one whose proposal was Approved) and the agreed rate.
+        public static DataTable GetCompletedProjectsByEmployer(int userID)
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.budget, p.budgetType,
+                            p.deadline, p.dateCreated, p.projectStatus,
+                            prop.proposedRate, prop.estimatedCompletionTime,
+                            f.freelancerID, uFl.userID AS freelancerUserID,
+                            (uFl.firstName + ' ' + uFl.lastName) AS freelancerName,
+                            uFl.ratingScore AS freelancerRating,
+                            f.skills AS freelancerSkills,
+                            (SELECT COUNT(*) FROM Rating r
+                                WHERE r.ratedUserID = uFl.userID) AS freelancerReviewCount
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            INNER JOIN Proposal prop ON p.projectID = prop.projectID AND prop.status = 'Approved'
+                            INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
+                            INNER JOIN [User] uFl ON f.userID = uFl.userID
+                            WHERE e.userID = @UserID AND p.projectStatus = 'Completed'
+                            ORDER BY p.dateCreated DESC";
+            return ExecuteQuery(query, new SqlParameter("@UserID", userID));
+        }
+
         // ============================================================
         // PROPOSAL OPERATIONS
         // ============================================================

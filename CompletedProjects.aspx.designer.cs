@@ -15,13 +15,13 @@ namespace FreeHubProject
     {
 
         /// <summary>
-        /// btnContactSupport control.
+        /// litCompletedCount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnContactSupport;
+        protected global::System.Web.UI.WebControls.Literal litCompletedCount;
 
         /// <summary>
         /// pnlCompletedMessage control.
@@ -42,30 +42,21 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblCompletedMessage;
 
         /// <summary>
-        /// btnViewFreelancer control.
+        /// rptCompleted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewFreelancer;
+        protected global::System.Web.UI.WebControls.Repeater rptCompleted;
 
         /// <summary>
-        /// btnRateFreelancer control.
+        /// pnlNoCompleted control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRateFreelancer;
-
-        /// <summary>
-        /// btnViewProject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewProject;
+        protected global::System.Web.UI.WebControls.Panel pnlNoCompleted;
     }
 }

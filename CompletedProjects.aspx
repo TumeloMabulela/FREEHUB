@@ -66,7 +66,7 @@
 
                     <strong>
 
-                        1
+                        <asp:Literal ID="litCompletedCount" runat="server" Text="0" />
 
                     </strong>
 
@@ -94,284 +94,286 @@
             </asp:Panel>
 
 
-            <!-- PROJECT CARD -->
+            <!-- PROJECT LIST (real data) -->
 
-            <section class="completed-project-card">
+            <asp:Repeater
+                ID="rptCompleted"
+                runat="server"
+                OnItemCommand="rptCompleted_ItemCommand">
 
+                <ItemTemplate>
 
-                <!-- PROJECT HEADER -->
-
-                <div class="completed-project-top">
-
-
-                    <div class="completed-project-icon">
-
-                        ?
-
-                    </div>
+                    <section class="completed-project-card">
 
 
-                    <div class="completed-project-information">
+                        <!-- PROJECT HEADER -->
 
-                        <div class="completed-project-title-row">
-
-                            <h2>
-
-                                E-commerce Website Redesign
-
-                            </h2>
+                        <div class="completed-project-top">
 
 
-                            <span class="completed-badge">
+                            <div class="completed-project-icon">
 
-                                ? Completed
+                                <%# Server.HtmlEncode(GetInitials(Eval("title"))) %>
 
-                            </span>
-
-                        </div>
+                            </div>
 
 
-                        <p>
+                            <div class="completed-project-information">
 
-                            A modern and responsive e-commerce
-                            website redesign with improved
-                            navigation and user experience.
+                                <div class="completed-project-title-row">
 
-                        </p>
+                                    <h2>
 
+                                        <%# Eval("title") %>
 
-                        <div class="completed-project-details">
-
-                            <span>
-
-                                ?? Completed:
-                                25 May 2024
-
-                            </span>
+                                    </h2>
 
 
-                            <span>
+                                    <span class="completed-badge">
 
-                                ?? Total Amount:
-                                R12,000
+                                        Completed
 
-                            </span>
+                                    </span>
 
-
-                            <span>
-
-                                ? Duration:
-                                15 Days
-
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
+                                </div>
 
 
-                <!-- FREELANCER INFORMATION -->
+                                <p>
 
-                <div class="completed-freelancer-section">
+                                    <%# Eval("description") %>
 
-
-                    <div class="completed-section-heading">
-
-                        <h3>
-
-                            Freelancer
-
-                        </h3>
+                                </p>
 
 
-                        <span>
+                                <div class="completed-project-details">
 
-                            Project successfully delivered
+                                    <span>
 
-                        </span>
+                                        Completed:
+                                        <%# Convert.ToDateTime(Eval("deadline")).ToString("dd MMM yyyy") %>
 
-                    </div>
-
-
-                    <div class="completed-freelancer-card">
+                                    </span>
 
 
-                        <div class="completed-avatar">
+                                    <span>
 
-                            TM
+                                        Total Amount:
+                                        R<%# Convert.ToDecimal(Eval("proposedRate")).ToString("N0") %>
+
+                                    </span>
+
+
+                                    <span>
+
+                                        Duration:
+                                        <%# Eval("estimatedCompletionTime") %>
+
+                                    </span>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
 
-                        <div class="completed-freelancer-info">
+                        <!-- FREELANCER INFORMATION -->
 
-                            <div class="completed-name-row">
+                        <div class="completed-freelancer-section">
+
+
+                            <div class="completed-section-heading">
 
                                 <h3>
 
-                                    Thabo Mokoena
+                                    Freelancer
 
                                 </h3>
 
 
-                                <span class="completed-top-rated">
+                                <span>
 
-                                    Top Rated Freelancer
+                                    Project successfully delivered
 
                                 </span>
 
                             </div>
 
 
-                            <p>
-
-                                Full-Stack Web Developer
-
-                            </p>
+                            <div class="completed-freelancer-card">
 
 
-                            <span>
+                                <div class="completed-avatar">
 
-                                ? 4.8
+                                    <%# Server.HtmlEncode(GetInitials(Eval("freelancerName"))) %>
 
-                                <small>
-
-                                    (56 Reviews)
-
-                                </small>
-
-                            </span>
+                                </div>
 
 
-                            <span class="completed-location">
+                                <div class="completed-freelancer-info">
 
-                                � South Africa
+                                    <div class="completed-name-row">
 
-                            </span>
+                                        <h3>
+
+                                            <%# Eval("freelancerName") %>
+
+                                        </h3>
+
+                                    </div>
+
+
+                                    <span>
+
+                                        <%# Convert.ToDecimal(Eval("freelancerRating")).ToString("0.0") %>
+
+                                        <small>
+
+                                            (<%# Eval("freelancerReviewCount") %> Reviews)
+
+                                        </small>
+
+                                    </span>
+
+                                </div>
+
+
+                                <asp:LinkButton
+                                    runat="server"
+                                    CssClass="completed-view-button"
+                                    CommandName="ViewFreelancer"
+                                    CommandArgument='<%# Eval("freelancerUserID") %>'
+                                    CausesValidation="false"
+                                    Text="View Profile" />
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- PROJECT COMPLETION -->
+
+                        <div class="completed-delivery-section">
+
+
+                            <div>
+
+                                <h3>
+
+                                    Project Delivery
+
+                                </h3>
+
+
+                                <p>
+
+                                    The freelancer submitted the final
+                                    project and the work was accepted.
+
+                                </p>
+
+                            </div>
+
+
+                            <div class="completed-delivery-status">
+
+
+                                <div>
+
+                                    <strong>
+
+                                        Delivery Accepted
+
+                                    </strong>
+
+
+                                    <small>
+
+                                        Project completed successfully
+
+                                    </small>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
 
-                        <asp:Button
-                            ID="btnViewFreelancer"
-                            runat="server"
-                            Text="View Profile"
-                            CssClass="completed-view-button"
-                            CausesValidation="false"
-                            OnClick="btnViewFreelancer_Click" />
+                        <!-- ACTIONS -->
 
-                    </div>
-
-                </div>
+                        <div class="completed-project-actions">
 
 
-                <!-- PROJECT COMPLETION -->
+                            <div>
 
-                <div class="completed-delivery-section">
+                                <h3>
 
+                                    Rate Your Experience
 
-                    <div>
-
-                        <h3>
-
-                            Project Delivery
-
-                        </h3>
+                                </h3>
 
 
-                        <p>
+                                <p>
 
-                            The freelancer submitted the final
-                            project and the work was accepted.
+                                    Your feedback helps build a trusted
+                                    FreeHUB community.
 
-                        </p>
+                                </p>
 
-                    </div>
-
-
-                    <div class="completed-delivery-status">
-
-                        <span>
-
-                            ?
-
-                        </span>
+                            </div>
 
 
-                        <div>
-
-                            <strong>
-
-                                Delivery Accepted
-
-                            </strong>
+                            <div class="completed-action-buttons">
 
 
-                            <small>
+                                <asp:LinkButton
+                                    runat="server"
+                                    CssClass="completed-rate-button"
+                                    CommandName="RateFreelancer"
+                                    CommandArgument='<%# Eval("projectID") %>'
+                                    CausesValidation="false"
+                                    Text="Rate Freelancer" />
 
-                                Project completed successfully
 
-                            </small>
+                                <asp:LinkButton
+                                    runat="server"
+                                    CssClass="completed-project-button"
+                                    CommandName="ViewProject"
+                                    CommandArgument='<%# Eval("projectID") %>'
+                                    CausesValidation="false"
+                                    Text="View Project" />
+
+                            </div>
 
                         </div>
 
-                    </div>
 
-                </div>
+                    </section>
 
+                </ItemTemplate>
 
-                <!-- ACTIONS -->
-
-                <div class="completed-project-actions">
+            </asp:Repeater>
 
 
-                    <div>
+            <!-- EMPTY STATE -->
 
-                        <h3>
+            <asp:Panel
+                ID="pnlNoCompleted"
+                runat="server"
+                CssClass="completed-empty"
+                Visible="false">
 
-                            Rate Your Experience
+                <h3>No completed projects yet</h3>
 
-                        </h3>
+                <p>
 
+                    When a freelancer finishes a project and you accept
+                    the delivery, it will appear here.
 
-                        <p>
+                </p>
 
-                            Your feedback helps build a trusted
-                            FreeHUB community.
-
-                        </p>
-
-                    </div>
-
-
-                    <div class="completed-action-buttons">
-
-
-                        <asp:Button
-                            ID="btnRateFreelancer"
-                            runat="server"
-                            Text="? Rate Freelancer"
-                            CssClass="completed-rate-button"
-                            CausesValidation="false"
-                            OnClick="btnRateFreelancer_Click" />
-
-
-                        <asp:Button
-                            ID="btnViewProject"
-                            runat="server"
-                            Text="View Project"
-                            CssClass="completed-project-button"
-                            CausesValidation="false"
-                            OnClick="btnViewProject_Click" />
-
-                    </div>
-
-                </div>
-
-
-            </section>
+            </asp:Panel>
 
 
             <!-- INFORMATION BOX -->
