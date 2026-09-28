@@ -35,6 +35,17 @@ namespace FreeHubProject
             return 0;
         }
 
+        // Returns the effective category: the specified text when "Other" is chosen,
+        // otherwise the selected dropdown value.
+        private string GetSelectedCategory()
+        {
+            if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase))
+            {
+                return txtOtherCategory.Text.Trim();
+            }
+            return ddlCategory.SelectedValue;
+        }
+
         // POST PROJECT - Save to database
         protected void btnSubmitProject_Click(object sender, EventArgs e)
         {
@@ -106,6 +117,23 @@ namespace FreeHubProject
                 return;
             }
 
+            // Validate the optional attachment (PDF or image only, max 10 MB).
+            if (fileAttachment.HasFile)
+            {
+                string ext = System.IO.Path.GetExtension(fileAttachment.FileName).ToLowerInvariant();
+                string[] allowed = { ".pdf", ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                if (Array.IndexOf(allowed, ext) < 0)
+                {
+                    ShowMessage("Attachments must be a PDF or an image (JPG, JPEG, PNG, GIF, WEBP).", false);
+                    return;
+                }
+                if (fileAttachment.PostedFile.ContentLength > 10 * 1024 * 1024)
+                {
+                    ShowMessage("The attachment is too large. Maximum size is 10 MB.", false);
+                    return;
+                }
+            }
+
             // Ensure the employer has enough funds in their wallet to cover the
             // project budget before allowing the post. The budget is held in escrow.
             int postingUserId = Convert.ToInt32(Session["UserID"]);
@@ -158,7 +186,7 @@ namespace FreeHubProject
                     new SqlParameter("@EmployerID", employerId),
                     new SqlParameter("@Title", txtProjectTitle.Text.Trim()),
                     new SqlParameter("@Description", txtDescription.Text.Trim()),
-                    new SqlParameter("@Category", ddlCategory.SelectedValue),
+                    new SqlParameter("@Category", GetSelectedCategory()),
                     new SqlParameter("@Budget", budget),
                     new SqlParameter("@BudgetType", rblBudgetType.SelectedValue),
                     new SqlParameter("@Deadline", deadline),
@@ -166,6 +194,30 @@ namespace FreeHubProject
                     new SqlParameter("@Skills", skills));
 
                 int projectId = Convert.ToInt32(result);
+
+                // Save the optional attachment (PDF or image) to the Uploads folder.
+                if (fileAttachment.HasFile)
+                {
+                    try
+                    {
+                        string uploadFolder = Server.MapPath("~/Uploads/");
+                        if (!System.IO.Directory.Exists(uploadFolder))
+                        {
+                            System.IO.Directory.CreateDirectory(uploadFolder);
+                        }
+
+                        string ext = System.IO.Path.GetExtension(fileAttachment.FileName);
+                        string uniqueFileName = "project_" + projectId + "_" +
+                            Guid.NewGuid().ToString("N") + ext;
+                        string savePath = System.IO.Path.Combine(uploadFolder, uniqueFileName);
+                        fileAttachment.SaveAs(savePath);
+                    }
+                    catch (Exception uploadEx)
+                    {
+                        // The project is already created; surface a non-fatal warning.
+                        ShowMessage("Project posted, but the attachment could not be saved: " + uploadEx.Message, false);
+                    }
+                }
 
                 // Deduct the project budget from the employer's wallet and hold it
                 // in escrow until the freelancer completes the project.
@@ -229,7 +281,7 @@ namespace FreeHubProject
         protected void btnPreview_Click(object sender, EventArgs e)
         {
             lblPreviewTitle.Text = txtProjectTitle.Text;
-            lblPreviewCategory.Text = ddlCategory.SelectedValue;
+            lblPreviewCategory.Text = GetSelectedCategory();
             lblPreviewDescription.Text = txtDescription.Text;
             lblPreviewBudget.Text = "R" + txtBudget.Text + " - " + rblBudgetType.SelectedItem.Text;
             lblPreviewDeadline.Text = txtDeadline.Text;
@@ -276,6 +328,13 @@ namespace FreeHubProject
                 return false;
             }
 
+            if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
+                && string.IsNullOrWhiteSpace(txtOtherCategory.Text))
+            {
+                ShowMessage("Please specify the category.", false);
+                return false;
+            }
+
             if (string.IsNullOrWhiteSpace(ddlExperience.SelectedValue))
             {
                 ShowMessage("Please select an experience level.", false);
@@ -319,6 +378,7 @@ namespace FreeHubProject
         {
             txtProjectTitle.Text = "";
             ddlCategory.SelectedIndex = 0;
+            txtOtherCategory.Text = "";
             ddlExperience.SelectedIndex = 0;
             txtDescription.Text = "";
             rblBudgetType.SelectedValue = "Fixed";
@@ -337,8 +397,16 @@ namespace FreeHubProject
         private void ShowMessage(string message, bool success)
         {
             pnlProjectStatus.Visible = true;
-            lblProjectStatus.Text = message;
-            pnlProjectStatus.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success)
+            {
+                lblProjectStatus.Text = "<span style='display:flex;align-items:center;gap:10px;'><span style='background:#2e7d56;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;'>&#10003;</span> " + message + "</span>";
+                pnlProjectStatus.CssClass = "post-status post-success";
+            }
+            else
+            {
+                lblProjectStatus.Text = message;
+                pnlProjectStatus.CssClass = "post-status post-error";
+            }
         }
     }
 }
