@@ -401,6 +401,60 @@
             document.getElementById('fhAlertModalGlobal').style.display = 'none';
         }
 
+        // ---- Numeric-only enforcement for money / numeric fields ----
+        // Applies to inputs with money/number classes: allows digits and a single
+        // decimal point, blocks letters and the "e", "+", "-" that number inputs
+        // otherwise permit. Also strips these on paste.
+        (function () {
+            var moneySelectors = [
+                '.budget-input',
+                '.fw-amount-input',
+                '.withdraw-amount-input',
+                '.refunds-amount-input',
+                '.no-spinner'
+            ].join(',');
+
+            function sanitizeMoney(el) {
+                var v = el.value;
+                // keep digits and at most one dot
+                v = v.replace(/[^0-9.]/g, '');
+                var firstDot = v.indexOf('.');
+                if (firstDot !== -1) {
+                    v = v.substring(0, firstDot + 1) + v.substring(firstDot + 1).replace(/\./g, '');
+                }
+                if (el.value !== v) el.value = v;
+            }
+
+            function attach() {
+                var nodes = document.querySelectorAll(moneySelectors);
+                for (var i = 0; i < nodes.length; i++) {
+                    (function (el) {
+                        el.addEventListener('keydown', function (e) {
+                            var key = e.keyCode || e.which;
+                            var control = [8, 9, 13, 46, 37, 38, 39, 40, 35, 36];
+                            if (control.indexOf(key) !== -1) return;
+                            if (e.ctrlKey || e.metaKey) return;
+                            var isDigit = (key >= 48 && key <= 57) || (key >= 96 && key <= 105);
+                            // allow a decimal point (190 = '.', 110 = numpad '.') if none yet
+                            var isDot = (key === 190 || key === 110);
+                            if (isDot && el.value.indexOf('.') === -1) return;
+                            if (!isDigit) e.preventDefault();
+                        });
+                        el.addEventListener('input', function () { sanitizeMoney(el); });
+                        el.addEventListener('paste', function () {
+                            setTimeout(function () { sanitizeMoney(el); }, 0);
+                        });
+                    })(nodes[i]);
+                }
+            }
+
+            if (window.addEventListener) {
+                window.addEventListener('load', attach);
+            } else {
+                window.attachEvent('onload', attach);
+            }
+        })();
+
         // Push Notifications & Notification Icon Pop-up Logic
         document.addEventListener("DOMContentLoaded", function () {
             if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {

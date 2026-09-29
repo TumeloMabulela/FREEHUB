@@ -364,7 +364,7 @@
                         </div>
                         <div class="form-field">
                             <label>Hourly Rate (ZAR) <span>*</span></label>
-                            <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="form-input"
+                            <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="form-input no-spinner"
                                 TextMode="Number" placeholder="e.g. 250" />
                         </div>
                     </div>

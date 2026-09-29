@@ -13711,3 +13711,37 @@ FREEHUB HOME PAGE
     color: #888;
     font-size: 11px;
 }
+
+
+/* ============================================================
+   Remove number-input spinner arrows on money / numeric fields
+   (the up/down arrows increment by 1 rand which is misleading).
+   ============================================================ */
+.budget-input::-webkit-outer-spin-button,
+.budget-input::-webkit-inner-spin-button,
+.fw-amount-input::-webkit-outer-spin-button,
+.fw-amount-input::-webkit-inner-spin-button,
+.withdraw-amount-input::-webkit-outer-spin-button,
+.withdraw-amount-input::-webkit-inner-spin-button,
+.refunds-amount-input::-webkit-outer-spin-button,
+.refunds-amount-input::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button,
+input[type=number].post-input::-webkit-outer-spin-button,
+input[type=number].post-input::-webkit-inner-spin-button,
+input[type=number].form-input::-webkit-outer-spin-button,
+input[type=number].form-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.budget-input,
+.fw-amount-input,
+.withdraw-amount-input,
+.refunds-amount-input,
+.no-spinner,
+input[type=number].post-input,
+input[type=number].form-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
