@@ -180,7 +180,9 @@ namespace FreeHubProject
             }
             else if (e.CommandName == "ReviewWork")
             {
-                Response.Redirect($"ProjectDetails.aspx?id={projectId}");
+                // Redirect the employer to the Review Work page to approve/reject
+                // the submitted work and complete the project.
+                Response.Redirect($"ReviewWork.aspx?projectId={projectId}");
             }
             else if (e.CommandName == "ViewDetails")
             {
