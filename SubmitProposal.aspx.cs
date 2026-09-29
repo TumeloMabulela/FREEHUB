@@ -77,11 +77,15 @@ namespace FreeHubProject
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtCompletionTime.Text))
+            int completionDays;
+            if (!int.TryParse(txtCompletionTime.Text.Trim(), out completionDays) || completionDays <= 0)
             {
-                ShowMessage("Please enter an estimated completion time.", false);
+                ShowMessage("Please enter the estimated completion time as a number of days (e.g. 15).", false);
                 return;
             }
+
+            // Store a friendly, converted duration (e.g. "15 days (about 2 weeks)").
+            string completionTime = DescribeDuration(completionDays);
 
             // Try to submit to database
             try
@@ -102,7 +106,7 @@ namespace FreeHubProject
                         userId,
                         txtCoverLetter.Text.Trim(),
                         proposedRate,
-                        txtCompletionTime.Text.Trim()
+                        completionTime
                     );
 
                     if (result > 0)
@@ -143,6 +147,32 @@ namespace FreeHubProject
         protected void btnCancel_Click(object sender, EventArgs e)
         {
             Response.Redirect("BrowseProjects.aspx");
+        }
+
+        // Converts a number of days into a friendly description that also shows
+        // the equivalent in weeks / months / years.
+        private static string DescribeDuration(int days)
+        {
+            if (days <= 0) return "";
+
+            string dayLabel = days + (days == 1 ? " day" : " days");
+
+            if (days < 7)
+            {
+                return dayLabel;
+            }
+            if (days < 30)
+            {
+                double weeks = Math.Round(days / 7.0, 1);
+                return dayLabel + " (about " + weeks + (weeks == 1 ? " week)" : " weeks)");
+            }
+            if (days < 365)
+            {
+                double months = Math.Round(days / 30.0, 1);
+                return dayLabel + " (about " + months + (months == 1 ? " month)" : " months)");
+            }
+            double years = Math.Round(days / 365.0, 1);
+            return dayLabel + " (about " + years + (years == 1 ? " year)" : " years)");
         }
 
         private void ShowMessage(string message, bool success)
