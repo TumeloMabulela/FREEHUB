@@ -556,9 +556,16 @@
                                 <!-- Attachment Link (If present) -->
                                 <asp:PlaceHolder ID="phAttachment" runat="server" Visible='<%# Eval("attachmentUrl") != DBNull.Value && !string.IsNullOrEmpty(Eval("attachmentUrl").ToString()) %>'>
                                     <div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid rgba(0,0,0,0.1);">
-                                        <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline; font-size: 11px;">
-                                            📎 View Attached File
-                                        </a>
+                                        <asp:PlaceHolder ID="phAttachmentLink" runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
+                                            <a href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline; font-size: 11px;">
+                                                📎 View Attached File
+                                            </a>
+                                        </asp:PlaceHolder>
+                                        <asp:PlaceHolder ID="phAttachmentMissing" runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
+                                            <span style="color: #b91c1c; font-style: italic; font-size: 11px;" title='<%# Eval("attachmentUrl") %>'>
+                                                📎 Attachment unavailable
+                                            </span>
+                                        </asp:PlaceHolder>
                                     </div>
                                 </asp:PlaceHolder>
 
@@ -628,7 +635,12 @@
                                 <span style="color: #243328; font-weight: 500;">📎 <%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></span>
                                 <div>
                                     <small style="color: #888; margin-right: 10px;"><%# Convert.ToDateTime(Eval("timeStamp")).ToString("dd MMM yyyy, HH:mm") %></small>
-                                    <a href='<%# ResolveUrl(Eval("attachmentUrl").ToString()) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Download</a>
+                                    <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
+                                        <a href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Download</a>
+                                    </asp:PlaceHolder>
+                                    <asp:PlaceHolder runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
+                                        <span style="color: #b91c1c; font-style: italic;">Unavailable</span>
+                                    </asp:PlaceHolder>
                                 </div>
                             </li>
                         </ItemTemplate>

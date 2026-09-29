@@ -559,5 +559,38 @@ namespace FreeHubProject
             pnlStatus.Visible = true;
             lblStatus.Text = message;
         }
+
+        /// <summary>
+        /// Returns true if the stored attachment actually exists on disk for the running app.
+        /// Used by the markup to avoid rendering dead links that 404.
+        /// </summary>
+        public bool AttachmentExists(object attachmentUrl)
+        {
+            if (attachmentUrl == null || attachmentUrl == DBNull.Value) return false;
+
+            string url = attachmentUrl.ToString();
+            if (string.IsNullOrWhiteSpace(url)) return false;
+
+            try
+            {
+                string physicalPath = Server.MapPath(url);
+                return !string.IsNullOrEmpty(physicalPath) && File.Exists(physicalPath);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Resolves a stored attachment url (e.g. "~/Uploads/x.pdf") to a browser url.
+        /// </summary>
+        public string ResolveAttachmentUrl(object attachmentUrl)
+        {
+            if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "#";
+            string url = attachmentUrl.ToString();
+            if (string.IsNullOrWhiteSpace(url)) return "#";
+            return ResolveUrl(url);
+        }
     }
 }
