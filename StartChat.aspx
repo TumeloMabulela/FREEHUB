@@ -327,10 +327,11 @@
 
         .chat-popup {
             position: absolute;
-            right: 22px;
-            bottom: 22px;
-            width: 430px;
-            height: min(560px, calc(100% - 44px));
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 440px;
+            height: min(580px, calc(100% - 44px));
             background: #ffffff;
             border: 1px solid #e6ece8;
             border-radius: 16px;
@@ -342,15 +343,19 @@
         }
 
         .chat-popup.expanded {
-            right: 22px;
-            bottom: 22px;
             top: 22px;
             left: 22px;
+            right: 22px;
+            bottom: 22px;
+            transform: none;
             width: auto;
             height: auto;
         }
 
         .chat-popup.minimized {
+            top: auto;
+            bottom: 22px;
+            transform: translateX(-50%);
             height: 58px;
             width: 300px;
         }
