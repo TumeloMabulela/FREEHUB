@@ -23,10 +23,13 @@ namespace FreeHubProject
                 DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
 
                 BindApprovedChatUsers("");
+                BindDashboard();
 
                 string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
 
+                // Deep links (e.g. a "Message" button elsewhere) open the popup straight away.
+                // A plain visit to Messages shows the dashboard first (popup stays closed).
                 if (!string.IsNullOrWhiteSpace(queryUserId))
                 {
                     int uid;
@@ -39,11 +42,81 @@ namespace FreeHubProject
                 {
                     SelectUserByName(userFromQuery);
                 }
-                else if (SelectedOtherUserId > 0)
+                else
                 {
-                    SelectUserById(SelectedOtherUserId);
+                    // Fresh Messages visit: dashboard only, no auto-opened conversation.
+                    ChatOpen = false;
                 }
             }
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            // The floating chat popup is shown only when a conversation is open.
+            pnlChatPopup.Visible = ChatOpen;
+
+            // After the popup renders (initial load or an AJAX switch), scroll it to the newest message.
+            if (ChatOpen)
+            {
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "scrollPopup",
+                    "if (window.scrollPopupToBottom) { scrollPopupToBottom(); }", true);
+            }
+        }
+
+        /// <summary>
+        /// Fills the dashboard widgets shown before/behind the popup: pinned contacts
+        /// (the user's chat contacts) and recently shared files across conversations.
+        /// </summary>
+        private void BindDashboard()
+        {
+            // Pinned contacts = the same approved chat contacts, capped to a few for the card.
+            DataTable contacts = new DataTable();
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = @"
+                    SELECT DISTINCT TOP 5
+                        u.userID AS UserID,
+                        (u.firstName + ' ' + u.lastName) AS Name,
+                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON (
+                        CASE WHEN e.userID = @CurrentUserID THEN f.userID
+                             WHEN f.userID = @CurrentUserID THEN e.userID END = u.userID)
+                    WHERE prop.status = 'Approved'
+                      AND (e.userID = @CurrentUserID OR f.userID = @CurrentUserID)";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(contacts); }
+                }
+            }
+            rptPinnedContacts.DataSource = contacts;
+            rptPinnedContacts.DataBind();
+            lblNoPinned.Visible = contacts.Rows.Count == 0;
+
+            // Recently shared files = latest messages (to/from the user) that carry an attachment.
+            DataTable files = new DataTable();
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = @"
+                    SELECT TOP 5 attachmentUrl, timeStamp
+                    FROM dbo.Message
+                    WHERE (senderID = @CurrentUserID OR receiverID = @CurrentUserID)
+                      AND attachmentUrl IS NOT NULL AND attachmentUrl <> ''
+                    ORDER BY timeStamp DESC";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(files); }
+                }
+            }
+            rptRecentFiles.DataSource = files;
+            rptRecentFiles.DataBind();
+            lblNoRecentFiles.Visible = files.Rows.Count == 0;
         }
 
         public int CurrentUserId
@@ -55,6 +128,16 @@ namespace FreeHubProject
         {
             get { return Session["SelectedOtherUserId"] != null ? Convert.ToInt32(Session["SelectedOtherUserId"]) : 0; }
             set { Session["SelectedOtherUserId"] = value; }
+        }
+
+        /// <summary>
+        /// True when a conversation is open, so the floating chat popup is shown over the
+        /// Messages dashboard. False shows the dashboard/workspace only.
+        /// </summary>
+        public bool ChatOpen
+        {
+            get { return ViewState["ChatOpen"] != null && (bool)ViewState["ChatOpen"]; }
+            set { ViewState["ChatOpen"] = value; }
         }
 
         private int ActiveProjectId
@@ -126,11 +209,6 @@ namespace FreeHubProject
             rptUsers.DataSource = dt;
             rptUsers.DataBind();
             lblNoUsers.Visible = (dt.Rows.Count == 0);
-
-            if (dt.Rows.Count > 0 && SelectedOtherUserId == 0)
-            {
-                SelectUserById(Convert.ToInt32(dt.Rows[0]["UserID"]));
-            }
         }
 
         protected void btnToggleDetails_Click(object sender, EventArgs e)
@@ -242,6 +320,7 @@ namespace FreeHubProject
         private void SelectUserById(int otherUserId)
         {
             SelectedOtherUserId = otherUserId;
+            ChatOpen = true;   // opening/switching a conversation shows the floating popup
 
             // Fetch user profile info
             DataRow user = DatabaseHelper.GetUserById(otherUserId);
@@ -584,6 +663,20 @@ namespace FreeHubProject
         {
             pnlStatus.Visible = true;
             lblStatus.Text = message;
+        }
+
+        /// <summary>
+        /// Closes the floating conversation popup and returns to the Messages dashboard,
+        /// keeping the user on the Messages page.
+        /// </summary>
+        protected void btnCloseChat_Click(object sender, EventArgs e)
+        {
+            ChatOpen = false;
+            SelectedOtherUserId = 0;
+            pnlRatingModal.Visible = false;
+            pnlUserDetailsModal.Visible = false;
+            // Refresh the contact list so the previously-selected row is no longer highlighted.
+            BindApprovedChatUsers("");
         }
 
         /// <summary>

@@ -319,5 +319,45 @@ namespace FreeHubProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCloseModal;
+
+        /// <summary>
+        /// chatScriptManager control.
+        /// </summary>
+        protected global::System.Web.UI.ScriptManager chatScriptManager;
+
+        /// <summary>
+        /// upChat control.
+        /// </summary>
+        protected global::System.Web.UI.UpdatePanel upChat;
+
+        /// <summary>
+        /// pnlChatPopup control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlChatPopup;
+
+        /// <summary>
+        /// btnCloseChat control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnCloseChat;
+
+        /// <summary>
+        /// rptPinnedContacts control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Repeater rptPinnedContacts;
+
+        /// <summary>
+        /// lblNoPinned control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblNoPinned;
+
+        /// <summary>
+        /// rptRecentFiles control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Repeater rptRecentFiles;
+
+        /// <summary>
+        /// lblNoRecentFiles control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblNoRecentFiles;
     }
 }
