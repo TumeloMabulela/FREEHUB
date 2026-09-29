@@ -69,13 +69,15 @@ namespace FreeHubProject
 
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
+                // One row PER CONTACT (other user), not per project. A freelancer and an
+                // employer who have worked on several projects together share a single chat,
+                // so a completed project followed by a new one reuses the same conversation
+                // instead of creating a duplicate contact row.
                 string query = @"
-                    SELECT DISTINCT 
+                    SELECT
                         u.userID AS UserID,
                         (u.firstName + ' ' + u.lastName) AS Name,
                         (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
-                        p.projectID AS ProjectID,
-                        p.title AS ProjectTitle,
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
                         -- Displayed time, converted from stored UTC to South Africa time (UTC+2)
                         ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
@@ -96,8 +98,12 @@ namespace FreeHubProject
 
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
-                    query += " AND (u.firstName + ' ' + u.lastName LIKE @Search OR p.title LIKE @Search)";
+                    query += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
                 }
+
+                // Collapse to a single row per contact regardless of how many shared projects.
+                query += @"
+                    GROUP BY u.userID, u.firstName, u.lastName";
 
                 // Newest conversation first; contacts with no messages fall to the bottom.
                 query += " ORDER BY LastTimeSort DESC";
@@ -277,7 +283,21 @@ namespace FreeHubProject
             // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus FROM dbo.Proposal prop INNER JOIN dbo.Project p ON prop.projectID = p.projectID INNER JOIN dbo.Employer e ON p.employerID = e.employerID INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID INNER JOIN dbo.[User] u ON e.userID = u.userID WHERE prop.status = 'Approved' AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
+                // Pick the MOST RECENT approved project between these two users, and prefer a
+                // project that is still active. This way, when an old project is completed and
+                // a new one is approved with the same people, the existing chat reopens for the
+                // new project instead of staying locked on the completed one.
+                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON e.userID = u.userID
+                    WHERE prop.status = 'Approved'
+                      AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))
+                    ORDER BY
+                        CASE WHEN p.projectStatus IN ('Completed', 'Cancelled') THEN 1 ELSE 0 END ASC,
+                        p.dateCreated DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
