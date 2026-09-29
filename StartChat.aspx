@@ -277,10 +277,15 @@
         .ws-welcome p { margin: 0; color: #7d8c82; font-size: 13px; }
 
         .ws-actions {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 14px;
             margin-bottom: 18px;
+        }
+
+        .ws-actions .ws-action {
+            flex: 0 1 260px;
+            max-width: 320px;
         }
 
         .ws-action {
@@ -577,8 +582,9 @@
 
         @media (max-width: 900px) {
             .msgx-wrap { grid-template-columns: 1fr; }
-            .ws-actions, .ws-cards { grid-template-columns: 1fr; }
-            .chat-popup { right: 12px; left: 12px; width: auto; }
+            .ws-cards { grid-template-columns: 1fr; }
+            .ws-actions .ws-action { flex: 1 1 100%; max-width: none; }
+            .chat-popup { right: 12px; left: 12px; width: auto; transform: translateX(-50%); }
         }
     </style>
 
@@ -713,25 +719,15 @@
             <div class="ws-welcome">
                 <div class="ws-icon">💬</div>
                 <h2>Welcome to Messages</h2>
-                <p>Select a conversation to start chatting, or start a new one.</p>
+                <p>Select a conversation from the list to start chatting.</p>
             </div>
 
             <!-- Quick actions -->
             <div class="ws-actions">
-                <a class="ws-action" href="StartChat.aspx">
-                    <div class="a-icon">✉️</div>
-                    <div class="a-title">New Message</div>
-                    <div class="a-sub">Start a conversation with a contact.</div>
-                </a>
                 <a class="ws-action" href="BrowseProjects.aspx">
                     <div class="a-icon">🧑‍💻</div>
                     <div class="a-title">Find Freelancers</div>
                     <div class="a-sub">Discover talent and start a chat.</div>
-                </a>
-                <a class="ws-action" href="#">
-                    <div class="a-icon">📎</div>
-                    <div class="a-title">Share Files</div>
-                    <div class="a-sub">Send documents and designs.</div>
                 </a>
             </div>
 
