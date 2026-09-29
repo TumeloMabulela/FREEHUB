@@ -77,7 +77,10 @@ namespace FreeHubProject
                         p.projectID AS ProjectID,
                         p.title AS ProjectTitle,
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
-                        ISNULL((SELECT TOP 1 FORMAT(timeStamp, 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime
+                        -- Displayed time, converted from stored UTC to South Africa time (UTC+2)
+                        ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
+                        -- Sortable raw timestamp of the latest message (NULL sorts last)
+                        (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort
                     FROM dbo.Proposal prop
                     INNER JOIN dbo.Project p ON prop.projectID = p.projectID
                     INNER JOIN dbo.Employer e ON p.employerID = e.employerID
@@ -95,6 +98,9 @@ namespace FreeHubProject
                 {
                     query += " AND (u.firstName + ' ' + u.lastName LIKE @Search OR p.title LIKE @Search)";
                 }
+
+                // Newest conversation first; contacts with no messages fall to the bottom.
+                query += " ORDER BY LastTimeSort DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {

@@ -192,12 +192,13 @@ namespace FreeHubProject
 
         protected string GetTimeAgo(DateTime date)
         {
-            TimeSpan diff = DateTime.Now - date;
+            // Stored dates are UTC (Azure SQL). Measure age against UTC and display in SA time.
+            TimeSpan diff = DateTime.UtcNow - DateTime.SpecifyKind(date, DateTimeKind.Utc);
             if (diff.TotalMinutes < 1) return "Just now";
             if (diff.TotalMinutes < 60) return (int)diff.TotalMinutes + " min ago";
             if (diff.TotalHours < 24) return (int)diff.TotalHours + " hours ago";
             if (diff.TotalDays < 7) return (int)diff.TotalDays + " days ago";
-            return date.ToString("dd MMM yyyy");
+            return TimeHelper.ToSast(date).ToString("dd MMM yyyy");
         }
 
         private void ShowMessage(string message, bool success)

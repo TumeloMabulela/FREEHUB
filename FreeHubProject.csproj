@@ -301,6 +301,7 @@
       <DependentUpon>EditProject.aspx</DependentUpon>
     </Compile>
     <Compile Include="AuthHelper.cs" />
+    <Compile Include="TimeHelper.cs" />
     <Compile Include="Sidebar.ascx.cs">
       <DependentUpon>Sidebar.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

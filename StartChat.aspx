@@ -570,7 +570,7 @@
                                 </asp:PlaceHolder>
 
                                 <div class="msg-meta">
-                                    <span><%# Convert.ToDateTime(Eval("timeStamp")).ToString("HH:mm") %></span>
+                                    <span><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("HH:mm") %></span>
                                     
                                     <asp:PlaceHolder ID="phReadReceipt" runat="server" Visible='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId %>'>
                                         <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'>
@@ -634,7 +634,7 @@
                             <li style="padding: 8px; border-bottom: 1px solid #f0f0f0; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
                                 <span style="color: #243328; font-weight: 500;">📎 <%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></span>
                                 <div>
-                                    <small style="color: #888; margin-right: 10px;"><%# Convert.ToDateTime(Eval("timeStamp")).ToString("dd MMM yyyy, HH:mm") %></small>
+                                    <small style="color: #888; margin-right: 10px;"><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("dd MMM yyyy, HH:mm") %></small>
                                     <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
                                         <a href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" style="color: #059669; font-weight: bold; text-decoration: underline;">Download</a>
                                     </asp:PlaceHolder>

@@ -606,8 +606,12 @@ namespace FreeHubProject
 
             if (user["lastSeen"] == DBNull.Value) return "Offline";
 
-            DateTime lastSeen = Convert.ToDateTime(user["lastSeen"]);
-            TimeSpan diff = DateTime.Now - lastSeen;
+            // lastSeen is stored as UTC (Azure SQL GETDATE()). Compute the age against
+            // UTC so the online window is correct regardless of the web host's time zone,
+            // and display the timestamp in South Africa time.
+            DateTime lastSeenUtc = Convert.ToDateTime(user["lastSeen"]);
+            TimeSpan diff = DateTime.UtcNow - lastSeenUtc;
+            DateTime lastSeen = TimeHelper.ToSast(lastSeenUtc);
 
             // Consider online if active within the last 3 minutes
             if (diff.TotalMinutes < 3)
