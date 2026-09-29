@@ -125,7 +125,7 @@
                                         CommandName="DeleteProject"
                                         CommandArgument='<%# Eval("projectID") %>'
                                         style="display:inline-block; color:#fff; background-color:#dc3545; text-decoration:none; font-size:13px; font-weight:500; padding:8px 16px; border-radius:20px;"
-                                        OnClientClick="return confirm('Are you sure you want to delete this project? This action cannot be undone.');">
+                                        OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this project? This action cannot be undone.', 'Delete Project');">
                                          Delete
                                     </asp:LinkButton>
                                 </div>

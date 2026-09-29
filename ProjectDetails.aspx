@@ -30,7 +30,7 @@
                             &bull; Posted <asp:Label ID="lblPosted" runat="server" />
                         </p>
                     </div>
-                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Projects</a>
+                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Projects</a>
                 </div>
             </div>
 
@@ -75,41 +75,37 @@
 
                     <asp:Repeater ID="rptComments" runat="server" OnItemCommand="rptComments_ItemCommand">
                         <ItemTemplate>
-                            <div class="comment-item" style="border-bottom:1px solid #f0f2f0; padding:12px 0;">
+                            <div class="comment-item">
                                 <div class="comment-avatar" style="background-color:<%# GetAvatarColor(Container.ItemIndex) %>">
                                     <%# Eval("authorName").ToString().Length > 0 ? Eval("authorName").ToString().Substring(0,1).ToUpper() : "?" %>
                                 </div>
-                                <div class="comment-body" style="flex:1;">
+                                <div class="comment-body">
                                     <div>
                                         <a href='ViewProfile.aspx?id=<%# Eval("userID") %>' style="color:#173f2c; text-decoration:none; font-weight:bold;"><%# Eval("authorName") %></a>
                                         <small class="comment-role"><%# Eval("userType") %></small>
                                         <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
-                                    <p style="margin:6px 0;"><%# Eval("commentText") %></p>
-
-                                    <!-- Reply and Edit actions -->
-                                    <div style="display:flex; gap:12px; margin-top:4px;">
-                                        <asp:LinkButton ID="btnReply" runat="server"
-                                            CommandName="ReplyComment"
-                                            CommandArgument='<%# Eval("authorName") %>'
-                                            style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
-                                            Reply
-                                        </asp:LinkButton>
-                                        <asp:LinkButton ID="btnEditComment" runat="server"
-                                            CommandName="EditComment"
-                                            CommandArgument='<%# Eval("commentID") + "|" + Eval("commentText") %>'
-                                            Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
-                                            style="color:#856404; font-size:12px; text-decoration:none; cursor:pointer;">
-                                            Edit
-                                        </asp:LinkButton>
-                                    </div>
+                                    <p><%# Eval("commentText") %></p>
+                                    <asp:LinkButton ID="btnReply" runat="server"
+                                        CommandName="ReplyComment"
+                                        CommandArgument='<%# Eval("authorName") %>'
+                                        style="color:#2e7d56; font-size:12px; text-decoration:none; cursor:pointer;">
+                                        Reply
+                                    </asp:LinkButton>
+                                    <asp:LinkButton ID="btnEditComment" runat="server"
+                                        CommandName="EditComment"
+                                        CommandArgument='<%# Eval("commentID") + "|" + Eval("commentText") %>'
+                                        Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
+                                        style="color:#856404; font-size:12px; text-decoration:none; cursor:pointer; margin-left:12px;">
+                                        Edit
+                                    </asp:LinkButton>
                                 </div>
                                 <asp:LinkButton ID="btnDelete" runat="server"
                                     CommandName="DeleteComment"
                                     CommandArgument='<%# Eval("commentID") %>'
                                     CssClass="delete-comment-btn"
                                     Visible='<%# Convert.ToInt32(Eval("userID")) == Convert.ToInt32(Session["UserID"]) %>'
-                                    OnClientClick="return confirm('Are you sure you want to delete this comment?');">
+                                    OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this comment?', 'Delete Comment');">
                                     &#128465;
                                 </asp:LinkButton>
                             </div>

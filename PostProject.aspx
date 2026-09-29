@@ -139,7 +139,8 @@
                             <asp:DropDownList
                                 ID="ddlCategory"
                                 runat="server"
-                                CssClass="post-input">
+                                CssClass="post-input"
+                                onchange="toggleOtherCategory();">
 
                                 <asp:ListItem
                                     Text="Select a category"
@@ -176,7 +177,30 @@
                                     Value="Digital Marketing">
                                 </asp:ListItem>
 
+                                <asp:ListItem
+                                    Text="Other"
+                                    Value="Other">
+                                </asp:ListItem>
+
                             </asp:DropDownList>
+
+
+                            <!-- OTHER CATEGORY (shown only when "Other" is selected) -->
+
+                            <asp:Panel
+                                ID="pnlOtherCategory"
+                                runat="server"
+                                CssClass="post-other-category"
+                                style="margin-top:10px; display:none;">
+
+                                <asp:TextBox
+                                    ID="txtOtherCategory"
+                                    runat="server"
+                                    CssClass="post-input"
+                                    placeholder="Please specify the category">
+                                </asp:TextBox>
+
+                            </asp:Panel>
 
                         </div>
 
@@ -441,7 +465,7 @@
 
                             <p>
 
-                                Add documents, images or project requirements.
+                                Add a PDF or image (JPG, JPEG, PNG, GIF, WEBP).
 
                             </p>
 
@@ -449,7 +473,8 @@
                             <asp:FileUpload
                                 ID="fileAttachment"
                                 runat="server"
-                                CssClass="post-file-upload" />
+                                CssClass="post-file-upload"
+                                accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,application/pdf,image/*" />
 
                         </div>
 
@@ -844,5 +869,23 @@
         </section>
 
     </div>
+
+    <script type="text/javascript">
+
+        function toggleOtherCategory() {
+            var ddl = document.getElementById('<%= ddlCategory.ClientID %>');
+            var panel = document.getElementById('<%= pnlOtherCategory.ClientID %>');
+            if (!ddl || !panel) return;
+            panel.style.display = (ddl.value === 'Other') ? 'block' : 'none';
+        }
+
+        // Restore the correct state on load (e.g. after a validation postback).
+        if (window.addEventListener) {
+            window.addEventListener('load', toggleOtherCategory);
+        } else {
+            window.attachEvent('onload', toggleOtherCategory);
+        }
+
+    </script>
 
 </asp:Content>

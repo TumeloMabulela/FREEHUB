@@ -123,19 +123,6 @@ namespace FreeHubProject
                     txtComment.Focus();
                 }
             }
-            else if (e.CommandName == "ReactComment")
-            {
-                // Just show a visual feedback - emoji reactions are decorative for now
-                ShowMessage("Reaction added!", true);
-                LoadComments();
-            }
-        }
-
-        protected void btnCancelReply_Click(object sender, EventArgs e)
-        {
-            pnlReplyingTo.Visible = false;
-            lblReplyingTo.Text = "";
-            ViewState["EditingCommentID"] = null;
         }
 
         protected void btnPostComment_Click(object sender, EventArgs e)
@@ -157,7 +144,7 @@ namespace FreeHubProject
                 int userId = Convert.ToInt32(Session["UserID"]);
                 string commentText = txtComment.Text.Trim();
 
-                // Check if editing
+                // Check if editing an existing comment
                 if (ViewState["EditingCommentID"] != null)
                 {
                     int commentId = Convert.ToInt32(ViewState["EditingCommentID"]);
@@ -171,11 +158,12 @@ namespace FreeHubProject
                 }
                 else
                 {
-                    // Check if replying
+                    // If replying, prefix with @name
                     if (pnlReplyingTo.Visible && !string.IsNullOrEmpty(lblReplyingTo.Text) && lblReplyingTo.Text != "Editing your comment")
                     {
                         commentText = "@" + lblReplyingTo.Text + " " + commentText;
                     }
+
                     DatabaseHelper.AddComment(ProjectId, userId, commentText);
                     ShowMessage("Comment posted successfully!", true);
                 }
@@ -186,8 +174,14 @@ namespace FreeHubProject
             }
             catch (Exception ex)
             {
-                ShowMessage("Error: " + ex.Message, false);
+                ShowMessage("Error posting comment: " + ex.Message, false);
             }
+        }
+
+        protected void btnCancelReply_Click(object sender, EventArgs e)
+        {
+            pnlReplyingTo.Visible = false;
+            lblReplyingTo.Text = "";
         }
 
         protected string GetAvatarColor(int index)
