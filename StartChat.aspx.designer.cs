@@ -341,6 +341,11 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.LinkButton btnCloseChat;
 
         /// <summary>
+        /// statusDot control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl statusDot;
+
+        /// <summary>
         /// rptPinnedContacts control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Repeater rptPinnedContacts;

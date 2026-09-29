@@ -237,6 +237,12 @@
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
         }
 
+        /* Red dot when the contact is offline. */
+        .status-dot.offline {
+            background-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+        }
+
         /* ===== RIGHT: dashboard workspace ===== */
         .msgx-workspace {
             position: relative;
@@ -781,7 +787,7 @@
                                             <asp:Label ID="lblChatName" runat="server" Text="Select a conversation"></asp:Label>
                                         </div>
                                         <div class="p-status">
-                                            <span class="status-dot"></span>
+                                            <span id="statusDot" runat="server" class="status-dot offline"></span>
                                             <asp:Label ID="lblPartnerStatus" runat="server" Text="Offline"></asp:Label>
                                         </div>
                                     </div>

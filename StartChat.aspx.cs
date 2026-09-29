@@ -336,10 +336,16 @@ namespace FreeHubProject
                 if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
                 {
                     lblPartnerStatus.Text = "Account Deactivated 🔴";
+                    statusDot.Attributes["class"] = "status-dot offline";
                 }
                 else
                 {
-                    lblPartnerStatus.Text = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                    string onlineStatus = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                    lblPartnerStatus.Text = onlineStatus;
+
+                    // Green dot only when actually online; red otherwise (last seen / offline).
+                    bool isOnline = onlineStatus.IndexOf("Online", StringComparison.OrdinalIgnoreCase) >= 0;
+                    statusDot.Attributes["class"] = isOnline ? "status-dot" : "status-dot offline";
                 }
             }
 
