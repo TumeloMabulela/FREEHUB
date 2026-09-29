@@ -408,7 +408,7 @@
                                     <div>
 
                                         <strong>
-                                            <%# Convert.ToDateTime(
+                                            <%# TimeHelper.ToSast(
                                                     Eval("DateCreated")
                                                 ).ToString("dd MMM yyyy") %>
                                         </strong>

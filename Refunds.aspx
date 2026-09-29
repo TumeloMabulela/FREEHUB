@@ -394,7 +394,7 @@
                                     <div>
 
                                         <strong>
-                                            <%# Convert.ToDateTime(
+                                            <%# TimeHelper.ToSast(
                                                     Eval("TransactionDate")
                                                 ).ToString("dd MMM yyyy") %>
                                         </strong>

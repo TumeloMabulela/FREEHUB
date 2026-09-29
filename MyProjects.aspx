@@ -106,7 +106,7 @@
                                     <div class="my-project-meta">
                                         <span>Budget: <strong>R<%# Convert.ToDecimal(Eval("budget")).ToString("N0") %></strong></span>
                                         <span>Proposals: <strong><%# Eval("proposalCount") %></strong></span>
-                                        <span>Posted: <strong><%# Convert.ToDateTime(Eval("dateCreated")).ToString("dd MMM yyyy") %></strong></span>
+                                        <span>Posted: <strong><%# TimeHelper.ToSast(Eval("dateCreated")).ToString("dd MMM yyyy") %></strong></span>
                                     </div>
                                 </div>
                                 <div class="my-project-actions">
