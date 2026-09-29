@@ -69,6 +69,15 @@ body {
     gap: 25px;
 }
 
+    /* The nav links are grouped inside asp:Panel wrappers (freelancer/employer/logged-in).
+       display:contents makes each panel's <a> links become direct flex children of
+       .main-navigation, so the single 25px gap applies evenly between every link
+       regardless of which panel it lives in. */
+    .main-navigation > span,
+    .main-navigation > div {
+        display: contents;
+    }
+
     .main-navigation a {
         color: #f4f6f2;
         text-decoration: none;
@@ -76,6 +85,7 @@ body {
         font-weight: 500;
         padding: 10px 4px;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
         .main-navigation a:hover {
