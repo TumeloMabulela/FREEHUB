@@ -343,13 +343,11 @@
         }
 
         .chat-popup.expanded {
-            top: 22px;
-            left: 22px;
-            right: 22px;
-            bottom: 22px;
-            transform: none;
-            width: auto;
-            height: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(680px, calc(100% - 44px));
+            height: calc(100% - 44px);
         }
 
         .chat-popup.minimized {
@@ -400,11 +398,11 @@
         .popup-body {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
+            padding: 16px 18px;
             background: #f7faf8;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 8px;
             min-height: 0;
         }
 
@@ -417,7 +415,7 @@
             border-radius: 12px;
         }
 
-        .msg-row { display: flex; gap: 10px; max-width: 78%; }
+        .msg-row { display: flex; gap: 10px; max-width: 72%; }
         .msg-row.received { align-self: flex-start; }
         .msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
 
