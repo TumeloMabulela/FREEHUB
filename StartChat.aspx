@@ -473,10 +473,10 @@
         <div class="chat-list-panel">
             
             <!-- User Search Control -->
-            <div class="chat-search-row">
+            <asp:Panel ID="pnlChatSearch" runat="server" DefaultButton="btnSearchUser" CssClass="chat-search-row">
                 <asp:TextBox ID="txtSearch" runat="server" CssClass="chat-search-input" placeholder="Search system users..." />
                 <asp:Button ID="btnSearchUser" runat="server" Text="Search 🔍" CssClass="chat-search-btn" OnClick="btnSearchUser_Click" />
-            </div>
+            </asp:Panel>
 
             <!-- Search Results Dropdown List -->
             <asp:Panel ID="pnlSearchResults" runat="server" CssClass="search-results-box" Visible="false">
@@ -586,7 +586,7 @@
 
             <!-- Input Controls with Functional File Attachment -->
             <div class="thread-input-container">
-                <div class="thread-input-row">
+                <asp:Panel ID="pnlChatInput" runat="server" DefaultButton="btnSend" CssClass="thread-input-row">
                     <div class="file-upload-wrapper">
                         <label for="<%= fileUploadControl.ClientID %>" class="attach-btn-label" title="Attach file">📎</label>
                         <asp:FileUpload ID="fileUploadControl" runat="server" CssClass="file-upload-hidden" onchange="showSelectedFileName(this);" />
@@ -594,7 +594,7 @@
 
                     <asp:TextBox ID="txtMessage" runat="server" CssClass="message-input" placeholder="Type your message..." onkeydown="return handleEnterKey(event, '<%= btnSend.ClientID %>');"></asp:TextBox>
                     <asp:Button ID="btnSend" runat="server" Text="Send 🚀" CssClass="send-btn-gradient" OnClick="btnSend_Click" />
-                </div>
+                </asp:Panel>
                 
                 <asp:Label ID="lblAttachedFileName" runat="server" CssClass="attachment-preview"></asp:Label>
             </div>

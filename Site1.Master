@@ -185,6 +185,41 @@
 
         </footer>
 
+        <!-- Site-wide Enter-to-submit: pressing Enter in a single-line text field
+             activates the most relevant button, so forms submit without a mouse click.
+             Textareas are ignored so multi-line fields keep normal Enter behaviour.
+             Pages that set a Panel DefaultButton keep their own precise handling. -->
+        <script type="text/javascript">
+            (function () {
+                document.addEventListener("keydown", function (e) {
+                    var key = e.keyCode || e.which;
+                    if (key !== 13) return;
+
+                    var el = e.target;
+                    if (!el || el.tagName !== "INPUT") return;
+
+                    var type = (el.getAttribute("type") || "text").toLowerCase();
+                    // Only act on text-like single-line inputs.
+                    if (["text", "password", "email", "search", "tel", "number", "url"].indexOf(type) === -1) return;
+
+                    // If the field already has its own onkeydown handler (e.g. chat send),
+                    // or lives inside a Panel with a DefaultButton, let that take over.
+                    if (el.getAttribute("onkeydown")) return;
+
+                    // Find the closest button to submit: search the field's containing
+                    // section first, then fall back to the first submit button on the page.
+                    var scope = el.closest("div, section, fieldset") || document;
+                    var btn = scope.querySelector("input[type=submit], button[type=submit]")
+                           || document.querySelector("input[type=submit], button[type=submit]");
+
+                    if (btn) {
+                        e.preventDefault();
+                        btn.click();
+                    }
+                }, false);
+            })();
+        </script>
+
     </form>
 
     <!-- Modal Styles & Scripts -->
