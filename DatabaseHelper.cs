@@ -9,20 +9,11 @@ namespace FreeHubProject
 {
     public static class DatabaseHelper
     {
-        // Resolve the connection string lazily (per call) rather than in a static field.
-        // A static field initializer that throws makes the WHOLE class unusable with the
-        // confusing "type initializer threw an exception" error. Resolving it here means a
-        // missing/invalid config produces a clear, direct message instead.
+        private static readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
+
         private static string GetConnectionString()
         {
-            var setting = ConfigurationManager.ConnectionStrings["FreeHubDB"];
-            if (setting == null || string.IsNullOrWhiteSpace(setting.ConnectionString))
-            {
-                throw new ConfigurationErrorsException(
-                    "Database connection string 'FreeHubDB' is missing or empty. " +
-                    "Ensure ConnectionStrings.config exists next to Web.config and contains the FreeHubDB entry.");
-            }
-            return setting.ConnectionString;
+            return ConfigurationManager.ConnectionStrings["FreeHubDB"].ConnectionString;
         }
 
         public static SqlConnection GetConnection()
