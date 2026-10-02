@@ -180,8 +180,7 @@ namespace FreeHubProject
             }
             else if (e.CommandName == "ReviewWork")
             {
-                // Redirect the employer to the Review Work page to approve/reject
-                // the submitted work and complete the project.
+                // Redirects the employer to the Review Work page to approve or reject the submission
                 Response.Redirect($"ReviewWork.aspx?projectId={projectId}");
             }
             else if (e.CommandName == "ViewDetails")
@@ -189,7 +188,6 @@ namespace FreeHubProject
                 Response.Redirect($"ProjectDetails.aspx?id={projectId}");
             }
         }
-
         protected string GetStatusBadgeStyle(string status)
         {
             if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
@@ -214,7 +212,7 @@ namespace FreeHubProject
             DateTime deadline;
             if (DateTime.TryParse(deadlineObj?.ToString(), out deadline))
             {
-                int daysLeft = (deadline - TimeHelper.Now).Days;
+                int daysLeft = (deadline - DateTime.Now).Days;
                 if (daysLeft <= 3)
                     return "background: #fee2e2; color: #dc2626; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px;";
                 return "background: #fef3c7; color: #d97706; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 12px;";
@@ -229,7 +227,7 @@ namespace FreeHubProject
             DateTime deadline;
             if (DateTime.TryParse(deadlineObj?.ToString(), out deadline))
             {
-                int daysLeft = (deadline - TimeHelper.Now).Days;
+                int daysLeft = (deadline - DateTime.Now).Days;
                 if (daysLeft < 0) return "Overdue";
                 if (daysLeft == 0) return "Due Today";
                 return $"{daysLeft} days left";
