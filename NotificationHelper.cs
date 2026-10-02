@@ -7,7 +7,9 @@ namespace FreeHubProject
 {
     public static class NotificationHelper
     {
-        private static readonly string _connStr = ConfigurationManager.ConnectionStrings["FreeHubDB"]?.ConnectionString;
+        // No static connection-string field here: all DB work goes through DatabaseHelper,
+        // which resolves the connection string safely per call. A static field that throws
+        // during initialization would make this whole class crash with a type-initializer error.
 
         public static void CreateNotification(int userID, string notificationType, string message)
         {
