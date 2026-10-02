@@ -51,6 +51,14 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btnSearchUser;
 
         /// <summary>
+        /// Conversation-list filter tabs.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnFilterAll;
+        protected global::System.Web.UI.WebControls.LinkButton btnFilterUnread;
+        protected global::System.Web.UI.WebControls.LinkButton btnFilterClients;
+        protected global::System.Web.UI.WebControls.LinkButton btnFilterFreelancers;
+
+        /// <summary>
         /// pnlSearchResults control.
         /// </summary>
         /// <remarks>
@@ -344,6 +352,11 @@ namespace FreeHubProject
         /// statusDot control.
         /// </summary>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl statusDot;
+
+        /// <summary>
+        /// workspacePanel control (right-hand chat/dashboard column).
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl workspacePanel;
 
         /// <summary>
         /// rptPinnedContacts control.

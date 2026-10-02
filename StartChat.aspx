@@ -218,6 +218,16 @@
 
         .chat-item-name { font-weight: 600; font-size: 14px; color: #111827; }
         .chat-item-time { font-size: 11px; color: #9ca3af; }
+        /* Unread conversations show a green time, WhatsApp-style. */
+        .chat-item-time.unread { color: #1f9d55; font-weight: 600; }
+
+        .chat-item-row2 {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 2px;
+        }
 
         .chat-item-preview {
             font-size: 12px;
@@ -225,6 +235,23 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        /* Green unread-count badge (WhatsApp pill). */
+        .unread-badge {
+            background: #1f9d55;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            padding: 0 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
         .status-dot {
@@ -327,59 +354,50 @@
         }
         .ws-file-row:last-child, .ws-pin-row:last-child { border-bottom: none; }
 
-        /* ===== FLOATING CHAT POPUP ===== */
-        .msgx-popup-scrim {
-            position: absolute;
-            inset: 0;
-            background: rgba(16, 40, 28, 0.04); /* very subtle, list stays clickable-looking */
-            pointer-events: none;               /* do NOT block the contact list */
-            z-index: 20;
+        /* ===== INLINE CHAT PANEL (docked in the right column, not a floating popup) ===== */
+        .msgx-popup-scrim { display: none; }   /* no overlay/scrim in the inline layout */
+
+        /* When a conversation is open, hide the dashboard widgets so the chat fills the panel. */
+        .msgx-workspace.has-chat .ws-welcome,
+        .msgx-workspace.has-chat .ws-actions,
+        .msgx-workspace.has-chat .ws-cards { display: none; }
+
+        .msgx-workspace.has-chat {
+            padding: 0;
+            overflow: hidden;
         }
 
         .chat-popup {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 440px;
-            height: min(580px, calc(100% - 44px));
+            position: static;
+            transform: none;
+            width: 100%;
+            height: 100%;
             background: #ffffff;
-            border: 1px solid #e6ece8;
-            border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(16, 40, 28, 0.28);
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            z-index: 30;
         }
 
-        .chat-popup.expanded {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: min(680px, calc(100% - 44px));
-            height: calc(100% - 44px);
-        }
-
+        /* Expand/minimise are no-ops in the docked layout; keep selectors harmless. */
+        .chat-popup.expanded,
         .chat-popup.minimized {
-            top: auto;
-            bottom: 22px;
-            transform: translateX(-50%);
-            height: 58px;
-            width: 300px;
+            position: static;
+            transform: none;
+            width: 100%;
+            height: 100%;
         }
-
-        .chat-popup.minimized .popup-body,
-        .chat-popup.minimized .popup-input { display: none; }
 
         /* Popup header (fixed) */
         .popup-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 14px;
-            border-bottom: 1px solid #eef2ef;
-            background: #ffffff;
+            padding: 10px 16px;
+            border-bottom: 1px solid #d1d7db;
+            background: #f0f2f5;   /* WhatsApp chat-header grey */
             flex-shrink: 0;
         }
 
@@ -409,76 +427,112 @@
         .popup-body {
             flex: 1;
             overflow-y: auto;
-            padding: 16px 18px;
-            background: #f7faf8;
+            padding: 16px 7%;
+            /* WhatsApp-style chat wallpaper: warm beige with a faint repeating doodle texture. */
+            background-color: #efeae2;
+            background-image:
+                radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+            background-size: 28px 28px, 28px 28px;
+            background-position: 0 0, 14px 14px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 3px;
             min-height: 0;
         }
 
-        .date-divider { text-align: center; margin: 4px 0; }
+        /* WhatsApp-style centered date pill */
+        .date-divider { text-align: center; margin: 10px 0; }
         .date-divider span {
-            background-color: #eef2ef;
-            color: #9ca3af;
-            font-size: 11px;
-            padding: 4px 12px;
-            border-radius: 12px;
+            background-color: #ffffff;
+            color: #54656f;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 5px 12px;
+            border-radius: 8px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
         }
 
-        .msg-row { display: flex; gap: 10px; max-width: 72%; }
+        .msg-row { display: flex; max-width: 65%; margin-bottom: 2px; }
         .msg-row.received { align-self: flex-start; }
-        .msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+        .msg-row.sent { align-self: flex-end; }
+
+        /* WhatsApp bubbles: received = white (left), sent = light green (right),
+           each with a small tail notch on the top outer corner. */
+        .msg-bubble-received,
+        .msg-bubble-sent {
+            position: relative;
+            padding: 6px 9px 8px 10px;
+            font-size: 14.2px;
+            line-height: 1.35;
+            box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+            word-wrap: break-word;
+        }
 
         .msg-bubble-received {
             background-color: #ffffff;
-            color: #1f2937;
-            padding: 11px 15px;
-            border-radius: 4px 18px 18px 18px;
-            font-size: 13px;
-            line-height: 1.45;
-            box-shadow: 0 1px 2px rgba(16, 40, 28, 0.06);
+            color: #111b21;
+            border-radius: 0 8px 8px 8px;
+        }
+
+        .msg-bubble-received::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -8px;
+            width: 8px; height: 13px;
+            background: #ffffff;
+            clip-path: polygon(100% 0, 0 0, 100% 100%);
         }
 
         .msg-bubble-sent {
-            background: linear-gradient(135deg, #eafaf0, #dff5e7);
-            color: #10261c;
-            padding: 11px 15px;
-            border-radius: 18px 4px 18px 18px;
-            font-size: 13px;
-            line-height: 1.45;
-            box-shadow: 0 1px 2px rgba(16, 40, 28, 0.06);
+            background-color: #d9fdd3;
+            color: #111b21;
+            border-radius: 8px 0 8px 8px;
         }
 
+        .msg-bubble-sent::before {
+            content: "";
+            position: absolute;
+            top: 0; right: -8px;
+            width: 8px; height: 13px;
+            background: #d9fdd3;
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+        }
+
+        /* Timestamp + ticks tucked bottom-right inside the bubble, WhatsApp-style. */
         .msg-meta {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 4px;
-            font-size: 10px;
-            color: #9ca3af;
-            margin-top: 4px;
+            gap: 3px;
+            float: right;
+            font-size: 11px;
+            color: #667781;
+            margin: 2px 0 -2px 10px;
+            position: relative;
+            top: 4px;
         }
 
-        .ticks-blue { color: #2563eb !important; font-weight: bold; }
-        .ticks-gray { color: #9ca3af; }
+        .ticks-blue { color: #53bdeb !important; font-weight: normal; }
+        .ticks-gray { color: #667781; }
 
-        /* Popup input (fixed) */
+        /* Input footer (fixed) — WhatsApp grey bar with a white rounded input. */
         .popup-input {
-            border-top: 1px solid #eef2ef;
-            padding: 12px 14px;
-            background: #ffffff;
+            border-top: 1px solid #d1d7db;
+            padding: 8px 16px;
+            background: #f0f2f5;
             flex-shrink: 0;
         }
 
         .thread-input-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: #f4f7f5;
-            border: 1px solid #e6ece8;
-            border-radius: 28px;
-            padding: 5px 6px 5px 10px;
+            gap: 8px;
+            background: #ffffff;
+            border: none;
+            border-radius: 24px;
+            padding: 4px 6px 4px 12px;
+            box-shadow: 0 1px 1px rgba(11, 20, 26, 0.08);
         }
 
         .file-upload-wrapper { position: relative; display: flex; align-items: center; }
@@ -631,11 +685,25 @@
             p.classList.toggle("expanded");
         }
         // Keep the messages area scrolled to the newest message after each load/switch.
+        // Runs after layout (double rAF) and retries briefly so it reliably lands at the
+        // bottom even right after a postback or AJAX conversation switch.
         function scrollPopupToBottom() {
             var b = document.getElementById("popupBody");
-            if (b) b.scrollTop = b.scrollHeight;
+            if (!b) return;
+            var jump = function () { b.scrollTop = b.scrollHeight; };
+            jump();
+            requestAnimationFrame(function () {
+                requestAnimationFrame(jump);
+            });
+            // A couple of delayed passes catch late-rendered images/attachments.
+            setTimeout(jump, 60);
+            setTimeout(jump, 200);
         }
         document.addEventListener("DOMContentLoaded", scrollPopupToBottom);
+        // Also re-scroll after ASP.NET AJAX partial postbacks (conversation switches).
+        if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(scrollPopupToBottom);
+        }
     </script>
 </asp:Content>
 
@@ -665,10 +733,10 @@
 
                 <!-- Filter tabs (visual grouping; All is the active default) -->
                 <div class="msgx-filters">
-                    <span class="msgx-filter active">All</span>
-                    <span class="msgx-filter">Unread</span>
-                    <span class="msgx-filter">Clients</span>
-                    <span class="msgx-filter">Freelancers</span>
+                    <asp:LinkButton ID="btnFilterAll" runat="server" CssClass="msgx-filter" CommandArgument="All" OnClick="Filter_Click" CausesValidation="false">All</asp:LinkButton>
+                    <asp:LinkButton ID="btnFilterUnread" runat="server" CssClass="msgx-filter" CommandArgument="Unread" OnClick="Filter_Click" CausesValidation="false">Unread</asp:LinkButton>
+                    <asp:LinkButton ID="btnFilterClients" runat="server" CssClass="msgx-filter" CommandArgument="Clients" OnClick="Filter_Click" CausesValidation="false">Clients</asp:LinkButton>
+                    <asp:LinkButton ID="btnFilterFreelancers" runat="server" CssClass="msgx-filter" CommandArgument="Freelancers" OnClick="Filter_Click" CausesValidation="false">Freelancers</asp:LinkButton>
                 </div>
             </div>
 
@@ -700,9 +768,14 @@
                             <div class="chat-item-info">
                                 <div class="chat-item-header">
                                     <span class="chat-item-name"><%# Eval("Name") %></span>
-                                    <span class="chat-item-time"><%# Eval("LastTime") %></span>
+                                    <span class='<%# Convert.ToInt32(Eval("UnreadCount")) > 0 ? "chat-item-time unread" : "chat-item-time" %>'><%# Eval("LastTime") %></span>
                                 </div>
-                                <div class="chat-item-preview"><%# Eval("LastMessage") %></div>
+                                <div class="chat-item-row2">
+                                    <span class="chat-item-preview"><%# Eval("LastMessage") %></span>
+                                    <asp:PlaceHolder runat="server" Visible='<%# Convert.ToInt32(Eval("UnreadCount")) > 0 %>'>
+                                        <span class="unread-badge"><%# Eval("UnreadCount") %></span>
+                                    </asp:PlaceHolder>
+                                </div>
                             </div>
                         </asp:LinkButton>
                     </ItemTemplate>
@@ -712,8 +785,8 @@
             </div>
         </div>
 
-        <!-- ============ RIGHT: DASHBOARD WORKSPACE ============ -->
-        <div class="msgx-workspace">
+        <!-- ============ RIGHT: CHAT WORKSPACE ============ -->
+        <div runat="server" id="workspacePanel" class="msgx-workspace">
 
             <!-- Welcome -->
             <div class="ws-welcome">
@@ -791,9 +864,6 @@
 
                                 <div class="popup-actions">
                                     <asp:LinkButton ID="btnInfoIcon" runat="server" CssClass="popup-btn" OnClick="btnToggleDetails_Click" title="Info">ⓘ</asp:LinkButton>
-                                    <button type="button" class="popup-btn" title="Minimise" onclick="popupToggleMinimize();return false;">—</button>
-                                    <button type="button" class="popup-btn" title="Expand" onclick="popupToggleExpand();return false;">□</button>
-                                    <asp:LinkButton ID="btnCloseChat" runat="server" CssClass="popup-btn close" OnClick="btnCloseChat_Click" title="Close" CausesValidation="false">×</asp:LinkButton>
                                 </div>
                             </div>
 

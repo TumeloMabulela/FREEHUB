@@ -52,10 +52,13 @@ namespace FreeHubProject
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
-            // The floating chat popup is shown only when a conversation is open.
-            pnlChatPopup.Visible = ChatOpen;
+            // Inline layout: the chat panel is always rendered in the right column.
+            // When a conversation is open, add 'has-chat' so the dashboard widgets hide
+            // and the chat fills the panel; otherwise the welcome/dashboard shows.
+            pnlChatPopup.Visible = true;
+            workspacePanel.Attributes["class"] = ChatOpen ? "msgx-workspace has-chat" : "msgx-workspace";
 
-            // After the popup renders (initial load or an AJAX switch), scroll it to the newest message.
+            // Scroll the thread to the newest message after it renders (open or switch).
             if (ChatOpen)
             {
                 ScriptManager.RegisterStartupScript(
@@ -146,6 +149,15 @@ namespace FreeHubProject
             set { Session["ActiveProjectId"] = value; }
         }
 
+        /// <summary>
+        /// The active conversation-list filter: All, Unread, Clients, or Freelancers.
+        /// </summary>
+        private string ContactFilter
+        {
+            get { return ViewState["ContactFilter"] as string ?? "All"; }
+            set { ViewState["ContactFilter"] = value; }
+        }
+
         private void BindApprovedChatUsers(string searchText)
         {
             DataTable dt = new DataTable();
@@ -159,13 +171,16 @@ namespace FreeHubProject
                 string query = @"
                     SELECT
                         u.userID AS UserID,
+                        u.userType AS UserType,
                         (u.firstName + ' ' + u.lastName) AS Name,
                         (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
                         -- Displayed time, converted from stored UTC to South Africa time (UTC+2)
                         ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
                         -- Sortable raw timestamp of the latest message (NULL sorts last)
-                        (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort
+                        (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort,
+                        -- Count of unread messages FROM this contact TO the current user
+                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount
                     FROM dbo.Proposal prop
                     INNER JOIN dbo.Project p ON prop.projectID = p.projectID
                     INNER JOIN dbo.Employer e ON p.employerID = e.employerID
@@ -184,9 +199,26 @@ namespace FreeHubProject
                     query += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
                 }
 
+                // Role filters: Clients = contacts who are Employers; Freelancers = contacts who are Freelancers.
+                if (ContactFilter == "Clients")
+                {
+                    query += " AND u.userType = 'Employer'";
+                }
+                else if (ContactFilter == "Freelancers")
+                {
+                    query += " AND u.userType = 'Freelancer'";
+                }
+
                 // Collapse to a single row per contact regardless of how many shared projects.
                 query += @"
-                    GROUP BY u.userID, u.firstName, u.lastName";
+                    GROUP BY u.userID, u.userType, u.firstName, u.lastName";
+
+                // Unread filter is applied after grouping (depends on the aggregated unread count).
+                if (ContactFilter == "Unread")
+                {
+                    query += @"
+                    HAVING (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') > 0";
+                }
 
                 // Newest conversation first; contacts with no messages fall to the bottom.
                 query += " ORDER BY LastTimeSort DESC";
@@ -209,6 +241,33 @@ namespace FreeHubProject
             rptUsers.DataSource = dt;
             rptUsers.DataBind();
             lblNoUsers.Visible = (dt.Rows.Count == 0);
+
+            // Reflect the active filter in the tab styling.
+            SetActiveFilterTab();
+        }
+
+        /// <summary>
+        /// Handles clicks on the All / Unread / Clients / Freelancers filter tabs.
+        /// </summary>
+        protected void Filter_Click(object sender, EventArgs e)
+        {
+            var btn = sender as System.Web.UI.WebControls.LinkButton;
+            if (btn != null)
+            {
+                ContactFilter = btn.CommandArgument;
+            }
+            BindApprovedChatUsers(txtSearch.Text.Trim());
+        }
+
+        /// <summary>
+        /// Adds the 'active' CSS class to whichever filter tab is currently selected.
+        /// </summary>
+        private void SetActiveFilterTab()
+        {
+            btnFilterAll.CssClass = "msgx-filter" + (ContactFilter == "All" ? " active" : "");
+            btnFilterUnread.CssClass = "msgx-filter" + (ContactFilter == "Unread" ? " active" : "");
+            btnFilterClients.CssClass = "msgx-filter" + (ContactFilter == "Clients" ? " active" : "");
+            btnFilterFreelancers.CssClass = "msgx-filter" + (ContactFilter == "Freelancers" ? " active" : "");
         }
 
         protected void btnToggleDetails_Click(object sender, EventArgs e)
