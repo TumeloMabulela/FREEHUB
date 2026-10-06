@@ -515,7 +515,7 @@
                                                     <div class="fh-file-card">
                                                         <span class="fh-file-ic">📄</span>
                                                         <div class="fh-file-meta">
-                                                            <div class="fh-file-name"><%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></div>
+                                                            <div class="fh-file-name"><%# OriginalFileName(Eval("attachmentUrl")) %></div>
                                                             <div class="fh-file-sub">Attachment</div>
                                                         </div>
                                                         <a class="fh-file-dl" href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" title="Download">⬇</a>
@@ -572,7 +572,7 @@
                         <div class="fh-file-card" style="margin-bottom:10px;">
                             <span class="fh-file-ic">📄</span>
                             <div class="fh-file-meta">
-                                <div class="fh-file-name"><%# System.IO.Path.GetFileName(Eval("attachmentUrl").ToString()) %></div>
+                                <div class="fh-file-name"><%# OriginalFileName(Eval("attachmentUrl")) %></div>
                                 <div class="fh-file-sub"><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("dd MMM yyyy") %></div>
                             </div>
                             <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>

@@ -578,8 +578,12 @@ namespace FreeHubProject
                         Directory.CreateDirectory(folderPath);
                     }
 
-                    string fileExt = Path.GetExtension(fileUploadControl.FileName);
-                    string fileName = Guid.NewGuid().ToString("N") + fileExt;
+                    // Keep the original filename for display, but prefix a GUID to guarantee
+                    // uniqueness on disk. Stored as "<guid>_<original name>"; the display
+                    // helper strips the "<guid>_" prefix to show the original name again.
+                    string originalName = Path.GetFileName(fileUploadControl.FileName);
+                    string safeOriginal = MakeSafeFileName(originalName);
+                    string fileName = Guid.NewGuid().ToString("N") + "_" + safeOriginal;
                     string fullPath = Path.Combine(folderPath, fileName);
 
                     fileUploadControl.SaveAs(fullPath);
@@ -811,6 +815,44 @@ namespace FreeHubProject
             string url = attachmentUrl.ToString();
             if (string.IsNullOrWhiteSpace(url)) return "#";
             return ResolveUrl(url);
+        }
+
+        /// <summary>
+        /// Returns the original uploaded filename for display. Stored files are named
+        /// "&lt;guid&gt;_&lt;original&gt;" so we strip the GUID prefix. Older files that were
+        /// saved as just "&lt;guid&gt;.ext" (no underscore) fall back to the stored name.
+        /// </summary>
+        public string OriginalFileName(object attachmentUrl)
+        {
+            if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "";
+            string stored = System.IO.Path.GetFileName(attachmentUrl.ToString());
+            if (string.IsNullOrEmpty(stored)) return "";
+
+            int underscore = stored.IndexOf('_');
+            // A 32-char hex GUID prefix followed by '_' means we can recover the original name.
+            if (underscore == 32)
+            {
+                string rest = stored.Substring(underscore + 1);
+                if (!string.IsNullOrEmpty(rest)) return rest;
+            }
+            return stored;
+        }
+
+        /// <summary>
+        /// Strips characters that are invalid in a Windows filename so the original name
+        /// can be safely embedded in the stored file name.
+        /// </summary>
+        private static string MakeSafeFileName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "file";
+            foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+            {
+                name = name.Replace(c, '-');
+            }
+            // Also drop underscores from the original so our "guid_original" split stays clean,
+            // and collapse spaces for tidy URLs.
+            name = name.Replace('_', '-');
+            return string.IsNullOrWhiteSpace(name) ? "file" : name;
         }
     }
 }
