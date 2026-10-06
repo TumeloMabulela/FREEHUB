@@ -556,10 +556,15 @@ namespace FreeHubProject
                 txtMessage.Attributes["placeholder"] = "Type your message...";
             }
 
-            // Mark unread messages as Read without deleting any table rows
-            DatabaseHelper.MarkMessagesAsRead(CurrentUserId, otherUserId, ActiveProjectId > 0 ? (int?)ActiveProjectId : null);
+            // Mark ALL unread messages from this contact as Read (across every project),
+            // because the conversation is one continuous chat per contact and the unread
+            // badge counts unread messages per contact regardless of project.
+            DatabaseHelper.MarkMessagesAsRead(CurrentUserId, otherUserId, null);
 
             LoadChatMessages();
+
+            // Rebind the contact list so the unread badge for this contact clears immediately.
+            BindApprovedChatUsers(txtSearch != null ? txtSearch.Text.Trim() : "");
         }
         protected void btnSend_Click(object sender, EventArgs e)
         {
