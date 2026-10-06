@@ -45,7 +45,7 @@
             min-height: 0;
         }
 
-        .fh-sidebar-head { padding: 18px 18px 10px 18px; }
+        .fh-sidebar-head { padding: 18px 18px 10px 18px; flex-shrink: 0; }
         .fh-sidebar-title { margin: 0 0 12px 0; font-size: 22px; font-weight: 800; color: #10261c; }
 
         .fh-search {
@@ -101,7 +101,7 @@
         }
         .fh-filter-chip.active { background: #eafaf0; color: #12833f; border-color: #bfe8cd; }
 
-        .fh-section-label { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; padding: 10px 18px 4px 18px; }
+        .fh-section-label { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; padding: 10px 18px 4px 18px; flex-shrink: 0; }
 
         /* Search results dropdown */
         .fh-search-results {
@@ -306,15 +306,16 @@
             width: 280px; flex-shrink: 0;
             border-left: 1px solid #e5e9e6; background: #ffffff;
             display: flex; flex-direction: column; min-height: 0;
-            overflow-y: auto;
+            /* The panel itself doesn't scroll — the body does. */
         }
         .fh-details.collapsed { display: none; }
         .fh-details-head {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px 18px; border-bottom: 1px solid #eef2ef;
+            flex-shrink: 0;
         }
         .fh-details-title { font-size: 16px; font-weight: 800; color: #10261c; }
-        .fh-details-body { padding: 16px 18px; }
+        .fh-details-body { padding: 16px 18px; flex: 1; overflow-y: auto; min-height: 0; }
         .fh-details-sub { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; margin: 16px 0 8px 0; }
         .fh-details-project { font-size: 16px; font-weight: 800; color: #10261c; margin-bottom: 4px; }
         .fh-details-status { font-size: 13px; color: #4b5b51; display: flex; align-items: center; gap: 6px; }
