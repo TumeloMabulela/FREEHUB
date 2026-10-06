@@ -16,10 +16,47 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
+                // If BOTH profiles exist and are active, switch straight to the other one
+                // without making the user choose. Otherwise, fall through to the normal
+                // page (buttons + create/reactivate modals) exactly as before.
+                if (TryAutoSwitch())
+                {
+                    return;
+                }
+
                 pnlMessage.Visible = false;
                 lblCurrentRole.Text = Session["UserType"] as string ?? "User";
                 UpdateButtonStates();
             }
+        }
+
+        /// <summary>
+        /// When the user has both an active Freelancer and an active Employer profile,
+        /// immediately switch to whichever one is NOT currently active and go to the
+        /// dashboard. Returns true if an automatic switch happened (and a redirect was issued).
+        /// </summary>
+        private bool TryAutoSwitch()
+        {
+            int userId = GetUserId();
+            string currentRole = Session["UserType"] as string ?? "";
+
+            bool freelancerActive = DatabaseHelper.GetProfileStatus(userId, "Freelancer") == "Active";
+            bool employerActive = DatabaseHelper.GetProfileStatus(userId, "Employer") == "Active";
+
+            // Both profiles must be present and active for an automatic switch.
+            if (!(freelancerActive && employerActive))
+            {
+                return false;
+            }
+
+            // Switch to the opposite of the current role.
+            string targetRole = currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase)
+                ? "Employer"
+                : "Freelancer";
+
+            SwitchUserRole(userId, targetRole);
+            Response.Redirect("Dashboard.aspx");
+            return true;
         }
 
         private int GetUserId()
