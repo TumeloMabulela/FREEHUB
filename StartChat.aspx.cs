@@ -58,9 +58,9 @@ namespace FreeHubProject
             // Add 'chat-open' class for mobile responsive (hides sidebar, shows chat).
             workspacePanel.Attributes["class"] = ChatOpen ? "fh-msg-root chat-open" : "fh-msg-root";
 
-            // Project details side-panel: only shown when a conversation is open AND there
-            // is an active project between the two users.
-            if (ChatOpen && ActiveProjectId > 0)
+            // Project details side-panel and sub-bar: shown on every open conversation.
+            // Displays the relevant project between the two users (active or completed).
+            if (ChatOpen)
             {
                 pnlProjectBar.Visible = true;
                 pnlProjectDetails.Visible = true;
@@ -88,29 +88,39 @@ namespace FreeHubProject
         /// </summary>
         private void BindProjectDetails()
         {
-            if (ActiveProjectId <= 0) return;
-
-            DataRow project = DatabaseHelper.GetProjectById(ActiveProjectId);
-            if (project != null)
+            if (ActiveProjectId > 0)
             {
-                string title = Convert.ToString(project["title"]);
-                string status = Convert.ToString(project["projectStatus"]);
+                DataRow project = DatabaseHelper.GetProjectById(ActiveProjectId);
+                if (project != null)
+                {
+                    string title = Convert.ToString(project["title"]);
+                    string status = Convert.ToString(project["projectStatus"]);
 
-                lblProjectBarTitle.Text = title;
-                lblProjectBarStatus.Text = status;
-                lblDetailsProjectTitle.Text = title;
-                lblDetailsProjectStatus.Text = status;
+                    lblProjectBarTitle.Text = title;
+                    lblProjectBarStatus.Text = status;
+                    lblDetailsProjectTitle.Text = title;
+                    lblDetailsProjectStatus.Text = status;
+                }
+                else
+                {
+                    SetNoProjectLabels();
+                }
             }
             else
             {
-                lblProjectBarTitle.Text = "Project";
-                lblProjectBarStatus.Text = "—";
-                lblDetailsProjectTitle.Text = "Project";
-                lblDetailsProjectStatus.Text = "—";
+                SetNoProjectLabels();
             }
 
             // Shared files for the details panel — files exchanged between the two users.
             LoadSharedFilesForDetailsPanel();
+        }
+
+        private void SetNoProjectLabels()
+        {
+            lblProjectBarTitle.Text = "No active project";
+            lblProjectBarStatus.Text = "—";
+            lblDetailsProjectTitle.Text = "No active project";
+            lblDetailsProjectStatus.Text = "—";
         }
 
         /// <summary>
