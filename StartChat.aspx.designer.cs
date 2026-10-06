@@ -377,5 +377,50 @@ namespace FreeHubProject
         /// lblNoRecentFiles control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblNoRecentFiles;
+
+        /// <summary>
+        /// pnlWelcome control (shown until a conversation is selected).
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlWelcome;
+
+        /// <summary>
+        /// pnlProjectBar control (project sub-bar under the chat header).
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlProjectBar;
+
+        /// <summary>
+        /// lblProjectBarTitle control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblProjectBarTitle;
+
+        /// <summary>
+        /// lblProjectBarStatus control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblProjectBarStatus;
+
+        /// <summary>
+        /// pnlProjectDetails control (collapsible project details side panel).
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Panel pnlProjectDetails;
+
+        /// <summary>
+        /// lblDetailsProjectTitle control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailsProjectTitle;
+
+        /// <summary>
+        /// lblDetailsProjectStatus control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailsProjectStatus;
+
+        /// <summary>
+        /// btnViewProject control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnViewProject;
+
+        /// <summary>
+        /// btnBack control (mobile back button).
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnBack;
     }
 }

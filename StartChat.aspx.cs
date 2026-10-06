@@ -23,7 +23,6 @@ namespace FreeHubProject
                 DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
 
                 BindApprovedChatUsers("");
-                BindDashboard();
 
                 string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
@@ -52,11 +51,26 @@ namespace FreeHubProject
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
-            // Inline layout: the chat panel is always rendered in the right column.
-            // When a conversation is open, add 'has-chat' so the dashboard widgets hide
-            // and the chat fills the panel; otherwise the welcome/dashboard shows.
-            pnlChatPopup.Visible = true;
-            workspacePanel.Attributes["class"] = ChatOpen ? "msgx-workspace has-chat" : "msgx-workspace";
+            // Welcome screen vs active chat.
+            pnlWelcome.Visible = !ChatOpen;
+            pnlChatPopup.Visible = ChatOpen;
+
+            // Add 'chat-open' class for mobile responsive (hides sidebar, shows chat).
+            workspacePanel.Attributes["class"] = ChatOpen ? "fh-msg-root chat-open" : "fh-msg-root";
+
+            // Project details side-panel: only shown when a conversation is open AND there
+            // is an active project between the two users.
+            if (ChatOpen && ActiveProjectId > 0)
+            {
+                pnlProjectBar.Visible = true;
+                pnlProjectDetails.Visible = true;
+                BindProjectDetails();
+            }
+            else
+            {
+                pnlProjectBar.Visible = false;
+                pnlProjectDetails.Visible = false;
+            }
 
             // Scroll the thread to the newest message after it renders (open or switch).
             if (ChatOpen)
@@ -68,58 +82,70 @@ namespace FreeHubProject
         }
 
         /// <summary>
-        /// Fills the dashboard widgets shown before/behind the popup: pinned contacts
-        /// (the user's chat contacts) and recently shared files across conversations.
+        /// Fills the project-details side panel and project sub-bar with data from
+        /// the active project between the current user and the selected contact.
+        /// Also binds the shared files repeater inside the details panel.
         /// </summary>
-        private void BindDashboard()
+        private void BindProjectDetails()
         {
-            // Pinned contacts = the same approved chat contacts, capped to a few for the card.
-            DataTable contacts = new DataTable();
-            using (SqlConnection conn = new SqlConnection(_connStr))
-            {
-                string q = @"
-                    SELECT DISTINCT TOP 5
-                        u.userID AS UserID,
-                        (u.firstName + ' ' + u.lastName) AS Name,
-                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials
-                    FROM dbo.Proposal prop
-                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
-                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
-                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
-                    INNER JOIN dbo.[User] u ON (
-                        CASE WHEN e.userID = @CurrentUserID THEN f.userID
-                             WHEN f.userID = @CurrentUserID THEN e.userID END = u.userID)
-                    WHERE prop.status = 'Approved'
-                      AND (e.userID = @CurrentUserID OR f.userID = @CurrentUserID)";
-                using (SqlCommand cmd = new SqlCommand(q, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(contacts); }
-                }
-            }
-            rptPinnedContacts.DataSource = contacts;
-            rptPinnedContacts.DataBind();
-            lblNoPinned.Visible = contacts.Rows.Count == 0;
+            if (ActiveProjectId <= 0) return;
 
-            // Recently shared files = latest messages (to/from the user) that carry an attachment.
-            DataTable files = new DataTable();
+            DataRow project = DatabaseHelper.GetProjectById(ActiveProjectId);
+            if (project != null)
+            {
+                string title = Convert.ToString(project["title"]);
+                string status = Convert.ToString(project["projectStatus"]);
+
+                lblProjectBarTitle.Text = title;
+                lblProjectBarStatus.Text = status;
+                lblDetailsProjectTitle.Text = title;
+                lblDetailsProjectStatus.Text = status;
+            }
+            else
+            {
+                lblProjectBarTitle.Text = "Project";
+                lblProjectBarStatus.Text = "—";
+                lblDetailsProjectTitle.Text = "Project";
+                lblDetailsProjectStatus.Text = "—";
+            }
+
+            // Shared files for the details panel — files exchanged between the two users.
+            LoadSharedFilesForDetailsPanel();
+        }
+
+        /// <summary>
+        /// Binds the shared-files repeater inside the collapsible project details panel
+        /// with files exchanged between the current user and the selected contact.
+        /// </summary>
+        private void LoadSharedFilesForDetailsPanel()
+        {
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                string q = @"
-                    SELECT TOP 5 attachmentUrl, timeStamp
-                    FROM dbo.Message
-                    WHERE (senderID = @CurrentUserID OR receiverID = @CurrentUserID)
-                      AND attachmentUrl IS NOT NULL AND attachmentUrl <> ''
+                string query = @"
+                    SELECT attachmentUrl, timeStamp 
+                    FROM dbo.Message 
+                    WHERE ((senderID = @CurrentUserID AND receiverID = @OtherUserID) 
+                        OR (senderID = @OtherUserID AND receiverID = @CurrentUserID))
+                      AND attachmentUrl IS NOT NULL 
+                      AND attachmentUrl != ''
                     ORDER BY timeStamp DESC";
-                using (SqlCommand cmd = new SqlCommand(q, conn))
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(files); }
+                    cmd.Parameters.AddWithValue("@OtherUserID", SelectedOtherUserId);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        DataTable dtFiles = new DataTable();
+                        da.Fill(dtFiles);
+
+                        rptSharedFiles.DataSource = dtFiles;
+                        rptSharedFiles.DataBind();
+                        lblNoSharedFiles.Visible = dtFiles.Rows.Count == 0;
+                    }
                 }
             }
-            rptRecentFiles.DataSource = files;
-            rptRecentFiles.DataBind();
-            lblNoRecentFiles.Visible = files.Rows.Count == 0;
         }
 
         public int CurrentUserId
@@ -264,10 +290,10 @@ namespace FreeHubProject
         /// </summary>
         private void SetActiveFilterTab()
         {
-            btnFilterAll.CssClass = "msgx-filter" + (ContactFilter == "All" ? " active" : "");
-            btnFilterUnread.CssClass = "msgx-filter" + (ContactFilter == "Unread" ? " active" : "");
-            btnFilterClients.CssClass = "msgx-filter" + (ContactFilter == "Clients" ? " active" : "");
-            btnFilterFreelancers.CssClass = "msgx-filter" + (ContactFilter == "Freelancers" ? " active" : "");
+            btnFilterAll.CssClass = "fh-filter" + (ContactFilter == "All" ? " active" : "");
+            btnFilterUnread.CssClass = "fh-filter" + (ContactFilter == "Unread" ? " active" : "");
+            btnFilterClients.CssClass = "fh-filter-chip" + (ContactFilter == "Clients" ? " active" : "");
+            btnFilterFreelancers.CssClass = "fh-filter-chip" + (ContactFilter == "Freelancers" ? " active" : "");
         }
 
         protected void btnToggleDetails_Click(object sender, EventArgs e)
