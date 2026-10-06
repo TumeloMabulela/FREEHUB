@@ -664,6 +664,21 @@ namespace FreeHubProject
             }
         }
 
+        /// <summary>
+        /// Marks all 'Sent' messages addressed to a user as 'Delivered'.
+        /// Called when the user loads the Messages page, meaning the messages have
+        /// reached their client. Senders then see ✓✓ (gray) instead of single ✓.
+        /// </summary>
+        public static void MarkMessagesAsDelivered(int receiverUserId)
+        {
+            string query = @"
+                UPDATE dbo.Message 
+                SET status = 'Delivered' 
+                WHERE receiverID = @ReceiverID 
+                  AND status = 'Sent'";
+            ExecuteNonQuery(query, new SqlParameter("@ReceiverID", receiverUserId));
+        }
+
         public static string CapitalizeSkills(string skills)
         {
             if (string.IsNullOrWhiteSpace(skills)) return "";

@@ -529,7 +529,7 @@
                                             <span class="fh-bubble-time">
                                                 <%# TimeHelper.ToSast(Eval("timeStamp")).ToString("HH:mm") %>
                                                 <asp:PlaceHolder ID="phReadReceipt" runat="server" Visible='<%# Convert.ToInt32(Eval("senderID")) == CurrentUserId %>'>
-                                                    <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'><%# Eval("status").ToString() == "Read" ? "✓✓" : "✓" %></span>
+                                                    <span class='<%# Eval("status").ToString() == "Read" ? "ticks-blue" : "ticks-gray" %>'><%# Eval("status").ToString() == "Read" ? "✓✓" : (Eval("status").ToString() == "Delivered" ? "✓✓" : "✓") %></span>
                                                 </asp:PlaceHolder>
                                             </span>
                                         </div>
@@ -569,19 +569,26 @@
                 <div class="fh-details-sub">SHARED FILES</div>
                 <asp:Repeater ID="rptSharedFiles" runat="server">
                     <ItemTemplate>
-                        <div class="fh-file-card" style="margin-bottom:10px;">
-                            <span class="fh-file-ic">📄</span>
-                            <div class="fh-file-meta">
-                                <div class="fh-file-name"><%# OriginalFileName(Eval("attachmentUrl")) %></div>
-                                <div class="fh-file-sub"><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("dd MMM yyyy") %></div>
-                            </div>
-                            <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
-                                <a class="fh-file-dl" href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" title="Download">⬇</a>
-                            </asp:PlaceHolder>
-                            <asp:PlaceHolder runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
+                        <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
+                            <a class="fh-file-card fh-file-card-link" href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" title="Open file" style="margin-bottom:10px;">
+                                <span class="fh-file-ic">📄</span>
+                                <div class="fh-file-meta">
+                                    <div class="fh-file-name"><%# OriginalFileName(Eval("attachmentUrl")) %></div>
+                                    <div class="fh-file-sub"><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("dd MMM yyyy") %></div>
+                                </div>
+                                <span class="fh-file-dl">⬇</span>
+                            </a>
+                        </asp:PlaceHolder>
+                        <asp:PlaceHolder runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
+                            <div class="fh-file-card" style="margin-bottom:10px;">
+                                <span class="fh-file-ic">📄</span>
+                                <div class="fh-file-meta">
+                                    <div class="fh-file-name"><%# OriginalFileName(Eval("attachmentUrl")) %></div>
+                                    <div class="fh-file-sub"><%# TimeHelper.ToSast(Eval("timeStamp")).ToString("dd MMM yyyy") %></div>
+                                </div>
                                 <span class="fh-file-missing">N/A</span>
-                            </asp:PlaceHolder>
-                        </div>
+                            </div>
+                        </asp:PlaceHolder>
                     </ItemTemplate>
                 </asp:Repeater>
                 <asp:Label ID="lblNoSharedFiles" runat="server" Visible="false" Text="No shared files yet." Style="font-size:13px; color:#9ca3af;" />

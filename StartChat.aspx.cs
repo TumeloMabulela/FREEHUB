@@ -22,6 +22,10 @@ namespace FreeHubProject
                 // Heartbeat: update current user's last seen timestamp
                 DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
 
+                // The user has opened Messages, so any messages still 'Sent' to them
+                // have now been delivered. Senders will see ✓✓ (delivered) going forward.
+                DatabaseHelper.MarkMessagesAsDelivered(CurrentUserId);
+
                 BindApprovedChatUsers("");
 
                 string queryUserId = Request.QueryString["userId"];
@@ -625,7 +629,6 @@ namespace FreeHubProject
 
             txtMessage.Text = "";
             lblAttachedFileName.Text = "";
-            ShowStatus("Message sent successfully.");
 
             LoadChatMessages();
             BindApprovedChatUsers("");
