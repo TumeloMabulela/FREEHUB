@@ -165,6 +165,25 @@
             background: #f7faf8;
         }
 
+        /* The ASP.NET UpdatePanel renders a <div id="upChat"> between .fh-chat and
+           the chat panel. It must be a bounded flex column so the messages area scrolls
+           and the composer stays pinned at the bottom. */
+        #upChat {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Active chat panel: bounded-height flex column (header + project bar fixed,
+           messages scroll, composer pinned). */
+        .fh-chat-panel {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Welcome screen */
         .fh-welcome {
             flex: 1;
@@ -446,9 +465,9 @@
             </asp:Panel>
 
             <!-- ACTIVE CHAT -->
-            <asp:UpdatePanel ID="upChat" runat="server" UpdateMode="Conditional">
+            <asp:UpdatePanel ID="upChat" runat="server" UpdateMode="Conditional" ClientIDMode="Static">
                 <ContentTemplate>
-                    <asp:Panel ID="pnlChatPopup" runat="server" Visible="false" Style="display:flex; flex-direction:column; flex:1; min-height:0;">
+                    <asp:Panel ID="pnlChatPopup" runat="server" Visible="false" CssClass="fh-chat-panel">
 
                         <!-- Chat header (fixed) -->
                         <div class="fh-chat-head">
