@@ -7,6 +7,9 @@ namespace FreeHubProject
     {
         // Maximum amount allowed per single deposit to avoid overflow / large-number errors.
         private const decimal MaxDepositAmount = 20000000m;
+
+        // Maximum total balance a wallet is allowed to hold at any one time.
+        private const decimal MaxWalletBalance = 200000m;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!AuthHelper.RequireLogin(this)) return;
@@ -137,6 +140,24 @@ namespace FreeHubProject
 
             decimal newBalance =
                 currentBalance + amount;
+
+            // Enforce the maximum wallet balance. A user may top up multiple times,
+            // but the total balance may never exceed MaxWalletBalance.
+            if (newBalance > MaxWalletBalance)
+            {
+                decimal remaining = MaxWalletBalance - currentBalance;
+                if (remaining < 0m) remaining = 0m;
+
+                ShowMessage(
+                    "This deposit would exceed the maximum wallet balance of " +
+                    FormatCurrency(MaxWalletBalance) + ". Your current balance is " +
+                    FormatCurrency(currentBalance) + ", so you can add at most " +
+                    FormatCurrency(remaining) + ".",
+                    false
+                );
+
+                return;
+            }
 
             // Update wallet balance in DB
             DatabaseHelper.UpdateWalletBalance(

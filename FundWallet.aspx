@@ -127,7 +127,7 @@
                                 CssClass="fw-amount-input"
                                 TextMode="Number"
                                 min="0"
-                                max="20000000"
+                                max="200000"
                                 step="0.01"
                                 placeholder="0.00">
                             </asp:TextBox>
@@ -347,7 +347,7 @@
 
     <script type="text/javascript">
 
-        var FW_MAX_DEPOSIT = 20000000;
+        var FW_MAX_DEPOSIT = 200000;
 
         function getAmountInput() {
             return document.getElementById('<%= txtAmount.ClientID %>');
