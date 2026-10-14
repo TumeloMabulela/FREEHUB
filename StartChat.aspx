@@ -7,34 +7,12 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
-        /* ===== Viewport lock: the Messages page fills the screen; only inner panels scroll ===== */
-        body.messages-page {
-            overflow: hidden !important;
-            height: 100vh !important;
-        }
-        body.messages-page > form {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        body.messages-page > form > .main-header { flex-shrink: 0; }
-        body.messages-page > form > main {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 12px 16px;
-        }
-        body.messages-page > form > .main-footer { flex-shrink: 0; }
-
         /* ===== FreeHub Messages workspace ===== */
         .fh-msg-root {
             font-family: Arial, Helvetica, sans-serif;
             display: flex;
-            flex: 1;
-            min-height: 0;
+            height: calc(100vh - 170px);
+            min-height: 520px;
             background: #ffffff;
             border: 1px solid #e5e9e6;
             border-radius: 14px;
@@ -67,7 +45,7 @@
             min-height: 0;
         }
 
-        .fh-sidebar-head { padding: 18px 18px 10px 18px; flex-shrink: 0; }
+        .fh-sidebar-head { padding: 18px 18px 10px 18px; }
         .fh-sidebar-title { margin: 0 0 12px 0; font-size: 22px; font-weight: 800; color: #10261c; }
 
         .fh-search {
@@ -123,7 +101,7 @@
         }
         .fh-filter-chip.active { background: #eafaf0; color: #12833f; border-color: #bfe8cd; }
 
-        .fh-section-label { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; padding: 10px 18px 4px 18px; flex-shrink: 0; }
+        .fh-section-label { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; padding: 10px 18px 4px 18px; }
 
         /* Search results dropdown */
         .fh-search-results {
@@ -328,16 +306,15 @@
             width: 280px; flex-shrink: 0;
             border-left: 1px solid #e5e9e6; background: #ffffff;
             display: flex; flex-direction: column; min-height: 0;
-            /* The panel itself doesn't scroll — the body does. */
+            overflow-y: auto;
         }
         .fh-details.collapsed { display: none; }
         .fh-details-head {
             display: flex; align-items: center; justify-content: space-between;
             padding: 16px 18px; border-bottom: 1px solid #eef2ef;
-            flex-shrink: 0;
         }
         .fh-details-title { font-size: 16px; font-weight: 800; color: #10261c; }
-        .fh-details-body { padding: 16px 18px; flex: 1; overflow-y: auto; min-height: 0; }
+        .fh-details-body { padding: 16px 18px; }
         .fh-details-sub { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; margin: 16px 0 8px 0; }
         .fh-details-project { font-size: 16px; font-weight: 800; color: #10261c; margin-bottom: 4px; }
         .fh-details-status { font-size: 13px; color: #4b5b51; display: flex; align-items: center; gap: 6px; }
@@ -356,12 +333,13 @@
         /* ===== Mobile ===== */
         .fh-back-btn { display: none; }
         @media (max-width: 820px) {
-            .fh-msg-root { flex-direction: column; min-height: 0; }
+            .fh-msg-root { flex-direction: column; height: auto; min-height: 0; }
             .fh-details { display: none; }
+            /* Show contacts first; when a chat is open, hide the list and show the chat with a back button. */
             .fh-msg-root.chat-open .fh-sidebar { display: none; }
             .fh-msg-root:not(.chat-open) .fh-chat { display: none; }
-            .fh-sidebar { width: 100%; flex: 1; min-height: 0; }
-            .fh-chat { flex: 1; min-height: 0; }
+            .fh-sidebar { width: 100%; height: 70vh; }
+            .fh-chat { height: calc(100vh - 170px); }
             .fh-back-btn { display: inline-flex; }
         }
     </style>
@@ -387,11 +365,6 @@
         if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
             Sys.WebForms.PageRequestManager.getInstance().add_endRequest(scrollPopupToBottom);
         }
-
-        // Lock the body so only inner panels scroll on the Messages page.
-        document.addEventListener("DOMContentLoaded", function () {
-            document.body.classList.add("messages-page");
-        });
 
         // Collapse/expand the project details panel (client-side).
         function toggleDetails() {
