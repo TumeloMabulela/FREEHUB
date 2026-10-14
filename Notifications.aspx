@@ -115,17 +115,33 @@
 
         .nx-empty { text-align:center; color:#9ca3af; font-size:14px; padding:40px 10px; background:#fff; border:1px dashed #e2e8e4; border-radius:12px; }
 
-        /* Two-container master-detail layout. The detail panel on the right is the larger,
-           primary reading area; the list on the left is a compact index. */
-        .nx-split { display:grid; grid-template-columns: 360px 1fr; gap:20px; align-items:start; }
-        .nx-list-panel { min-width:0; }
+        /* Two-container master-detail layout. Both panels share one fixed height that fits
+           the viewport, so the page itself never grows with the number of notifications. */
+        .nx-split {
+            display:grid; grid-template-columns: 360px 1fr; gap:20px;
+            /* Shared container height: viewport minus the header/filters/tabs above it. */
+            height: calc(100vh - 300px);
+            min-height: 420px;
+        }
+        /* Each column is a full-height flex container; min-height:0 lets the inner
+           scroll area shrink and scroll instead of pushing the page taller. */
+        .nx-list-panel { min-width:0; min-height:0; height:100%; display:flex; flex-direction:column; }
         .nx-card.selected { border-left-color:#1f9d55; background:#eafaf0; box-shadow:0 4px 12px rgba(16,40,28,.1); }
 
-        /* Right detail panel (big) */
-        .nx-detail-panel { position:sticky; top:90px; }
+        /* LEFT: the list is the scroll area. The header/filters stay outside this. */
+        .nx-list-panel .nx-list {
+            flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
+            padding:2px 8px 2px 2px; /* small right padding so cards don't touch the scrollbar */
+        }
+
+        /* RIGHT: panel fills the shared height and scrolls its own content independently. */
+        .nx-detail-panel {
+            height:100%; min-height:0; display:flex; flex-direction:column;
+        }
         .nx-detail {
+            flex:1 1 auto; min-height:0; overflow-y:auto;
             background:#fff; border:1px solid #e7ece9; border-radius:16px;
-            padding:32px 34px; box-shadow:0 4px 18px rgba(16,40,28,.07); min-height:420px;
+            padding:32px 34px; box-shadow:0 4px 18px rgba(16,40,28,.07);
         }
         .nx-detail-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:22px; }
         .nx-detail-head .nx-ic { width:56px; height:56px; font-size:26px; border-radius:14px; }
@@ -149,20 +165,44 @@
         }
         .nx-act-primary:hover { opacity:.92; background:linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%); }
 
-        /* Empty detail placeholder (fills the big right panel) */
+        /* Empty detail placeholder (fills the full shared panel height) */
         .nx-detail-empty {
+            flex:1 1 auto; min-height:0;
             background:#fff; border:1px dashed #e2e8e4; border-radius:16px;
-            padding:90px 32px; text-align:center; color:#9ca3af; min-height:420px;
+            padding:40px 32px; text-align:center; color:#9ca3af;
             display:flex; flex-direction:column; align-items:center; justify-content:center;
         }
         .nx-detail-empty-icon { font-size:52px; margin-bottom:14px; opacity:.6; }
         .nx-detail-empty h3 { margin:0 0 8px 0; color:#5a6e62; font-size:19px; }
         .nx-detail-empty p { margin:0; font-size:14px; }
 
-        /* Stack to one column on small screens */
+        /* Thin, modern scrollbar in FreeHUB's green/white theme (left list + right detail). */
+        .nx-list-panel .nx-list,
+        .nx-detail { scrollbar-width: thin; scrollbar-color: #72c94b #eef3ef; }
+        .nx-list-panel .nx-list::-webkit-scrollbar,
+        .nx-detail::-webkit-scrollbar { width: 8px; }
+        .nx-list-panel .nx-list::-webkit-scrollbar-track,
+        .nx-detail::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+        .nx-list-panel .nx-list::-webkit-scrollbar-thumb,
+        .nx-detail::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #2fa86d, #72c94b);
+            border-radius: 8px; border: 2px solid #eef3ef;
+        }
+        .nx-list-panel .nx-list::-webkit-scrollbar-thumb:hover,
+        .nx-detail::-webkit-scrollbar-thumb:hover { background: #2fa86d; }
+
+        /* Responsive shared height for different screen sizes. */
+        @media (max-height: 820px) { .nx-split { height: calc(100vh - 270px); } }
+        @media (min-height: 1000px) { .nx-split { height: calc(100vh - 320px); } }
+
+        /* Stack to one column on small screens: let the page flow naturally there so the
+           list isn't cramped into a tiny scroll box on phones/tablets. */
         @media (max-width: 1000px) {
-            .nx-split { grid-template-columns: 1fr; }
-            .nx-detail-panel { position:static; }
+            .nx-split { grid-template-columns: 1fr; height:auto; min-height:0; }
+            .nx-list-panel { height:auto; display:block; }
+            .nx-list-panel .nx-list { max-height:60vh; overflow-y:auto; }
+            .nx-detail-panel { height:auto; display:block; }
+            .nx-detail, .nx-detail-empty { overflow:visible; }
         }
 
         @media (max-width: 720px) {
