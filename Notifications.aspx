@@ -48,8 +48,11 @@
 
         /* Notification list + cards */
         .nx-list { display:flex; flex-direction:column; gap:12px; }
-        .nx-card {
-            position:relative; display:flex; align-items:flex-start; gap:14px;
+        /* The card is an <a> (LinkButton). Force flex so block children inside the anchor
+           never fall back to inline rendering and split the card across lines. */
+        a.nx-card, .nx-card {
+            position:relative; display:flex !important; align-items:flex-start; gap:14px;
+            width:100%; box-sizing:border-box;
             background:#fff; border:1px solid #e7ece9; border-left:4px solid transparent;
             border-radius:12px; padding:16px; box-shadow:0 1px 3px rgba(16,40,28,.05);
             text-decoration:none; color:inherit; cursor:pointer; transition:box-shadow .15s;
@@ -102,30 +105,32 @@
 
         .nx-empty { text-align:center; color:#9ca3af; font-size:14px; padding:40px 10px; background:#fff; border:1px dashed #e2e8e4; border-radius:12px; }
 
-        /* Two-container master-detail layout */
-        .nx-split { display:grid; grid-template-columns: 1fr 380px; gap:16px; align-items:start; }
+        /* Two-container master-detail layout. The detail panel on the right is the larger,
+           primary reading area; the list on the left is a compact index. */
+        .nx-split { display:grid; grid-template-columns: 360px 1fr; gap:20px; align-items:start; }
         .nx-list-panel { min-width:0; }
         .nx-card.selected { border-left-color:#1f9d55; background:#eafaf0; box-shadow:0 4px 12px rgba(16,40,28,.1); }
 
-        /* Right detail panel */
+        /* Right detail panel (big) */
         .nx-detail-panel { position:sticky; top:90px; }
         .nx-detail {
-            background:#fff; border:1px solid #e7ece9; border-radius:14px;
-            padding:22px; box-shadow:0 1px 3px rgba(16,40,28,.05);
+            background:#fff; border:1px solid #e7ece9; border-radius:16px;
+            padding:32px 34px; box-shadow:0 4px 18px rgba(16,40,28,.07); min-height:420px;
         }
-        .nx-detail-head { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
-        .nx-detail-title { margin:0 0 6px 0; color:#10261c; font-size:17px; }
-        .nx-detail-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .nx-detail-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:22px; }
+        .nx-detail-head .nx-ic { width:56px; height:56px; font-size:26px; border-radius:14px; }
+        .nx-detail-title { margin:0 0 8px 0; color:#10261c; font-size:24px; }
+        .nx-detail-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
         .nx-detail-content {
-            color:#374151; font-size:14px; line-height:1.6; margin:0 0 20px 0;
-            padding:14px 16px; background:#f7faf8; border-radius:10px;
+            color:#374151; font-size:16px; line-height:1.75; margin:0 0 28px 0;
+            padding:20px 22px; background:#f7faf8; border-radius:12px; min-height:120px;
         }
-        .nx-detail-actions { display:flex; gap:10px; flex-wrap:wrap; }
+        .nx-detail-actions { display:flex; gap:12px; flex-wrap:wrap; }
 
         .nx-act {
             display:inline-block; text-decoration:none; cursor:pointer;
-            background:#eaf6ee; color:#0f5132; border:none; border-radius:9px;
-            padding:9px 16px; font-size:13px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
+            background:#eaf6ee; color:#0f5132; border:none; border-radius:10px;
+            padding:12px 22px; font-size:14px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
         }
         .nx-act:hover { background:#dcefe3; }
         .nx-act-primary {
@@ -134,17 +139,18 @@
         }
         .nx-act-primary:hover { opacity:.92; background:linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%); }
 
-        /* Empty detail placeholder */
+        /* Empty detail placeholder (fills the big right panel) */
         .nx-detail-empty {
-            background:#fff; border:1px dashed #e2e8e4; border-radius:14px;
-            padding:40px 24px; text-align:center; color:#9ca3af;
+            background:#fff; border:1px dashed #e2e8e4; border-radius:16px;
+            padding:90px 32px; text-align:center; color:#9ca3af; min-height:420px;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
         }
-        .nx-detail-empty-icon { font-size:40px; margin-bottom:10px; opacity:.6; }
-        .nx-detail-empty h3 { margin:0 0 6px 0; color:#5a6e62; font-size:16px; }
-        .nx-detail-empty p { margin:0; font-size:13px; }
+        .nx-detail-empty-icon { font-size:52px; margin-bottom:14px; opacity:.6; }
+        .nx-detail-empty h3 { margin:0 0 8px 0; color:#5a6e62; font-size:19px; }
+        .nx-detail-empty p { margin:0; font-size:14px; }
 
         /* Stack to one column on small screens */
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .nx-split { grid-template-columns: 1fr; }
             .nx-detail-panel { position:static; }
         }

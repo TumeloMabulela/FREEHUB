@@ -230,6 +230,19 @@ namespace FreeHubProject
             }
         }
 
+        /// <summary>Label for the primary action button, based on where the type routes to.</summary>
+        private string OpenButtonTextForType(string type)
+        {
+            switch (type)
+            {
+                case "Message": return "View Message";
+                case "Payment": return "View Wallet";
+                case "Project":
+                case "Proposal": return "View Project";
+                default: return "View Details";
+            }
+        }
+
         // ============================================================
         // TAB COUNTS + STYLES
         // ============================================================
@@ -470,8 +483,11 @@ namespace FreeHubProject
                             btnToggleRead.Text = status == "Read" ? "Mark as Unread" : "Mark as Read";
                             btnToggleArchive.Text = status == "Archived" ? "Unarchive" : "Archive";
 
-                            // "View Details" routes to the target for actionable types.
+                            // Primary action button: label + visibility depend on the type.
+                            // Project/Proposal -> View Project, Message -> View Message,
+                            // Payment -> View Wallet. System/Welcome have no target.
                             btnOpenTarget.Visible = (type == "Message" || type == "Project" || type == "Proposal" || type == "Payment");
+                            btnOpenTarget.Text = OpenButtonTextForType(type);
                         }
                     }
                 }
