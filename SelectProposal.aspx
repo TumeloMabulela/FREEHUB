@@ -63,10 +63,17 @@
             font-weight: bold; font-size: 14px;
         }
         .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-        .pl-name { color: #173f2c; font-size: 14px; font-weight: 700;
+        .pl-name { color: #10261c; font-size: 15px; font-weight: 700;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Light-green project badge with folder icon (project name shown here, once) */
+        /* Plain "Project: <name>" line under the freelancer name */
+        .pl-project-line {
+            color: #6b7280; font-size: 13px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+        .pl-project-line strong { color: #10261c; font-weight: 700; }
+
+        /* Light-green project badge with folder icon */
         .pl-project-badge {
             display: inline-flex; align-items: center; gap: 6px;
             align-self: flex-start; max-width: 100%;
@@ -211,6 +218,7 @@
                                     </div>
                                     <div class="pl-freelancer-text">
                                         <strong class="pl-name"><%# Server.HtmlEncode(Convert.ToString(Eval("freelancerName"))) %></strong>
+                                        <span class="pl-project-line">Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong></span>
                                         <span class="pl-project-badge">
                                             <span class="pl-folder" aria-hidden="true">&#128193;</span>
                                             Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong>
