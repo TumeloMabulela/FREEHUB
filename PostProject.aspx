@@ -675,40 +675,6 @@
                     </div>
 
 
-                    <div class="post-secure-card">
-
-
-                        <div class="secure-icon">
-
-                            ✓
-
-                        </div>
-
-
-                        <h3>
-
-                            Secure Project Posting
-
-                        </h3>
-
-
-                        <p>
-
-                            Your project information is protected and only visible to registered FreeHUB users.
-
-                        </p>
-
-
-                        <asp:Button
-                            ID="btnLearnMore"
-                            runat="server"
-                            Text="Learn More"
-                            CssClass="post-learn-button"
-                            CausesValidation="false"
-                            OnClick="btnLearnMore_Click" />
-
-                    </div>
-
                 </div>
 
             </div>

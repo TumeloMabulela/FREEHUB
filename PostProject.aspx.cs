@@ -317,12 +317,6 @@ namespace FreeHubProject
             pnlProjectStatus.Visible = false;
         }
 
-        // LEARN MORE
-        protected void btnLearnMore_Click(object sender, EventArgs e)
-        {
-            ShowMessage("FreeHUB protects your project information and shares it only with registered users.", true);
-        }
-
         // VALIDATE
         private bool ValidateProject()
         {
