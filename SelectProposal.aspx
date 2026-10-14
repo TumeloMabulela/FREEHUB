@@ -20,7 +20,9 @@
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
                 <div>
                     <div class="post-breadcrumb">
-                        Dashboard <span>/</span> My Projects <span>/</span> Proposals
+                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                        <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a> <span>/</span>
+                        <strong>Proposals</strong>
                     </div>
                     <h1 style="color:#173f2c; margin-top:5px;">
                         <%= IsFreelancerView() ? "My Proposals" : "Select Proposal" %>

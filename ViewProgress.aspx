@@ -16,7 +16,9 @@
                 <!-- BREADCRUMB & HEADING -->
                 <div class="notification-heading" style="margin-bottom: 24px;">
                     <div class="notification-breadcrumb">
-                        Dashboard <span>›</span> Projects <span>›</span> View Progress (<asp:Literal ID="litUserRoleHeader" runat="server" />)
+                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>›</span>
+                        <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">Projects</a> <span>›</span>
+                        <strong>View Progress (<asp:Literal ID="litUserRoleHeader" runat="server" />)</strong>
                     </div>
                     <h1>View Progress</h1>
                     <p style="color: #6b7280; font-size: 14px;">Track the real-time progress of your projects in one place.</p>

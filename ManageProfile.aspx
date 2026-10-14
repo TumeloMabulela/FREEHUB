@@ -21,7 +21,9 @@
 
                 <div class="post-page-heading">
                     <div class="post-breadcrumb">
-                        Dashboard <span>/</span> Settings <span>/</span> Manage Profile
+                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                        Settings <span>/</span>
+                        <strong>Manage Profile</strong>
                     </div>
                     <h1>Manage Profile</h1>
                     <p>Update your information, deactivate your profile or account.</p>

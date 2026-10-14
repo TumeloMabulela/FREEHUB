@@ -19,7 +19,9 @@
 
             <div class="post-page-heading">
                 <div class="post-breadcrumb">
-                    Dashboard <span>/</span> My Projects <span>/</span> Edit Project
+                    <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                    <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a> <span>/</span>
+                    <strong>Edit Project</strong>
                 </div>
                 <h1>Edit Project</h1>
                 <p>Update your project details below and save the changes.</p>

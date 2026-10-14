@@ -33,11 +33,11 @@
             <!-- BREADCRUMB -->
             <div class="rate-breadcrumb">
 
-                My Projects
+                <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a>
 
                 <span>&#8250;</span>
 
-                Completed Projects
+                <a href="<%= ResolveUrl("~/CompletedProjects.aspx") %>" class="breadcrumb-link">Completed Projects</a>
 
                 <span>&#8250;</span>
 

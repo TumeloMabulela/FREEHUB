@@ -15,7 +15,8 @@
             <div class="notifications-page">
                 <div class="notification-heading">
                     <div class="notification-breadcrumb">
-                        Dashboard <span>›</span> Notifications
+                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>›</span>
+                        <strong>Notifications</strong>
                     </div>
                     <h1>Notifications</h1>
                     <p>View your latest system alerts and updates.</p>
@@ -89,7 +90,6 @@
         </span>
         <div>
             <h3><asp:Label ID="lblSelectedTitle" runat="server"></asp:Label></h3>
-            <p><asp:Label ID="lblSelectedDescription" runat="server"></asp:Label></p>
             <small><asp:Label ID="lblSelectedTime" runat="server"></asp:Label></small>
         </div>
     </div>

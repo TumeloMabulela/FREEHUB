@@ -20,7 +20,9 @@
             <!-- BREADCRUMB -->
             <div class="post-page-heading">
                 <div class="post-breadcrumb">
-                    Dashboard <span>/</span> Browse Projects <span>/</span> Submit Proposal
+                    <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                    <a href="<%= ResolveUrl("~/BrowseProjects.aspx") %>" class="breadcrumb-link">Browse Projects</a> <span>/</span>
+                    <strong>Submit Proposal</strong>
                 </div>
                 <h1>Submit Proposal</h1>
                 <p>Send your proposal to the employer for this project.</p>

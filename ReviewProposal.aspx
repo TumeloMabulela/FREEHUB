@@ -21,7 +21,9 @@
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
                 <div style="min-width:0;">
                     <div class="post-breadcrumb">
-                        Dashboard <span>/</span> Proposals <span>/</span> Review Proposal
+                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                        <a href="<%= ResolveUrl("~/SelectProposal.aspx") %>" class="breadcrumb-link">Proposals</a> <span>/</span>
+                        <strong>Review Proposal</strong>
                     </div>
                     <h1 style="color:#173f2c; margin-top:5px;">Review Proposal</h1>
                     <p style="color:#666; font-size:14px;">Review the proposal details before making your decision.</p>

@@ -20,7 +20,9 @@
             <!-- BREADCRUMB & HEADER -->
             <div class="pd-header">
                 <div class="post-breadcrumb">
-                    Dashboard <span>/</span> Projects <span>/</span> Project Details
+                    <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                    <a href="<%= ResolveUrl("~/BrowseProjects.aspx") %>" class="breadcrumb-link">Projects</a> <span>/</span>
+                    <strong>Project Details</strong>
                 </div>
                 <div class="pd-title-row" style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>

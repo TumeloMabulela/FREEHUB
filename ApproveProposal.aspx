@@ -24,15 +24,15 @@
             <!-- BREADCRUMB -->
             <div class="approve-breadcrumb">
 
-                Dashboard
+                <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a>
 
                 <span>&#8250;</span>
 
-                My Projects
+                <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a>
 
                 <span>&#8250;</span>
 
-                Review Proposal
+                <a href="<%= ResolveUrl("~/SelectProposal.aspx") %>" class="breadcrumb-link">Review Proposal</a>
 
                 <span>&#8250;</span>
 

@@ -26,7 +26,7 @@
 
             <div class="completed-breadcrumb">
 
-                My Projects
+                <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a>
 
                 <span>&#8250;</span>
 
