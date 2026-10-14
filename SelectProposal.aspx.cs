@@ -84,32 +84,42 @@ namespace FreeHubProject
 
                 if (isEmployer)
                 {
-                    // Count the two categories from the full set (dynamic, not hardcoded):
-                    //   Not Yet Approved = Pending (eligible for approval). Rejected /
-                    //   Withdrawn / Cancelled are NOT treated as pending.
-                    //   Approved = status 'Approved'.
-                    int pendingCount = 0, approvedCount = 0;
+                    // Count each category from the full set (dynamic, not hardcoded):
+                    //   Pending Approval = status 'Pending' (genuinely awaiting a decision).
+                    //   Approved = status 'Approved'. Rejected = status 'Rejected'.
+                    //   Withdrawn/Cancelled (if any) are not counted in these three tabs.
+                    int pendingCount = 0, approvedCount = 0, rejectedCount = 0;
                     foreach (DataRow r in proposals.Rows)
                     {
                         string st = Convert.ToString(r["status"]).Trim();
                         if (st.Equals("Approved", StringComparison.OrdinalIgnoreCase)) approvedCount++;
+                        else if (st.Equals("Rejected", StringComparison.OrdinalIgnoreCase)) rejectedCount++;
                         else if (st.Equals("Pending", StringComparison.OrdinalIgnoreCase)) pendingCount++;
                     }
-                    lblPendingCount.Text = pendingCount.ToString();
-                    lblApprovedCount.Text = approvedCount.ToString();
+
+                    // Set each tab's full label + count badge as inline HTML on the LinkButton
+                    // Text, so the labels/counts can never be lost across postbacks.
+                    lnkTabPending.Text = "Pending Approval <span class=\"pl-tab-count\">" + pendingCount + "</span>";
+                    lnkTabApproved.Text = "Approved <span class=\"pl-tab-count\">" + approvedCount + "</span>";
+                    lnkTabRejected.Text = "Rejected <span class=\"pl-tab-count\">" + rejectedCount + "</span>";
 
                     // Highlight the active tab (FreeHUB green).
-                    lnkTabPending.CssClass = CurrentFilter == "Approved" ? "pl-tab" : "pl-tab pl-tab-active";
+                    lnkTabPending.CssClass = CurrentFilter == "Pending" ? "pl-tab pl-tab-active" : "pl-tab";
                     lnkTabApproved.CssClass = CurrentFilter == "Approved" ? "pl-tab pl-tab-active" : "pl-tab";
+                    lnkTabRejected.CssClass = CurrentFilter == "Rejected" ? "pl-tab pl-tab-active" : "pl-tab";
 
                     // Build the filtered view for the selected tab.
                     DataTable view = proposals.Clone();
                     foreach (DataRow r in proposals.Rows)
                     {
                         string st = Convert.ToString(r["status"]).Trim();
-                        bool include = CurrentFilter == "Approved"
-                            ? st.Equals("Approved", StringComparison.OrdinalIgnoreCase)
-                            : st.Equals("Pending", StringComparison.OrdinalIgnoreCase);
+                        bool include;
+                        if (CurrentFilter == "Approved")
+                            include = st.Equals("Approved", StringComparison.OrdinalIgnoreCase);
+                        else if (CurrentFilter == "Rejected")
+                            include = st.Equals("Rejected", StringComparison.OrdinalIgnoreCase);
+                        else
+                            include = st.Equals("Pending", StringComparison.OrdinalIgnoreCase);
                         if (include) view.ImportRow(r);
                     }
                     proposals = view;
@@ -128,6 +138,9 @@ namespace FreeHubProject
                     if (CurrentFilter == "Approved")
                         pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
                             "<h3>No approved proposals yet</h3><p>Proposals you approve will appear here.</p>"));
+                    else if (CurrentFilter == "Rejected")
+                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
+                            "<h3>No rejected proposals found.</h3><p>Proposals you reject will appear here.</p>"));
                     else
                         pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
                             "<h3>No proposals awaiting approval</h3><p>Pending proposals for your projects will appear here for review.</p>"));
@@ -140,16 +153,21 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>Active approval filter tab: "Pending" (default) or "Approved".</summary>
+        /// <summary>Active approval filter tab: "Pending" (default), "Approved" or "Rejected".</summary>
         private string CurrentFilter
         {
-            get { return ViewState["ProposalFilter"] as string == "Approved" ? "Approved" : "Pending"; }
+            get
+            {
+                string f = ViewState["ProposalFilter"] as string;
+                return (f == "Approved" || f == "Rejected") ? f : "Pending";
+            }
             set { ViewState["ProposalFilter"] = value; }
         }
 
         protected void FilterTab_Command(object sender, System.Web.UI.WebControls.CommandEventArgs e)
         {
-            CurrentFilter = e.CommandName == "Approved" ? "Approved" : "Pending";
+            string cmd = Convert.ToString(e.CommandName);
+            CurrentFilter = (cmd == "Approved" || cmd == "Rejected") ? cmd : "Pending";
             LoadProposals();
 
             // Reset the proposal list scrollbar to the top on filter switch.
