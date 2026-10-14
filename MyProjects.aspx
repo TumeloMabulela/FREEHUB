@@ -77,7 +77,8 @@
                     </span>
                 </asp:HyperLink>
 
-                <asp:DropDownList ID="ddlSortProjects" runat="server" CssClass="my-projects-sort mp-sort">
+                <asp:DropDownList ID="ddlSortProjects" runat="server" CssClass="my-projects-sort mp-sort"
+                    AutoPostBack="true" OnSelectedIndexChanged="ddlSortProjects_SelectedIndexChanged">
                     <asp:ListItem Text="Newest First" Value="Newest" />
                     <asp:ListItem Text="Oldest First" Value="Oldest" />
                 </asp:DropDownList>

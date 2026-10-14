@@ -35,8 +35,27 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
+                // Restore the saved sort preference so it persists across tab navigations
+                // (the tabs are plain GET links, so the dropdown would otherwise reset).
+                string savedSort = Session["MyProjectsSort"] as string;
+                if (savedSort == "Oldest" || savedSort == "Newest")
+                {
+                    System.Web.UI.WebControls.ListItem item = ddlSortProjects.Items.FindByValue(savedSort);
+                    if (item != null)
+                    {
+                        ddlSortProjects.ClearSelection();
+                        item.Selected = true;
+                    }
+                }
+
                 LoadProjects();
             }
+        }
+
+        /// <summary>Current sort direction from the dropdown (defaults to Newest).</summary>
+        private string CurrentSort
+        {
+            get { return ddlSortProjects.SelectedValue == "Oldest" ? "Oldest" : "Newest"; }
         }
 
         private void LoadProjects()
@@ -101,7 +120,14 @@ namespace FreeHubProject
                     }
                 }
 
-                rptProjects.DataSource = filtered;
+                // Sort by the ACTUAL posting DateTime (not a formatted string), with projectID
+                // as a stable tie-breaker. Newest First = DESC, Oldest First = ASC.
+                string direction = CurrentSort == "Oldest" ? "ASC" : "DESC";
+                DataView view = filtered.DefaultView;
+                view.Sort = "dateCreated " + direction + ", projectID " + direction;
+                DataTable sorted = view.ToTable();
+
+                rptProjects.DataSource = sorted;
                 rptProjects.DataBind();
 
                 // Toggle panel visibility
@@ -126,6 +152,18 @@ namespace FreeHubProject
                 lblCancelledCount.Text = "0";
             }
         }
+        protected void ddlSortProjects_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            // Remember the choice so it carries across the Active/Completed/Cancelled tab links.
+            Session["MyProjectsSort"] = CurrentSort;
+            LoadProjects();
+
+            // Reset the project list scrollbar to the top so the first item in the new
+            // order is visible; the main page scroll position is left untouched.
+            ClientScript.RegisterStartupScript(GetType(), "mpScrollTop",
+                "var l=document.querySelector('.mp-list'); if(l){l.scrollTop=0;}", true);
+        }
+
         protected void rptProjects_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             if (e.CommandName == "DeleteProject")
