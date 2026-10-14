@@ -14,9 +14,23 @@ html {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    /* Standard default text size for the whole site: matches the left sidebar menu
+       items (.sidebar-item uses 13px). Elements that need a different size (headings,
+       badges, icons) still set their own font-size and override this inherited default. */
+    font-size: 13px;
     background-color: #f5f7f5;
     color: #243328;
     line-height: 1.6;
+}
+
+/* Form controls don't inherit font-family/size by default, so make them match the
+   site default too (keeps inputs, dropdowns, textareas and buttons consistent). */
+input,
+select,
+textarea,
+button {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
 }
 
 
@@ -12650,7 +12664,7 @@ FREEHUB HOME PAGE
     gap: 8px;
     margin-bottom: 16px;
     color: #899499;
-    font-size: 10px;
+    font-size: 12px;
 }
 
     .project-breadcrumb a,
@@ -12689,7 +12703,7 @@ FREEHUB HOME PAGE
     .my-projects-heading p {
         margin: 0;
         color: #758188;
-        font-size: 12px;
+        font-size: 13px;
     }
 
 .my-projects-post-button {
@@ -12697,7 +12711,7 @@ FREEHUB HOME PAGE
     color: #ffffff;
     background: linear-gradient(90deg, #0a9a5b, #0965d6);
     border-radius: 7px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
 }
@@ -12722,7 +12736,7 @@ FREEHUB HOME PAGE
     padding: 11px 17px;
     color: #68747b;
     border-radius: 6px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
 }
@@ -12734,7 +12748,7 @@ FREEHUB HOME PAGE
         background: #edf1f2;
         border-radius: 11px;
         text-align: center;
-        font-size: 9px;
+        font-size: 11px;
     }
 
 .my-projects-tab-active {
@@ -12775,7 +12789,7 @@ FREEHUB HOME PAGE
     .my-projects-list-heading p {
         margin: 0;
         color: #7b878d;
-        font-size: 10px;
+        font-size: 12px;
     }
 
 .my-projects-sort {
@@ -12785,7 +12799,7 @@ FREEHUB HOME PAGE
     background: #ffffff;
     border: 1px solid #d9e0e2;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .my-project-card {
@@ -12823,13 +12837,13 @@ FREEHUB HOME PAGE
     .my-project-title-row h3 {
         margin: 0;
         color: #39474e;
-        font-size: 14px;
+        font-size: 16px;
     }
 
 .my-project-status {
     padding: 4px 8px;
     border-radius: 4px;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
 }
 
@@ -12851,7 +12865,7 @@ FREEHUB HOME PAGE
 .my-project-information > p {
     margin: 8px 0 11px;
     color: #77848a;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .my-project-meta {
@@ -12862,7 +12876,7 @@ FREEHUB HOME PAGE
 
     .my-project-meta span {
         color: #899499;
-        font-size: 9px;
+        font-size: 12px;
     }
 
     .my-project-meta strong {
@@ -12878,7 +12892,7 @@ FREEHUB HOME PAGE
 .my-project-primary-button {
     padding: 10px 13px;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
 }
@@ -12919,13 +12933,13 @@ FREEHUB HOME PAGE
     .my-projects-empty h3 {
         margin: 0 0 7px;
         color: #546168;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .my-projects-empty p {
         margin: 0;
         color: #899499;
-        font-size: 10px;
+        font-size: 13px;
     }
 
 
