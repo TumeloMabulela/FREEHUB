@@ -26,15 +26,15 @@
 
                 <div class="post-breadcrumb">
 
-                    Dashboard
+                    <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="post-breadcrumb-link">Dashboard</a>
 
                     <span>/</span>
 
-                    My Projects
+                    <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="post-breadcrumb-link">My Projects</a>
 
                     <span>/</span>
 
-                    Post Project
+                    <span class="post-breadcrumb-current">Post Project</span>
 
                 </div>
 

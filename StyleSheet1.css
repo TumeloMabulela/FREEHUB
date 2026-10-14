@@ -7177,6 +7177,22 @@ FREEHUB HOME PAGE
         color: #b2bac4;
     }
 
+    .post-breadcrumb-link {
+        color: #8a95a2;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+        .post-breadcrumb-link:hover {
+            color: #1f9d55;
+            text-decoration: underline;
+        }
+
+    .post-breadcrumb-current {
+        color: #27364a;
+        font-weight: 600;
+    }
+
 
 .post-page-heading h1 {
     margin: 0;
