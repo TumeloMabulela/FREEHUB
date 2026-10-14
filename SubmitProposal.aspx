@@ -60,6 +60,7 @@
                         <label>Cover Letter <span>*</span></label>
                         <asp:TextBox ID="txtCoverLetter" runat="server"
                             CssClass="post-textarea" TextMode="MultiLine" Rows="8"
+                            data-fh-format="true"
                             placeholder="Introduce yourself, explain your relevant experience, and describe how you would approach this project..." />
                     </div>
 
@@ -145,6 +146,8 @@
         </section>
 
     </div>
+
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
 

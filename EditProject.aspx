@@ -69,7 +69,7 @@
                     <div class="post-field">
                         <label>Project Description <span>*</span></label>
                         <asp:TextBox ID="txtDescription" runat="server" CssClass="post-textarea"
-                            TextMode="MultiLine" Rows="6" />
+                            TextMode="MultiLine" Rows="6" data-fh-format="true" />
                     </div>
 
                     <!-- BUDGET -->
@@ -154,6 +154,8 @@
         </section>
 
     </div>
+
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
 

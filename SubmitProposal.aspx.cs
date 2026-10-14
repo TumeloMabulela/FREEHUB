@@ -57,6 +57,10 @@ namespace FreeHubProject
 
         protected void btnSubmitProposal_Click(object sender, EventArgs e)
         {
+            // Normalise the pasted/typed cover letter into clean paragraphs before
+            // validating and saving, so the stored value and the 50-char check match.
+            txtCoverLetter.Text = TextHelper.NormalizeDescription(txtCoverLetter.Text);
+
             // Validate
             if (string.IsNullOrWhiteSpace(txtCoverLetter.Text))
             {

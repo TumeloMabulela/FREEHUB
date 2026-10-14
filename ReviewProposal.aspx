@@ -80,7 +80,7 @@
                 <!-- COVER LETTER -->
                 <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:25px; min-width:0; max-width:100%; overflow:hidden;">
                     <h3 style="color:#173f2c; margin-bottom:15px;">Cover Letter</h3>
-                    <p style="color:#444; font-size:14px; line-height:1.8; margin:0; max-width:100%; white-space:pre-wrap; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;">
+                    <p style="color:#444; font-size:14px; line-height:1.8; margin:0; max-width:100%; white-space:pre-wrap; text-align:justify; word-wrap:break-word; overflow-wrap:anywhere; word-break:break-word;">
                         <asp:Label ID="lblCoverLetter" runat="server" />
                     </p>
                 </div>

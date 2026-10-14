@@ -13683,6 +13683,11 @@ FREEHUB HOME PAGE
     color: #444;
     font-size: 14px;
     line-height: 1.6;
+    /* Show saved paragraph breaks and justify the text (wraps naturally). */
+    white-space: pre-wrap;
+    text-align: justify;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .pd-meta-row {

@@ -108,6 +108,7 @@
     <Content Include="PrivacyPolicy.aspx" />
     <Content Include="SelectProposal.aspx" />
     <Content Include="StyleSheet1.css" />
+    <Content Include="fhText.js" />
     <Content Include="Transactions.aspx" />
     <Content Include="ViewProgress.aspx" />
     <Content Include="Wallet.aspx" />
@@ -303,6 +304,7 @@
     </Compile>
     <Compile Include="AuthHelper.cs" />
     <Compile Include="TimeHelper.cs" />
+    <Compile Include="TextHelper.cs" />
     <Compile Include="Sidebar.ascx.cs">
       <DependentUpon>Sidebar.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

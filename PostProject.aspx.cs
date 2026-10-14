@@ -53,6 +53,10 @@ namespace FreeHubProject
         // POST PROJECT - Save to database
         protected void btnSubmitProject_Click(object sender, EventArgs e)
         {
+            // Normalise the pasted/typed description into clean paragraphs BEFORE validating
+            // and saving, so the stored value and the 50-char check use the cleaned text.
+            txtDescription.Text = TextHelper.NormalizeDescription(txtDescription.Text);
+
             if (!ValidateProject()) return;
 
             int employerId = GetEmployerId();

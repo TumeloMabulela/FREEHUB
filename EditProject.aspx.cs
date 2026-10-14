@@ -108,6 +108,9 @@ namespace FreeHubProject
                 return;
             }
 
+            // Normalise the description into clean paragraphs before validating/saving.
+            txtDescription.Text = TextHelper.NormalizeDescription(txtDescription.Text);
+
             // Validation checks...
             if (string.IsNullOrWhiteSpace(txtProjectTitle.Text) || string.IsNullOrWhiteSpace(ddlCategory.SelectedValue) ||
                 string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtBudget.Text) ||

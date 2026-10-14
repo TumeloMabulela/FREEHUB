@@ -277,6 +277,7 @@
                             CssClass="post-textarea"
                             TextMode="MultiLine"
                             Rows="7"
+                            data-fh-format="true"
                             placeholder="Example: I need a responsive e-commerce website with a product catalogue, shopping cart, and secure checkout. Please include the key features, any design preferences, deliverables, and the timeline you expect. (At least 50 characters.)">
                         </asp:TextBox>
 
@@ -926,6 +927,8 @@
             border-color: #d4474f !important;
         }
     </style>
+
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
 
