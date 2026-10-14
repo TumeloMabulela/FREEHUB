@@ -7725,6 +7725,29 @@ FREEHUB HOME PAGE
 }
 
 
+/* Medium screens: keep labels but trim the sidebar so content gets more room. */
+@media screen and (max-width:1100px) {
+
+    .freehub-sidebar {
+        width: 172px;
+        min-width: 172px;
+        padding: 20px 10px;
+    }
+
+
+    .sidebar-item {
+        gap: 10px;
+        padding: 11px 11px;
+        font-size: 12.5px;
+    }
+
+
+    .freehub-main-content {
+        padding: 22px;
+    }
+}
+
+
 @media screen and (max-width:800px) {
 
     .freehub-sidebar {
@@ -7736,16 +7759,33 @@ FREEHUB HOME PAGE
 
     .sidebar-item {
         justify-content: center;
+        gap: 0;
         padding: 12px 5px;
     }
 
 
+        /* Icon-only rail: hide the text label (the label is the span after the icon). */
         .sidebar-item span:last-child {
             display: none;
         }
 
 
+    .sidebar-icon {
+        font-size: 18px;
+    }
+
+
     .sidebar-heading {
+        display: none;
+    }
+
+
+    /* Back pill shrinks to just the circle arrow in the narrow rail. */
+    .freehub-sidebar .fh-back-pill {
+        margin: 6px auto 10px !important;
+        padding: 6px;
+    }
+    .freehub-sidebar .fh-back-text {
         display: none;
     }
 
@@ -7763,6 +7803,7 @@ FREEHUB HOME PAGE
 
 @media screen and (max-width:600px) {
 
+    /* Sidebar becomes a horizontal top strip that scrolls sideways. */
     .freehub-dashboard-layout {
         display: block;
     }
@@ -7772,13 +7813,48 @@ FREEHUB HOME PAGE
         width: 100%;
         min-width: 100%;
         min-height: auto;
+        padding: 8px 10px;
         display: flex;
+        align-items: center;
+        gap: 6px;
         overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        /* Hide the horizontal scrollbar for a clean strip (still scrollable by swipe). */
+        scrollbar-width: none;
+        border-right: none;
+        border-bottom: 1px solid #e2e7ed;
+        white-space: nowrap;
     }
+    .freehub-sidebar::-webkit-scrollbar { display: none; }
 
 
     .sidebar-section {
+        display: flex;
         flex-direction: row;
+        gap: 6px;
+        flex: 0 0 auto;
+    }
+
+
+    /* Show icon + label again as compact horizontal pills, and keep them from shrinking. */
+    .sidebar-item {
+        flex: 0 0 auto;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 14px;
+        font-size: 12.5px;
+        white-space: nowrap;
+    }
+    .sidebar-item span:last-child {
+        display: inline;
+    }
+
+
+    /* No heading and no Back pill in the horizontal strip (they add clutter). */
+    .sidebar-heading,
+    .freehub-sidebar .sidebar-back {
+        display: none;
     }
 
 
