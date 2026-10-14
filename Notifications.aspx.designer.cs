@@ -13,185 +13,91 @@ namespace FreeHubProject
 
     public partial class Notifications
     {
-
-        /// <summary>
-        /// SidebarControl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>SidebarControl control.</summary>
         protected global::FreeHubProject.Sidebar SidebarControl;
 
-        /// <summary>
-        /// pnlNotificationStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnMarkAllRead control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnMarkAllRead;
+
+        /// <summary>pnlNotificationStatus control.</summary>
         protected global::System.Web.UI.WebControls.Panel pnlNotificationStatus;
 
-        /// <summary>
-        /// lblNotificationStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblNotificationStatus control.</summary>
         protected global::System.Web.UI.WebControls.Label lblNotificationStatus;
 
-        /// <summary>
-        /// btnAll control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>txtSearch control.</summary>
+        protected global::System.Web.UI.WebControls.TextBox txtSearch;
+
+        /// <summary>btnDoSearch control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnDoSearch;
+
+        /// <summary>ddlType control.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlType;
+
+        /// <summary>ddlTime control.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlTime;
+
+        /// <summary>btnAll control.</summary>
         protected global::System.Web.UI.WebControls.Button btnAll;
 
-        /// <summary>
-        /// btnUnread control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnUnread control.</summary>
         protected global::System.Web.UI.WebControls.Button btnUnread;
 
-        /// <summary>
-        /// btnArchived control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnProjects control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnProjects;
+
+        /// <summary>btnMessages control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnMessages;
+
+        /// <summary>btnSystem control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnSystem;
+
+        /// <summary>btnPayments control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnPayments;
+
+        /// <summary>btnArchived control.</summary>
         protected global::System.Web.UI.WebControls.Button btnArchived;
 
-        /// <summary>
-        /// rptNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>rptNotifications control.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptNotifications;
 
-        /// <summary>
-        /// lblNoNotifications control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblNoNotifications control.</summary>
         protected global::System.Web.UI.WebControls.Label lblNoNotifications;
 
-        /// <summary>
-        /// lblReadStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblReadStatus;
+        /// <summary>pnlDetailsModal control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlDetailsModal;
 
-        /// <summary>
-        /// pnlSelectedNotification control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlSelectedNotification;
-
-        /// <summary>
-        /// lblSelectedIcon control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblSelectedIcon control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedIcon;
 
-        /// <summary>
-        /// lblSelectedTitle control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblSelectedTitle control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedTitle;
 
-        /// <summary>
-        /// lblSelectedDescription control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSelectedDescription;
-
-        /// <summary>
-        /// lblSelectedTime control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblSelectedTime control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedTime;
 
-        /// <summary>
-        /// lblSelectedPreview control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblSelectedPreview control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedPreview;
 
-        /// <summary>
-        /// btnViewMessage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewMessage;
+        /// <summary>btnOpenTarget control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnOpenTarget;
 
-        /// <summary>
-        /// btnViewProject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewProject;
-
-        /// <summary>
-        /// btnToggleRead control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnToggleRead control.</summary>
         protected global::System.Web.UI.WebControls.Button btnToggleRead;
 
-        /// <summary>
-        /// btnToggleArchive control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnToggleArchive control.</summary>
         protected global::System.Web.UI.WebControls.Button btnToggleArchive;
 
-        /// <summary>
-        /// lblSelectNotification control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSelectNotification;
+        /// <summary>btnCloseDetails control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCloseDetails;
+
+        /// <summary>lblReadStatus control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblReadStatus;
+
+        /// <summary>btnViewMessage control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnViewMessage;
+
+        /// <summary>btnViewProject control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnViewProject;
     }
 }
