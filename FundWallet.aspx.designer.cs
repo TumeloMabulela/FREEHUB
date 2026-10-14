@@ -90,13 +90,13 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Button btn5000;
 
         /// <summary>
-        /// btnOther control.
+        /// btn100000 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnOther;
+        protected global::System.Web.UI.WebControls.Button btn100000;
 
         /// <summary>
         /// rblPaymentMethod control.

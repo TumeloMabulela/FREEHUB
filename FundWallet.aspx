@@ -201,13 +201,13 @@
                                 OnClick="btn5000_Click" />
 
                             <asp:Button
-                                ID="btnOther"
+                                ID="btn100000"
                                 runat="server"
-                                Text="Other"
+                                Text="R100,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setOtherAmount(); return false;"
-                                OnClick="btnOther_Click" />
+                                OnClientClick="setQuickAmount(100000); return false;"
+                                OnClick="btn100000_Click" />
 
                         </div>
 
@@ -400,15 +400,6 @@
             var input = getAmountInput();
             if (input) {
                 input.value = String(Math.round(amount));
-                fwSetError('');
-                input.focus();
-            }
-        }
-
-        function setOtherAmount() {
-            var input = getAmountInput();
-            if (input) {
-                input.value = '';
                 fwSetError('');
                 input.focus();
             }

@@ -55,14 +55,9 @@ namespace FreeHubProject
             SetAmount(5000.00m);
         }
 
-        protected void btnOther_Click(object sender, EventArgs e)
+        protected void btn100000_Click(object sender, EventArgs e)
         {
-            txtAmount.Text = "";
-
-            ShowMessage(
-                "Enter your preferred amount.",
-                true
-            );
+            SetAmount(100000.00m);
         }
 
         private void SetAmount(decimal amount)
