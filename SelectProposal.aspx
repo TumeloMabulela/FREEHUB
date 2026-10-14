@@ -14,8 +14,10 @@
         /* ===== Proposal list redesign (compact horizontal cards) =====
            Uses FreeHUB's existing green/white palette and the default 13px text size. */
 
-        /* Two containers: scrollable proposals list on the left, tips on the right. */
-        .pl-layout { display: grid; grid-template-columns: 1fr 300px; gap: 25px; align-items: start; }
+        /* Two containers: scrollable proposals list on the left, tips on the right.
+           minmax(0,1fr) lets the left column shrink so its cards never force a
+           horizontal scrollbar; a slightly narrower tips column gives the list room. */
+        .pl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px; align-items: start; }
 
         /* LEFT container: the proposals list scrolls inside its own box so the page
            doesn't grow endlessly and the tips panel stays visible beside it. */
@@ -36,53 +38,55 @@
         }
         .pl-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
 
-        /* One horizontal card per proposal */
+        /* One horizontal card per proposal. overflow-x:hidden + shrinkable children
+           guarantee the card never pushes a horizontal scrollbar. */
         .pl-card {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 12px;
             background: #ffffff;
             border: 1px solid #e8ece9;
             border-radius: 12px;
-            padding: 16px 20px;
+            padding: 14px 16px;
             margin-bottom: 12px;
             box-shadow: 0 1px 3px rgba(16, 40, 28, 0.06);
+            overflow: hidden;
         }
         .pl-card:hover { box-shadow: 0 6px 16px rgba(16, 40, 28, 0.10); }
 
-        /* Freelancer block */
-        .pl-freelancer { display: flex; align-items: center; gap: 12px; flex: 0 0 190px; min-width: 0; }
+        /* Freelancer block — shrinkable */
+        .pl-freelancer { display: flex; align-items: center; gap: 10px; flex: 1 1 150px; min-width: 0; }
         .pl-avatar {
-            width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
+            width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
             background: #2e7d56; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 15px;
+            font-weight: bold; font-size: 14px;
         }
         .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; }
-        .pl-name { color: #173f2c; font-size: 14px; font-weight: 700;
+        .pl-name { color: #173f2c; font-size: 13px; font-weight: 700;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .pl-role { color: #7b878d; font-size: 12px; }
 
-        /* A labelled field (label on top, value below) */
-        .pl-field { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        /* A labelled field (label on top, value below) — all shrinkable */
+        .pl-field { display: flex; align-items: center; gap: 8px; min-width: 0; }
         .pl-field-text { display: flex; flex-direction: column; min-width: 0; }
-        .pl-label { color: #8a949a; font-size: 12px; }
+        .pl-label { color: #8a949a; font-size: 11px; white-space: nowrap; }
         .pl-value { color: #173f2c; font-size: 13px; font-weight: 700;
                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .pl-project { flex: 1 1 170px; display: flex; flex-direction: column; gap: 2px; }
-        .pl-project-name { color: #173f2c; font-size: 14px; font-weight: 700;
+        .pl-project { flex: 1 1 110px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .pl-project-name { color: #173f2c; font-size: 13px; font-weight: 700;
                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .pl-rate { flex: 0 0 auto; }
-        .pl-rate .pl-value { color: #10261c; }   /* allow room for large amounts */
-        .pl-time { flex: 0 0 auto; }
-        .pl-date { flex: 0 0 auto; }
+        .pl-rate { flex: 1 1 auto; min-width: 0; }
+        .pl-rate .pl-value { color: #10261c; }
+        .pl-time { flex: 0 1 auto; min-width: 0; }
+        .pl-date { flex: 0 1 auto; min-width: 0; }
 
-        /* Round pastel icon chips */
+        /* Round pastel icon chips (smaller to save width) */
         .pl-icon {
-            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
+            width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
         }
         .pl-icon-rate { background: #e5f4ea; }
         .pl-icon-time { background: #e6f0ff; }
@@ -91,8 +95,8 @@
         /* Status badge */
         .pl-status-wrap { flex: 0 0 auto; }
         .pl-badge {
-            display: inline-block; padding: 5px 12px; border-radius: 14px;
-            font-size: 12px; font-weight: 700; text-align: center; white-space: nowrap;
+            display: inline-block; padding: 5px 10px; border-radius: 14px;
+            font-size: 11px; font-weight: 700; text-align: center; white-space: nowrap;
         }
         .pl-badge-pending  { color: #8a5a00; background: #fff3cd; }
         .pl-badge-approved { color: #155724; background: #d4edda; }
@@ -100,11 +104,11 @@
         .pl-badge-withdrawn{ color: #4b5563; background: #e5e7eb; }
         .pl-badge-default  { color: #4b5563; background: #eef2f5; }
 
-        /* Action buttons */
-        .pl-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; margin-left: auto; }
+        /* Action buttons (compact so they fit without overflow) */
+        .pl-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .pl-btn {
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 9px 16px; border-radius: 22px; font-size: 13px; font-weight: 600;
+            padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
             cursor: pointer; white-space: nowrap; border: 1px solid transparent;
         }
         .pl-btn-view {
