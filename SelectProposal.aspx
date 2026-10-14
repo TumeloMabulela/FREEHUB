@@ -38,98 +38,90 @@
         }
         .pl-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
 
-        /* One horizontal card per proposal. overflow-x:hidden + shrinkable children
-           guarantee the card never pushes a horizontal scrollbar. */
+        /* Card: left zone (freelancer) | divider | right zone (meta + status + actions) */
         .pl-card {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            align-items: stretch;
+            gap: 24px;
             background: #ffffff;
             border: 1px solid #e8ece9;
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 14px;
             box-shadow: 0 1px 3px rgba(16, 40, 28, 0.06);
-            overflow: hidden;
         }
         .pl-card:hover { box-shadow: 0 6px 16px rgba(16, 40, 28, 0.10); }
 
-        /* Freelancer block — name + project badge beneath it (shrinkable) */
-        .pl-freelancer { display: flex; align-items: center; gap: 10px; flex: 1 1 230px; min-width: 0; }
+        /* LEFT zone: avatar + name + project badge */
+        .pl-left { display: flex; align-items: flex-start; gap: 14px; flex: 1 1 260px; min-width: 0; }
         .pl-avatar {
-            width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+            width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
             background: #2e7d56; color: #fff;
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 14px;
+            font-weight: bold; font-size: 15px;
         }
-        .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-        .pl-name { color: #10261c; font-size: 15px; font-weight: 700;
+        .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+        .pl-name { color: #10261c; font-size: 16px; font-weight: 700;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Plain "Project: <name>" line under the freelancer name */
-        .pl-project-line {
-            color: #6b7280; font-size: 13px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-        }
-        .pl-project-line strong { color: #10261c; font-weight: 700; }
-
-        /* Light-green project badge with folder icon */
+        /* Light-green project badge with folder icon (project shown once, here) */
         .pl-project-badge {
-            display: inline-flex; align-items: center; gap: 6px;
+            display: inline-flex; align-items: center; gap: 7px;
             align-self: flex-start; max-width: 100%;
-            padding: 4px 10px; border-radius: 14px;
+            padding: 6px 12px; border-radius: 8px;
             background: #e5f4ea; color: #2e7d56;
-            font-size: 12px; font-weight: 600;
+            font-size: 13px; font-weight: 600;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .pl-project-badge strong { color: #173f2c; font-weight: 700; }
-        .pl-folder { font-size: 13px; flex-shrink: 0; }
+        .pl-folder { font-size: 14px; flex-shrink: 0; }
 
-        /* A labelled field (label on top, value below) — all shrinkable */
-        .pl-field { display: flex; align-items: center; gap: 8px; min-width: 0; }
-        .pl-field-text { display: flex; flex-direction: column; min-width: 0; }
-        .pl-label { color: #8a949a; font-size: 11px; white-space: nowrap; }
-        .pl-value { color: #173f2c; font-size: 13px; font-weight: 700;
-                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* RIGHT zone: separated by a soft left border, stacked vertically */
+        .pl-right {
+            flex: 0 0 auto; display: flex; flex-direction: column; gap: 14px;
+            padding-left: 24px; border-left: 1px solid #eef2ef; min-width: 0;
+        }
 
-        .pl-rate { flex: 0 1 auto; min-width: 0; }
-        .pl-rate .pl-value { color: #10261c; }
-        .pl-time { flex: 0 1 auto; min-width: 0; }
-        .pl-date { flex: 0 1 auto; min-width: 0; }
+        /* Meta fields row (Proposed Rate | Estimated Time | Submitted) */
+        .pl-meta { display: flex; align-items: center; gap: 26px; }
+        .pl-field { display: flex; align-items: center; gap: 10px; }
+        .pl-field-text { display: flex; flex-direction: column; }
+        .pl-label { color: #8a949a; font-size: 12px; white-space: nowrap; }
+        /* Values shown IN FULL — no truncation. */
+        .pl-value { color: #10261c; font-size: 14px; font-weight: 700; white-space: nowrap; }
 
-        /* Round pastel icon chips (smaller to save width) */
+        /* Round pastel icon chips */
         .pl-icon {
-            width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 15px;
         }
         .pl-icon-rate { background: #e5f4ea; }
         .pl-icon-time { background: #e6f0ff; }
         .pl-icon-date { background: #f3e8ff; }
 
-        /* Status badge */
-        .pl-status-wrap { flex: 0 0 auto; }
-        .pl-badge {
-            display: inline-block; padding: 5px 10px; border-radius: 14px;
-            font-size: 11px; font-weight: 700; text-align: center; white-space: nowrap;
+        /* Full-width status bar (shown for Approved/Rejected/Withdrawn; hidden for Pending) */
+        .pl-status-bar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px; border-radius: 10px;
+            font-size: 13px; font-weight: 700;
         }
-        .pl-badge-pending  { color: #8a5a00; background: #fff3cd; }
-        .pl-badge-approved { color: #155724; background: #d4edda; }
+        .pl-status-tick { font-size: 14px; }
+        .pl-status-bar.pl-badge-pending { display: none; }   /* no bar for Pending, like the reference */
+        .pl-badge-approved { color: #1e7a46; background: #e5f4ea; }
         .pl-badge-rejected { color: #721c24; background: #f8d7da; }
         .pl-badge-withdrawn{ color: #4b5563; background: #e5e7eb; }
         .pl-badge-default  { color: #4b5563; background: #eef2f5; }
 
-        /* Action buttons (compact so they fit without overflow) */
-        .pl-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        /* Action buttons row (right-aligned, pill buttons) */
+        .pl-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
         .pl-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 10px 20px; border-radius: 24px; font-size: 13px; font-weight: 700;
             cursor: pointer; white-space: nowrap; border: 1px solid transparent;
         }
-        .pl-btn-view {
-            background: #ffffff; color: #2e7d56; border: 1.5px solid #2e7d56;
-        }
+        .pl-btn-view { background: #ffffff; color: #173f2c; border: 1.5px solid #2e7d56; }
         .pl-btn-view:hover { background: #eaf6ee; }
-        .pl-btn-delete { background: #dc3545; color: #ffffff; border: 1px solid #dc3545; }
+        .pl-btn-delete { background: #e03b4b; color: #ffffff; border: 1px solid #e03b4b; }
         .pl-btn-delete:hover { background: #c82333; }
         .pl-btn-select { background: #2e7d56; color: #ffffff; border: 1px solid #2e7d56; }
         .pl-btn-select:hover { opacity: .93; }
@@ -138,24 +130,26 @@
         .pl-tips { position: sticky; top: 90px; }
 
         /* ===== Responsive ===== */
-        /* Tablet: let the card wrap neatly */
+        /* Tablet/narrow: the two card zones stack; the left-border divider moves to top. */
         @media (max-width: 1100px) {
-            .pl-card { flex-wrap: wrap; }
-            .pl-freelancer { flex: 1 1 100%; }
-            .pl-actions { margin-left: 0; flex: 1 1 100%; }
+            .pl-card { flex-direction: column; align-items: stretch; gap: 16px; }
+            .pl-left { flex: 1 1 auto; }
+            .pl-right {
+                flex: 1 1 auto; padding-left: 0; border-left: none;
+                padding-top: 16px; border-top: 1px solid #eef2ef;
+            }
+            .pl-meta { flex-wrap: wrap; gap: 18px 26px; }
         }
-        /* Below this width the two columns stack: list on top, tips below. */
+        /* Below this width the two containers stack: list on top, tips below. */
         @media (max-width: 900px) {
             .pl-layout { grid-template-columns: 1fr; }
             .pl-list { max-height: 60vh; }
             .pl-tips { position: static; }
         }
-        /* Mobile: stack everything vertically, buttons full width */
+        /* Mobile: buttons full width, meta items wrap. */
         @media (max-width: 640px) {
-            .pl-card { flex-direction: column; align-items: stretch; gap: 12px; }
-            .pl-field, .pl-freelancer { flex: 1 1 100%; }
-            .pl-actions { flex-direction: column; align-items: stretch; }
-            .pl-btn { width: 100%; }
+            .pl-actions { flex-wrap: wrap; }
+            .pl-actions .pl-btn { flex: 1 1 auto; }
         }
     </style>
 
@@ -211,14 +205,13 @@
                                  content is shown here — it opens only via "View Proposal". --%>
                             <div class="pl-card">
 
-                                <!-- Freelancer: avatar + name + project badge (project shown here only, once) -->
-                                <div class="pl-freelancer">
+                                <!-- LEFT: avatar + name + project badge (project shown once, in the badge) -->
+                                <div class="pl-left">
                                     <div class="pl-avatar">
                                         <%# Eval("freelancerName").ToString().Substring(0,1).ToUpper() %><%# Eval("freelancerName").ToString().Contains(" ") ? Eval("freelancerName").ToString().Split(' ')[1].Substring(0,1).ToUpper() : "" %>
                                     </div>
                                     <div class="pl-freelancer-text">
                                         <strong class="pl-name"><%# Server.HtmlEncode(Convert.ToString(Eval("freelancerName"))) %></strong>
-                                        <span class="pl-project-line">Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong></span>
                                         <span class="pl-project-badge">
                                             <span class="pl-folder" aria-hidden="true">&#128193;</span>
                                             Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong>
@@ -226,63 +219,71 @@
                                     </div>
                                 </div>
 
-                                <!-- Proposed rate (ZAR) -->
-                                <div class="pl-field pl-rate">
-                                    <span class="pl-icon pl-icon-rate" aria-hidden="true">&#128176;</span>
-                                    <span class="pl-field-text">
-                                        <span class="pl-label">Proposed Rate</span>
-                                        <strong class="pl-value">R<%# Convert.ToDecimal(Eval("proposedRate")).ToString("N2") %></strong>
-                                    </span>
-                                </div>
+                                <!-- RIGHT: meta fields row on top, then status + action buttons -->
+                                <div class="pl-right">
 
-                                <!-- Estimated time -->
-                                <div class="pl-field pl-time">
-                                    <span class="pl-icon pl-icon-time" aria-hidden="true">&#128336;</span>
-                                    <span class="pl-field-text">
-                                        <span class="pl-label">Estimated Time</span>
-                                        <strong class="pl-value"><%# Server.HtmlEncode(Convert.ToString(Eval("estimatedCompletionTime"))) %></strong>
-                                    </span>
-                                </div>
+                                    <div class="pl-meta">
+                                        <!-- Proposed rate (ZAR) -->
+                                        <div class="pl-field pl-rate">
+                                            <span class="pl-icon pl-icon-rate" aria-hidden="true">&#128176;</span>
+                                            <span class="pl-field-text">
+                                                <span class="pl-label">Proposed Rate</span>
+                                                <strong class="pl-value">R<%# Convert.ToDecimal(Eval("proposedRate")).ToString("N2") %></strong>
+                                            </span>
+                                        </div>
 
-                                <!-- Submitted date -->
-                                <div class="pl-field pl-date">
-                                    <span class="pl-icon pl-icon-date" aria-hidden="true">&#128197;</span>
-                                    <span class="pl-field-text">
-                                        <span class="pl-label">Submitted</span>
-                                        <strong class="pl-value"><%# Convert.ToDateTime(Eval("date")).ToString("dd MMM yyyy") %></strong>
-                                    </span>
-                                </div>
+                                        <!-- Estimated time -->
+                                        <div class="pl-field pl-time">
+                                            <span class="pl-icon pl-icon-time" aria-hidden="true">&#128336;</span>
+                                            <span class="pl-field-text">
+                                                <span class="pl-label">Estimated Time</span>
+                                                <strong class="pl-value"><%# Server.HtmlEncode(Convert.ToString(Eval("estimatedCompletionTime"))) %></strong>
+                                            </span>
+                                        </div>
 
-                                <!-- Status badge -->
-                                <div class="pl-field pl-status-wrap">
-                                    <span class='<%# "pl-badge " + GetStatusClass(Eval("status")) %>'><%# Server.HtmlEncode(Convert.ToString(Eval("status"))) %></span>
-                                </div>
+                                        <!-- Submitted date -->
+                                        <div class="pl-field pl-date">
+                                            <span class="pl-icon pl-icon-date" aria-hidden="true">&#128197;</span>
+                                            <span class="pl-field-text">
+                                                <span class="pl-label">Submitted</span>
+                                                <strong class="pl-value"><%# Convert.ToDateTime(Eval("date")).ToString("dd MMM yyyy") %></strong>
+                                            </span>
+                                        </div>
+                                    </div>
 
-                                <!-- Actions -->
-                                <div class="pl-actions">
-                                    <%-- Employer-only "Select Proposal" for Pending proposals (unchanged business rule) --%>
-                                    <asp:Button ID="btnSelect" runat="server"
-                                        CommandName="ApproveProposal"
-                                        CommandArgument='<%# Eval("proposalID") %>'
-                                        Text="Select Proposal"
-                                        CssClass="pl-btn pl-btn-select"
-                                        Visible='<%# Eval("status").ToString() == "Pending" && !IsFreelancerView() %>' />
+                                    <!-- Status bar (full width, like the Approved bar in the reference) -->
+                                    <div class='<%# "pl-status-bar " + GetStatusClass(Eval("status")) %>'>
+                                        <span class="pl-status-tick" aria-hidden="true"><%# Eval("status").ToString() == "Approved" ? "&#9989;" : "" %></span>
+                                        <%# Server.HtmlEncode(Convert.ToString(Eval("status"))) %>
+                                    </div>
 
-                                    <%-- View Proposal: opens the full proposal (ReviewProposal.aspx), for both roles --%>
-                                    <asp:Button ID="btnViewProposal" runat="server"
-                                        CommandName="ViewProposal"
-                                        CommandArgument='<%# Eval("proposalID") %>'
-                                        Text="&#128065; View Proposal"
-                                        CssClass="pl-btn pl-btn-view" />
+                                    <!-- Action buttons row -->
+                                    <div class="pl-actions">
+                                        <%-- Employer-only "Select Proposal" for Pending proposals (unchanged business rule) --%>
+                                        <asp:Button ID="btnSelect" runat="server"
+                                            CommandName="ApproveProposal"
+                                            CommandArgument='<%# Eval("proposalID") %>'
+                                            Text="Select Proposal"
+                                            CssClass="pl-btn pl-btn-select"
+                                            Visible='<%# Eval("status").ToString() == "Pending" && !IsFreelancerView() %>' />
 
-                                    <%-- Delete: freelancer-only, same confirmation + rule as before --%>
-                                    <asp:Button ID="btnDeleteProposal" runat="server"
-                                        CommandName="DeleteProposal"
-                                        CommandArgument='<%# Eval("proposalID") %>'
-                                        Text="&#128465; Delete"
-                                        CssClass="pl-btn pl-btn-delete"
-                                        Visible='<%# IsFreelancerView() %>'
-                                        OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this proposal? It will also be removed from the employer.', 'Delete Proposal');" />
+                                        <%-- View Proposal: opens the full proposal (ReviewProposal.aspx), for both roles --%>
+                                        <asp:Button ID="btnViewProposal" runat="server"
+                                            CommandName="ViewProposal"
+                                            CommandArgument='<%# Eval("proposalID") %>'
+                                            Text="&#128065; View Proposal"
+                                            CssClass="pl-btn pl-btn-view" />
+
+                                        <%-- Delete: freelancer-only, same confirmation + rule as before --%>
+                                        <asp:Button ID="btnDeleteProposal" runat="server"
+                                            CommandName="DeleteProposal"
+                                            CommandArgument='<%# Eval("proposalID") %>'
+                                            Text="&#128465; Delete"
+                                            CssClass="pl-btn pl-btn-delete"
+                                            Visible='<%# IsFreelancerView() %>'
+                                            OnClientClick="return fhConfirm(this, 'Are you sure you want to delete this proposal? It will also be removed from the employer.', 'Delete Proposal');" />
+                                    </div>
+
                                 </div>
 
                             </div>
