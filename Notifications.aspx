@@ -124,13 +124,23 @@
 
         .nx-empty { text-align:center; color:#9ca3af; font-size:14px; padding:40px 10px; background:#fff; border:1px dashed #e2e8e4; border-radius:12px; }
 
-        /* Two-container master-detail layout. Both panels share one fixed height that fits
-           the viewport, so the page itself never grows with the number of notifications. */
+        /* Keep the whole page inside the viewport width (no horizontal scroll on any size). */
+        .nx-page { max-width:100%; }
+        .nx-page * { box-sizing:border-box; }
+
+        /* Two-container master-detail layout. Both panels share one fluid height that fits
+           the viewport, so the page itself never grows with the number of notifications.
+           The list column is fluid (clamp) so it adapts smoothly instead of a fixed width. */
         .nx-split {
-            display:grid; grid-template-columns: 360px 1fr; gap:20px;
-            /* Shared container height: viewport minus the header/filters/tabs above it. */
+            display:grid;
+            grid-template-columns: clamp(300px, 32%, 400px) minmax(0, 1fr);
+            gap:20px; width:100%;
+            /* Shared container height: viewport minus the header/filters/tabs above it.
+               dvh tracks mobile browser chrome; vh is the fallback for older browsers. */
             height: calc(100vh - 300px);
+            height: calc(100dvh - 300px);
             min-height: 420px;
+            max-height: calc(100vh - 180px);
         }
         /* Each column is a full-height flex container; min-height:0 lets the inner
            scroll area shrink and scroll instead of pushing the page taller. */
@@ -200,23 +210,71 @@
         .nx-list-panel .nx-list::-webkit-scrollbar-thumb:hover,
         .nx-detail::-webkit-scrollbar-thumb:hover { background: #2fa86d; }
 
-        /* Responsive shared height for different screen sizes. */
-        @media (max-height: 820px) { .nx-split { height: calc(100vh - 270px); } }
-        @media (min-height: 1000px) { .nx-split { height: calc(100vh - 320px); } }
+        /* ============================================================
+           RESPONSIVE: auto-adjust across screen sizes
+           ============================================================ */
 
-        /* Stack to one column on small screens: let the page flow naturally there so the
-           list isn't cramped into a tiny scroll box on phones/tablets. */
-        @media (max-width: 1000px) {
-            .nx-split { grid-template-columns: 1fr; height:auto; min-height:0; }
-            .nx-list-panel { height:auto; display:block; }
-            .nx-list-panel .nx-list { max-height:60vh; overflow-y:auto; }
-            .nx-detail-panel { height:auto; display:block; }
-            .nx-detail, .nx-detail-empty { overflow:visible; }
+        /* Short viewports (small laptops): reclaim height so the panels still fit. */
+        @media (max-height: 820px) {
+            .nx-split { height: calc(100vh - 240px); height: calc(100dvh - 240px); }
+        }
+        /* Tall viewports (large monitors): a little more breathing room above/below. */
+        @media (min-height: 1000px) {
+            .nx-split { height: calc(100vh - 320px); height: calc(100dvh - 320px); }
         }
 
+        /* Large desktops: cap the reading column so lines don't stretch too wide. */
+        @media (min-width: 1600px) {
+            .nx-split { grid-template-columns: 400px minmax(0, 1100px); justify-content:center; }
+        }
+
+        /* Narrow desktops / small laptops: tighten the gap and list width. */
+        @media (max-width: 1200px) {
+            .nx-split { gap:16px; grid-template-columns: clamp(280px, 30%, 340px) minmax(0, 1fr); }
+            .nx-detail { padding:26px 24px; }
+            .nx-detail-title { font-size:21px; }
+        }
+
+        /* Tablets & phones: stack to one column. Let the page flow naturally so the
+           list isn't crammed into a tiny scroll box; cap list height so the detail
+           panel is still reachable without endless scrolling. */
+        @media (max-width: 1000px) {
+            .nx-split {
+                grid-template-columns: 1fr; height:auto; min-height:0; max-height:none; gap:14px;
+            }
+            .nx-list-panel { height:auto; display:block; }
+            .nx-list-panel .nx-list {
+                max-height:55vh; max-height:55dvh; overflow-y:auto;
+            }
+            .nx-detail-panel { height:auto; display:block; }
+            .nx-detail, .nx-detail-empty { overflow:visible; min-height:0; }
+            .nx-detail { padding:24px 22px; }
+        }
+
+        /* Small tablets / large phones. */
         @media (max-width: 720px) {
             .nx-head { flex-direction:column; }
-            .nx-select { flex:1; min-width:120px; }
+            .nx-head h1 { font-size:21px; }
+            .nx-filters { gap:8px; }
+            .nx-select { flex:1 1 140px; min-width:0; }
+            .nx-list-panel .nx-list { max-height:50vh; max-height:50dvh; }
+            .nx-detail { padding:20px 18px; }
+            .nx-detail-title { font-size:19px; }
+            .nx-detail-content { font-size:15px; padding:16px 18px; }
+            .nx-detail-head .nx-ic { width:48px; height:48px; font-size:22px; }
+        }
+
+        /* Phones: compact everything, full-width action buttons for easy tapping. */
+        @media (max-width: 480px) {
+            .nx-head h1 { font-size:19px; }
+            .nx-markall { width:100%; justify-content:center; }
+            .nx-search-wrap { min-width:0; flex:1 1 100%; }
+            .nx-select { flex:1 1 100%; }
+            .nx-card { padding:10px 12px; gap:10px; }
+            .nx-ic { width:34px; height:34px; font-size:15px; }
+            .nx-detail-actions { flex-direction:column; }
+            .nx-detail-actions .nx-act { width:100%; text-align:center; }
+            .nx-detail-head { gap:12px; margin-bottom:16px; }
         }
     </style>
 
