@@ -13,7 +13,28 @@
     <style type="text/css">
         /* ===== Proposal list redesign (compact horizontal cards) =====
            Uses FreeHUB's existing green/white palette and the default 13px text size. */
-        .pl-layout { display: block; }
+
+        /* Two containers: scrollable proposals list on the left, tips on the right. */
+        .pl-layout { display: grid; grid-template-columns: 1fr 300px; gap: 25px; align-items: start; }
+
+        /* LEFT container: the proposals list scrolls inside its own box so the page
+           doesn't grow endlessly and the tips panel stays visible beside it. */
+        .pl-list {
+            max-height: calc(100vh - 230px);
+            min-height: 320px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px; /* room so cards don't sit under the scrollbar */
+        }
+        /* Thin green/white themed scrollbar to match FreeHUB. */
+        .pl-list { scrollbar-width: thin; scrollbar-color: #2e7d56 #eef3ef; }
+        .pl-list::-webkit-scrollbar { width: 8px; }
+        .pl-list::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+        .pl-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #2e7d56, #72c94b);
+            border-radius: 8px; border: 2px solid #eef3ef;
+        }
+        .pl-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
 
         /* One horizontal card per proposal */
         .pl-card {
@@ -95,9 +116,8 @@
         .pl-btn-select { background: #2e7d56; color: #ffffff; border: 1px solid #2e7d56; }
         .pl-btn-select:hover { opacity: .93; }
 
-        /* Tips panel sits full-width below the list, in up-to-3 columns */
-        .pl-tips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px; }
-        .pl-tips > div { margin-bottom: 0 !important; }
+        /* RIGHT container: tips stacked vertically, sticky so they stay in view. */
+        .pl-tips { position: sticky; top: 90px; }
 
         /* ===== Responsive ===== */
         /* Tablet: let the card wrap neatly */
@@ -107,8 +127,11 @@
             .pl-project { flex: 1 1 100%; }
             .pl-actions { margin-left: 0; flex: 1 1 100%; }
         }
+        /* Below this width the two columns stack: list on top, tips below. */
         @media (max-width: 900px) {
-            .pl-tips { grid-template-columns: 1fr; }
+            .pl-layout { grid-template-columns: 1fr; }
+            .pl-list { max-height: 60vh; }
+            .pl-tips { position: static; }
         }
         /* Mobile: stack everything vertically, buttons full width */
         @media (max-width: 640px) {
@@ -163,6 +186,8 @@
                         <h3 style="color:#173f2c;">Proposals (<asp:Label ID="lblProposalCount" runat="server" Text="0" />)</h3>
                     </div>
 
+                    <!-- Scrollable list container (left) -->
+                    <div class="pl-list">
                     <asp:Repeater ID="rptProposals" runat="server" OnItemCommand="rptProposals_ItemCommand">
                         <ItemTemplate>
                             <%-- Compact horizontal proposal card. No cover letter / proposal
@@ -248,9 +273,10 @@
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
+                    </div><!-- /.pl-list -->
                 </div>
 
-                <!-- TIPS PANEL (below the list) -->
+                <!-- TIPS PANEL (right container) -->
                 <div class="pl-tips">
                     <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:15px;">
                         <h4 style="color:#173f2c; margin-bottom:12px;">Tips for Choosing the Right Freelancer</h4>
