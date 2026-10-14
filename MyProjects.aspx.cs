@@ -110,6 +110,11 @@ namespace FreeHubProject
 
                 lblSectionTitle.Text = SelectedView == "Completed" ? "Completed Projects" :
                                        SelectedView == "Cancelled" ? "Cancelled Projects" : "Active Projects";
+
+                // Highlight the active filter tab.
+                lnkTabActive.CssClass = GetTabClass("Active");
+                lnkTabCompleted.CssClass = GetTabClass("Completed");
+                lnkTabCancelled.CssClass = GetTabClass("Cancelled");
             }
             catch (Exception ex)
             {
@@ -153,6 +158,24 @@ namespace FreeHubProject
             return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
                 ? "my-projects-tab my-projects-tab-active"
                 : "my-projects-tab";
+        }
+
+        /// <summary>
+        /// Maps an existing project status to its badge CSS class (display colour only).
+        /// Does not change or add any status values or business logic.
+        /// </summary>
+        protected string GetStatusClass(object status)
+        {
+            string s = Convert.ToString(status).Trim().ToLowerInvariant();
+            switch (s)
+            {
+                case "open": return "mp-status-open";
+                case "in progress": return "mp-status-progress";
+                case "under review": return "mp-status-review";
+                case "completed": return "mp-status-completed";
+                case "cancelled": return "mp-status-cancelled";
+                default: return "mp-status-default";
+            }
         }
 
         protected string GetMiniMenuClass(string viewName)

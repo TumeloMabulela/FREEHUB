@@ -79,6 +79,7 @@
     <Content Include="FundWallet.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="MyProjects.aspx" />
+    <Content Include="MyProjects.css" />
     <Content Include="Notifications.aspx" />
     <Content Include="PostProject.aspx" />
     <Content Include="ProjectDetails.aspx" />
