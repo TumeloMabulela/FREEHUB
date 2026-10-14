@@ -46,23 +46,23 @@
         .nx-tab:hover { color:#12833f; }
         .nx-tab.active-tab { color:#12833f; border-bottom-color:#1f9d55; background:#f3faf5; }
 
-        /* Notification list + cards */
-        .nx-list { display:flex; flex-direction:column; gap:12px; }
+        /* Notification list + cards (compact: fixed, consistent height) */
+        .nx-list { display:flex; flex-direction:column; gap:8px; }
         /* The card is an <a> (LinkButton). Force flex so block children inside the anchor
            never fall back to inline rendering and split the card across lines. */
         a.nx-card, .nx-card {
-            position:relative; display:flex !important; align-items:flex-start; gap:14px;
+            position:relative; display:flex !important; align-items:center; gap:12px;
             width:100%; box-sizing:border-box;
             background:#fff; border:1px solid #e7ece9; border-left:4px solid transparent;
-            border-radius:12px; padding:16px; box-shadow:0 1px 3px rgba(16,40,28,.05);
+            border-radius:10px; padding:12px 14px; box-shadow:0 1px 3px rgba(16,40,28,.05);
             text-decoration:none; color:inherit; cursor:pointer; transition:box-shadow .15s;
         }
         .nx-card:hover { box-shadow:0 6px 16px rgba(16,40,28,.09); }
         .nx-card.unread { background:#f1faf4; border-left-color:#1f9d55; }
 
         .nx-ic {
-            width:44px; height:44px; border-radius:12px; flex-shrink:0;
-            display:flex; align-items:center; justify-content:center; font-size:20px;
+            width:38px; height:38px; border-radius:10px; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center; font-size:17px;
         }
         .nx-ic.project { background:#e6f0ff; color:#2563eb; }
         .nx-ic.message { background:#eafaf0; color:#12833f; }
@@ -72,26 +72,28 @@
 
         .nx-body { flex:1; min-width:0; }
         .nx-title-row { display:flex; align-items:center; gap:8px; }
-        .nx-title { font-size:14px; color:#10261c; margin:0; }
+        .nx-title {
+            font-size:14px; color:#10261c; margin:0;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+        }
         .nx-card.unread .nx-title { font-weight:800; }
         .nx-dot { width:8px; height:8px; border-radius:50%; background:#ef4444; flex-shrink:0; }
-        /* Clamp long descriptions in the list to 2 lines with a trailing ellipsis (…).
-           The full text is always shown in the right-hand detail panel when selected. */
+        /* Single-line preview, truncated with an ellipsis (…) so cards stay a consistent
+           compact height. The full message is shown in the right-hand detail panel. */
         .nx-desc {
-            color:#6b7280; font-size:13px; margin:4px 0 8px 0; line-height:1.4;
-            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-            overflow:hidden; text-overflow:ellipsis;
-            /* Fallback for browsers without line-clamp support */
-            max-height:2.8em;
+            color:#6b7280; font-size:12.5px; margin:2px 0 6px 0; line-height:1.35;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
         }
-        .nx-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .nx-meta { display:flex; align-items:center; gap:10px; flex-wrap:nowrap; }
         .nx-badge { font-size:11px; font-weight:700; padding:2px 9px; border-radius:12px; }
         .nx-badge.project { background:#e6f0ff; color:#2563eb; }
         .nx-badge.message { background:#eafaf0; color:#12833f; }
         .nx-badge.proposal { background:#f3e8ff; color:#7e22ce; }
         .nx-badge.payment { background:#fef3c7; color:#b45309; }
         .nx-badge.system { background:#eef2f5; color:#475569; }
-        .nx-time { color:#9ca3af; font-size:12px; }
+        .nx-time { color:#9ca3af; font-size:11.5px; white-space:nowrap; }
+        /* Keep the badge from shrinking so the meta row stays single-line and tidy. */
+        .nx-meta .nx-badge { flex-shrink:0; }
 
         /* 3-dot menu */
         .nx-menu-wrap { position:relative; flex-shrink:0; }
