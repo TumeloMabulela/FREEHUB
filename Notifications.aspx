@@ -102,6 +102,34 @@
 
         .nx-empty { text-align:center; color:#9ca3af; font-size:14px; padding:40px 10px; background:#fff; border:1px dashed #e2e8e4; border-radius:12px; }
 
+        /* The card is now a vertical container: a clickable header row + an inline expand area. */
+        .nx-card { flex-direction:column; align-items:stretch; padding:0; cursor:default; }
+        .nx-card-head {
+            display:flex; align-items:flex-start; gap:14px;
+            padding:16px; text-decoration:none; color:inherit; cursor:pointer; border-radius:12px;
+        }
+        .nx-card.expanded { border-left-color:#1f9d55; box-shadow:0 6px 16px rgba(16,40,28,.1); }
+
+        /* Inline expanded detail + action row shown inside the selected notification */
+        .nx-expand { padding:0 16px 16px 74px; }
+        .nx-full { margin:0 0 12px 0; color:#374151; font-size:13.5px; line-height:1.5; }
+        .nx-actions { display:flex; gap:10px; flex-wrap:wrap; }
+        .nx-act {
+            display:inline-block; text-decoration:none; cursor:pointer;
+            background:#eaf6ee; color:#0f5132; border:none; border-radius:9px;
+            padding:8px 16px; font-size:13px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
+        }
+        .nx-act:hover { background:#dcefe3; }
+        .nx-act-primary {
+            background:linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%);
+            color:#fff;
+        }
+        .nx-act-primary:hover { opacity:.92; background:linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%); }
+
+        @media (max-width: 720px) {
+            .nx-expand { padding-left:16px; }
+        }
+
         @media (max-width: 720px) {
             .nx-head { flex-direction:column; }
             .nx-select { flex:1; min-width:120px; }
@@ -208,32 +236,43 @@
                 <div class="nx-list">
                     <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
                         <ItemTemplate>
-                            <asp:LinkButton runat="server"
-                                CssClass='<%# Eval("Status").ToString() == "Unread" ? "nx-card unread" : "nx-card" %>'
-                                CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'>
-                                <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Eval("Icon") %></span>
-                                <div class="nx-body">
-                                    <div class="nx-title-row">
-                                        <h4 class="nx-title"><%# Eval("Title") %></h4>
-                                        <asp:PlaceHolder runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
-                                            <span class="nx-dot" title="Unread"></span>
-                                        </asp:PlaceHolder>
+                            <div class='<%# "nx-card" + (Eval("Status").ToString() == "Unread" ? " unread" : "") + (Convert.ToInt32(Eval("Id")) == SelectedNotificationId ? " expanded" : "") %>'>
+
+                                <!-- Clickable header: selects/expands the notification -->
+                                <asp:LinkButton runat="server" CssClass="nx-card-head"
+                                    CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'>
+                                    <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Eval("Icon") %></span>
+                                    <div class="nx-body">
+                                        <div class="nx-title-row">
+                                            <h4 class="nx-title"><%# Eval("Title") %></h4>
+                                            <asp:PlaceHolder runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
+                                                <span class="nx-dot" title="Unread"></span>
+                                            </asp:PlaceHolder>
+                                        </div>
+                                        <div class="nx-desc"><%# Eval("Description") %></div>
+                                        <div class="nx-meta">
+                                            <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Eval("Category") %></span>
+                                            <span class="nx-time"><%# Eval("Time") %></span>
+                                        </div>
                                     </div>
-                                    <div class="nx-desc"><%# Eval("Description") %></div>
-                                    <div class="nx-meta">
-                                        <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Eval("Category") %></span>
-                                        <span class="nx-time"><%# Eval("Time") %></span>
+                                </asp:LinkButton>
+
+                                <!-- Inline expanded detail + action buttons (shown only for the selected card) -->
+                                <asp:PlaceHolder runat="server" Visible='<%# Convert.ToInt32(Eval("Id")) == SelectedNotificationId %>'>
+                                    <div class="nx-expand">
+                                        <p class="nx-full"><%# Eval("Content") %></p>
+                                        <div class="nx-actions">
+                                            <asp:LinkButton runat="server" CssClass="nx-act nx-act-primary"
+                                                CommandName="ViewDetails" CommandArgument='<%# Eval("Id") %>'
+                                                Visible='<%# Eval("Type").ToString() == "Message" || Eval("Type").ToString() == "Project" || Eval("Type").ToString() == "Proposal" || Eval("Type").ToString() == "Payment" %>'>View Details</asp:LinkButton>
+                                            <asp:LinkButton runat="server" CssClass="nx-act"
+                                                CommandName="ToggleRead" CommandArgument='<%# Eval("Id") %>'><%# Eval("Status").ToString() == "Read" ? "Mark as Unread" : "Mark as Read" %></asp:LinkButton>
+                                            <asp:LinkButton runat="server" CssClass="nx-act"
+                                                CommandName="ToggleArchive" CommandArgument='<%# Eval("Id") %>'><%# Eval("Status").ToString() == "Archived" ? "Unarchive" : "Archive" %></asp:LinkButton>
+                                        </div>
                                     </div>
-                                </div>
-                                <span class="nx-menu-wrap" onclick="nxMenuClick(event);">
-                                    <button type="button" class="nx-dots" onclick="return nxToggleMenu(event, 'nxmenu-<%# Eval("Id") %>');">⋮</button>
-                                    <span id="nxmenu-<%# Eval("Id") %>" class="nx-menu">
-                                        <asp:LinkButton runat="server" CssClass="nx-mi" CommandName="ViewDetails" CommandArgument='<%# Eval("Id") %>' OnClientClick="event.stopPropagation();">View Details</asp:LinkButton>
-                                        <asp:LinkButton runat="server" CssClass="nx-mi" CommandName="ToggleRead" CommandArgument='<%# Eval("Id") %>' OnClientClick="event.stopPropagation();"><%# Eval("Status").ToString() == "Read" ? "Mark as Unread" : "Mark as Read" %></asp:LinkButton>
-                                        <asp:LinkButton runat="server" CssClass="nx-mi" CommandName="ToggleArchive" CommandArgument='<%# Eval("Id") %>' OnClientClick="event.stopPropagation();"><%# Eval("Status").ToString() == "Archived" ? "Unarchive" : "Archive" %></asp:LinkButton>
-                                    </span>
-                                </span>
-                            </asp:LinkButton>
+                                </asp:PlaceHolder>
+                            </div>
                         </ItemTemplate>
                     </asp:Repeater>
 

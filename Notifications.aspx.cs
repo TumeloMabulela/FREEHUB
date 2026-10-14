@@ -44,6 +44,16 @@ namespace FreeHubProject
             set { Session["NotificationFilter"] = value; }
         }
 
+        /// <summary>
+        /// The currently expanded notification (0 = none). The card markup reads this to show
+        /// the full content and the inline action buttons inside the selected notification.
+        /// </summary>
+        public int SelectedNotificationId
+        {
+            get { return ViewState["SelectedNotificationId"] != null ? (int)ViewState["SelectedNotificationId"] : 0; }
+            set { ViewState["SelectedNotificationId"] = value; }
+        }
+
         // ============================================================
         // BINDING
         // ============================================================
@@ -317,16 +327,24 @@ namespace FreeHubProject
             switch (e.CommandName)
             {
                 case "SelectNotification":
-                    // Opening a notification marks it read (existing behaviour) then routes to its target.
-                    UpdateNotificationStatus(notificationId, "Read");
-                    RouteToTarget(ownerType);
+                    // Clicking a notification expands it inline so you can read it in place and
+                    // see the action buttons inside the card. Clicking it again collapses it.
+                    if (SelectedNotificationId == notificationId)
+                    {
+                        SelectedNotificationId = 0; // collapse
+                    }
+                    else
+                    {
+                        SelectedNotificationId = notificationId; // expand
+                        UpdateNotificationStatus(notificationId, "Read"); // reading it marks it read
+                    }
+                    BindNotifications();
                     break;
 
                 case "ViewDetails":
+                    // Explicit "View Details" opens the related page (chat/progress/wallet).
                     UpdateNotificationStatus(notificationId, "Read");
-                    Session["SelectedNotificationId"] = notificationId;
-                    LoadSelectedNotification(notificationId);
-                    BindNotifications();
+                    RouteToTarget(ownerType);
                     break;
 
                 case "ToggleRead":
