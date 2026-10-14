@@ -50,6 +50,9 @@ namespace FreeHubProject
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtAmount;
 
+        /// <summary>lblAmountError control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAmountError;
+
         /// <summary>
         /// btn500 control.
         /// </summary>

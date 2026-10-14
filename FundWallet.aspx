@@ -14,6 +14,23 @@
           rel="stylesheet"
           type="text/css" />
 
+    <style type="text/css">
+        /* Compact validation message under the amount field. */
+        .fw-amount-error {
+            display: block;
+            margin-top: 6px;
+            color: #d4474f;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .fw-amount-error:empty { display: none; }
+        /* Red highlight when the amount is invalid. */
+        .fw-amount-input.input-invalid {
+            border-color: #d4474f !important;
+            box-shadow: 0 0 0 1px #d4474f;
+        }
+    </style>
+
 </asp:Content>
 
 <asp:Content ID="FundWalletContent"
@@ -121,16 +138,22 @@
 
                             <span>R</span>
 
+                            <%-- Text input (not type=number) with numeric hints so no
+                                 spinner, range, "e", "+", "-", comma or decimal point can be
+                                 entered. Whole-rand integers only; JS enforces, C# re-validates. --%>
                             <asp:TextBox
                                 ID="txtAmount"
                                 runat="server"
                                 CssClass="fw-amount-input"
-                                TextMode="Number"
-                                min="0"
-                                max="20000000"
-                                step="0.01"
-                                placeholder="0.00">
+                                TextMode="SingleLine"
+                                MaxLength="8"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                autocomplete="off"
+                                placeholder="0">
                             </asp:TextBox>
+
+                            <asp:Label ID="lblAmountError" runat="server" CssClass="fw-amount-error" EnableViewState="false"></asp:Label>
 
                         </div>
 
@@ -353,15 +376,26 @@
             return document.getElementById('<%= txtAmount.ClientID %>');
         }
 
+        function getAmountError() {
+            return document.getElementById('<%= lblAmountError.ClientID %>');
+        }
+
+        function fwSetError(msg) {
+            var err = getAmountError();
+            var input = getAmountInput();
+            if (err) err.innerText = msg || '';
+            if (input) {
+                if (msg) input.classList.add('input-invalid');
+                else input.classList.remove('input-invalid');
+            }
+        }
+
+        // Quick buttons set a whole-rand integer (no decimals).
         function setQuickAmount(amount) {
             var input = getAmountInput();
             if (input) {
-                if (amount > FW_MAX_DEPOSIT) {
-                    amount = FW_MAX_DEPOSIT;
-                }
-                // HTML5 number inputs require a dot decimal separator and no
-                // thousands separators, so format with a fixed invariant style.
-                input.value = amount.toFixed(2);
+                input.value = String(Math.round(amount));
+                fwSetError('');
                 input.focus();
             }
         }
@@ -370,22 +404,47 @@
             var input = getAmountInput();
             if (input) {
                 input.value = '';
+                fwSetError('');
                 input.focus();
             }
         }
 
-        // Keep the typed value within the allowed range so the browser never
-        // reports an "incorrect value" on a number input that exceeds max.
+        // ============================================================
+        // Amount: whole-rand integers only (digits 0-9). No negative sign,
+        // no comma, no decimal point, no "e". Does NOT auto-fill the max —
+        // if the value exceeds the limit the error is shown instead.
+        // ============================================================
         (function () {
             var input = getAmountInput();
             if (!input) return;
-            input.addEventListener('input', function () {
-                var raw = input.value.replace(/,/g, '.');
-                var val = parseFloat(raw);
-                if (!isNaN(val) && val > FW_MAX_DEPOSIT) {
-                    input.value = FW_MAX_DEPOSIT.toFixed(2);
-                }
+
+            // Block any non-digit key (allow control/navigation keys).
+            input.addEventListener('keydown', function (e) {
+                var key = e.keyCode || e.which;
+                var allowed = [8, 9, 13, 46, 37, 38, 39, 40, 35, 36];
+                if (allowed.indexOf(key) !== -1) return;
+                if (e.ctrlKey || e.metaKey) return;
+                var isTopDigit = key >= 48 && key <= 57;
+                var isNumpadDigit = key >= 96 && key <= 105;
+                if (!isTopDigit && !isNumpadDigit) e.preventDefault();
             });
+
+            function sanitize() {
+                var original = input.value;
+                var digits = original.replace(/[^0-9]/g, '');
+                if (digits.length > 1) digits = digits.replace(/^0+/, '');
+                if (digits !== original) input.value = digits;
+
+                if (digits !== '' && parseInt(digits, 10) > FW_MAX_DEPOSIT) {
+                    fwSetError('Maximum amount per deposit is R20 000 000.');
+                } else {
+                    fwSetError('');
+                }
+            }
+
+            input.addEventListener('input', sanitize);
+            input.addEventListener('paste', function () { setTimeout(sanitize, 0); });
+            input.addEventListener('blur', sanitize);
         })();
 
     </script>

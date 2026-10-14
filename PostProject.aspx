@@ -1009,32 +1009,21 @@
                 }
             }
 
-            // Strip everything that is not a digit, then clamp to the maximum.
+            // Strip everything that is not a digit. Do NOT clamp/auto-fill the maximum:
+            // if the user types more than the limit we keep their digits and show the
+            // validation error so they must correct it themselves.
             function sanitize() {
                 var original = budget.value;
                 var digits = original.replace(/[^0-9]/g, '');
 
-                // Drop leading zeros (keep a single "0" while typing is fine, but
-                // we normalise "007" -> "7"). Empty stays empty.
+                // Drop leading zeros (normalise "007" -> "7"). Empty stays empty.
                 if (digits.length > 1) digits = digits.replace(/^0+/, '');
 
-                if (digits.length > 6) digits = digits.slice(0, 6);
-
-                var overLimit = false;
-                if (digits !== '') {
-                    var n = parseInt(digits, 10);
-                    if (n > MAX_BUDGET) {
-                        digits = String(MAX_BUDGET);
-                        overLimit = true;
-                    }
-                }
-
+                // Only strip non-digits here; the length/limit is validated, not clamped.
                 if (digits !== original) budget.value = digits;
 
-                if (overLimit) {
+                if (digits !== '' && parseInt(digits, 10) > MAX_BUDGET) {
                     setBudgetError('Maximum budget allowed is R200 000.00');
-                    // Also surface it as a pop-up so the user clearly sees the cap.
-                    ppShowValidation('Maximum budget allowed is <strong>R200 000.00</strong>. The amount has been adjusted to the maximum.', 'Budget limit reached');
                 } else {
                     // Clear the error once the value is valid again.
                     setBudgetError('');

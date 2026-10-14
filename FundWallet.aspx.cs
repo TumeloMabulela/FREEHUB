@@ -67,10 +67,9 @@ namespace FreeHubProject
 
         private void SetAmount(decimal amount)
         {
-            // Always write the value using an invariant "." decimal separator so
-            // the HTML5 number input accepts it regardless of server/browser culture.
+            // Whole-rand integers only (no decimal part) to match the amount field.
             txtAmount.Text =
-                amount.ToString("0.00", CultureInfo.InvariantCulture);
+                decimal.Truncate(amount).ToString("0", CultureInfo.InvariantCulture);
 
             ShowMessage(
                 FormatCurrency(amount) + " selected.",
@@ -80,27 +79,37 @@ namespace FreeHubProject
 
         protected void btnProceed_Click(object sender, EventArgs e)
         {
+            lblAmountError.Text = "";
+
+            // Amount must be whole-rand digits only: no sign, comma, decimal or letters.
+            string amountRaw = (txtAmount.Text ?? "").Trim();
             decimal amount;
 
-            if (!TryParseAmount(txtAmount.Text, out amount) || amount <= 0)
+            if (amountRaw.Length == 0)
             {
-                ShowMessage(
-                    "Please enter a valid amount.",
-                    false
-                );
-
+                lblAmountError.Text = "Please enter an amount.";
+                txtAmount.CssClass = "fw-amount-input input-invalid";
+                return;
+            }
+            if (!System.Text.RegularExpressions.Regex.IsMatch(amountRaw, "^[0-9]+$"))
+            {
+                lblAmountError.Text = "Enter whole rand amounts only (digits 0-9, no commas or decimals).";
+                txtAmount.CssClass = "fw-amount-input input-invalid";
+                return;
+            }
+            if (!decimal.TryParse(amountRaw, NumberStyles.None, CultureInfo.InvariantCulture, out amount)
+                || amount <= 0)
+            {
+                lblAmountError.Text = "Please enter an amount greater than zero.";
+                txtAmount.CssClass = "fw-amount-input input-invalid";
                 return;
             }
 
             if (amount > MaxDepositAmount)
             {
-                ShowMessage(
-                    "The maximum amount per deposit is " +
-                    FormatCurrency(MaxDepositAmount) +
-                    ". Please enter a smaller amount.",
-                    false
-                );
-
+                lblAmountError.Text =
+                    "The maximum amount per deposit is " + FormatCurrency(MaxDepositAmount) + ".";
+                txtAmount.CssClass = "fw-amount-input input-invalid";
                 return;
             }
 
