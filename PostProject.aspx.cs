@@ -105,9 +105,11 @@ namespace FreeHubProject
                 || budget <= 0 || budget > MaxBudget)
             {
                 // Server-side safety net in case client validation was bypassed.
-                lblErrBudget.Text = budget > MaxBudget
+                string msg = budget > MaxBudget
                     ? "Maximum budget allowed is R200 000.00"
                     : "Enter a valid whole-number budget amount.";
+                lblErrBudget.Text = msg;
+                ShowValidationPopup(msg, "Budget amount");
                 return;
             }
 
@@ -264,13 +266,14 @@ namespace FreeHubProject
 
                 ClearProjectForm();
 
-                // Redirect to the Dashboard, carrying a one-time success message.
-                Session["DashboardMessage"] =
+                // Show a success pop-up with the escrow summary and let the user choose
+                // where to go next (Dashboard or My Projects), instead of auto-redirecting.
+                litSuccessMessage.Text =
                     "Project posted successfully! R" + budget.ToString("N2") +
                     " has been removed from your wallet and is held in escrow until the " +
                     "freelancer completes the project. Your remaining wallet balance is R" +
                     newBalance.ToString("N2") + ". (Project ID: " + projectId + ")";
-                Response.Redirect("Dashboard.aspx");
+                pnlSuccessModal.Visible = true;
             }
             catch (Exception ex)
             {
@@ -314,8 +317,36 @@ namespace FreeHubProject
             pnlProjectStatus.Visible = false;
         }
 
+        // SUCCESS POP-UP NAVIGATION
+        protected void btnGoDashboard_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Dashboard.aspx");
+        }
+
+        protected void btnGoMyProjects_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("MyProjects.aspx");
+        }
+
         /// <summary>Maximum budget a project may be posted with (R200 000.00).</summary>
         private const decimal MaxBudget = 200000m;
+
+        /// <summary>Minimum number of characters required in the project description.</summary>
+        private const int MinDescriptionLength = 50;
+
+        /// <summary>
+        /// Shows a validation message as a pop-up modal (reusing the page's modal styling)
+        /// instead of the old top status bar. Used for budget limit / low-amount messages
+        /// and the summary shown when Post is clicked with invalid fields.
+        /// </summary>
+        private void ShowValidationPopup(string message, string title = "Please check your details")
+        {
+            string safeMsg = message.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
+            string safeTitle = title.Replace("\\", "\\\\").Replace("'", "\\'");
+            string script = "if(window.ppShowValidation){ppShowValidation('" + safeMsg + "','" + safeTitle + "');}";
+            // Plain WebForms page (no AJAX ScriptManager), so register via ClientScript.
+            ClientScript.RegisterStartupScript(GetType(), "ppValidate_" + Guid.NewGuid().ToString("N"), script, true);
+        }
 
         // Clears all inline field errors and their red borders. Called at the start of
         // every validation pass so stale messages never linger.
@@ -348,6 +379,7 @@ namespace FreeHubProject
             ClearFieldErrors();
             bool valid = true;
             bool firstHandled = false; // track whether we've seen the first error (for focus)
+            string budgetPopup = null; // specific budget message to surface as a pop-up
 
             if (string.IsNullOrWhiteSpace(txtProjectTitle.Text))
             {
@@ -377,9 +409,16 @@ namespace FreeHubProject
                 valid = false; firstHandled = true;
             }
 
-            if (string.IsNullOrWhiteSpace(txtDescription.Text))
+            string descText = (txtDescription.Text ?? "").Trim();
+            if (descText.Length == 0)
             {
                 lblErrDescription.Text = "Please enter a project description.";
+                txtDescription.CssClass = "post-textarea input-invalid";
+                valid = false; firstHandled = true;
+            }
+            else if (descText.Length < MinDescriptionLength)
+            {
+                lblErrDescription.Text = "Please enter at least 50 characters (" + descText.Length + "/50).";
                 txtDescription.CssClass = "post-textarea input-invalid";
                 valid = false; firstHandled = true;
             }
@@ -416,11 +455,13 @@ namespace FreeHubProject
                 else if (parsed <= 0)
                 {
                     lblErrBudget.Text = "Budget must be greater than zero.";
+                    budgetPopup = "Please enter a budget greater than R0.00.";
                     valid = false; firstHandled = true;
                 }
                 else if (parsed > MaxBudget)
                 {
                     lblErrBudget.Text = "Maximum budget allowed is R200 000.00";
+                    budgetPopup = "Maximum budget allowed is R200 000.00.";
                     valid = false; firstHandled = true;
                 }
             }
@@ -443,11 +484,18 @@ namespace FreeHubProject
                 valid = false; firstHandled = true;
             }
 
-            // Keep the top status panel hidden for field-level validation; it's still
-            // used for success and server/system messages elsewhere.
+            // Keep the top status panel hidden for field-level validation; messages
+            // now appear beside each field and as a pop-up summary.
             if (!valid)
             {
                 pnlProjectStatus.Visible = false;
+
+                // Show a pop-up. For budget-specific issues (too low / exceeding limit)
+                // show that exact message; otherwise a short "please review" summary.
+                if (!string.IsNullOrEmpty(budgetPopup))
+                    ShowValidationPopup(budgetPopup, "Budget amount");
+                else
+                    ShowValidationPopup("Please review the highlighted fields and try again.");
             }
 
             // Mark firstHandled as used (avoids an unused-variable warning while keeping
@@ -478,18 +526,20 @@ namespace FreeHubProject
         }
 
         // SHOW MESSAGE
+        // Success/informational messages (e.g. Preview) stay in the inline status panel.
+        // Error messages are now surfaced as a pop-up modal, per the new UX.
         private void ShowMessage(string message, bool success)
         {
-            pnlProjectStatus.Visible = true;
             if (success)
             {
+                pnlProjectStatus.Visible = true;
                 lblProjectStatus.Text = "<span style='display:flex;align-items:center;gap:10px;'><span style='background:#2e7d56;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:14px;'>&#10003;</span> " + message + "</span>";
                 pnlProjectStatus.CssClass = "post-status post-success";
             }
             else
             {
-                lblProjectStatus.Text = message;
-                pnlProjectStatus.CssClass = "post-status post-error";
+                pnlProjectStatus.Visible = false;
+                ShowValidationPopup(message, "Unable to post project");
             }
         }
     }

@@ -68,6 +68,18 @@ namespace FreeHubProject
         /// <summary>lblErrSkills control.</summary>
         protected global::System.Web.UI.WebControls.Label lblErrSkills;
 
+        /// <summary>pnlSuccessModal control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlSuccessModal;
+
+        /// <summary>litSuccessMessage control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litSuccessMessage;
+
+        /// <summary>btnGoDashboard control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnGoDashboard;
+
+        /// <summary>btnGoMyProjects control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnGoMyProjects;
+
         /// <summary>
         /// ddlCategory control.
         /// </summary>

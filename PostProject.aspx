@@ -277,8 +277,13 @@
                             CssClass="post-textarea"
                             TextMode="MultiLine"
                             Rows="7"
-                            placeholder="Describe the project, important requirements and expected results...">
+                            placeholder="Example: I need a responsive e-commerce website with a product catalogue, shopping cart, and secure checkout. Please include the key features, any design preferences, deliverables, and the timeline you expect. (At least 50 characters.)">
                         </asp:TextBox>
+
+                        <p class="field-description">
+                            Minimum 50 characters.
+                            <span id="descCharCount" style="font-weight:600;">0</span>/50 entered.
+                        </p>
 
                     </div>
 
@@ -861,6 +866,38 @@
 
     </div>
 
+
+    <!-- VALIDATION POP-UP (budget too low / exceeding limit, missing fields, etc.)
+         Reuses the master page's modal styling for a consistent look. -->
+    <div id="ppValidationModal" class="fh-modal-overlay" style="display:none;">
+        <div class="fh-modal">
+            <div class="fh-modal-icon" style="background:#fef3c7; color:#d97706;">&#33;</div>
+            <h3 id="ppValidationTitle">Please check your details</h3>
+            <p id="ppValidationMessage"></p>
+            <button type="button" class="fh-modal-btn-primary" style="background:#2b68c2;" onclick="ppHideValidation();">OK</button>
+        </div>
+    </div>
+
+
+    <!-- SUCCESS POP-UP (after a project is posted). Server fills the message and
+         un-hides this panel; the two buttons navigate to Dashboard or My Projects. -->
+    <asp:Panel ID="pnlSuccessModal" runat="server" CssClass="fh-modal-overlay" Visible="false"
+               style="display:flex;">
+        <div class="fh-modal">
+            <div class="fh-modal-icon" style="background:#2e7d56; color:#fff;">&#10003;</div>
+            <h3>Project Posted</h3>
+            <p><asp:Literal ID="litSuccessMessage" runat="server"></asp:Literal></p>
+            <asp:Button ID="btnGoDashboard" runat="server" Text="Go to Dashboard"
+                        CssClass="fh-modal-btn-primary" style="background:#2e7d56;"
+                        CausesValidation="false" OnClick="btnGoDashboard_Click" />
+            <br />
+            <asp:Button ID="btnGoMyProjects" runat="server" Text="View My Projects"
+                        CssClass="fh-modal-btn-cancel" CausesValidation="false"
+                        OnClick="btnGoMyProjects_Click" />
+        </div>
+    </asp:Panel>
+
+
     <style type="text/css">
         /* Compact inline validation message shown beside a field label.
            Hidden until it has text so it never disrupts the layout. */
@@ -907,6 +944,52 @@
         }
 
         // ============================================================
+        // Validation pop-up (shared) — used for budget limit messages and
+        // the summary shown when Post is clicked with invalid fields.
+        // ============================================================
+        function ppShowValidation(message, title) {
+            var m = document.getElementById('ppValidationMessage');
+            var t = document.getElementById('ppValidationTitle');
+            if (m) m.innerHTML = message || 'Please review the highlighted fields.';
+            if (t) t.innerText = title || 'Please check your details';
+            var modal = document.getElementById('ppValidationModal');
+            if (modal) modal.style.display = 'flex';
+        }
+        function ppHideValidation() {
+            var modal = document.getElementById('ppValidationModal');
+            if (modal) modal.style.display = 'none';
+        }
+        // Close when clicking the dark overlay.
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.id === 'ppValidationModal') ppHideValidation();
+        });
+
+        var MIN_DESCRIPTION = 50;
+
+        // ============================================================
+        // Project Description: live character counter + 50-char minimum.
+        // ============================================================
+        (function () {
+            var desc = document.getElementById('<%= txtDescription.ClientID %>');
+            var count = document.getElementById('descCharCount');
+            var descErr = document.getElementById('<%= lblErrDescription.ClientID %>');
+            if (!desc) return;
+
+            function update() {
+                var len = desc.value.trim().length;
+                if (count) count.innerText = len;
+                // Clear the inline error once the minimum is met.
+                if (len >= MIN_DESCRIPTION) {
+                    if (descErr) descErr.innerText = '';
+                    desc.classList.remove('input-invalid');
+                }
+            }
+            desc.addEventListener('input', update);
+            desc.addEventListener('blur', update);
+            update();
+        })();
+
+        // ============================================================
         // Budget Amount: whole-number rand only, 0..200000, live checks.
         // ============================================================
         (function () {
@@ -950,6 +1033,8 @@
 
                 if (overLimit) {
                     setBudgetError('Maximum budget allowed is R200 000.00');
+                    // Also surface it as a pop-up so the user clearly sees the cap.
+                    ppShowValidation('Maximum budget allowed is <strong>R200 000.00</strong>. The amount has been adjusted to the maximum.', 'Budget limit reached');
                 } else {
                     // Clear the error once the value is valid again.
                     setBudgetError('');
