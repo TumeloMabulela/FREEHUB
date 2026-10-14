@@ -129,38 +129,34 @@
         .nx-page * { box-sizing:border-box; }
 
         /* ------------------------------------------------------------------
-           Layout chain so the panels fill the available space and the footer
-           follows immediately — no fixed viewport height, no leftover gap.
+           Full-height flex chain so the three sections fill the space between
+           the header and the footer with NO blank gap. The gap was caused by
+           a fixed `height: calc(100vh - 300px)` on .nx-split while its parent
+           containers (.page-content min-height:650px, .freehub-dashboard-layout
+           min-height:100vh-75px) stayed taller. We instead let each ancestor be
+           a flex column and have .nx-split flex:1 to fill the leftover height,
+           so the footer sits immediately below the sections.
 
-           page-content (flex column, fills viewport below the nav)
-             └ nx-layout  (flex row: sidebar + main; stretches to full height)
-                 └ freehub-main-content (flex column)
-                     └ nx-page (flex column, flex:1)
-                         └ nx-split (flex:1 — takes the remaining height)
+           body ─ form#form1 ─ page-content ─ nx-layout(row) ─ main ─ nx-page ─ nx-split
+           All scoped to .nx-layout so no other page is affected.
            ------------------------------------------------------------------ */
-
-        /* Neutralise the global min-heights that were forcing blank space, scoped to
-           this page only (other pages keep their defaults). */
-        .page-content:has(.nx-layout) { min-height:0; display:flex; flex-direction:column; flex:1 0 auto; }
-        .nx-layout { min-height:0; flex:1 0 auto; align-items:stretch; }
+        body:has(.nx-layout) { display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
+        body:has(.nx-layout) > form#form1 { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
+        /* page-content holds the sections; drop its 650px floor and let it grow. */
+        .page-content:has(.nx-layout) { min-height:0; display:flex; flex-direction:column; flex:1 1 auto; }
+        /* The three-column layout fills the content area and stretches its columns. */
+        .nx-layout { min-height:0; flex:1 1 auto; align-items:stretch; }
         .nx-layout .freehub-main-content { display:flex; flex-direction:column; min-height:0; }
         .nx-layout .nx-page { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
 
-        /* Make the whole document a flex column so page-content can grow and the
-           footer sits right after it. */
-        html, body { height:100%; }
-        body:has(.nx-layout) { display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
-        body:has(.nx-layout) form#form1 { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
-
         /* Two-container master-detail layout. The panels flex to fill the remaining
-           height of the page, so they always reach the footer with no gap.
-           The list column is fluid (clamp) so it adapts smoothly. */
+           height, so their bottom edges reach the footer. List column is fluid (clamp). */
         .nx-split {
             display:grid;
             grid-template-columns: clamp(300px, 32%, 400px) minmax(0, 1fr);
             gap:20px; width:100%;
-            flex:1 1 auto;      /* fill the leftover vertical space */
-            min-height:420px;   /* but never collapse too short */
+            flex:1 1 auto;     /* fill the leftover vertical space down to the footer */
+            min-height:420px;  /* never collapse too short on tiny screens */
         }
         /* Each column is a full-height flex container; min-height:0 lets the inner
            scroll area shrink and scroll instead of pushing the page taller. */
@@ -232,8 +228,10 @@
 
         /* ============================================================
            RESPONSIVE: auto-adjust across screen sizes
-           (height is handled by the flex chain above — no fixed heights here)
            ============================================================ */
+
+        /* (Panel height is handled by the flex chain above — no fixed heights needed,
+           so the sections always meet the footer regardless of viewport height.) */
 
         /* Large desktops: cap the reading column so lines don't stretch too wide. */
         @media (min-width: 1600px) {
