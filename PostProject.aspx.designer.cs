@@ -41,6 +41,33 @@ namespace FreeHubProject
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtProjectTitle;
 
+        /// <summary>lblErrTitle control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrTitle;
+
+        /// <summary>lblErrCategory control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrCategory;
+
+        /// <summary>lblErrOtherCategory control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrOtherCategory;
+
+        /// <summary>lblErrExperience control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrExperience;
+
+        /// <summary>lblErrDescription control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrDescription;
+
+        /// <summary>lblErrBudgetType control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrBudgetType;
+
+        /// <summary>lblErrBudget control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrBudget;
+
+        /// <summary>lblErrDeadline control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrDeadline;
+
+        /// <summary>lblErrSkills control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblErrSkills;
+
         /// <summary>
         /// ddlCategory control.
         /// </summary>

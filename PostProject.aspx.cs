@@ -94,23 +94,20 @@ namespace FreeHubProject
             }
             string skills = string.Join(", ", selectedSkills);
 
+            // Budget is a whole-number rand amount. ValidateProject() has already
+            // confirmed it is digits-only, > 0 and <= R200 000; parse it strictly here
+            // (NumberStyles.None rejects signs, decimals, thousands separators, etc.).
             decimal budget;
             if (!decimal.TryParse(txtBudget.Text.Trim(),
-                    System.Globalization.NumberStyles.Number,
+                    System.Globalization.NumberStyles.None,
                     System.Globalization.CultureInfo.InvariantCulture,
-                    out budget))
+                    out budget)
+                || budget <= 0 || budget > MaxBudget)
             {
-                // Fall back to current-culture parsing for values like "1 000,50".
-                if (!decimal.TryParse(txtBudget.Text.Trim(), out budget))
-                {
-                    ShowMessage("Please enter a valid budget amount.", false);
-                    return;
-                }
-            }
-
-            if (budget <= 0)
-            {
-                ShowMessage("Please enter a budget greater than zero.", false);
+                // Server-side safety net in case client validation was bypassed.
+                lblErrBudget.Text = budget > MaxBudget
+                    ? "Maximum budget allowed is R200 000.00"
+                    : "Enter a valid whole-number budget amount.";
                 return;
             }
 
@@ -317,50 +314,122 @@ namespace FreeHubProject
             pnlProjectStatus.Visible = false;
         }
 
-        // VALIDATE
+        /// <summary>Maximum budget a project may be posted with (R200 000.00).</summary>
+        private const decimal MaxBudget = 200000m;
+
+        // Clears all inline field errors and their red borders. Called at the start of
+        // every validation pass so stale messages never linger.
+        private void ClearFieldErrors()
+        {
+            lblErrTitle.Text = "";
+            lblErrCategory.Text = "";
+            lblErrOtherCategory.Text = "";
+            lblErrExperience.Text = "";
+            lblErrDescription.Text = "";
+            lblErrBudgetType.Text = "";
+            lblErrBudget.Text = "";
+            lblErrDeadline.Text = "";
+            lblErrSkills.Text = "";
+
+            txtProjectTitle.CssClass = "post-input";
+            ddlCategory.CssClass = "post-input";
+            txtOtherCategory.CssClass = "post-input";
+            ddlExperience.CssClass = "post-input";
+            txtDescription.CssClass = "post-textarea";
+            txtDeadline.CssClass = "post-input";
+            rblBudgetType.CssClass = "post-budget-options";
+            // txtBudget keeps its class; the red border is on the wrapper box (handled client-side).
+        }
+
+        // VALIDATE — sets a compact message beside each invalid field's label and
+        // highlights the field border, instead of one big message at the top.
         private bool ValidateProject()
         {
+            ClearFieldErrors();
+            bool valid = true;
+            bool firstHandled = false; // track whether we've seen the first error (for focus)
+
             if (string.IsNullOrWhiteSpace(txtProjectTitle.Text))
             {
-                ShowMessage("Please enter the project title.", false);
-                return false;
+                lblErrTitle.Text = "Please enter a project title.";
+                txtProjectTitle.CssClass = "post-input input-invalid";
+                valid = false; firstHandled = true;
             }
 
             if (string.IsNullOrWhiteSpace(ddlCategory.SelectedValue))
             {
-                ShowMessage("Please select a project category.", false);
-                return false;
+                lblErrCategory.Text = "Please select a category.";
+                ddlCategory.CssClass = "post-input input-invalid";
+                valid = false; firstHandled = true;
             }
-
-            if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
-                && string.IsNullOrWhiteSpace(txtOtherCategory.Text))
+            else if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
+                     && string.IsNullOrWhiteSpace(txtOtherCategory.Text))
             {
-                ShowMessage("Please specify the category.", false);
-                return false;
+                lblErrOtherCategory.Text = "Please specify the category.";
+                txtOtherCategory.CssClass = "post-input input-invalid";
+                valid = false; firstHandled = true;
             }
 
             if (string.IsNullOrWhiteSpace(ddlExperience.SelectedValue))
             {
-                ShowMessage("Please select an experience level.", false);
-                return false;
+                lblErrExperience.Text = "Please select an experience level.";
+                ddlExperience.CssClass = "post-input input-invalid";
+                valid = false; firstHandled = true;
             }
 
             if (string.IsNullOrWhiteSpace(txtDescription.Text))
             {
-                ShowMessage("Please enter the project description.", false);
-                return false;
+                lblErrDescription.Text = "Please enter a project description.";
+                txtDescription.CssClass = "post-textarea input-invalid";
+                valid = false; firstHandled = true;
             }
 
-            if (string.IsNullOrWhiteSpace(txtBudget.Text))
+            if (string.IsNullOrWhiteSpace(rblBudgetType.SelectedValue))
             {
-                ShowMessage("Please enter the project budget.", false);
-                return false;
+                lblErrBudgetType.Text = "Please choose a budget type.";
+                rblBudgetType.CssClass = "post-budget-options input-invalid";
+                valid = false; firstHandled = true;
+            }
+
+            // Budget: required, whole number (digits only), greater than zero, <= R200 000.
+            string budgetRaw = (txtBudget.Text ?? "").Trim();
+            if (budgetRaw.Length == 0)
+            {
+                lblErrBudget.Text = "Please enter a budget amount.";
+                valid = false; firstHandled = true;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(budgetRaw, "^[0-9]+$"))
+            {
+                lblErrBudget.Text = "Enter whole rand amounts only (digits 0-9).";
+                valid = false; firstHandled = true;
+            }
+            else
+            {
+                decimal parsed;
+                if (!decimal.TryParse(budgetRaw,
+                        System.Globalization.NumberStyles.None,
+                        System.Globalization.CultureInfo.InvariantCulture, out parsed))
+                {
+                    lblErrBudget.Text = "Enter a valid budget amount.";
+                    valid = false; firstHandled = true;
+                }
+                else if (parsed <= 0)
+                {
+                    lblErrBudget.Text = "Budget must be greater than zero.";
+                    valid = false; firstHandled = true;
+                }
+                else if (parsed > MaxBudget)
+                {
+                    lblErrBudget.Text = "Maximum budget allowed is R200 000.00";
+                    valid = false; firstHandled = true;
+                }
             }
 
             if (string.IsNullOrWhiteSpace(txtDeadline.Text))
             {
-                ShowMessage("Please select a project deadline.", false);
-                return false;
+                lblErrDeadline.Text = "Please select a deadline.";
+                txtDeadline.CssClass = "post-input input-invalid";
+                valid = false; firstHandled = true;
             }
 
             bool skillSelected = false;
@@ -370,11 +439,22 @@ namespace FreeHubProject
             }
             if (!skillSelected)
             {
-                ShowMessage("Please select at least one required skill.", false);
-                return false;
+                lblErrSkills.Text = "Please select at least one skill.";
+                valid = false; firstHandled = true;
             }
 
-            return true;
+            // Keep the top status panel hidden for field-level validation; it's still
+            // used for success and server/system messages elsewhere.
+            if (!valid)
+            {
+                pnlProjectStatus.Visible = false;
+            }
+
+            // Mark firstHandled as used (avoids an unused-variable warning while keeping
+            // the hook available for future focus handling).
+            System.Diagnostics.Debug.WriteLineIf(firstHandled, "PostProject validation failed.");
+
+            return valid;
         }
 
         // CLEAR FORM

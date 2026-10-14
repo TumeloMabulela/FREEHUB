@@ -107,6 +107,8 @@
 
                             <span>*</span>
 
+                            <asp:Label ID="lblErrTitle" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
+
                         </label>
 
 
@@ -132,6 +134,8 @@
                                 Category
 
                                 <span>*</span>
+
+                                <asp:Label ID="lblErrCategory" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
 
                             </label>
 
@@ -200,6 +204,8 @@
                                     placeholder="Please specify the category">
                                 </asp:TextBox>
 
+                                <asp:Label ID="lblErrOtherCategory" runat="server" CssClass="post-field-error post-field-error-block" EnableViewState="false"></asp:Label>
+
                             </asp:Panel>
 
                         </div>
@@ -212,6 +218,8 @@
                                 Experience Level
 
                                 <span>*</span>
+
+                                <asp:Label ID="lblErrExperience" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
 
                             </label>
 
@@ -258,6 +266,8 @@
 
                             <span>*</span>
 
+                            <asp:Label ID="lblErrDescription" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
+
                         </label>
 
 
@@ -285,6 +295,8 @@
                                 Budget Type
 
                                 <span>*</span>
+
+                                <asp:Label ID="lblErrBudgetType" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
 
                             </label>
 
@@ -319,20 +331,29 @@
 
                                 <span>*</span>
 
+                                <asp:Label ID="lblErrBudget" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
+
                             </label>
 
 
-                            <div class="budget-input-box">
+                            <div id="budgetInputBox" class="budget-input-box">
 
                                 <span>R</span>
 
 
+                                <%-- Text input (not type=number) so browsers can't inject
+                                     e, +, -, or a decimal point. Digits 0-9 only, max 6 chars
+                                     (200000). JS enforces live; C# re-validates on the server. --%>
                                 <asp:TextBox
                                     ID="txtBudget"
                                     runat="server"
                                     CssClass="budget-input"
-                                    TextMode="Number"
-                                    placeholder="25000">
+                                    TextMode="SingleLine"
+                                    MaxLength="6"
+                                    placeholder="25000"
+                                    autocomplete="off"
+                                    inputmode="numeric"
+                                    pattern="[0-9]*">
                                 </asp:TextBox>
 
                             </div>
@@ -347,6 +368,8 @@
                                 Deadline
 
                                 <span>*</span>
+
+                                <asp:Label ID="lblErrDeadline" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
 
                             </label>
 
@@ -372,6 +395,8 @@
                             Required Skills
 
                             <span>*</span>
+
+                            <asp:Label ID="lblErrSkills" runat="server" CssClass="post-field-error" EnableViewState="false"></asp:Label>
 
                         </label>
 
@@ -836,6 +861,35 @@
 
     </div>
 
+    <style type="text/css">
+        /* Compact inline validation message shown beside a field label.
+           Hidden until it has text so it never disrupts the layout. */
+        .post-field-error {
+            margin-left: 8px;
+            color: #d4474f;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .post-field-error:empty { display: none; }
+        /* For the "Other category" message that sits under its input instead of a label. */
+        .post-field-error-block {
+            display: block;
+            margin-left: 0;
+            margin-top: 6px;
+        }
+        /* Red highlight for an invalid field's border. */
+        .post-input.input-invalid,
+        .post-textarea.input-invalid {
+            border-color: #d4474f !important;
+        }
+        .budget-input-box.input-invalid {
+            border-color: #d4474f !important;
+        }
+        .post-budget-options.input-invalid {
+            border-color: #d4474f !important;
+        }
+    </style>
+
     <script type="text/javascript">
 
         function toggleOtherCategory() {
@@ -851,6 +905,104 @@
         } else {
             window.attachEvent('onload', toggleOtherCategory);
         }
+
+        // ============================================================
+        // Budget Amount: whole-number rand only, 0..200000, live checks.
+        // ============================================================
+        (function () {
+            var MAX_BUDGET = 200000;
+
+            var budget = document.getElementById('<%= txtBudget.ClientID %>');
+            var budgetBox = document.getElementById('budgetInputBox');
+            var budgetErr = document.getElementById('<%= lblErrBudget.ClientID %>');
+
+            if (!budget) return;
+
+            function setBudgetError(msg) {
+                if (budgetErr) budgetErr.innerText = msg || '';
+                if (budgetBox) {
+                    if (msg) budgetBox.classList.add('input-invalid');
+                    else budgetBox.classList.remove('input-invalid');
+                }
+            }
+
+            // Strip everything that is not a digit, then clamp to the maximum.
+            function sanitize() {
+                var original = budget.value;
+                var digits = original.replace(/[^0-9]/g, '');
+
+                // Drop leading zeros (keep a single "0" while typing is fine, but
+                // we normalise "007" -> "7"). Empty stays empty.
+                if (digits.length > 1) digits = digits.replace(/^0+/, '');
+
+                if (digits.length > 6) digits = digits.slice(0, 6);
+
+                var overLimit = false;
+                if (digits !== '') {
+                    var n = parseInt(digits, 10);
+                    if (n > MAX_BUDGET) {
+                        digits = String(MAX_BUDGET);
+                        overLimit = true;
+                    }
+                }
+
+                if (digits !== original) budget.value = digits;
+
+                if (overLimit) {
+                    setBudgetError('Maximum budget allowed is R200 000.00');
+                } else {
+                    // Clear the error once the value is valid again.
+                    setBudgetError('');
+                }
+            }
+
+            // Block non-digit keys up front (allow control/navigation keys).
+            budget.addEventListener('keydown', function (e) {
+                var key = e.keyCode || e.which;
+                var allowed = [8, 9, 13, 46, 37, 38, 39, 40, 35, 36]; // bksp, tab, enter, del, arrows, home, end
+                if (allowed.indexOf(key) !== -1) return;
+                if (e.ctrlKey || e.metaKey) return; // allow copy/paste/select-all shortcuts
+                var isTopDigit = key >= 48 && key <= 57;
+                var isNumpadDigit = key >= 96 && key <= 105;
+                if (!isTopDigit && !isNumpadDigit) {
+                    e.preventDefault();
+                }
+            });
+
+            budget.addEventListener('input', sanitize);
+            budget.addEventListener('paste', function () {
+                // Let the paste land, then sanitize + clamp (handles "R1,000.50" etc.).
+                setTimeout(sanitize, 0);
+            });
+            budget.addEventListener('blur', sanitize);
+        })();
+
+        // ============================================================
+        // Clear a field's inline error + red border as soon as it's corrected.
+        // ============================================================
+        (function () {
+            function bindClear(ctrlId, errId, invalidTarget) {
+                var ctrl = document.getElementById(ctrlId);
+                var err = document.getElementById(errId);
+                if (!ctrl) return;
+                var evt = (ctrl.tagName === 'SELECT') ? 'change' : 'input';
+                ctrl.addEventListener(evt, function () {
+                    var hasValue = (ctrl.value && ctrl.value.toString().trim() !== '');
+                    if (hasValue) {
+                        if (err) err.innerText = '';
+                        var target = invalidTarget ? document.getElementById(invalidTarget) : ctrl;
+                        if (target) target.classList.remove('input-invalid');
+                    }
+                });
+            }
+
+            bindClear('<%= txtProjectTitle.ClientID %>', '<%= lblErrTitle.ClientID %>');
+            bindClear('<%= ddlCategory.ClientID %>', '<%= lblErrCategory.ClientID %>');
+            bindClear('<%= txtOtherCategory.ClientID %>', '<%= lblErrOtherCategory.ClientID %>');
+            bindClear('<%= ddlExperience.ClientID %>', '<%= lblErrExperience.ClientID %>');
+            bindClear('<%= txtDescription.ClientID %>', '<%= lblErrDescription.ClientID %>');
+            bindClear('<%= txtDeadline.ClientID %>', '<%= lblErrDeadline.ClientID %>');
+        })();
 
     </script>
 
