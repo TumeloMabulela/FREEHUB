@@ -114,12 +114,13 @@ namespace FreeHubProject
                 }
                 LoadProposals();
             }
-            else if (e.CommandName == "ViewDetails")
+            else if (e.CommandName == "ViewProposal"
+                     || e.CommandName == "ViewDetails"
+                     || e.CommandName == "ReadAll")
             {
-                Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
-            }
-            else if (e.CommandName == "ReadAll")
-            {
+                // Opens the existing full-proposal page (ReviewProposal.aspx), which loads the
+                // complete cover letter and enforces its own role-based authorisation
+                // (employers can act, freelancers are read-only).
                 Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
             else if (e.CommandName == "DeleteProposal")
@@ -150,6 +151,23 @@ namespace FreeHubProject
         {
             string userType = Session["UserType"] as string ?? "";
             return userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Maps an existing proposal status value to its badge CSS class.
+        /// Does not change or add status values — only picks a colour for display.
+        /// </summary>
+        protected string GetStatusClass(object status)
+        {
+            string s = Convert.ToString(status).Trim().ToLowerInvariant();
+            switch (s)
+            {
+                case "approved": return "pl-badge-approved";
+                case "rejected": return "pl-badge-rejected";
+                case "withdrawn": return "pl-badge-withdrawn";
+                case "pending": return "pl-badge-pending";
+                default: return "pl-badge-default";
+            }
         }
     }
 }
