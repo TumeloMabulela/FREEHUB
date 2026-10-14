@@ -35,41 +35,68 @@ namespace FreeHubProject
                 FormatCurrency(balance);
         }
 
+        // Quick-amount buttons. In normal use the client-side addQuickAmount() handles
+        // these and returns false (no postback). These server handlers are a no-JS
+        // fallback: they ADD the amount to the current field value and enforce the same
+        // maximum, so the additive behaviour and limits hold even without JavaScript.
         protected void btn500_Click(object sender, EventArgs e)
         {
-            SetAmount(500.00m);
+            AddAmount(500.00m);
         }
 
         protected void btn1000_Click(object sender, EventArgs e)
         {
-            SetAmount(1000.00m);
+            AddAmount(1000.00m);
         }
 
         protected void btn2500_Click(object sender, EventArgs e)
         {
-            SetAmount(2500.00m);
+            AddAmount(2500.00m);
         }
 
         protected void btn5000_Click(object sender, EventArgs e)
         {
-            SetAmount(5000.00m);
+            AddAmount(5000.00m);
         }
 
         protected void btn100000_Click(object sender, EventArgs e)
         {
-            SetAmount(100000.00m);
+            AddAmount(100000.00m);
         }
 
-        private void SetAmount(decimal amount)
+        // Reads the current whole-rand amount from the field (0 if blank/invalid),
+        // adds the given delta, and writes it back — unless the new total would exceed
+        // the maximum, in which case the field is left unchanged and the error is shown.
+        private void AddAmount(decimal delta)
         {
-            // Whole-rand integers only (no decimal part) to match the amount field.
-            txtAmount.Text =
-                decimal.Truncate(amount).ToString("0", CultureInfo.InvariantCulture);
+            lblAmountError.Text = "";
 
-            ShowMessage(
-                FormatCurrency(amount) + " selected.",
-                true
-            );
+            string raw = (txtAmount.Text ?? "").Trim();
+            decimal current = 0m;
+            if (raw.Length > 0)
+            {
+                // Only accept whole-rand digits; ignore anything invalid (treat as 0).
+                string digits = System.Text.RegularExpressions.Regex.Replace(raw, "[^0-9]", "");
+                if (digits.Length > 0)
+                    decimal.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out current);
+            }
+
+            decimal next = current + delta;
+
+            if (next > MaxDepositAmount)
+            {
+                // Keep the current value; do not let repeated adds exceed the maximum.
+                lblAmountError.Text =
+                    "The maximum amount per deposit is " + FormatCurrency(MaxDepositAmount) + ".";
+                txtAmount.CssClass = "fw-amount-input input-invalid";
+                return;
+            }
+
+            // Whole-rand integer, no decimal part, invariant culture.
+            txtAmount.Text = decimal.Truncate(next).ToString("0", CultureInfo.InvariantCulture);
+            txtAmount.CssClass = "fw-amount-input";
+
+            ShowMessage(FormatCurrency(next) + " entered.", true);
         }
 
         protected void btnProceed_Click(object sender, EventArgs e)

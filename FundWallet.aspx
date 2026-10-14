@@ -170,7 +170,7 @@
                                 Text="R500"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setQuickAmount(500); return false;"
+                                OnClientClick="addQuickAmount(500); return false;"
                                 OnClick="btn500_Click" />
 
                             <asp:Button
@@ -179,7 +179,7 @@
                                 Text="R1,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setQuickAmount(1000); return false;"
+                                OnClientClick="addQuickAmount(1000); return false;"
                                 OnClick="btn1000_Click" />
 
                             <asp:Button
@@ -188,7 +188,7 @@
                                 Text="R2,500"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setQuickAmount(2500); return false;"
+                                OnClientClick="addQuickAmount(2500); return false;"
                                 OnClick="btn2500_Click" />
 
                             <asp:Button
@@ -197,7 +197,7 @@
                                 Text="R5,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setQuickAmount(5000); return false;"
+                                OnClientClick="addQuickAmount(5000); return false;"
                                 OnClick="btn5000_Click" />
 
                             <asp:Button
@@ -206,7 +206,7 @@
                                 Text="R100,000"
                                 CssClass="fw-quick-button"
                                 CausesValidation="false"
-                                OnClientClick="setQuickAmount(100000); return false;"
+                                OnClientClick="addQuickAmount(100000); return false;"
                                 OnClick="btn100000_Click" />
 
                         </div>
@@ -395,14 +395,33 @@
             }
         }
 
-        // Quick buttons set a whole-rand integer (no decimals).
-        function setQuickAmount(amount) {
+        // Reads the current whole-rand amount in the field (0 if blank/invalid).
+        function fwCurrentAmount() {
             var input = getAmountInput();
-            if (input) {
-                input.value = String(Math.round(amount));
+            if (!input) return 0;
+            var digits = (input.value || '').replace(/[^0-9]/g, '');
+            return digits === '' ? 0 : parseInt(digits, 10);
+        }
+
+        // Quick buttons ADD their value to whatever is already in the field.
+        // The running total is validated against the existing max on every click;
+        // if a click would exceed the max we keep the previous value and show the
+        // error instead, so repeated clicks can never bypass the limit.
+        function addQuickAmount(delta) {
+            var input = getAmountInput();
+            if (!input) return;
+
+            var current = fwCurrentAmount();
+            var next = current + Math.round(delta);
+
+            if (next > FW_MAX_DEPOSIT) {
+                // Do not apply the add; leave the field at the current value and warn.
+                fwSetError('Maximum amount per deposit is R20 000 000.');
+            } else {
+                input.value = String(next);
                 fwSetError('');
-                input.focus();
             }
+            input.focus();
         }
 
         // ============================================================
