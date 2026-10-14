@@ -15,10 +15,15 @@
           type="text/css" />
 
     <style type="text/css">
-        /* Compact validation message under the amount field. */
+        /* Required-field star beside the label. */
+        .fw-required {
+            color: #d4474f;
+            margin-left: 2px;
+            font-weight: bold;
+        }
+        /* Compact validation message shown beside the label (not under the input). */
         .fw-amount-error {
-            display: block;
-            margin-top: 6px;
+            margin-left: 8px;
             color: #d4474f;
             font-size: 12px;
             font-weight: 600;
@@ -132,6 +137,8 @@
 
                         <label class="fw-label">
                             Amount (ZAR)
+                            <span class="fw-required">*</span>
+                            <asp:Label ID="lblAmountError" runat="server" CssClass="fw-amount-error" EnableViewState="false"></asp:Label>
                         </label>
 
                         <div class="fw-amount-box">
@@ -152,8 +159,6 @@
                                 autocomplete="off"
                                 placeholder="0">
                             </asp:TextBox>
-
-                            <asp:Label ID="lblAmountError" runat="server" CssClass="fw-amount-error" EnableViewState="false"></asp:Label>
 
                         </div>
 
