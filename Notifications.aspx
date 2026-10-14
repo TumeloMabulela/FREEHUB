@@ -75,7 +75,15 @@
         .nx-title { font-size:14px; color:#10261c; margin:0; }
         .nx-card.unread .nx-title { font-weight:800; }
         .nx-dot { width:8px; height:8px; border-radius:50%; background:#ef4444; flex-shrink:0; }
-        .nx-desc { color:#6b7280; font-size:13px; margin:4px 0 8px 0; line-height:1.4; }
+        /* Clamp long descriptions in the list to 2 lines with a trailing ellipsis (…).
+           The full text is always shown in the right-hand detail panel when selected. */
+        .nx-desc {
+            color:#6b7280; font-size:13px; margin:4px 0 8px 0; line-height:1.4;
+            display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+            overflow:hidden; text-overflow:ellipsis;
+            /* Fallback for browsers without line-clamp support */
+            max-height:2.8em;
+        }
         .nx-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
         .nx-badge { font-size:11px; font-weight:700; padding:2px 9px; border-radius:12px; }
         .nx-badge.project { background:#e6f0ff; color:#2563eb; }
