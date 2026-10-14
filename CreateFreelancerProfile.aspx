@@ -32,8 +32,9 @@
         .form-textarea { width: 100%; padding: 11px 14px; border: 1px solid #d1d9d3; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 100px; font-family: Arial, sans-serif; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .readonly-input { background-color: #f5f5f5; cursor: not-allowed; }
-        .back-link { display: inline-flex; align-items: center; gap: 6px; color: #173f2c; text-decoration: none; font-size: 14px; font-weight: 600; margin-bottom: 24px; padding: 10px 18px; border: 1px solid #d1d9d3; border-radius: 8px; }
-        .back-link:hover { border-color: #173f2c; }
+        .back-link { display: inline-flex; align-items: center; gap: 10px; color: #0f5132; text-decoration: none; font-size: 15px; font-weight: 700; margin-bottom: 24px; padding: 8px 20px 8px 8px; border: none; border-radius: 30px; background-color: #eaf6ee; }
+        .back-link:hover { background-color: #dcefe3; }
+        .back-link::before { content: "\2190"; width: 34px; height: 34px; border-radius: 50%; background-color: #0f5132; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
         .form-actions { display: flex; gap: 12px; margin-top: 24px; }
         .btn-submit { flex: 1; background-color: #173f2c; color: white; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
         .btn-submit:hover { background-color: #1f5438; }
@@ -58,7 +59,7 @@
 
             <div class="create-form">
 
-                <a href="ChooseRole.aspx" class="back-link">&#8592; Back to Choose Role</a>
+                <a href="ChooseRole.aspx" class="back-link">Back to Choose Role</a>
 
                 <div class="form-row">
                     <div class="form-field">

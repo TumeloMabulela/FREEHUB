@@ -4,7 +4,10 @@
 
     <div class="sidebar-back">
         <% if (!GetActiveClass("Default").Contains("active")) { %>
-        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background:linear-gradient(90deg,#148b97 0%,#2fa86d 50%,#72c94b 100%);text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
+        <a href="javascript:history.back()" class="fh-back-pill" style="margin:10px 16px;">
+            <span class="fh-back-circle">&#8592;</span>
+            <span class="fh-back-text">Back</span>
+        </a>
         <% } %>
     </div>
 

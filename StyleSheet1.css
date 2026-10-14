@@ -4646,15 +4646,20 @@ FREEHUB HOME PAGE
     }
 
 .approve-back-button {
-    height: 31px;
-    padding: 0 14px;
-    color: #5d6870;
-    background: #ffffff;
-    border: 1px solid #dce2e3;
-    border-radius: 5px;
-    font-size: 8px;
+    height: 38px;
+    padding: 0 18px;
+    color: #0f5132;
+    background: #eaf6ee;
+    border: none;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
 }
+
+    .approve-back-button:hover {
+        background: #dcefe3;
+    }
 
 
 /* CONFIRMATION */
@@ -5357,15 +5362,20 @@ FREEHUB HOME PAGE
     }
 
 .reject-back-button {
-    height: 31px;
-    padding: 0 14px;
-    color: #5d6870;
-    background: #ffffff;
-    border: 1px solid #dce2e3;
-    border-radius: 5px;
-    font-size: 8px;
+    height: 38px;
+    padding: 0 18px;
+    color: #0f5132;
+    background: #eaf6ee;
+    border: none;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
     cursor: pointer;
 }
+
+    .reject-back-button:hover {
+        background: #dcefe3;
+    }
 
 
 /* WARNING */
@@ -13004,6 +13014,46 @@ FREEHUB HOME PAGE
 /* =========================
    SHARED SIDEBAR CONTROL
 ========================= */
+
+/* ==================================
+   Shared Back button (dark-green circular arrow + green label on a light pill)
+   ================================== */
+.fh-back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #eaf6ee;
+    border: none;
+    border-radius: 30px;
+    padding: 8px 20px 8px 8px;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+    .fh-back-pill:hover {
+        background-color: #dcefe3;
+    }
+
+    .fh-back-pill .fh-back-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background-color: #0f5132;
+        color: #ffffff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .fh-back-pill .fh-back-text {
+        color: #0f5132;
+        font-size: 16px;
+        font-weight: 700;
+    }
 
 .freehub-sidebar {
     width: 260px;
