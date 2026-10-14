@@ -1078,6 +1078,123 @@
             bindClear('<%= txtDeadline.ClientID %>', '<%= lblErrDeadline.ClientID %>');
         })();
 
+        // ============================================================
+        // Auto-save draft: keeps what you've typed so you can leave the
+        // page and continue later. Stored in the browser (localStorage),
+        // per user, and cleared once the project is posted or cancelled.
+        // No server/database involvement.
+        // ============================================================
+        (function () {
+            // Scope the draft to the logged-in user so drafts don't leak between accounts.
+            var DRAFT_KEY = 'fh_postproject_draft_<%= (Session["UserID"] ?? "guest").ToString() %>';
+
+            // Map of logical name -> control id. Text/select fields.
+            var fields = {
+                title: '<%= txtProjectTitle.ClientID %>',
+                category: '<%= ddlCategory.ClientID %>',
+                otherCategory: '<%= txtOtherCategory.ClientID %>',
+                experience: '<%= ddlExperience.ClientID %>',
+                description: '<%= txtDescription.ClientID %>',
+                budget: '<%= txtBudget.ClientID %>',
+                deadline: '<%= txtDeadline.ClientID %>'
+            };
+            var budgetTypeName = '<%= rblBudgetType.UniqueID %>';          // radio group name
+            var skillsContainerId = '<%= cblSkills.ClientID %>';            // checkbox list container
+            var successModal = document.getElementById('<%= pnlSuccessModal.ClientID %>');
+
+            function el(id) { return document.getElementById(id); }
+
+            // If the project was just posted successfully, the success modal is rendered.
+            // Clear the draft and stop — nothing to restore.
+            if (successModal) {
+                try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }
+                return;
+            }
+
+            function collect() {
+                var data = {};
+                for (var k in fields) {
+                    var c = el(fields[k]);
+                    if (c) data[k] = c.value;
+                }
+                // Budget type (radio group).
+                var radios = document.getElementsByName(budgetTypeName);
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) { data.budgetType = radios[i].value; break; }
+                }
+                // Skills (checkbox list) -> list of checked values/labels.
+                var container = el(skillsContainerId);
+                if (container) {
+                    var boxes = container.getElementsByTagName('input');
+                    var checked = [];
+                    for (var j = 0; j < boxes.length; j++) {
+                        if (boxes[j].type === 'checkbox' && boxes[j].checked) checked.push(boxes[j].id);
+                    }
+                    data.skills = checked;
+                }
+                return data;
+            }
+
+            function save() {
+                try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collect())); } catch (e) { }
+            }
+
+            function restore() {
+                var raw;
+                try { raw = localStorage.getItem(DRAFT_KEY); } catch (e) { return; }
+                if (!raw) return;
+                var data;
+                try { data = JSON.parse(raw); } catch (e) { return; }
+
+                // Only fill fields that are currently empty, so a validation postback
+                // (which keeps the server's values) is never overwritten.
+                for (var k in fields) {
+                    var c = el(fields[k]);
+                    if (c && (c.value === '' || c.value == null) && data[k]) {
+                        c.value = data[k];
+                    }
+                }
+                if (data.budgetType) {
+                    var radios = document.getElementsByName(budgetTypeName);
+                    for (var i = 0; i < radios.length; i++) {
+                        if (radios[i].value === data.budgetType && !anyRadioChecked(radios)) {
+                            radios[i].checked = true;
+                        }
+                    }
+                }
+                if (data.skills && data.skills.length) {
+                    for (var s = 0; s < data.skills.length; s++) {
+                        var box = el(data.skills[s]);
+                        if (box && box.type === 'checkbox') box.checked = true;
+                    }
+                }
+
+                // Reflect restored state in dependent UI (e.g. "Other" category box) + counters.
+                if (typeof toggleOtherCategory === 'function') toggleOtherCategory();
+                var desc = el(fields.description);
+                if (desc) { var ev = new Event('input'); desc.dispatchEvent(ev); }
+            }
+
+            function anyRadioChecked(radios) {
+                for (var i = 0; i < radios.length; i++) if (radios[i].checked) return true;
+                return false;
+            }
+
+            // Restore on load, then attach savers to every field.
+            restore();
+
+            // Save on any change within the form card (covers text, selects, radios, checkboxes).
+            var scope = document.querySelector('.post-form-card') || document;
+            scope.addEventListener('input', save, true);
+            scope.addEventListener('change', save, true);
+
+            // Clear the draft when the user cancels (Cancel posts back and clears the form).
+            var cancelBtn = el('<%= btnCancel.ClientID %>');
+            if (cancelBtn) cancelBtn.addEventListener('click', function () {
+                try { localStorage.removeItem(DRAFT_KEY); } catch (e) { }
+            });
+        })();
+
     </script>
 
 </asp:Content>
