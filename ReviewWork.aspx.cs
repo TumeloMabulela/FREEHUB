@@ -37,7 +37,6 @@ namespace FreeHubProject
 
             try
             {
-                // Retrieve project, approved proposal, and latest submission message
                 string query = @"
                     SELECT 
                         p.projectID, p.title, p.budget, p.projectStatus,
@@ -78,7 +77,6 @@ namespace FreeHubProject
                     ShowStatus("This project has already been approved and completed.", true);
                     btnApproveWork.Enabled = false;
                     btnRequestRevision.Enabled = false;
-                    pnlRating.Visible = false;
                 }
             }
             catch (Exception ex)
@@ -118,10 +116,8 @@ namespace FreeHubProject
                     decimal currentBalance = Convert.ToDecimal(freelancerWallet["balance"]);
                     decimal newBalance = currentBalance + netPayout;
 
-                    // Update balance with NET payout
                     DatabaseHelper.UpdateWalletBalance(walletId, newBalance);
 
-                    // Record Freelancer Credit Transaction (90%)
                     string freelancerRef = TransactionStore.CreateReference("PAY");
                     string payoutDescription = string.Format("Payout received for '{0}' (Gross: R{1:N2}, 10% Fee: -R{2:N2})",
                         lblProjectTitle.Text, grossBudget, commissionFee);
@@ -136,7 +132,7 @@ namespace FreeHubProject
                         "Escrow Release");
                 }
 
-                // 4. Record Admin / System Commission Entry (10%)
+                // 4. Record Admin Commission Entry (10%)
                 DataRow adminWallet = DatabaseHelper.GetWalletByUserId(1); // Admin UserID = 1
                 if (adminWallet != null)
                 {
@@ -159,29 +155,7 @@ namespace FreeHubProject
                         "Platform Fee");
                 }
 
-                // 5. Save Rating for Freelancer
-                int score = Convert.ToInt32(ddlRatingScore.SelectedValue);
-                string comment = txtRatingComment.Text.Trim();
-
-                string ratingQuery = @"
-            INSERT INTO dbo.Rating (projectID, raterUserID, ratedUserID, score, ratingComment, ratingDate)
-            VALUES (@ProjectID, @RaterID, @RatedID, @Score, @Comment, GETDATE())";
-
-                DatabaseHelper.ExecuteNonQuery(ratingQuery,
-                    new SqlParameter("@ProjectID", ProjectId),
-                    new SqlParameter("@RaterID", employerUserId),
-                    new SqlParameter("@RatedID", freelancerUserId),
-                    new SqlParameter("@Score", score),
-                    new SqlParameter("@Comment", string.IsNullOrEmpty(comment) ? (object)DBNull.Value : comment));
-
-                // Recalculate average rating
-                string updateAvgRatingQuery = @"
-            UPDATE dbo.[User]
-            SET ratingScore = (SELECT AVG(CAST(score AS DECIMAL(3,2))) FROM dbo.Rating WHERE ratedUserID = @FreelancerUserID)
-            WHERE userID = @FreelancerUserID";
-                DatabaseHelper.ExecuteNonQuery(updateAvgRatingQuery, new SqlParameter("@FreelancerUserID", freelancerUserId));
-
-                // 6. Notify Freelancer
+                // 5. Notify Freelancer
                 string notificationText = string.Format(
                     "Your work for '{0}' was approved! R{1:N2} has been added to your wallet (R{2:N2} gross minus R{3:N2} platform fee).",
                     lblProjectTitle.Text, netPayout, grossBudget, commissionFee);
@@ -191,18 +165,17 @@ namespace FreeHubProject
                 ShowStatus(string.Format("Project completed! R{0:N2} released to freelancer. Platform fee collected: R{1:N2}.", netPayout, commissionFee), true);
                 btnApproveWork.Enabled = false;
                 btnRequestRevision.Enabled = false;
-                pnlRating.Visible = false;
             }
             catch (Exception ex)
             {
                 ShowStatus("Error completing project: " + ex.Message, false);
             }
         }
+
         protected void btnRequestRevision_Click(object sender, EventArgs e)
         {
             try
             {
-                // Set status back to 'In Progress' for revisions
                 string query = "UPDATE dbo.Project SET projectStatus = 'In Progress' WHERE projectID = @ProjectID";
                 DatabaseHelper.ExecuteNonQuery(query, new SqlParameter("@ProjectID", ProjectId));
 

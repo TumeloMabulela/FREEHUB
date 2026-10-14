@@ -3,15 +3,15 @@
     Inherits="FreeHubProject.Sidebar" %><aside class="freehub-sidebar">
 
     <div class="sidebar-back">
-        <% if (!GetActiveClass("Dashboard").Contains("active")) { %>
-        <a href="Dashboard.aspx" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
+        <% if (!GetActiveClass("Default").Contains("active")) { %>
+        <a href="javascript:history.back()" style="display:inline-block;color:#fff;background-color:#173f2c;text-decoration:none;font-size:13px;font-weight:500;padding:8px 16px;border-radius:6px;margin:10px 16px;">&#8592; Back</a>
         <% } %>
     </div>
 
     <div class="sidebar-section">
 
-        <a href="Dashboard.aspx"
-           class="sidebar-item <%= GetActiveClass("Dashboard") %>">
+        <a href="Default.aspx"
+           class="sidebar-item <%= GetActiveClass("Default") %>">
             <span class="sidebar-icon">&#127968;</span>
             <span>Dashboard</span>
         </a>
@@ -39,9 +39,9 @@
             <span>Proposals Received</span>
         </a>
         <a href="ViewProgress.aspx" class="sidebar-item <%= GetActiveClass("ViewProgress") %>">
-    <span class="sidebar-icon">&#128202;</span>
-    <span>View Progress</span>
-</a>
+            <span class="sidebar-icon">&#128200;</span>
+            <span>View Progress</span>
+        </a>
         <% } %>
 
         <% if (CurrentUserType == "Freelancer") { %>
@@ -49,6 +49,10 @@
            class="sidebar-item <%= GetActiveClass("SelectProposal") %>">
             <span class="sidebar-icon">&#128221;</span>
             <span>My Proposals</span>
+        </a>
+        <a href="ViewProgress.aspx" class="sidebar-item <%= GetActiveClass("ViewProgress") %>">
+            <span class="sidebar-icon">&#128200;</span>
+            <span>View Progress</span>
         </a>
         <% } %>
 
@@ -59,9 +63,8 @@
         </a>
 
         <a href="Wallet.aspx"
-           class="sidebar-item <%= GetActiveClass("Wallet") %>"
-           title="Wallet - view balance, fund, withdraw and transactions">
-            <span class="sidebar-icon">&#128091;</span>
+           class="sidebar-item <%= GetActiveClass("Wallet") %>">
+            <span class="sidebar-icon">&#128176;</span>
             <span>Wallet</span>
         </a>
 
@@ -81,10 +84,6 @@
            class="sidebar-item <%= GetActiveClass("RateFreelancer") %>">
             <span class="sidebar-icon">&#11088;</span>
             <span>Ratings</span>
-
-
         </a>
 
-    </div>
-
-</aside>
+    </div></aside>

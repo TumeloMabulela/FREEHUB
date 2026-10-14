@@ -78,33 +78,6 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblSubmissionContent;
 
         /// <summary>
-        /// pnlRating control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlRating;
-
-        /// <summary>
-        /// ddlRatingScore control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlRatingScore;
-
-        /// <summary>
-        /// txtRatingComment control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRatingComment;
-
-        /// <summary>
         /// btnApproveWork control.
         /// </summary>
         /// <remarks>
