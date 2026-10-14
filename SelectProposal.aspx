@@ -38,6 +38,28 @@
         }
         .pl-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
 
+        /* Approval filter tabs */
+        .pl-tabs {
+            display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .pl-tab {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 16px; border-radius: 22px;
+            background: #f3f6f4; color: #5a6e62; border: 1px solid #e2e8e4;
+            font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+        }
+        .pl-tab:hover { background: #eaf6ee; color: #12833f; }
+        .pl-tab-count {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 22px; padding: 2px 7px; border-radius: 11px;
+            background: #e2e8e4; color: #5a6e62; font-size: 12px; font-weight: 700;
+        }
+        /* Active tab — FreeHUB green */
+        .pl-tab.pl-tab-active {
+            background: #2e7d56; color: #ffffff; border-color: #2e7d56;
+        }
+        .pl-tab.pl-tab-active .pl-tab-count { background: rgba(255,255,255,.25); color: #ffffff; }
+
         /* Card: left zone (freelancer) | divider | right zone (meta + status + actions) */
         .pl-card {
             display: flex;
@@ -196,6 +218,20 @@
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                         <h3 style="color:#173f2c;">Proposals (<asp:Label ID="lblProposalCount" runat="server" Text="0" />)</h3>
                     </div>
+
+                    <!-- APPROVAL FILTER TABS (employer only) -->
+                    <asp:Panel ID="pnlFilterTabs" runat="server" CssClass="pl-tabs">
+                        <asp:LinkButton ID="lnkTabPending" runat="server" CssClass="pl-tab"
+                            CommandName="Pending" OnCommand="FilterTab_Command" CausesValidation="false">
+                            Not Yet Approved
+                            <span class="pl-tab-count"><asp:Label ID="lblPendingCount" runat="server" Text="0" /></span>
+                        </asp:LinkButton>
+                        <asp:LinkButton ID="lnkTabApproved" runat="server" CssClass="pl-tab"
+                            CommandName="Approved" OnCommand="FilterTab_Command" CausesValidation="false">
+                            Approved
+                            <span class="pl-tab-count"><asp:Label ID="lblApprovedCount" runat="server" Text="0" /></span>
+                        </asp:LinkButton>
+                    </asp:Panel>
 
                     <!-- Scrollable list container (left) -->
                     <div class="pl-list">

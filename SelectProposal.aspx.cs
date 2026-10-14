@@ -76,17 +76,85 @@ namespace FreeHubProject
                         new SqlParameter("@UserID", userId));
                 }
 
+                bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+
+                // Filter tabs apply to the employer view only; freelancers keep their
+                // existing "all my proposals" list unchanged.
+                pnlFilterTabs.Visible = isEmployer;
+
+                if (isEmployer)
+                {
+                    // Count the two categories from the full set (dynamic, not hardcoded):
+                    //   Not Yet Approved = Pending (eligible for approval). Rejected /
+                    //   Withdrawn / Cancelled are NOT treated as pending.
+                    //   Approved = status 'Approved'.
+                    int pendingCount = 0, approvedCount = 0;
+                    foreach (DataRow r in proposals.Rows)
+                    {
+                        string st = Convert.ToString(r["status"]).Trim();
+                        if (st.Equals("Approved", StringComparison.OrdinalIgnoreCase)) approvedCount++;
+                        else if (st.Equals("Pending", StringComparison.OrdinalIgnoreCase)) pendingCount++;
+                    }
+                    lblPendingCount.Text = pendingCount.ToString();
+                    lblApprovedCount.Text = approvedCount.ToString();
+
+                    // Highlight the active tab (FreeHUB green).
+                    lnkTabPending.CssClass = CurrentFilter == "Approved" ? "pl-tab" : "pl-tab pl-tab-active";
+                    lnkTabApproved.CssClass = CurrentFilter == "Approved" ? "pl-tab pl-tab-active" : "pl-tab";
+
+                    // Build the filtered view for the selected tab.
+                    DataTable view = proposals.Clone();
+                    foreach (DataRow r in proposals.Rows)
+                    {
+                        string st = Convert.ToString(r["status"]).Trim();
+                        bool include = CurrentFilter == "Approved"
+                            ? st.Equals("Approved", StringComparison.OrdinalIgnoreCase)
+                            : st.Equals("Pending", StringComparison.OrdinalIgnoreCase);
+                        if (include) view.ImportRow(r);
+                    }
+                    proposals = view;
+                }
+
                 rptProposals.DataSource = proposals;
                 rptProposals.DataBind();
 
                 pnlNoProposals.Visible = proposals.Rows.Count == 0;
                 lblProposalCount.Text = proposals.Rows.Count.ToString();
+
+                // Friendly empty-state message tailored to the active filter.
+                if (proposals.Rows.Count == 0 && isEmployer)
+                {
+                    pnlNoProposals.Controls.Clear();
+                    if (CurrentFilter == "Approved")
+                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
+                            "<h3>No approved proposals yet</h3><p>Proposals you approve will appear here.</p>"));
+                    else
+                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
+                            "<h3>No proposals awaiting approval</h3><p>Pending proposals for your projects will appear here for review.</p>"));
+                }
             }
             catch (Exception ex)
             {
                 pnlNoProposals.Visible = true;
                 ShowMessage("Error loading proposals: " + ex.Message, false);
             }
+        }
+
+        /// <summary>Active approval filter tab: "Pending" (default) or "Approved".</summary>
+        private string CurrentFilter
+        {
+            get { return ViewState["ProposalFilter"] as string == "Approved" ? "Approved" : "Pending"; }
+            set { ViewState["ProposalFilter"] = value; }
+        }
+
+        protected void FilterTab_Command(object sender, System.Web.UI.WebControls.CommandEventArgs e)
+        {
+            CurrentFilter = e.CommandName == "Approved" ? "Approved" : "Pending";
+            LoadProposals();
+
+            // Reset the proposal list scrollbar to the top on filter switch.
+            ClientScript.RegisterStartupScript(GetType(), "plScrollTop",
+                "var l=document.querySelector('.pl-list'); if(l){l.scrollTop=0;}", true);
         }
 
         protected void rptProposals_ItemCommand(object source,
