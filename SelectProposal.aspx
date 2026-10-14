@@ -54,18 +54,29 @@
         }
         .pl-card:hover { box-shadow: 0 6px 16px rgba(16, 40, 28, 0.10); }
 
-        /* Freelancer block — shrinkable */
-        .pl-freelancer { display: flex; align-items: center; gap: 10px; flex: 1 1 150px; min-width: 0; }
+        /* Freelancer block — name + project badge beneath it (shrinkable) */
+        .pl-freelancer { display: flex; align-items: center; gap: 10px; flex: 1 1 230px; min-width: 0; }
         .pl-avatar {
             width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
             background: #2e7d56; color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 14px;
         }
-        .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; }
-        .pl-name { color: #173f2c; font-size: 13px; font-weight: 700;
+        .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .pl-name { color: #173f2c; font-size: 14px; font-weight: 700;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pl-role { color: #7b878d; font-size: 12px; }
+
+        /* Light-green project badge with folder icon (project name shown here, once) */
+        .pl-project-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            align-self: flex-start; max-width: 100%;
+            padding: 4px 10px; border-radius: 14px;
+            background: #e5f4ea; color: #2e7d56;
+            font-size: 12px; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pl-project-badge strong { color: #173f2c; font-weight: 700; }
+        .pl-folder { font-size: 13px; flex-shrink: 0; }
 
         /* A labelled field (label on top, value below) — all shrinkable */
         .pl-field { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -74,11 +85,7 @@
         .pl-value { color: #173f2c; font-size: 13px; font-weight: 700;
                     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .pl-project { flex: 1 1 110px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-        .pl-project-name { color: #173f2c; font-size: 13px; font-weight: 700;
-                           white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        .pl-rate { flex: 1 1 auto; min-width: 0; }
+        .pl-rate { flex: 0 1 auto; min-width: 0; }
         .pl-rate .pl-value { color: #10261c; }
         .pl-time { flex: 0 1 auto; min-width: 0; }
         .pl-date { flex: 0 1 auto; min-width: 0; }
@@ -128,7 +135,6 @@
         @media (max-width: 1100px) {
             .pl-card { flex-wrap: wrap; }
             .pl-freelancer { flex: 1 1 100%; }
-            .pl-project { flex: 1 1 100%; }
             .pl-actions { margin-left: 0; flex: 1 1 100%; }
         }
         /* Below this width the two columns stack: list on top, tips below. */
@@ -198,21 +204,18 @@
                                  content is shown here — it opens only via "View Proposal". --%>
                             <div class="pl-card">
 
-                                <!-- Freelancer: avatar + name + role -->
+                                <!-- Freelancer: avatar + name + project badge (project shown here only, once) -->
                                 <div class="pl-freelancer">
                                     <div class="pl-avatar">
                                         <%# Eval("freelancerName").ToString().Substring(0,1).ToUpper() %><%# Eval("freelancerName").ToString().Contains(" ") ? Eval("freelancerName").ToString().Split(' ')[1].Substring(0,1).ToUpper() : "" %>
                                     </div>
                                     <div class="pl-freelancer-text">
                                         <strong class="pl-name"><%# Server.HtmlEncode(Convert.ToString(Eval("freelancerName"))) %></strong>
-                                        <span class="pl-role">Freelancer</span>
+                                        <span class="pl-project-badge">
+                                            <span class="pl-folder" aria-hidden="true">&#128193;</span>
+                                            Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong>
+                                        </span>
                                     </div>
-                                </div>
-
-                                <!-- Project name (bold, no description) -->
-                                <div class="pl-field pl-project">
-                                    <span class="pl-label">Project</span>
-                                    <strong class="pl-project-name"><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong>
                                 </div>
 
                                 <!-- Proposed rate (ZAR) -->
