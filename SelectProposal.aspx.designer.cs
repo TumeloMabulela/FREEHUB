@@ -11,11 +11,14 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Label lblProposalMessage;
         protected global::System.Web.UI.WebControls.Panel pnlNoProposals;
+        protected global::System.Web.UI.WebControls.Literal litEmptyTitle;
+        protected global::System.Web.UI.WebControls.Literal litEmptyText;
         protected global::System.Web.UI.WebControls.Label lblProposalCount;
         protected global::System.Web.UI.WebControls.Panel pnlFilterTabs;
         protected global::System.Web.UI.WebControls.LinkButton lnkTabPending;
         protected global::System.Web.UI.WebControls.LinkButton lnkTabApproved;
         protected global::System.Web.UI.WebControls.LinkButton lnkTabRejected;
+        protected global::System.Web.UI.WebControls.Panel pnlListWrap;
         protected global::System.Web.UI.WebControls.Repeater rptProposals;
     }
 }

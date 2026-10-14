@@ -61,6 +61,24 @@
         .pl-tab.pl-tab-active:hover { background: #276b4a; color: #ffffff; }
         .pl-tab.pl-tab-active .pl-tab-count { background: rgba(255,255,255,.25); color: #ffffff; }
 
+        /* Empty-state card (shown when the selected filter has no proposals) */
+        .pl-empty {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center;
+            min-height: 240px;
+            background: #ffffff; border: 1px solid #e8ece9; border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(16, 40, 28, 0.06);
+            padding: 36px 24px;
+        }
+        .pl-empty-icon {
+            width: 92px; height: 92px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 18px;
+            background: #e5f4ea; color: #2e7d56; font-size: 40px;
+        }
+        .pl-empty-title { margin: 0 0 8px; color: #173f2c; font-size: 20px; font-weight: 700; }
+        .pl-empty-text { margin: 0; color: #7b878d; font-size: 14px; }
+
         /* Card: left zone (freelancer) | divider | right zone (meta + status + actions) */
         .pl-card {
             display: flex;
@@ -205,12 +223,6 @@
                 <asp:Label ID="lblProposalMessage" runat="server" />
             </asp:Panel>
 
-            <!-- NO PROPOSALS -->
-            <asp:Panel ID="pnlNoProposals" runat="server" Visible="false" CssClass="no-projects-message">
-                <h3>No proposals received yet</h3>
-                <p>Once freelancers submit proposals for your projects, they will appear here for you to review.</p>
-            </asp:Panel>
-
             <!-- PROPOSALS + TIPS LAYOUT -->
             <div class="pl-layout">
 
@@ -233,8 +245,8 @@
                             CommandName="Rejected" OnCommand="FilterTab_Command" CausesValidation="false" />
                     </asp:Panel>
 
-                    <!-- Scrollable list container (left) -->
-                    <div class="pl-list">
+                    <!-- Scrollable list container — hidden when empty so no blank scrollbar shows -->
+                    <asp:Panel ID="pnlListWrap" runat="server" CssClass="pl-list">
                     <asp:Repeater ID="rptProposals" runat="server" OnItemCommand="rptProposals_ItemCommand">
                         <ItemTemplate>
                             <%-- Compact horizontal proposal card. No cover letter / proposal
@@ -325,7 +337,15 @@
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
-                    </div><!-- /.pl-list -->
+                    </asp:Panel><%-- /.pl-list (pnlListWrap) --%>
+
+                    <!-- EMPTY STATE (shown directly below the filter tabs when the selected
+                         filter has zero proposals; mutually exclusive with the list) -->
+                    <asp:Panel ID="pnlNoProposals" runat="server" Visible="false" CssClass="pl-empty">
+                        <div class="pl-empty-icon" aria-hidden="true">&#128196;</div>
+                        <h3 class="pl-empty-title"><asp:Literal ID="litEmptyTitle" runat="server" Text="No Proposals" /></h3>
+                        <p class="pl-empty-text"><asp:Literal ID="litEmptyText" runat="server" Text="Proposals will appear here." /></p>
+                    </asp:Panel>
                 </div>
 
                 <!-- TIPS PANEL (right container) -->

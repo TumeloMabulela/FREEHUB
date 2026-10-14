@@ -128,22 +128,38 @@ namespace FreeHubProject
                 rptProposals.DataSource = proposals;
                 rptProposals.DataBind();
 
-                pnlNoProposals.Visible = proposals.Rows.Count == 0;
+                bool isEmpty = proposals.Rows.Count == 0;
+                pnlNoProposals.Visible = isEmpty;      // empty-state card
                 lblProposalCount.Text = proposals.Rows.Count.ToString();
 
-                // Friendly empty-state message tailored to the active filter.
-                if (proposals.Rows.Count == 0 && isEmployer)
+                // Mutually exclusive: hide the (scrollable) list wrapper when empty so the
+                // empty-state card takes the content area and no empty scrollbar shows.
+                pnlListWrap.Visible = !isEmpty;
+
+                // Dynamic empty-state heading + description per selected filter.
+                if (isEmpty)
                 {
-                    pnlNoProposals.Controls.Clear();
-                    if (CurrentFilter == "Approved")
-                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
-                            "<h3>No approved proposals yet</h3><p>Proposals you approve will appear here.</p>"));
-                    else if (CurrentFilter == "Rejected")
-                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
-                            "<h3>No rejected proposals found.</h3><p>Proposals you reject will appear here.</p>"));
+                    if (isEmployer && CurrentFilter == "Approved")
+                    {
+                        litEmptyTitle.Text = "No Approved Proposals";
+                        litEmptyText.Text = "Proposals you approve will appear here.";
+                    }
+                    else if (isEmployer && CurrentFilter == "Rejected")
+                    {
+                        litEmptyTitle.Text = "No Rejected Proposals";
+                        litEmptyText.Text = "Proposals you reject will appear here.";
+                    }
+                    else if (isEmployer)
+                    {
+                        litEmptyTitle.Text = "No Pending Proposals";
+                        litEmptyText.Text = "New proposals awaiting your approval will appear here.";
+                    }
                     else
-                        pnlNoProposals.Controls.Add(new System.Web.UI.LiteralControl(
-                            "<h3>No proposals awaiting approval</h3><p>Pending proposals for your projects will appear here for review.</p>"));
+                    {
+                        // Freelancer view (no filter tabs).
+                        litEmptyTitle.Text = "No Proposals Yet";
+                        litEmptyText.Text = "Your submitted proposals will appear here.";
+                    }
                 }
             }
             catch (Exception ex)
