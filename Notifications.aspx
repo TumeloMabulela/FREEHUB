@@ -102,22 +102,30 @@
 
         .nx-empty { text-align:center; color:#9ca3af; font-size:14px; padding:40px 10px; background:#fff; border:1px dashed #e2e8e4; border-radius:12px; }
 
-        /* The card is now a vertical container: a clickable header row + an inline expand area. */
-        .nx-card { flex-direction:column; align-items:stretch; padding:0; cursor:default; }
-        .nx-card-head {
-            display:flex; align-items:flex-start; gap:14px;
-            padding:16px; text-decoration:none; color:inherit; cursor:pointer; border-radius:12px;
-        }
-        .nx-card.expanded { border-left-color:#1f9d55; box-shadow:0 6px 16px rgba(16,40,28,.1); }
+        /* Two-container master-detail layout */
+        .nx-split { display:grid; grid-template-columns: 1fr 380px; gap:16px; align-items:start; }
+        .nx-list-panel { min-width:0; }
+        .nx-card.selected { border-left-color:#1f9d55; background:#eafaf0; box-shadow:0 4px 12px rgba(16,40,28,.1); }
 
-        /* Inline expanded detail + action row shown inside the selected notification */
-        .nx-expand { padding:0 16px 16px 74px; }
-        .nx-full { margin:0 0 12px 0; color:#374151; font-size:13.5px; line-height:1.5; }
-        .nx-actions { display:flex; gap:10px; flex-wrap:wrap; }
+        /* Right detail panel */
+        .nx-detail-panel { position:sticky; top:90px; }
+        .nx-detail {
+            background:#fff; border:1px solid #e7ece9; border-radius:14px;
+            padding:22px; box-shadow:0 1px 3px rgba(16,40,28,.05);
+        }
+        .nx-detail-head { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+        .nx-detail-title { margin:0 0 6px 0; color:#10261c; font-size:17px; }
+        .nx-detail-meta { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+        .nx-detail-content {
+            color:#374151; font-size:14px; line-height:1.6; margin:0 0 20px 0;
+            padding:14px 16px; background:#f7faf8; border-radius:10px;
+        }
+        .nx-detail-actions { display:flex; gap:10px; flex-wrap:wrap; }
+
         .nx-act {
             display:inline-block; text-decoration:none; cursor:pointer;
             background:#eaf6ee; color:#0f5132; border:none; border-radius:9px;
-            padding:8px 16px; font-size:13px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
+            padding:9px 16px; font-size:13px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
         }
         .nx-act:hover { background:#dcefe3; }
         .nx-act-primary {
@@ -126,8 +134,19 @@
         }
         .nx-act-primary:hover { opacity:.92; background:linear-gradient(90deg, #148b97 0%, #2fa86d 50%, #72c94b 100%); }
 
-        @media (max-width: 720px) {
-            .nx-expand { padding-left:16px; }
+        /* Empty detail placeholder */
+        .nx-detail-empty {
+            background:#fff; border:1px dashed #e2e8e4; border-radius:14px;
+            padding:40px 24px; text-align:center; color:#9ca3af;
+        }
+        .nx-detail-empty-icon { font-size:40px; margin-bottom:10px; opacity:.6; }
+        .nx-detail-empty h3 { margin:0 0 6px 0; color:#5a6e62; font-size:16px; }
+        .nx-detail-empty p { margin:0; font-size:13px; }
+
+        /* Stack to one column on small screens */
+        @media (max-width: 900px) {
+            .nx-split { grid-template-columns: 1fr; }
+            .nx-detail-panel { position:static; }
         }
 
         @media (max-width: 720px) {
@@ -232,82 +251,79 @@
                     <asp:Button ID="btnArchived" runat="server" Text="Archived" CssClass="nx-tab" OnClick="btnArchived_Click" CausesValidation="false" />
                 </div>
 
-                <!-- Notification cards -->
-                <div class="nx-list">
-                    <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
-                        <ItemTemplate>
-                            <div class='<%# "nx-card" + (Eval("Status").ToString() == "Unread" ? " unread" : "") + (Convert.ToInt32(Eval("Id")) == SelectedNotificationId ? " expanded" : "") %>'>
+                <!-- TWO-CONTAINER LAYOUT: list (left) + selected detail (right) -->
+                <div class="nx-split">
 
-                                <!-- Clickable header: selects/expands the notification -->
-                                <asp:LinkButton runat="server" CssClass="nx-card-head"
-                                    CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'>
-                                    <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Eval("Icon") %></span>
-                                    <div class="nx-body">
-                                        <div class="nx-title-row">
-                                            <h4 class="nx-title"><%# Eval("Title") %></h4>
-                                            <asp:PlaceHolder runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
-                                                <span class="nx-dot" title="Unread"></span>
-                                            </asp:PlaceHolder>
+                    <!-- LEFT: notification list -->
+                    <div class="nx-list-panel">
+                        <div class="nx-list">
+                            <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
+                                <ItemTemplate>
+                                    <asp:LinkButton runat="server"
+                                        CssClass='<%# "nx-card" + (Eval("Status").ToString() == "Unread" ? " unread" : "") + (Convert.ToInt32(Eval("Id")) == SelectedNotificationId ? " selected" : "") %>'
+                                        CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'>
+                                        <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Eval("Icon") %></span>
+                                        <div class="nx-body">
+                                            <div class="nx-title-row">
+                                                <h4 class="nx-title"><%# Eval("Title") %></h4>
+                                                <asp:PlaceHolder runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
+                                                    <span class="nx-dot" title="Unread"></span>
+                                                </asp:PlaceHolder>
+                                            </div>
+                                            <div class="nx-desc"><%# Eval("Description") %></div>
+                                            <div class="nx-meta">
+                                                <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Eval("Category") %></span>
+                                                <span class="nx-time"><%# Eval("Time") %></span>
+                                            </div>
                                         </div>
-                                        <div class="nx-desc"><%# Eval("Description") %></div>
-                                        <div class="nx-meta">
-                                            <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Eval("Category") %></span>
-                                            <span class="nx-time"><%# Eval("Time") %></span>
-                                        </div>
-                                    </div>
-                                </asp:LinkButton>
+                                    </asp:LinkButton>
+                                </ItemTemplate>
+                            </asp:Repeater>
 
-                                <!-- Inline expanded detail + action buttons (shown only for the selected card) -->
-                                <asp:PlaceHolder runat="server" Visible='<%# Convert.ToInt32(Eval("Id")) == SelectedNotificationId %>'>
-                                    <div class="nx-expand">
-                                        <p class="nx-full"><%# Eval("Content") %></p>
-                                        <div class="nx-actions">
-                                            <asp:LinkButton runat="server" CssClass="nx-act nx-act-primary"
-                                                CommandName="ViewDetails" CommandArgument='<%# Eval("Id") %>'
-                                                Visible='<%# Eval("Type").ToString() == "Message" || Eval("Type").ToString() == "Project" || Eval("Type").ToString() == "Proposal" || Eval("Type").ToString() == "Payment" %>'>View Details</asp:LinkButton>
-                                            <asp:LinkButton runat="server" CssClass="nx-act"
-                                                CommandName="ToggleRead" CommandArgument='<%# Eval("Id") %>'><%# Eval("Status").ToString() == "Read" ? "Mark as Unread" : "Mark as Read" %></asp:LinkButton>
-                                            <asp:LinkButton runat="server" CssClass="nx-act"
-                                                CommandName="ToggleArchive" CommandArgument='<%# Eval("Id") %>'><%# Eval("Status").ToString() == "Archived" ? "Unarchive" : "Archive" %></asp:LinkButton>
-                                        </div>
+                            <asp:Label ID="lblNoNotifications" runat="server" CssClass="nx-empty" Visible="false" Text="No notifications match your filters."></asp:Label>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: selected notification detail -->
+                    <div class="nx-detail-panel">
+                        <asp:Panel ID="pnlDetail" runat="server" Visible="false" CssClass="nx-detail">
+                            <div class="nx-detail-head">
+                                <span class='<%= "nx-ic " + DetailIconClass %>'><asp:Label ID="lblSelectedIcon" runat="server"></asp:Label></span>
+                                <div>
+                                    <h3 class="nx-detail-title"><asp:Label ID="lblSelectedTitle" runat="server"></asp:Label></h3>
+                                    <div class="nx-detail-meta">
+                                        <span class='<%= "nx-badge " + DetailIconClass %>'><asp:Label ID="lblSelectedCategory" runat="server"></asp:Label></span>
+                                        <span class="nx-time"><asp:Label ID="lblSelectedTime" runat="server"></asp:Label></span>
                                     </div>
-                                </asp:PlaceHolder>
+                                </div>
                             </div>
-                        </ItemTemplate>
-                    </asp:Repeater>
 
-                    <asp:Label ID="lblNoNotifications" runat="server" CssClass="nx-empty" Visible="false" Text="No notifications match your filters."></asp:Label>
+                            <p class="nx-detail-content"><asp:Label ID="lblSelectedPreview" runat="server"></asp:Label></p>
+
+                            <div class="nx-detail-actions">
+                                <asp:Button ID="btnOpenTarget" runat="server" Text="View Details" CssClass="nx-act nx-act-primary" OnClick="btnOpenTarget_Click" CausesValidation="false" Visible="false" />
+                                <asp:Button ID="btnToggleRead" runat="server" Text="Mark as Read" CssClass="nx-act" OnClick="btnToggleRead_Click" CausesValidation="false" />
+                                <asp:Button ID="btnToggleArchive" runat="server" Text="Archive" CssClass="nx-act" OnClick="btnToggleArchive_Click" CausesValidation="false" />
+                            </div>
+
+                            <!-- kept for compatibility with existing code paths -->
+                            <asp:Label ID="lblReadStatus" runat="server" Visible="false"></asp:Label>
+                            <asp:Button ID="btnViewMessage" runat="server" OnClick="btnViewMessage_Click" style="display:none;" CausesValidation="false" />
+                            <asp:Button ID="btnViewProject" runat="server" OnClick="btnViewProject_Click" style="display:none;" CausesValidation="false" />
+                            <asp:Button ID="btnCloseDetails" runat="server" OnClick="btnCloseDetails_Click" style="display:none;" CausesValidation="false" />
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlNoSelection" runat="server" CssClass="nx-detail-empty">
+                            <div class="nx-detail-empty-icon">🔔</div>
+                            <h3>No notification selected</h3>
+                            <p>Select a notification from the list to read it and take action.</p>
+                        </asp:Panel>
+                    </div>
+
                 </div>
 
             </div>
         </section>
     </div>
 
-    <!-- NOTIFICATION DETAILS MODAL (preserves the existing details view) -->
-    <asp:Panel ID="pnlDetailsModal" runat="server" Visible="false"
-        Style="position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:9999;">
-        <div style="background:#fff; width:90%; max-width:460px; border-radius:14px; padding:24px; font-family:Arial,Helvetica,sans-serif; box-shadow:0 10px 30px rgba(0,0,0,.25);">
-            <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
-                <span class='<%= "nx-ic " + DetailIconClass %>' style="width:44px;height:44px;"><asp:Label ID="lblSelectedIcon" runat="server"></asp:Label></span>
-                <div>
-                    <h3 style="margin:0; color:#10261c; font-size:17px;"><asp:Label ID="lblSelectedTitle" runat="server"></asp:Label></h3>
-                    <small style="color:#9ca3af;"><asp:Label ID="lblSelectedTime" runat="server"></asp:Label></small>
-                </div>
-            </div>
-            <p style="color:#374151; font-size:14px; line-height:1.5; margin:0 0 16px 0;"><asp:Label ID="lblSelectedPreview" runat="server"></asp:Label></p>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <asp:Button ID="btnOpenTarget" runat="server" Text="Open" CssClass="nx-markall" OnClick="btnOpenTarget_Click" CausesValidation="false" Visible="false" />
-                <asp:Button ID="btnToggleRead" runat="server" Text="Mark as Read" OnClick="btnToggleRead_Click" CausesValidation="false"
-                    Style="background:#eaf6ee; color:#0f5132; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer;" />
-                <asp:Button ID="btnToggleArchive" runat="server" Text="Archive" OnClick="btnToggleArchive_Click" CausesValidation="false"
-                    Style="background:#f3f4f6; color:#374151; border:none; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer;" />
-                <asp:Button ID="btnCloseDetails" runat="server" Text="Close" OnClick="btnCloseDetails_Click" CausesValidation="false"
-                    Style="background:transparent; color:#6b7280; border:1px solid #e5e9e6; border-radius:10px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; margin-left:auto;" />
-            </div>
-            <!-- kept for compatibility with existing code paths -->
-            <asp:Label ID="lblReadStatus" runat="server" Visible="false"></asp:Label>
-            <asp:Button ID="btnViewMessage" runat="server" OnClick="btnViewMessage_Click" style="display:none;" CausesValidation="false" />
-            <asp:Button ID="btnViewProject" runat="server" OnClick="btnViewProject_Click" style="display:none;" CausesValidation="false" />
-        </div>
-    </asp:Panel>
 </asp:Content>

@@ -64,14 +64,20 @@ namespace FreeHubProject
         /// <summary>lblNoNotifications control.</summary>
         protected global::System.Web.UI.WebControls.Label lblNoNotifications;
 
-        /// <summary>pnlDetailsModal control.</summary>
-        protected global::System.Web.UI.WebControls.Panel pnlDetailsModal;
+        /// <summary>pnlDetail control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlDetail;
+
+        /// <summary>pnlNoSelection control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlNoSelection;
 
         /// <summary>lblSelectedIcon control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedIcon;
 
         /// <summary>lblSelectedTitle control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedTitle;
+
+        /// <summary>lblSelectedCategory control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblSelectedCategory;
 
         /// <summary>lblSelectedTime control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedTime;

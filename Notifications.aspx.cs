@@ -149,6 +149,31 @@ namespace FreeHubProject
 
             UpdateTabsAndCounts();
             UpdateMarkAllButton();
+
+            // Keep the right-hand detail panel in sync with the current selection across
+            // filter/tab/search postbacks. If the selected notification is no longer part of
+            // the visible list (e.g. filtered or archived away), fall back to the placeholder.
+            if (SelectedNotificationId > 0 && SelectionIsVisible(dt, SelectedNotificationId))
+            {
+                LoadSelectedNotification(SelectedNotificationId);
+            }
+            else
+            {
+                SelectedNotificationId = 0;
+                Session["SelectedNotificationId"] = null;
+                pnlDetail.Visible = false;
+                pnlNoSelection.Visible = true;
+            }
+        }
+
+        /// <summary>True if the selected notification id is present in the currently bound list.</summary>
+        private bool SelectionIsVisible(DataTable dt, int id)
+        {
+            foreach (DataRow row in dt.Rows)
+            {
+                if (Convert.ToInt32(row["Id"]) == id) return true;
+            }
+            return false;
         }
 
         // ============================================================
@@ -327,17 +352,22 @@ namespace FreeHubProject
             switch (e.CommandName)
             {
                 case "SelectNotification":
-                    // Clicking a notification expands it inline so you can read it in place and
-                    // see the action buttons inside the card. Clicking it again collapses it.
+                    // Clicking a notification selects it and opens it in the right-hand detail
+                    // panel so you can read it and act on it. Clicking the same one again
+                    // deselects and shows the empty placeholder.
                     if (SelectedNotificationId == notificationId)
                     {
-                        SelectedNotificationId = 0; // collapse
+                        SelectedNotificationId = 0;         // deselect
+                        Session["SelectedNotificationId"] = null;
                     }
                     else
                     {
-                        SelectedNotificationId = notificationId; // expand
-                        UpdateNotificationStatus(notificationId, "Read"); // reading it marks it read
+                        SelectedNotificationId = notificationId;            // select
+                        Session["SelectedNotificationId"] = notificationId; // keep detail handlers in sync
+                        UpdateNotificationStatus(notificationId, "Read");   // reading it marks it read
                     }
+                    // BindNotifications() re-populates (or clears) the right detail panel
+                    // based on the current SelectedNotificationId.
                     BindNotifications();
                     break;
 
@@ -425,8 +455,12 @@ namespace FreeHubProject
                             string content = dr["content"].ToString();
                             string status = dr["status"].ToString();
 
-                            pnlDetailsModal.Visible = true;
+                            // Show the right-hand detail panel, hide the empty placeholder.
+                            pnlDetail.Visible = true;
+                            pnlNoSelection.Visible = false;
+
                             lblSelectedTitle.Text = TitleForType(type);
+                            lblSelectedCategory.Text = CategoryForType(type);
                             lblSelectedPreview.Text = content;
                             lblSelectedTime.Text = dr["Time"].ToString();
                             lblSelectedIcon.Text = IconForType(type);
@@ -436,7 +470,7 @@ namespace FreeHubProject
                             btnToggleRead.Text = status == "Read" ? "Mark as Unread" : "Mark as Read";
                             btnToggleArchive.Text = status == "Archived" ? "Unarchive" : "Archive";
 
-                            // "Open" routes to the target for actionable types.
+                            // "View Details" routes to the target for actionable types.
                             btnOpenTarget.Visible = (type == "Message" || type == "Project" || type == "Proposal" || type == "Payment");
                         }
                     }
@@ -444,16 +478,30 @@ namespace FreeHubProject
             }
         }
 
+        /// <summary>Resolves the currently selected notification id from ViewState (preferred) or Session.</summary>
+        private int CurrentSelectedId
+        {
+            get
+            {
+                if (SelectedNotificationId > 0) return SelectedNotificationId;
+                return Session["SelectedNotificationId"] != null ? Convert.ToInt32(Session["SelectedNotificationId"]) : 0;
+            }
+        }
+
         protected void btnCloseDetails_Click(object sender, EventArgs e)
         {
-            pnlDetailsModal.Visible = false;
+            // Clear the selection and return to the empty placeholder.
+            SelectedNotificationId = 0;
+            Session["SelectedNotificationId"] = null;
+            pnlDetail.Visible = false;
+            pnlNoSelection.Visible = true;
             BindNotifications();
         }
 
         protected void btnOpenTarget_Click(object sender, EventArgs e)
         {
-            if (Session["SelectedNotificationId"] == null) return;
-            int id = Convert.ToInt32(Session["SelectedNotificationId"]);
+            int id = CurrentSelectedId;
+            if (id <= 0) return;
             string type = GetNotificationType(id);
             if (type == null) return;
             UpdateNotificationStatus(id, "Read");
@@ -462,23 +510,21 @@ namespace FreeHubProject
 
         protected void btnToggleRead_Click(object sender, EventArgs e)
         {
-            if (Session["SelectedNotificationId"] == null) return;
-            int id = Convert.ToInt32(Session["SelectedNotificationId"]);
-            if (GetNotificationType(id) == null) return;
+            int id = CurrentSelectedId;
+            if (id <= 0 || GetNotificationType(id) == null) return;
 
             string status = GetNotificationStatus(id);
             string newStatus = status == "Read" ? "Unread" : "Read";
             UpdateNotificationStatus(id, newStatus);
             ShowNotificationStatus(newStatus == "Read" ? "Notification marked as read." : "Notification marked as unread.");
-            LoadSelectedNotification(id);
+            LoadSelectedNotification(id); // refresh right panel labels/buttons
             BindNotifications();
         }
 
         protected void btnToggleArchive_Click(object sender, EventArgs e)
         {
-            if (Session["SelectedNotificationId"] == null) return;
-            int id = Convert.ToInt32(Session["SelectedNotificationId"]);
-            if (GetNotificationType(id) == null) return;
+            int id = CurrentSelectedId;
+            if (id <= 0 || GetNotificationType(id) == null) return;
 
             string status = GetNotificationStatus(id);
             if (status == "Archived")
@@ -491,23 +537,27 @@ namespace FreeHubProject
                 UpdateNotificationStatus(id, "Archived");
                 ShowNotificationStatus("Notification archived.");
             }
-            pnlDetailsModal.Visible = false;
+            // Archiving removes it from the current (non-archived) view, so close the panel.
+            SelectedNotificationId = 0;
+            Session["SelectedNotificationId"] = null;
+            pnlDetail.Visible = false;
+            pnlNoSelection.Visible = true;
             BindNotifications();
         }
 
-        // Legacy handlers kept so wired events still resolve; route via the modal's Open button now.
+        // Legacy handlers kept so wired events still resolve; route via the panel's View Details button now.
         protected void btnViewMessage_Click(object sender, EventArgs e)
         {
-            if (Session["SelectedNotificationId"] == null) return;
-            int id = Convert.ToInt32(Session["SelectedNotificationId"]);
+            int id = CurrentSelectedId;
+            if (id <= 0) return;
             UpdateNotificationStatus(id, "Read");
             Response.Redirect("StartChat.aspx");
         }
 
         protected void btnViewProject_Click(object sender, EventArgs e)
         {
-            if (Session["SelectedNotificationId"] == null) return;
-            int id = Convert.ToInt32(Session["SelectedNotificationId"]);
+            int id = CurrentSelectedId;
+            if (id <= 0) return;
             UpdateNotificationStatus(id, "Read");
             Response.Redirect("ViewProgress.aspx");
         }
