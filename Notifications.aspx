@@ -48,17 +48,26 @@
 
         /* Notification list + cards (compact: fixed, consistent height) */
         .nx-list { display:flex; flex-direction:column; gap:8px; }
-        /* The card is an <a> (LinkButton). Force flex so block children inside the anchor
-           never fall back to inline rendering and split the card across lines. */
-        a.nx-card, .nx-card {
-            position:relative; display:flex !important; align-items:center; gap:12px;
+        /* The card is a DIV, so block children are always valid and never split it.
+           A stretched LinkButton (.nx-card-link) overlays the card to make it clickable. */
+        .nx-card {
+            position:relative; display:flex; align-items:center; gap:12px;
             width:100%; box-sizing:border-box;
             background:#fff; border:1px solid #e7ece9; border-left:4px solid transparent;
             border-radius:10px; padding:12px 14px; box-shadow:0 1px 3px rgba(16,40,28,.05);
-            text-decoration:none; color:inherit; cursor:pointer; transition:box-shadow .15s;
+            color:inherit; cursor:pointer; transition:box-shadow .15s;
         }
         .nx-card:hover { box-shadow:0 6px 16px rgba(16,40,28,.09); }
         .nx-card.unread { background:#f1faf4; border-left-color:#1f9d55; }
+
+        /* Full-card clickable overlay. Covers the whole card so a click anywhere opens
+           it in the right panel; the inner content sits above it only for text selection. */
+        .nx-card-link {
+            position:absolute; inset:0; z-index:1;
+            display:block; border-radius:10px; text-decoration:none; font-size:0; line-height:0;
+        }
+        .nx-card-link:focus-visible { outline:2px solid #2fa86d; outline-offset:-2px; }
+        .nx-card .nx-ic, .nx-card .nx-body { position:relative; z-index:0; pointer-events:none; }
 
         .nx-ic {
             width:38px; height:38px; border-radius:10px; flex-shrink:0;
@@ -315,24 +324,29 @@
                         <div class="nx-list">
                             <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
                                 <ItemTemplate>
-                                    <asp:LinkButton runat="server"
-                                        CssClass='<%# "nx-card" + (Eval("Status").ToString() == "Unread" ? " unread" : "") + (Convert.ToInt32(Eval("Id")) == SelectedNotificationId ? " selected" : "") %>'
-                                        CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'>
-                                        <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Eval("Icon") %></span>
+                                    <%-- The card is a DIV (not an anchor). An anchor cannot legally wrap
+                                         block-level content, and any HTML in the message body would close
+                                         it early and split the card. The whole card is made clickable by a
+                                         single stretched LinkButton (.nx-card-link) overlaid on top. --%>
+                                    <div class='<%# "nx-card" + (Eval("Status").ToString() == "Unread" ? " unread" : "") + (Convert.ToInt32(Eval("Id")) == SelectedNotificationId ? " selected" : "") %>'>
+                                        <span class='<%# "nx-ic " + Eval("IconClass") %>'><%# Server.HtmlEncode(Convert.ToString(Eval("Icon"))) %></span>
                                         <div class="nx-body">
                                             <div class="nx-title-row">
-                                                <h4 class="nx-title"><%# Eval("Title") %></h4>
+                                                <h4 class="nx-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %></h4>
                                                 <asp:PlaceHolder runat="server" Visible='<%# Eval("Status").ToString() == "Unread" %>'>
                                                     <span class="nx-dot" title="Unread"></span>
                                                 </asp:PlaceHolder>
                                             </div>
-                                            <div class="nx-desc"><%# Eval("Description") %></div>
+                                            <div class="nx-desc"><%# Server.HtmlEncode(Convert.ToString(Eval("Description"))) %></div>
                                             <div class="nx-meta">
-                                                <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Eval("Category") %></span>
-                                                <span class="nx-time"><%# Eval("Time") %></span>
+                                                <span class='<%# "nx-badge " + Eval("IconClass") %>'><%# Server.HtmlEncode(Convert.ToString(Eval("Category"))) %></span>
+                                                <span class="nx-time"><%# Server.HtmlEncode(Convert.ToString(Eval("Time"))) %></span>
                                             </div>
                                         </div>
-                                    </asp:LinkButton>
+                                        <asp:LinkButton runat="server" CssClass="nx-card-link"
+                                            CommandName="SelectNotification" CommandArgument='<%# Eval("Id") %>'
+                                            CausesValidation="false" ToolTip="Open notification"></asp:LinkButton>
+                                    </div>
                                 </ItemTemplate>
                             </asp:Repeater>
 
