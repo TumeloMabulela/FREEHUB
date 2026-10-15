@@ -211,4 +211,40 @@
 
     </div>
 
+    <script type="text/javascript">
+        // Preserve the LEFT project-list scroll position across postbacks (e.g. when a
+        // project is selected), so selecting a project doesn't jump the list back to top.
+        (function () {
+            var KEY = "fh_browse_list_scroll";
+            function listEl() { return document.querySelector(".projects-column"); }
+
+            // Restore after each render.
+            function restore() {
+                var el = listEl();
+                if (!el) return;
+                var v = sessionStorage.getItem(KEY);
+                if (v !== null) el.scrollTop = parseInt(v, 10) || 0;
+            }
+
+            // Save continuously as the user scrolls, and right before any postback.
+            function wire() {
+                var el = listEl();
+                if (!el) return;
+                el.addEventListener("scroll", function () {
+                    sessionStorage.setItem(KEY, el.scrollTop);
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", function () { wire(); restore(); });
+            } else { wire(); restore(); }
+
+            // ASP.NET WebForms: save just before the form posts back.
+            document.addEventListener("submit", function () {
+                var el = listEl();
+                if (el) sessionStorage.setItem(KEY, el.scrollTop);
+            }, true);
+        })();
+    </script>
+
 </asp:Content>

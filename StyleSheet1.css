@@ -13979,3 +13979,66 @@ input[type=number].form-input {
 .no-selection-panel p { font-size: 15px; }
 .no-projects-message h3 { font-size: 20px; }
 .no-projects-message p { font-size: 15px; }
+
+
+/* ============================================================
+   BROWSE PROJECTS — independent scrolling for the two columns.
+   The left project list scrolls within its own container (scrollbar
+   on its right edge); the right details panel stays put and scrolls
+   independently when its content is long. Both columns share one
+   height so they align top and bottom. No page-level growth.
+   ============================================================ */
+.browse-layout {
+    align-items: stretch;              /* equal-height columns */
+    /* Shared height that fits the viewport below the header/filters/counter. */
+    height: calc(100vh - 300px);
+    height: calc(100dvh - 300px);
+    min-height: 420px;
+}
+
+/* LEFT: the project list is the scroll area. */
+.projects-column {
+    min-height: 0;                     /* allow the flex/grid child to shrink */
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px;                /* keep cards clear of the scrollbar */
+    /* Slim dark-green thumb on a light-grey track (FreeHUB colours). */
+    scrollbar-width: thin;
+    scrollbar-color: #176d42 #eef3ef;
+}
+.projects-column::-webkit-scrollbar { width: 8px; }
+.projects-column::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+.projects-column::-webkit-scrollbar-thumb {
+    background: #176d42; border-radius: 8px; border: 2px solid #eef3ef;
+}
+.projects-column::-webkit-scrollbar-thumb:hover { background: #125a37; }
+
+/* RIGHT: details panel fills the shared height and scrolls its own content. */
+.details-column {
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #176d42 #eef3ef;
+}
+.details-column::-webkit-scrollbar { width: 8px; }
+.details-column::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+.details-column::-webkit-scrollbar-thumb {
+    background: #176d42; border-radius: 8px; border: 2px solid #eef3ef;
+}
+.details-column::-webkit-scrollbar-thumb:hover { background: #125a37; }
+
+/* Short viewports: reclaim a little height. */
+@media screen and (max-height: 820px) {
+    .browse-layout { height: calc(100vh - 250px); height: calc(100dvh - 250px); }
+}
+
+/* Single-column stack (matches the existing 1100px breakpoint where the grid
+   collapses to one column): let the page flow naturally, cap the list height so
+   it still scrolls but isn't cramped, and let the details panel flow. */
+@media screen and (max-width: 1100px) {
+    .browse-layout { height: auto; min-height: 0; }
+    .projects-column { height: auto; max-height: 60vh; }
+    .details-column { height: auto; overflow: visible; }
+}
