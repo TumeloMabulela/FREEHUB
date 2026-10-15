@@ -128,35 +128,20 @@
         .nx-page { max-width:100%; }
         .nx-page * { box-sizing:border-box; }
 
-        /* ------------------------------------------------------------------
-           Full-height flex chain so the three sections fill the space between
-           the header and the footer with NO blank gap. The gap was caused by
-           a fixed `height: calc(100vh - 300px)` on .nx-split while its parent
-           containers (.page-content min-height:650px, .freehub-dashboard-layout
-           min-height:100vh-75px) stayed taller. We instead let each ancestor be
-           a flex column and have .nx-split flex:1 to fill the leftover height,
-           so the footer sits immediately below the sections.
-
-           body ─ form#form1 ─ page-content ─ nx-layout(row) ─ main ─ nx-page ─ nx-split
-           All scoped to .nx-layout so no other page is affected.
-           ------------------------------------------------------------------ */
-        body:has(.nx-layout) { display:flex; flex-direction:column; min-height:100vh; min-height:100dvh; }
-        body:has(.nx-layout) > form#form1 { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
-        /* page-content holds the sections; drop its 650px floor and let it grow. */
-        .page-content:has(.nx-layout) { min-height:0; display:flex; flex-direction:column; flex:1 1 auto; }
-        /* The three-column layout fills the content area and stretches its columns. */
-        .nx-layout { min-height:0; flex:1 1 auto; align-items:stretch; }
-        .nx-layout .freehub-main-content { display:flex; flex-direction:column; min-height:0; }
-        .nx-layout .nx-page { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; }
-
-        /* Two-container master-detail layout. The panels flex to fill the remaining
-           height, so their bottom edges reach the footer. List column is fluid (clamp). */
+        /* Two-container master-detail layout. Both panels share one fluid height that fits
+           the viewport, so the page itself never grows with the number of notifications.
+           The list column is fluid (clamp) so it adapts smoothly instead of a fixed width. */
         .nx-split {
             display:grid;
             grid-template-columns: clamp(300px, 32%, 400px) minmax(0, 1fr);
             gap:20px; width:100%;
-            flex:1 1 auto;     /* fill the leftover vertical space down to the footer */
-            min-height:420px;  /* never collapse too short on tiny screens */
+            /* Shared container height: viewport minus the fixed header, the fixed
+               footer, and the filters/tabs above it. dvh tracks mobile browser chrome;
+               vh is the fallback for older browsers. */
+            height: calc(100vh - 410px);
+            height: calc(100dvh - 410px);
+            min-height: 420px;
+            max-height: calc(100vh - 290px);
         }
         /* Each column is a full-height flex container; min-height:0 lets the inner
            scroll area shrink and scroll instead of pushing the page taller. */
@@ -230,8 +215,14 @@
            RESPONSIVE: auto-adjust across screen sizes
            ============================================================ */
 
-        /* (Panel height is handled by the flex chain above — no fixed heights needed,
-           so the sections always meet the footer regardless of viewport height.) */
+        /* Short viewports (small laptops): reclaim height so the panels still fit. */
+        @media (max-height: 820px) {
+            .nx-split { height: calc(100vh - 240px); height: calc(100dvh - 240px); }
+        }
+        /* Tall viewports (large monitors): a little more breathing room above/below. */
+        @media (min-height: 1000px) {
+            .nx-split { height: calc(100vh - 320px); height: calc(100dvh - 320px); }
+        }
 
         /* Large desktops: cap the reading column so lines don't stretch too wide. */
         @media (min-width: 1600px) {
@@ -251,7 +242,6 @@
         @media (max-width: 1000px) {
             .nx-split {
                 grid-template-columns: 1fr; height:auto; min-height:0; max-height:none; gap:14px;
-                flex:0 0 auto;  /* size to content when stacked so the footer follows naturally */
             }
             .nx-list-panel { height:auto; display:block; }
             .nx-list-panel .nx-list {
@@ -323,7 +313,7 @@
 </asp:Content>
 
 <asp:Content ID="MainContent" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="freehub-dashboard-layout nx-layout">
+    <div class="freehub-dashboard-layout">
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
         <section class="freehub-main-content">

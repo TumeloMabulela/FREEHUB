@@ -191,14 +191,9 @@ namespace FreeHubProject
             pnlNoProjects.Visible = isEmpty;
             if (isEmpty) SetEmptyState();
 
-            // Bind Stats & Pie Chart from the FULL (unfiltered) dataset so the overview
-            // totals always reflect every eligible project regardless of the active tab.
-            litStatTotal.Text = totalCount.ToString();
-            litStatCompleted.Text = completedCount.ToString();
-            litStatActive.Text = inProgressCount.ToString();
-
+            // Bind the Progress Overview widget from the FULL (unfiltered) dataset so the
+            // overview totals always reflect every eligible project regardless of the tab.
             int avgCompletion = totalCount > 0 ? (int)(totalPercentSum / totalCount) : 0;
-            litStatAvgCompletion.Text = avgCompletion + "%";
             litPieAvg.Text = avgCompletion + "%";
             litCountCompleted.Text = $"{completedCount} ({(totalCount > 0 ? (completedCount * 100) / totalCount : 0)}%)";
             litCountInProgress.Text = $"{inProgressCount} ({(totalCount > 0 ? (inProgressCount * 100) / totalCount : 0)}%)";

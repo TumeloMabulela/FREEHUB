@@ -161,7 +161,7 @@ runat="server">
         <div class="statistic">
 
             <h2>
-                10K+
+                <asp:Literal ID="litFreelancers" runat="server" Text="0" />
             </h2>
 
             <p>
@@ -174,7 +174,7 @@ runat="server">
         <div class="statistic">
 
             <h2>
-                5K+
+                <asp:Literal ID="litProjects" runat="server" Text="0" />
             </h2>
 
             <p>
@@ -187,7 +187,7 @@ runat="server">
         <div class="statistic">
 
             <h2>
-                3K+
+                <asp:Literal ID="litEmployers" runat="server" Text="0" />
             </h2>
 
             <p>
@@ -200,7 +200,7 @@ runat="server">
         <div class="statistic">
 
             <h2>
-                95%
+                <asp:Literal ID="litSuccessRate" runat="server" Text="N/A" />
             </h2>
 
             <p>

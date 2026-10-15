@@ -154,33 +154,34 @@
         </main>
 
 
-        <!-- Footer -->
+        <!-- Footer — compact single-row layout: four sections aligned on one line,
+             with the copyright merged into the same row (no separate bottom bar). -->
         <footer class="main-footer">
 
             <div class="footer-container">
 
-                <div>
+                <div class="footer-brand">
                     <h3>Free<span>HUB</span></h3>
                     <p>Connecting skilled freelancers with employers and opportunities.</p>
                 </div>
 
-                <div>
+                <div class="footer-links">
                     <h4>Quick Links</h4>
                     <a href="BrowseProjects.aspx">Browse Projects</a>
                     <a href="PostProject.aspx">Post a Project</a>
                     <a href="Dashboard.aspx">Dashboard</a>
                 </div>
 
-                <div>
+                <div class="footer-contact">
                     <h4>Contact</h4>
                     <p>support@freehub.co.za</p>
                     <p>South Africa</p>
                 </div>
 
-            </div>
+                <div class="footer-copyright">
+                    &copy; 2026 FreeHUB. All rights reserved.
+                </div>
 
-            <div class="footer-bottom">
-                &copy; 2026 FreeHUB. All rights reserved.
             </div>
 
         </footer>

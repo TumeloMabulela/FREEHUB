@@ -16,11 +16,123 @@
     ContentPlaceHolderID="MainContent"
     runat="server">
 
-    <div class="freehub-dashboard-layout">
+    <style type="text/css">
+        /* ===== Dashboard-style fixed sub-layout for Browse Projects =====
+           The shared fixed shell pins the header/footer and gives .page-content a
+           definite flex height (the viewport minus header/footer).
+
+           ROOT-CAUSE FIX: the shared .freehub-dashboard-layout uses `min-height:100%`,
+           which does NOT give it a definite height — so a child's `height:100%` could
+           not resolve and the content grew, pushing the list behind the footer and
+           making .page-content scroll (the browser scrollbar). Here we give THIS page's
+           layout wrapper a DEFINITE `height:100%` so the whole chain
+           (.page-content -> layout -> main -> project-content -> list) is height-bound
+           and only the project list scrolls. Scoped via .browse-shell/.browse-main so
+           no other page is affected. */
+        .freehub-dashboard-layout.browse-shell {
+            height: 100%;       /* definite height (parent .page-content is definite) */
+            min-height: 0;
+            overflow: hidden;   /* the layout row itself never scrolls */
+        }
+        /* .freehub-main-content.browse-main (two classes) matches the shared
+           ".freehub-dashboard-layout > .freehub-main-content" specificity and, coming
+           later in the cascade, wins — so overflow:hidden overrides the shared
+           overflow-y:auto and the main column no longer scrolls (only the list does). */
+        .freehub-main-content.browse-main {
+            display: flex;
+            flex-direction: column;
+            min-height: 0;      /* let the scroll child shrink instead of growing */
+            height: 100%;       /* fill the .page-content middle exactly */
+            overflow: hidden;   /* no page-content scroll; the list scrolls instead */
+        }
+
+        /* Sidebar: fills the fixed row height; scrolls internally only if its nav
+           exceeds the available height (so it never pushes past the footer). */
+        .browse-shell .freehub-sidebar {
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* Fixed top band: the header row (heading + inline filters) and the
+           project-count status line stay stationary; only the list scrolls. */
+        .browse-main .browse-header-row,
+        .browse-main .filter-message {
+            flex: 0 0 auto;
+        }
+
+        /* ===== Compact header row: heading left, filters inline on the right ===== */
+        .browse-main .browse-header-row {
+            display: flex;
+            align-items: flex-end;              /* dropdowns/buttons line up with heading baseline */
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;                    /* wrap neatly on smaller screens */
+            margin-bottom: 10px;
+        }
+        /* Heading keeps its left alignment but no longer reserves full-width spacing. */
+        .browse-main .browse-header-row .post-page-heading {
+            margin-bottom: 0;
+            flex: 0 1 auto;
+            min-width: 0;
+        }
+        /* Filters move inline to the right: drop the white card box (bg/border/padding)
+           and size the control row to its content. Labels stay above each dropdown. */
+        .browse-main .browse-filters {
+            background: none;
+            border: none;
+            padding: 0;
+            align-items: end;
+            gap: 10px;
+            grid-template-columns: repeat(3, minmax(110px, 150px)) auto auto;
+        }
+        /* Keep the project-count tight to the list, left-aligned. */
+        .browse-main .filter-message {
+            margin: 0 0 8px;
+        }
+
+        /* Responsive: stack the heading above the filters, filters wrap. */
+        @media screen and (max-width: 1100px) {
+            .browse-main .browse-header-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .browse-main .browse-filters {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* The two-column region fills the remaining space; min-height:0 lets its
+           inner columns scroll rather than push the layout taller. */
+        .browse-main .browse-layout {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        /* Stacked layout: stop pinning so the content flows and the shell's
+           .page-content scrolls naturally (prevents clipping on small screens). */
+        @media screen and (max-width: 1100px) {
+            .freehub-dashboard-layout.browse-shell {
+                height: auto;
+                overflow: visible;
+            }
+            .freehub-main-content.browse-main {
+                display: block;
+                height: auto;
+                overflow: visible;
+            }
+            .browse-shell .freehub-sidebar { overflow-y: visible; }
+            .browse-main .browse-layout { min-height: 0; }
+        }
+    </style>
+
+    <div class="freehub-dashboard-layout browse-shell">
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
-        <section class="freehub-main-content">
+        <section class="freehub-main-content browse-main">
+
+            <!-- HEADER ROW: heading on the left, filters inline on the right -->
+            <div class="browse-header-row">
 
             <!-- PAGE HEADING -->
             <div class="post-page-heading">
@@ -72,7 +184,9 @@
                     CssClass="reset-button" OnClick="btnReset_Click" />
             </div>
 
-            <!-- STATUS -->
+            </div><%-- /.browse-header-row --%>
+
+            <!-- STATUS / PROJECT COUNT (above the project list) -->
             <asp:Label ID="lblFilterMessage" runat="server" CssClass="filter-message" />
 
             <!-- PROJECT LIST -->
@@ -123,15 +237,11 @@
                     <!-- Project details (hidden until selected) -->
                     <asp:Panel ID="pnlProjectDetails" runat="server" Visible="false">
 
-                        <asp:Button ID="btnReturnToList" runat="server" Text="← Return to List"
-                            OnClick="btnReturnToList_Click"
-                            style="display:inline-block;color:#0f5132;background-color:#eaf6ee;text-decoration:none;font-size:16px;font-weight:700;padding:10px 22px;border-radius:30px;border:none;cursor:pointer;margin-bottom:15px;" />
+                        <h2><asp:Label ID="lblProjectTitle" runat="server" /></h2>
 
                         <p class="posted-information">
                             <asp:Label ID="lblPosted" runat="server" />
                         </p>
-
-                        <h2><asp:Label ID="lblProjectTitle" runat="server" /></h2>
 
                         <div class="details-line"></div>
 

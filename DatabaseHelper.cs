@@ -366,6 +366,44 @@ namespace FreeHubProject
             return ExecuteQuery(query);
         }
 
+        /// <summary>
+        /// Open projects for freelancer discovery, EXCLUDING projects posted by the
+        /// given registered user's own Employer profile. The exclusion compares the
+        /// underlying account (Employer.userID), not the selected profile, so a user
+        /// with both profiles never sees their own employer projects while browsing.
+        /// </summary>
+        public static DataTable GetOpenProjectsExcludingOwner(int excludeUserID)
+        {
+            string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
+                            p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
+                            p.experienceLevel, p.skills, e.companyName,
+                            u.firstName + ' ' + u.lastName AS employerName
+                            FROM Project p
+                            INNER JOIN Employer e ON p.employerID = e.employerID
+                            INNER JOIN [User] u ON e.userID = u.userID
+                            WHERE p.projectStatus = 'Open'
+                              AND e.userID <> @ExcludeUserID
+                            ORDER BY p.dateCreated DESC";
+            return ExecuteQuery(query, new SqlParameter("@ExcludeUserID", excludeUserID));
+        }
+
+        /// <summary>
+        /// Returns true if the given project was posted by the given registered user's
+        /// own Employer profile (resolved via Project.employerID -> Employer.userID).
+        /// Used to block a freelancer from applying to their own employer project.
+        /// </summary>
+        public static bool IsProjectOwnedByUser(int projectID, int userID)
+        {
+            string query = @"SELECT COUNT(*)
+                             FROM Project p
+                             INNER JOIN Employer e ON p.employerID = e.employerID
+                             WHERE p.projectID = @ProjectID AND e.userID = @UserID";
+            object result = ExecuteScalar(query,
+                new SqlParameter("@ProjectID", projectID),
+                new SqlParameter("@UserID", userID));
+            return result != null && result != DBNull.Value && Convert.ToInt32(result) > 0;
+        }
+
         public static DataTable GetProjectsByEmployer(int userID)
         {
             string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
@@ -385,6 +423,15 @@ namespace FreeHubProject
         public static int SubmitProposal(int projectID, int userID, string coverLetter,
             decimal proposedRate, string estimatedTime)
         {
+            // Defense-in-depth: never allow a proposal on a project posted by the same
+            // registered account's own Employer profile, no matter the caller. Returns
+            // -2 so callers can distinguish this from a generic failure. No record is
+            // created or modified when this guard trips.
+            if (IsProjectOwnedByUser(projectID, userID))
+            {
+                return -2;
+            }
+
             DataRow freelancer = GetFreelancerByUserId(userID);
             int freelancerID;
 

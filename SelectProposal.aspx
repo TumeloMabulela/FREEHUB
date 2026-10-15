@@ -22,7 +22,12 @@
         /* LEFT container: the proposals list scrolls inside its own box so the page
            doesn't grow endlessly and the tips panel stays visible beside it. */
         .pl-list {
-            max-height: calc(100vh - 230px);
+            /* Fit within the scrollable middle: viewport minus the fixed header,
+               the fixed footer, and the breadcrumb/heading/filter chrome above the
+               list, so the list scrolls on its own without pushing the page under
+               the fixed footer. dvh keeps mobile browser chrome from clipping it. */
+            max-height: calc(100vh - 340px);
+            max-height: calc(100dvh - 340px);
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 8px; /* room so cards don't sit under the scrollbar */
@@ -192,29 +197,13 @@
             .pl-actions .pl-btn { flex: 1 1 auto; }
         }
 
-        /* ------------------------------------------------------------------
-           Layout alignment (scoped to this page via .sp-layout).
-
-           Root cause of the misaligned bottoms: the shared .freehub-sidebar
-           sets `align-self:flex-start` + its own `min-height:calc(100vh-75px)`,
-           which opts it OUT of the flex row's stretch and sizes it independently
-           of the main content. The main content stretches to its own content
-           height, so the two column backgrounds end at different vertical points.
-
-           Fix: let BOTH columns share the same flex row height so they terminate
-           at the same bottom boundary, and let the layout size to its content so
-           the footer follows after it (keeping only the footer's intended 70px gap).
-           Scroll areas (.pl-list) and the sidebar's sticky top are untouched.
-           ------------------------------------------------------------------ */
-        .page-content:has(.sp-layout) { min-height: 0; }
-        .sp-layout { min-height: 0; align-items: stretch; }
-        .sp-layout .freehub-sidebar {
-            align-self: stretch;   /* stretch to the row height instead of flex-start */
-            min-height: 0;         /* drop the independent 100vh min-height */
-        }
+        /* NOTE: column-bottom alignment, the page-content height overshoot and the
+           footer gap are now fixed once in the shared stylesheet (StyleSheet1.css)
+           for every .freehub-dashboard-layout page, so the per-page .sp-layout
+           override that used to live here has been removed. */
     </style>
 
-    <div class="freehub-dashboard-layout sp-layout">
+    <div class="freehub-dashboard-layout">
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
@@ -379,11 +368,6 @@
                         </ul>
                     </div>
 
-                    <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:15px;">
-                        <h4 style="color:#173f2c; margin-bottom:8px;">Need Help?</h4>
-                        <p style="font-size:13px; color:#666; margin-bottom:12px;">If you need assistance in choosing the right freelancer, our support team is here.</p>
-                        <a href="mailto:support@freehub.co.za" style="display:inline-block;color:#2e7d56;border:1px solid #2e7d56;padding:8px 16px;border-radius:20px;font-size:12px;text-decoration:none;">Contact Support</a>
-                    </div>
 
                     <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px;">
                         <h4 style="color:#173f2c; margin-bottom:8px;">Next Step</h4>

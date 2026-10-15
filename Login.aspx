@@ -149,8 +149,45 @@
     </section>
 
     <style>
+        /* Fit the login page within the fixed-shell middle (the scrollable area
+           between the fixed header and footer) so there's no page scrollbar on
+           standard desktop screens. The shared rule set min-height:100vh, which is
+           taller than the available middle (viewport minus header + footer) and
+           forced an overflow scrollbar. Fill the middle (100%) and let flex keep the
+           panel centred. The lower min-height on the container + trimmed padding keep
+           it inside a 768px-tall desktop without clipping any content. */
+        .fssb-login-page {
+            min-height: 100%;
+            padding: 24px 7%;
+        }
+
+        .fssb-login-container {
+            min-height: 0;
+        }
+
+        /* Small screens: if the content genuinely can't fit the middle, allow it to
+           grow and scroll (via the shell's .page-content) rather than clip. */
+        @media screen and (max-height: 640px), screen and (max-width: 950px) {
+            .fssb-login-page {
+                min-height: 100%;
+                height: auto;
+            }
+        }
+
         .password-input-group {
             position: relative;
+        }
+
+        /* Suppress the browser's NATIVE password reveal / clear controls so only the
+           custom .password-eye below is shown. Microsoft Edge/IE inject their own eye
+           button (::-ms-reveal) inside password fields once the field has text, which
+           is what produced the intermittent second eye icon; ::-ms-clear removes the
+           native "x". Scoped to the password field only. */
+        .password-input-group input::-ms-reveal,
+        .password-input-group input::-ms-clear {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         .password-eye {

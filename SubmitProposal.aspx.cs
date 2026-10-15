@@ -103,6 +103,15 @@ namespace FreeHubProject
 
                 int userId = AuthHelper.GetCurrentUserId(this);
 
+                // Server-side ownership guard: a user must never apply to a project
+                // posted by their OWN Employer profile (same registered account),
+                // regardless of how the projectId was supplied. Reject before saving.
+                if (projectId > 0 && DatabaseHelper.IsProjectOwnedByUser(projectId, userId))
+                {
+                    ShowMessage("You cannot submit a proposal for a project posted by your own Employer profile.", false);
+                    return;
+                }
+
                 if (projectId > 0)
                 {
                     int result = DatabaseHelper.SubmitProposal(
@@ -126,6 +135,10 @@ namespace FreeHubProject
                     else if (result == -1)
                     {
                         ShowMessage("You have already submitted a proposal for this project.", false);
+                    }
+                    else if (result == -2)
+                    {
+                        ShowMessage("You cannot submit a proposal for a project posted by your own Employer profile.", false);
                     }
                     else
                     {

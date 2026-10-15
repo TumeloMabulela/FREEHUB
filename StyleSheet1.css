@@ -23,6 +23,45 @@ body {
     line-height: 1.6;
 }
 
+/* ===== Fixed-shell layout: fixed header, scrollable middle, fixed footer =====
+   The ASP.NET form (#form1) wraps the whole page (header, main, footer). Make it a
+   viewport-tall flex column that never scrolls itself; the window is locked
+   (html/body overflow:hidden). The header and footer are fixed-size flex items that
+   stay put, and ONLY the middle (.page-content) scrolls vertically. No
+   position:fixed/absolute, no spacer elements. Applies site-wide. */
+html, body {
+    height: 100%;
+    overflow: hidden;   /* the window never scrolls; the middle area does */
+}
+
+body > form#form1 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;     /* dvh keeps mobile browser chrome from clipping the footer */
+    overflow: hidden;
+}
+
+/* Header: fixed-size, stays at the top of the shell. */
+body > form#form1 > .main-header {
+    flex: 0 0 auto;
+}
+
+/* Middle: takes the remaining space and is the one scroll container.
+   min-height:0 is required so this flex child can shrink and scroll instead of
+   growing the shell. */
+body > form#form1 > .page-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Footer: fixed-size, stays pinned at the bottom of the shell. */
+body > form#form1 > .main-footer {
+    flex: 0 0 auto;
+}
+
 /* Form controls don't inherit font-family/size by default, so make them match the
    site default too (keeps inputs, dropdowns, textareas and buttons consistent). */
 input,
@@ -146,8 +185,12 @@ button {
    PAGE CONTENT
 ========================= */
 
+/* .page-content is the scrollable middle of the fixed shell (see the layout rules on
+   #form1 near the top of this file). Its height comes from flex, and it scrolls its
+   own overflow, so it needs no min-height floor — a fixed floor would force an
+   unnecessary scroll on shorter viewports. */
 .page-content {
-    min-height: 650px;
+    min-height: 0;
 }
 
 
@@ -155,26 +198,34 @@ button {
    FOOTER
 ========================= */
 
+/* The footer is pinned at the bottom of the fixed shell by flex (flex:0 0 auto),
+   so it needs no top margin — any margin would only steal space from the
+   scrollable middle or open a gap above the footer. */
 .main-footer {
     background-color: #102c1e;
     color: #e7ece7;
-    margin-top: 70px;
 }
 
+/* Compact single-row footer: the four sections (brand, quick links, contact,
+   copyright) sit on one horizontal line, vertically centred, giving a ~90–110px
+   desktop footer. The copyright is now part of this row (the old separate
+   .footer-bottom bar was removed). Links stack tightly within their own section. */
 .footer-container {
     width: 90%;
-    max-width: 1200px;
+    max-width: 1250px;
     margin: auto;
-    padding: 55px 0 35px;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 50px;
+    padding: 14px 0;          /* compact: ~85–95px total footer height on desktop */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
     .footer-container h3 {
         color: white;
-        font-size: 25px;
-        margin-bottom: 15px;
+        font-size: 20px;
+        margin-bottom: 2px;
     }
 
         .footer-container h3 span {
@@ -183,21 +234,26 @@ button {
 
     .footer-container h4 {
         color: white;
-        margin-bottom: 15px;
-        font-size: 17px;
+        margin-bottom: 6px;
+        font-size: 15px;
     }
 
     .footer-container p {
         color: #c8d0c8;
-        margin-bottom: 8px;
-        max-width: 380px;
+        margin-bottom: 2px;
+        font-size: 13px;
+        line-height: 1.4;
+        max-width: 300px;
     }
 
+    /* Quick Links / Contact lay their items out as a tight inline row so each
+       section stays short and the whole footer keeps to a single compact band. */
     .footer-container a {
-        display: block;
+        display: inline-block;
         color: #c8d0c8;
         text-decoration: none;
-        margin-bottom: 9px;
+        margin: 0 14px 0 0;
+        font-size: 13px;
         transition: 0.3s;
     }
 
@@ -205,13 +261,15 @@ button {
             color: #b7d68c;
         }
 
-.footer-bottom {
-    text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    padding: 18px;
-    color: #aab6aa;
-    font-size: 14px;
-}
+    .footer-contact p { display: inline-block; margin: 0 14px 0 0; }
+
+    /* Copyright sits at the far right of the same row. */
+    .footer-copyright {
+        color: #aab6aa;
+        font-size: 13px;
+        white-space: nowrap;
+        margin-left: auto;
+    }
 
 
 /* =========================
@@ -232,9 +290,15 @@ button {
         flex-wrap: wrap;
     }
 
+    /* Tablet: footer sections wrap onto two rows but stay evenly spaced; the
+       copyright drops to its own line and no longer pins to the far right. */
     .footer-container {
-        grid-template-columns: 1fr 1fr;
+        gap: 20px 40px;
     }
+
+        .footer-copyright {
+            margin-left: 0;
+        }
 }
 
 
@@ -255,9 +319,12 @@ button {
         justify-content: center;
     }
 
+    /* Mobile: stack the footer sections vertically, left-aligned, with tight spacing
+       so nothing overlaps and no links are cut off. */
     .footer-container {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
     }
 }
 
@@ -2371,7 +2438,11 @@ FREEHUB HOME PAGE
 
 .browse-layout {
     display: grid;
-    grid-template-columns: 1.05fr 1fr;
+    /* Left project list 35% / right details 65% of the two-column area.
+       minmax(0, …fr) lets each column shrink below its content so long titles or
+       wide details never force horizontal overflow; the 15px gap is distributed
+       automatically by the fr tracks. */
+    grid-template-columns: minmax(0, 3.5fr) minmax(0, 6.5fr);
     gap: 15px;
 }
 
@@ -7108,7 +7179,7 @@ FREEHUB HOME PAGE
 .freehub-dashboard-layout {
     display: flex;
     width: 100%;
-    min-height: calc(100vh - 75px);
+    min-height: 100%;
     background: #f5f7fa;
 }
 
@@ -13151,10 +13222,13 @@ FREEHUB HOME PAGE
     background-color: #ffffff;
     border-right: 1px solid #e8ece9;
     padding: 20px 0;
-    min-height: calc(100vh - 75px);
+    /* Share the flex-row height with the main content so both columns end at the
+       same bottom boundary (no mismatched column heights / grey gap). The scroll
+       container is now .page-content (which already sits below the fixed header),
+       so the sidebar sticks to the TOP of that scroll area (top:0). */
+    align-self: stretch;
     position: sticky;
-    top: 75px;
-    align-self: flex-start;
+    top: 0;
 }
 
 .freehub-sidebar .sidebar-section {
@@ -13201,14 +13275,17 @@ FREEHUB HOME PAGE
     text-align: center;
 }
 
-/* Layout wrapper for pages using the shared sidebar */
+/* Layout wrapper for pages using the shared sidebar.
+   Fills the flex-grown .page-content (see the sticky-footer layout on #form1) rather
+   than imposing its own viewport-height calc, so there's no overshoot past the
+   available area and the footer follows naturally. */
 .freehub-dashboard-layout,
 .my-projects-page,
 .wallet-page-layout,
 .completed-page-layout,
 .rate-page-layout {
     display: flex;
-    min-height: calc(100vh - 75px);
+    min-height: 100%;
 }
 
 .freehub-dashboard-layout > section,
@@ -13935,11 +14012,12 @@ input[type=number].form-input {
    shared by other pages, so it is intentionally left unchanged here. ---- */
 
 /* ---- Filters ---- */
-.filter-group label { font-size: 14px; }
-.filter-dropdown { font-size: 16px; height: 42px; }
-.filter-button { font-size: 16px; height: 42px; }
-.reset-button { font-size: 15px; height: 42px; }
-.filter-message { font-size: 14px; }
+/* Compact filter row (labels, dropdowns, Filter/Reset) + project count. */
+.filter-group label { font-size: 12px; }
+.filter-dropdown { font-size: 13px; height: 34px; }
+.filter-button { font-size: 13px; height: 34px; }
+.reset-button { font-size: 13px; height: 34px; }
+.filter-message { font-size: 12px; }
 
 /* ---- Project list cards ---- */
 .project-card { padding: 16px; gap: 14px; }
@@ -13957,22 +14035,32 @@ input[type=number].form-input {
 .project-budget small { font-size: 14px; }
 
 /* ---- Right-hand details panel ---- */
-.posted-information { font-size: 14px; }
-.details-column h2 { font-size: 20px; font-weight: 700; }   /* project title */
-.details-column h3 { font-size: 18px; font-weight: 700; }   /* section headings */
-.details-description { font-size: 16px; line-height: 1.7; }
+/* Selected-project details text — exact target sizes to match the reference UI.
+   These are the LAST font-size declarations for each selector (document order), so
+   they win over the earlier base rules. Scoped to the details panel classes, so the
+   left project list is unaffected. Font weights and colours are left unchanged. */
+.details-column h2 { font-size: 16px; font-weight: 700; margin: 0 0 4px; }   /* project title */
+.posted-information { font-size: 12px; margin: 0 0 10px; }                   /* date sits below the title */
+.details-column h3 { font-size: 14px; font-weight: 700; margin: 0 0 8px; }   /* section headings */
+.details-description { font-size: 12px; line-height: 1.6; margin: 0 0 12px; }
 
-.detail-box small { font-size: 14px; }
-.detail-box strong { font-size: 16px; }
-.detail-box em { font-size: 14px; }
+.detail-box { padding: 10px 0; }
+.detail-box small { font-size: 11.5px; }   /* information labels */
+.detail-box strong { font-size: 12.5px; }  /* information values */
+.detail-box em { font-size: 11.5px; }
 
-.employer-information strong { font-size: 16px; }
-.employer-information small { font-size: 14px; }
-.employer-information span { font-size: 14px; }
+.employer-information strong { font-size: 12.5px; margin-bottom: 6px; }  /* employer name */
+.employer-information small { font-size: 12px; margin-bottom: 6px; }     /* employer details */
+.employer-information span { font-size: 11.5px; }                        /* verification status */
 
-/* Action buttons */
+/* Details panel internal padding and section spacing (reference recommendation). */
+.details-column { padding: 16px; }
+.details-column .employer-section { margin-top: 12px; }
+
+/* Action buttons — ~20% shorter (46px -> 37px), tighter padding and slightly
+   smaller text; equal height, rounded corners, colours and alignment preserved. */
 .submit-button,
-.save-button { font-size: 16px; height: 46px; }
+.save-button { font-size: 14.5px; height: 37px; padding: 0 14px; }
 
 /* Empty / no-selection states */
 .no-selection-panel h3 { font-size: 20px; }
@@ -13990,15 +14078,16 @@ input[type=number].form-input {
    ============================================================ */
 .browse-layout {
     align-items: stretch;              /* equal-height columns */
-    /* Shared height that fits the viewport below the header/filters/counter. */
-    height: calc(100vh - 300px);
-    height: calc(100dvh - 300px);
-    min-height: 420px;
+    /* Height now comes from the page's flex column (.browse-main makes this region
+       flex:1 1 auto; min-height:0), so it fills the real space between the fixed
+       filters and the fixed footer — no fragile viewport-minus-constant calc. */
+    min-height: 0;
 }
 
 /* LEFT: the project list is the scroll area. */
 .projects-column {
     min-height: 0;                     /* allow the flex/grid child to shrink */
+    min-width: 0;                      /* let the column shrink to 35% without overflow */
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -14017,8 +14106,10 @@ input[type=number].form-input {
 /* RIGHT: details panel fills the shared height and scrolls its own content. */
 .details-column {
     min-height: 0;
+    min-width: 0;                      /* let the column shrink to 65% without overflow */
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: #176d42 #eef3ef;
 }
@@ -14029,10 +14120,8 @@ input[type=number].form-input {
 }
 .details-column::-webkit-scrollbar-thumb:hover { background: #125a37; }
 
-/* Short viewports: reclaim a little height. */
-@media screen and (max-height: 820px) {
-    .browse-layout { height: calc(100vh - 250px); height: calc(100dvh - 250px); }
-}
+/* Height is now driven by the flex column (.browse-main), so no per-viewport
+   height override is needed here. */
 
 /* Single-column stack (matches the existing 1100px breakpoint where the grid
    collapses to one column): let the page flow naturally, cap the list height so

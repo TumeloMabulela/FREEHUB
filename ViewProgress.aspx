@@ -9,7 +9,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
     <style type="text/css">
-        /* ===== ViewProgress enhancements (scoped via .vp-layout / .vp-* classes) =====
+        /* ===== ViewProgress enhancements (scoped via .vp-* classes) =====
            Reuses FreeHUB's existing palette, typography and card styling. Only adds the
            new status filter tabs, the independent project-list scrollbar and the
            empty-state block — nothing else about the page is restyled. */
@@ -37,7 +37,10 @@
            max-height sized so roughly three project cards show at once and the rest are
            reachable by scrolling; only the list scrolls, not the whole page. */
         .vp-list {
-            max-height: calc(100vh - 430px);
+            /* Fit within the scrollable middle: viewport minus the fixed header,
+               the fixed footer, and the breadcrumb/heading/filter chrome above. */
+            max-height: calc(100vh - 540px);
+            max-height: calc(100dvh - 540px);
             min-height: 180px;
             overflow-y: auto;
             overflow-x: hidden;
@@ -68,19 +71,17 @@
         .vp-empty-title { margin: 0 0 8px; color: #173f2c; font-size: 20px; font-weight: 700; }
         .vp-empty-text { margin: 0; color: #7b878d; font-size: 14px; }
 
-        /* LAYOUT ALIGNMENT (scoped to .vp-layout) — same fix proven on SelectProposal:
-           let the sidebar share the flex-row height instead of sizing independently,
-           and let the page size to its content so the footer follows naturally. */
-        .page-content:has(.vp-layout) { min-height: 0; }
-        .vp-layout { min-height: 0; align-items: stretch; }
-        .vp-layout .freehub-sidebar { align-self: stretch; min-height: 0; }
+        /* NOTE: column-bottom alignment, the page-content height overshoot and the
+           footer gap are now handled once in the shared stylesheet (StyleSheet1.css)
+           for every .freehub-dashboard-layout page, so no per-page override is needed
+           here anymore. */
 
         @media (max-width: 900px) {
             .vp-list { max-height: 60vh; }
         }
     </style>
 
-    <div class="freehub-dashboard-layout vp-layout">
+    <div class="freehub-dashboard-layout">
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
         <section class="freehub-main-content">
@@ -101,41 +102,6 @@
                 <asp:Panel ID="pnlMessage" runat="server" Visible="false" style="padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px;">
                     <asp:Label ID="lblMessage" runat="server" />
                 </asp:Panel>
-
-                <!-- STATS CARDS SECTION -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
-                    <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #e6f4ea; color: #137333; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">💼</div>
-                        <div>
-                            <small style="color: #6b7280; font-size: 12px; font-weight: 600;">Total Projects</small>
-                            <h3 style="font-size: 22px; margin: 2px 0 0; color: #111827;"><asp:Literal ID="litStatTotal" runat="server" Text="0" /></h3>
-                        </div>
-                    </div>
-
-                    <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #e8f0fe; color: #1a73e8; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📊</div>
-                        <div>
-                            <small style="color: #6b7280; font-size: 12px; font-weight: 600;">Completed</small>
-                            <h3 style="font-size: 22px; margin: 2px 0 0; color: #111827;"><asp:Literal ID="litStatCompleted" runat="server" Text="0" /></h3>
-                        </div>
-                    </div>
-
-                    <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #fef7e0; color: #b06000; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">⏳</div>
-                        <div>
-                            <small style="color: #6b7280; font-size: 12px; font-weight: 600;">In Progress / Review</small>
-                            <h3 style="font-size: 22px; margin: 2px 0 0; color: #111827;"><asp:Literal ID="litStatActive" runat="server" Text="0" /></h3>
-                        </div>
-                    </div>
-
-                    <div style="background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #f3e8ff; color: #7e22ce; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📈</div>
-                        <div>
-                            <small style="color: #6b7280; font-size: 12px; font-weight: 600;">Avg. Completion</small>
-                            <h3 style="font-size: 22px; margin: 2px 0 0; color: #111827;"><asp:Literal ID="litStatAvgCompletion" runat="server" Text="0%" /></h3>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- MAIN GRID LAYOUT -->
                 <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">

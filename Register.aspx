@@ -288,6 +288,65 @@
     </section>
 
     <style>
+        /* ===== Fit the Sign Up page within the fixed-shell middle (between the fixed
+           header and footer) so there's no page scrollbar at standard desktop sizes.
+           The shared .register-page set min-height:760px + 85px vertical padding, far
+           taller than the available middle, which forced the overflow. Here we fill
+           the middle, centre both columns, and compress the card/benefit spacing to
+           professional-but-tight values. All page-scoped (register-* classes). ===== */
+
+        .register-page {
+            min-height: 100%;          /* fill the shell middle, not a fixed 760px */
+            height: 100%;              /* bound to the shell middle so nothing overflows it */
+            padding: 12px 8%;          /* was 85px 8% */
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;       /* vertically centre the two columns */
+            justify-content: center;
+            overflow: hidden;          /* content below is sized to fit, so no scroll here */
+        }
+
+        /* Keep both columns vertically centred and aligned. */
+        .register-container { align-items: center; gap: 56px; }
+
+        /* LEFT: trim vertical rhythm so the three benefits + intro fit compactly. */
+        .register-information { padding: 0; }
+        .register-information h1 { font-size: 42px; margin-bottom: 16px; }
+        .register-small-title { margin-bottom: 12px; }
+        .register-description { font-size: 16px; line-height: 1.6; margin-bottom: 22px; }
+        .register-benefits { gap: 16px; }
+
+        /* RIGHT: a more compact card so the whole form clears the footer.
+           Trimmed ~20–30px of vertical height vs. the previous pass. */
+        .register-card { padding: 16px 30px; }
+        .register-card-heading { margin-bottom: 10px; }
+        .register-card-heading h2 { font-size: 28px; }
+
+        .form-row { gap: 14px; }
+        .form-group { margin-bottom: 9px; }
+        .form-group label { margin-bottom: 4px; }
+
+        /* Consistent ~45px input height (padding 12px + 1px borders + ~19px line). */
+        .form-input { padding: 12px 14px; }
+
+        .required-note { margin-bottom: 6px; }
+        .terms-row { margin: 2px 0 12px; }
+        .create-account-button { padding: 13px; }
+        .login-question { margin-top: 10px; margin-bottom: 0; }
+
+        /* Responsive: on stacked (narrow) layouts the content legitimately needs more
+           room, so stop forcing full-middle height and let it flow / scroll naturally
+           rather than clip. */
+        @media screen and (max-width: 1000px) {
+            .register-page {
+                min-height: 100%;
+                height: auto;
+                display: block;
+                padding: 40px 6%;
+                overflow: visible;   /* allow natural scrolling when stacked */
+            }
+        }
+
         /* Red asterisk marking compulsory fields */
         .required-star {
             color: #dc3545;
@@ -298,7 +357,17 @@
         .required-note {
             font-size: 13px;
             color: #666;
-            margin-bottom: 4px;
+            /* margin-bottom set in the compact overrides above */
+        }
+
+        /* Suppress the browser's NATIVE password reveal/clear controls (Edge/IE inject
+           their own eye via ::-ms-reveal once a password field has text) so each field
+           shows ONLY the custom .reg-eye-toggle icon. */
+        .register-form input::-ms-reveal,
+        .register-form input::-ms-clear {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         .reg-eye-toggle {

@@ -13,5 +13,25 @@ namespace FreeHubProject
 
     public partial class Default
     {
+
+        /// <summary>
+        /// litFreelancers control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litFreelancers;
+
+        /// <summary>
+        /// litProjects control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litProjects;
+
+        /// <summary>
+        /// litEmployers control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litEmployers;
+
+        /// <summary>
+        /// litSuccessRate control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Literal litSuccessRate;
     }
 }

@@ -185,12 +185,6 @@
                     </div>
 
                     <div class="mp-info-card">
-                        <h4>Need Help?</h4>
-                        <p>If you need assistance with managing your projects, our support team is here.</p>
-                        <a href="mailto:support@freehub.co.za" class="mp-support-btn">Contact Support</a>
-                    </div>
-
-                    <div class="mp-info-card">
                         <h4>Next Step</h4>
                         <p>Review the proposals for your active projects and choose the best freelancer.</p>
                     </div>

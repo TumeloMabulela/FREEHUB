@@ -10,25 +10,70 @@
     runat="server">
     <style>
         /* Dashboard Layout */
+        /* Dashboard-only sub-shell: the container fills the scrollable middle
+           (.page-content) and becomes a flex column so the welcome section can stay
+           pinned at the top while only the content below it scrolls. The horizontal
+           max-width/centre and gutters are preserved via the inner parts. */
         .dashboard-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;      /* allow the inner scroll child to shrink and scroll */
+        }
+
+        /* Fixed (non-scrolling) top band: the banner + welcome section. Shares the
+           page background and keeps the same 1200px centred width + side gutters as
+           the content below, so the welcome text stays aligned with the stat cards. */
+        .dashboard-topband {
+            flex: 0 0 auto;
+            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 16px 20px 0;
+            box-sizing: border-box;
+        }
+
+        /* The only scrollable region on the Dashboard: everything from the stat cards
+           down. Fills the remaining height between the welcome band and the fixed
+           footer; keeps the same centred width + gutters. */
+        .dashboard-scroll {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px 24px;
+            box-sizing: border-box;
         }
 
         .dashboard-welcome {
-            margin-bottom: 35px;
+            /* Sits in the fixed top band (which supplies the vertical padding), so a
+               small bottom margin keeps the band compact above the scroll area. */
+            margin-bottom: 12px;
+        }
+
+        /* Heading + role badge share one horizontal line, badge vertically centred
+           and immediately after the name. Wraps naturally on narrow screens. */
+        .dashboard-welcome .welcome-heading-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 4px;
         }
 
         .dashboard-welcome h1 {
             font-size: 28px;
             color: #173f2c;
-            margin-bottom: 6px;
+            margin: 0;
         }
 
         .dashboard-welcome p {
             color: #5a6e5f;
             font-size: 15px;
+            margin: 0;
         }
 
         .dashboard-welcome .role-badge {
@@ -39,7 +84,6 @@
             border-radius: 12px;
             font-size: 13px;
             font-weight: 600;
-            margin-top: 8px;
         }
 
         /* Stats Cards */
@@ -275,18 +319,29 @@
 
     <div class="dashboard-container">
 
-        <!-- Success/Info banner (shown after posting a project or submitting a proposal) -->
-        <asp:Panel ID="pnlDashboardMessage" runat="server" Visible="false"
-            CssClass="dashboard-banner">
-            <asp:Literal ID="litDashboardMessage" runat="server" />
-        </asp:Panel>
+        <!-- FIXED TOP BAND: banner + welcome section stay pinned below the header;
+             only .dashboard-scroll below this scrolls. -->
+        <div class="dashboard-topband">
 
-        <!-- Welcome Section -->
-        <div class="dashboard-welcome">
-            <h1>Welcome back, <asp:Literal ID="litFirstName" runat="server" /></h1>
-            <p>Here's an overview of your FreeHUB activity.</p>
-            <span class="role-badge"><asp:Literal ID="litRole" runat="server" /></span>
-        </div>
+            <!-- Success/Info banner (shown after posting a project or submitting a proposal) -->
+            <asp:Panel ID="pnlDashboardMessage" runat="server" Visible="false"
+                CssClass="dashboard-banner">
+                <asp:Literal ID="litDashboardMessage" runat="server" />
+            </asp:Panel>
+
+            <!-- Welcome Section -->
+            <div class="dashboard-welcome">
+                <div class="welcome-heading-row">
+                    <h1>Welcome back, <asp:Literal ID="litFirstName" runat="server" /></h1>
+                    <span class="role-badge"><asp:Literal ID="litRole" runat="server" /></span>
+                </div>
+                <p>Here's an overview of your FreeHUB activity.</p>
+            </div>
+
+        </div><%-- /.dashboard-topband --%>
+
+        <!-- SCROLLABLE CONTENT: stats, quick actions, recent activity, etc. -->
+        <div class="dashboard-scroll">
 
         <!-- Stats -->
         <div class="dashboard-stats">
@@ -444,6 +499,8 @@
                 </asp:Panel>
             </div>
         </div>
+
+        </div><%-- /.dashboard-scroll --%>
 
     </div>
 

@@ -51,42 +51,6 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblMessage;
 
         /// <summary>
-        /// litStatTotal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litStatTotal;
-
-        /// <summary>
-        /// litStatCompleted control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litStatCompleted;
-
-        /// <summary>
-        /// litStatActive control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litStatActive;
-
-        /// <summary>
-        /// litStatAvgCompletion control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litStatAvgCompletion;
-
-        /// <summary>
         /// pnlFilterTabs control.
         /// </summary>
         /// <remarks>

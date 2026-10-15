@@ -21,7 +21,10 @@ namespace FreeHubProject
         {
             try
             {
-                DataTable projects = DatabaseHelper.GetOpenProjects();
+                // Exclude projects posted by the logged-in account's own Employer profile
+                // so a user browsing as a Freelancer never discovers their own projects.
+                int currentUserId = AuthHelper.GetCurrentUserId(this);
+                DataTable projects = DatabaseHelper.GetOpenProjectsExcludingOwner(currentUserId);
 
                 if (projects.Rows.Count == 0)
                 {
@@ -108,6 +111,8 @@ namespace FreeHubProject
         {
             try
             {
+                int currentUserId = AuthHelper.GetCurrentUserId(this);
+
                 string query = @"SELECT p.projectID, p.title, p.description, p.category, p.budget,
                                 p.budgetType, p.dateCreated, p.deadline, p.projectStatus,
                                 p.experienceLevel, p.skills, e.companyName,
@@ -115,7 +120,8 @@ namespace FreeHubProject
                                 FROM Project p
                                 INNER JOIN Employer e ON p.employerID = e.employerID
                                 INNER JOIN [User] u ON e.userID = u.userID
-                                WHERE p.projectStatus = 'Open'";
+                                WHERE p.projectStatus = 'Open'
+                                  AND e.userID <> @ExcludeUserID";
 
                 // Category filter
                 if (!string.IsNullOrEmpty(ddlCategory.SelectedValue))
@@ -142,7 +148,8 @@ namespace FreeHubProject
 
                 query += " ORDER BY p.dateCreated DESC";
 
-                DataTable results = DatabaseHelper.ExecuteQuery(query);
+                DataTable results = DatabaseHelper.ExecuteQuery(query,
+                    new SqlParameter("@ExcludeUserID", currentUserId));
 
                 rptProjects.DataSource = results;
                 rptProjects.DataBind();
@@ -208,13 +215,6 @@ namespace FreeHubProject
             {
                 lblProjectMessage.Text = "Please select a project first.";
             }
-        }
-
-        protected void btnReturnToList_Click(object sender, EventArgs e)
-        {
-            pnlProjectDetails.Visible = false;
-            pnlNoSelection.Visible = true;
-            ViewState["SelectedProjectId"] = null;
         }
     }
 }
