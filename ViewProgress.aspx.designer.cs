@@ -87,6 +87,51 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Literal litStatAvgCompletion;
 
         /// <summary>
+        /// pnlFilterTabs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlFilterTabs;
+
+        /// <summary>
+        /// lnkTabAll control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkTabAll;
+
+        /// <summary>
+        /// lnkTabInProgress control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkTabInProgress;
+
+        /// <summary>
+        /// lnkTabCompleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkTabCompleted;
+
+        /// <summary>
+        /// pnlListWrap control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlListWrap;
+
+        /// <summary>
         /// rptProgressProjects control.
         /// </summary>
         /// <remarks>
@@ -96,22 +141,31 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Repeater rptProgressProjects;
 
         /// <summary>
-        /// lblNoProjects control.
+        /// pnlNoProjects control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNoProjects;
+        protected global::System.Web.UI.WebControls.Panel pnlNoProjects;
 
         /// <summary>
-        /// btnViewAllProjects control.
+        /// litEmptyTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnViewAllProjects;
+        protected global::System.Web.UI.WebControls.Literal litEmptyTitle;
+
+        /// <summary>
+        /// litEmptyText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litEmptyText;
 
         /// <summary>
         /// litPieAvg control.

@@ -7,7 +7,80 @@
 <%@ Register Src="~/Sidebar.ascx" TagPrefix="uc" TagName="Sidebar" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="freehub-dashboard-layout">
+
+    <style type="text/css">
+        /* ===== ViewProgress enhancements (scoped via .vp-layout / .vp-* classes) =====
+           Reuses FreeHUB's existing palette, typography and card styling. Only adds the
+           new status filter tabs, the independent project-list scrollbar and the
+           empty-state block — nothing else about the page is restyled. */
+
+        /* STATUS FILTER TABS — same pill style as SelectProposal's proposal filters. */
+        .vp-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .vp-tab {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 9px 16px; border-radius: 22px;
+            background: #f3f6f4; color: #5a6e62; border: 1px solid #e2e8e4;
+            font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+            white-space: nowrap; line-height: 1.2;
+        }
+        .vp-tab:hover { background: #eaf6ee; color: #12833f; }
+        .vp-tab .vp-tab-count {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 22px; padding: 2px 7px; border-radius: 11px; margin-left: 2px;
+            background: #e2e8e4; color: #5a6e62; font-size: 12px; font-weight: 700;
+        }
+        .vp-tab.vp-tab-active { background: #2e7d56; color: #ffffff; border-color: #2e7d56; }
+        .vp-tab.vp-tab-active:hover { background: #276b4a; color: #ffffff; }
+        .vp-tab.vp-tab-active .vp-tab-count { background: rgba(255,255,255,.25); color: #ffffff; }
+
+        /* INDEPENDENT PROJECT-LIST SCROLLBAR.
+           max-height sized so roughly three project cards show at once and the rest are
+           reachable by scrolling; only the list scrolls, not the whole page. */
+        .vp-list {
+            max-height: calc(100vh - 430px);
+            min-height: 180px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px; /* keep cards clear of the scrollbar */
+        }
+        /* Slim green/white scrollbar — identical to BrowseProjects/SelectProposal. */
+        .vp-list { scrollbar-width: thin; scrollbar-color: #2e7d56 #eef3ef; }
+        .vp-list::-webkit-scrollbar { width: 8px; }
+        .vp-list::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+        .vp-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #2e7d56, #72c94b);
+            border-radius: 8px; border: 2px solid #eef3ef;
+        }
+        .vp-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
+
+        /* EMPTY STATE — centred inside the list container, FreeHUB palette. */
+        .vp-empty {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; min-height: 240px;
+            background: #ffffff; border: 1px solid #e8ece9; border-radius: 14px;
+            box-shadow: 0 1px 3px rgba(16, 40, 28, 0.06); padding: 36px 24px;
+        }
+        .vp-empty-icon {
+            width: 92px; height: 92px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 18px; background: #e5f4ea; color: #2e7d56; font-size: 40px;
+        }
+        .vp-empty-title { margin: 0 0 8px; color: #173f2c; font-size: 20px; font-weight: 700; }
+        .vp-empty-text { margin: 0; color: #7b878d; font-size: 14px; }
+
+        /* LAYOUT ALIGNMENT (scoped to .vp-layout) — same fix proven on SelectProposal:
+           let the sidebar share the flex-row height instead of sizing independently,
+           and let the page size to its content so the footer follows naturally. */
+        .page-content:has(.vp-layout) { min-height: 0; }
+        .vp-layout { min-height: 0; align-items: stretch; }
+        .vp-layout .freehub-sidebar { align-self: stretch; min-height: 0; }
+
+        @media (max-width: 900px) {
+            .vp-list { max-height: 60vh; }
+        }
+    </style>
+
+    <div class="freehub-dashboard-layout vp-layout">
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
         <section class="freehub-main-content">
@@ -71,6 +144,21 @@
                     <div style="display: flex; flex-direction: column; gap: 16px;">
                         <h3 style="font-size: 16px; font-weight: 700; color: #111827; margin-bottom: -8px;">Project Progress List</h3>
 
+                        <!-- STATUS FILTER TABS: All Projects | In Progress | Completed.
+                             Each tab's label + count is set entirely from code-behind on the
+                             LinkButton Text so it survives postbacks. "In Progress" is the
+                             default selected tab (set server-side). -->
+                        <asp:Panel ID="pnlFilterTabs" runat="server" CssClass="vp-tabs">
+                            <asp:LinkButton ID="lnkTabAll" runat="server" CssClass="vp-tab"
+                                CommandName="All" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            <asp:LinkButton ID="lnkTabInProgress" runat="server" CssClass="vp-tab"
+                                CommandName="InProgress" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            <asp:LinkButton ID="lnkTabCompleted" runat="server" CssClass="vp-tab"
+                                CommandName="Completed" OnCommand="FilterTab_Command" CausesValidation="false" />
+                        </asp:Panel>
+
+                        <!-- Independent scrollable list container (hidden when empty). -->
+                        <asp:Panel ID="pnlListWrap" runat="server" CssClass="vp-list">
                         <asp:Repeater ID="rptProgressProjects" runat="server" OnItemCommand="rptProgressProjects_ItemCommand">
                             <ItemTemplate>
                                 <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 4px;">
@@ -120,13 +208,16 @@
                                 </div>
                             </ItemTemplate>
                         </asp:Repeater>
+                        </asp:Panel><%-- /.vp-list (pnlListWrap) --%>
 
-                        <asp:Label ID="lblNoProjects" runat="server" CssClass="no-projects-message" Visible="false" Text="No active projects found to track progress." style="text-align:center; padding:30px; color:#6b7280; background:#fff; border-radius:12px; border:1px solid #e5e7eb;" />
-
-                        <div style="text-align: center; margin-top: 8px;">
-                            <asp:Button ID="btnViewAllProjects" runat="server" Text="View All Projects" OnClick="btnViewAllProjects_Click" 
-                                style="background: #fff; border: 1px solid #d1d5db; color: #374151; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;" />
-                        </div>
+                        <!-- EMPTY STATE: centred inside the list area, shown when the selected
+                             filter has no projects (mutually exclusive with the list). The
+                             heading/description are set per filter + role in code-behind. -->
+                        <asp:Panel ID="pnlNoProjects" runat="server" Visible="false" CssClass="vp-empty">
+                            <div class="vp-empty-icon" aria-hidden="true">📊</div>
+                            <h3 class="vp-empty-title"><asp:Literal ID="litEmptyTitle" runat="server" Text="No projects found." /></h3>
+                            <p class="vp-empty-text"><asp:Literal ID="litEmptyText" runat="server" Text="Your projects will appear here when they become available." /></p>
+                        </asp:Panel>
                     </div>
 
                     <!-- RIGHT COLUMN: PROGRESS BREAKDOWN & DEADLINES -->
