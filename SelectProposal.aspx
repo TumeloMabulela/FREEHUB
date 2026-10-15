@@ -23,7 +23,6 @@
            doesn't grow endlessly and the tips panel stays visible beside it. */
         .pl-list {
             max-height: calc(100vh - 230px);
-            min-height: 320px;
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 8px; /* room so cards don't sit under the scrollbar */
@@ -192,9 +191,16 @@
             .pl-actions { flex-wrap: wrap; }
             .pl-actions .pl-btn { flex: 1 1 auto; }
         }
+
+        /* The shared dashboard layout forces min-height:calc(100vh - 75px), which leaves
+           a large blank band above the footer when the proposal content is short. Scoped
+           to this page only, let the layout size to its content so the footer follows
+           naturally. Scrollbars / scroll areas are untouched. */
+        .page-content:has(.sp-layout) { min-height: 0; }
+        .sp-layout { min-height: 0; }
     </style>
 
-    <div class="freehub-dashboard-layout">
+    <div class="freehub-dashboard-layout sp-layout">
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
