@@ -366,14 +366,8 @@ namespace FreeHubProject
             string message,
             bool success)
         {
-            pnlMessage.Visible = true;
-
-            lblMessage.Text = message;
-
-            pnlMessage.CssClass =
-                success
-                    ? "disputes-message disputes-success"
-                    : "disputes-message disputes-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

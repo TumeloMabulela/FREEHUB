@@ -136,12 +136,13 @@
             grid-template-columns: clamp(300px, 32%, 400px) minmax(0, 1fr);
             gap:20px; width:100%;
             /* Shared container height: viewport minus the fixed header, the fixed
-               footer, and the filters/tabs above it. dvh tracks mobile browser chrome;
-               vh is the fallback for older browsers. */
-            height: calc(100vh - 410px);
-            height: calc(100dvh - 410px);
+               footer, and the heading + tabs above it. The search/type/time filter row
+               was removed, so the panels reclaim that height (~64px) and sit higher.
+               dvh tracks mobile browser chrome; vh is the fallback for older browsers. */
+            height: calc(100vh - 346px);
+            height: calc(100dvh - 346px);
             min-height: 420px;
-            max-height: calc(100vh - 290px);
+            max-height: calc(100vh - 226px);
         }
         /* Each column is a full-height flex container; min-height:0 lets the inner
            scroll area shrink and scroll instead of pushing the page taller. */
@@ -338,31 +339,8 @@
                     <asp:Label ID="lblNotificationStatus" runat="server"></asp:Label>
                 </asp:Panel>
 
-                <!-- Search + filters -->
-                <div class="nx-filters">
-                    <div class="nx-search-wrap">
-                        <span class="ic">🔍</span>
-                        <asp:TextBox ID="txtSearch" runat="server" CssClass="nx-search" placeholder="Search notifications..."
-                            AutoPostBack="true" OnTextChanged="Filters_Changed"
-                            onkeyup="nxSearchDebounce('<%= btnDoSearch.ClientID %>');"></asp:TextBox>
-                        <asp:Button ID="btnDoSearch" runat="server" OnClick="Filters_Changed" style="display:none;" CausesValidation="false" />
-                    </div>
-                    <asp:DropDownList ID="ddlType" runat="server" CssClass="nx-select" AutoPostBack="true" OnSelectedIndexChanged="Filters_Changed">
-                        <asp:ListItem Text="All Types" Value="All" />
-                        <asp:ListItem Text="Project Updates" Value="Project" />
-                        <asp:ListItem Text="Messages" Value="Message" />
-                        <asp:ListItem Text="Proposals" Value="Proposal" />
-                        <asp:ListItem Text="Payments" Value="Payment" />
-                        <asp:ListItem Text="System Notifications" Value="System" />
-                    </asp:DropDownList>
-                    <asp:DropDownList ID="ddlTime" runat="server" CssClass="nx-select" AutoPostBack="true" OnSelectedIndexChanged="Filters_Changed">
-                        <asp:ListItem Text="All Time" Value="0" />
-                        <asp:ListItem Text="Today" Value="1" />
-                        <asp:ListItem Text="Last 7 Days" Value="7" />
-                        <asp:ListItem Text="Last 30 Days" Value="30" />
-                        <asp:ListItem Text="Last 90 Days" Value="90" />
-                    </asp:DropDownList>
-                </div>
+                <!-- (Search + type/time filter controls removed — the category tabs
+                     below now sit directly under the heading and the panels expand up.) -->
 
                 <!-- Category tabs -->
                 <div class="nx-tabs">

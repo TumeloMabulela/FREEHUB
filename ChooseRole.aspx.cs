@@ -134,10 +134,25 @@ namespace FreeHubProject
                 return;
             }
 
-            decimal hourlyRate;
-            if (!decimal.TryParse(txtHourlyRate.Text, out hourlyRate) || hourlyRate <= 0)
+            // Hourly rate: digits only (no commas/dots/spaces/minus/letters), 1..2000.
+            // Validated on the raw string so "20.50" is rejected, never converted to 2050.
+            string rawRate = (txtHourlyRate.Text ?? "").Trim();
+            if (!System.Text.RegularExpressions.Regex.IsMatch(rawRate, @"^\d+$"))
+            {
+                ShowMessage("Enter digits only, without spaces, commas or decimal points.", "error");
+                pnlCreateFreelancer.Visible = true;
+                return;
+            }
+            int hourlyRate;
+            if (!int.TryParse(rawRate, out hourlyRate) || hourlyRate <= 0)
             {
                 ShowMessage("Please enter a valid hourly rate.", "error");
+                pnlCreateFreelancer.Visible = true;
+                return;
+            }
+            if (hourlyRate > 2000)
+            {
+                ShowMessage("Hourly rate cannot exceed R2 000.", "error");
                 pnlCreateFreelancer.Visible = true;
                 return;
             }

@@ -11,7 +11,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/MyProjects.css?v=6") %>"
+    <link href="<%= ResolveUrl("~/MyProjects.css?v=9") %>"
           rel="stylesheet"
           type="text/css" />
 </asp:Content>
@@ -26,6 +26,7 @@
 
         <main class="my-projects-main">
 
+            <!-- STATIC HEADER (stays put while the project list scrolls) -->
             <div class="project-breadcrumb">
                 <a href="Default.aspx">Dashboard</a>
                 <span>&#8250;</span>
@@ -33,65 +34,42 @@
             </div>
 
             <div class="my-projects-heading">
-                <div>
-                    <h1>My Projects</h1>
-                    <p>Manage your active, completed and cancelled projects.</p>
-                </div>
-
-                <a href="PostProject.aspx" class="my-projects-post-button">
-                    + Post a Project
-                </a>
+                <h1>My Projects</h1>
+                <p>Manage your active, completed and cancelled projects.</p>
             </div>
-
-            <section class="my-projects-tabs">
-                <asp:HyperLink
-                    ID="lnkTabActive"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Active"
-                    CssClass="my-projects-tab">
-                    Active Projects
-                    <span>
-                        <asp:Label ID="lblActiveCount" runat="server" Text="0" />
-                    </span>
-                </asp:HyperLink>
-
-                <asp:HyperLink
-                    ID="lnkTabCompleted"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Completed"
-                    CssClass="my-projects-tab">
-                    Completed Projects
-                    <span>
-                        <asp:Label ID="lblCompletedCount" runat="server" Text="0" />
-                    </span>
-                </asp:HyperLink>
-
-                <asp:HyperLink
-                    ID="lnkTabCancelled"
-                    runat="server"
-                    NavigateUrl="~/MyProjects.aspx?view=Cancelled"
-                    CssClass="my-projects-tab">
-                    Cancelled Projects
-                    <span>
-                        <asp:Label ID="lblCancelledCount" runat="server" Text="0" />
-                    </span>
-                </asp:HyperLink>
-
-                <asp:DropDownList ID="ddlSortProjects" runat="server" CssClass="my-projects-sort mp-sort"
-                    AutoPostBack="true" OnSelectedIndexChanged="ddlSortProjects_SelectedIndexChanged">
-                    <asp:ListItem Text="Newest First" Value="Newest" />
-                    <asp:ListItem Text="Oldest First" Value="Oldest" />
-                </asp:DropDownList>
-            </section>
 
             <!-- TWO CONTAINERS: scrollable project list (left) + info sidebar (right) -->
             <div class="mp-layout">
 
-                <!-- LEFT: project list -->
+                <!-- LEFT: static "Projects (N)" + filters row, then scrollable list -->
                 <section class="mp-list-wrap">
+
+                    <!-- "Projects (N)" on the left; the four filter pills + sort on the
+                         right — same row, matching the Select Proposal layout. Static
+                         (never scrolls). -->
                     <div class="mp-list-heading">
-                        <h2><asp:Label ID="lblSectionTitle" runat="server" Text="Active Projects" /></h2>
-                        <p>Select a project to view its details, proposals and contracts.</p>
+                        <h2>Projects (<asp:Label ID="lblProjectCount" runat="server" Text="0" />)</h2>
+
+                        <div class="mp-filter-cluster">
+                            <%-- STATUS FILTER PILLS — each pill's label + count badge is set
+                                 server-side on the LinkButton Text so counts survive postbacks. --%>
+                            <asp:Panel ID="pnlFilterTabs" runat="server" CssClass="mp-tabs">
+                                <asp:LinkButton ID="lnkTabAll" runat="server" CssClass="mp-tab"
+                                    CommandName="All" OnCommand="FilterTab_Command" CausesValidation="false" />
+                                <asp:LinkButton ID="lnkTabActive" runat="server" CssClass="mp-tab"
+                                    CommandName="Active" OnCommand="FilterTab_Command" CausesValidation="false" />
+                                <asp:LinkButton ID="lnkTabCompleted" runat="server" CssClass="mp-tab"
+                                    CommandName="Completed" OnCommand="FilterTab_Command" CausesValidation="false" />
+                                <asp:LinkButton ID="lnkTabCancelled" runat="server" CssClass="mp-tab"
+                                    CommandName="Cancelled" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            </asp:Panel>
+
+                            <asp:DropDownList ID="ddlSortProjects" runat="server" CssClass="my-projects-sort mp-sort"
+                                AutoPostBack="true" OnSelectedIndexChanged="ddlSortProjects_SelectedIndexChanged">
+                                <asp:ListItem Text="Newest First" Value="Newest" />
+                                <asp:ListItem Text="Oldest First" Value="Oldest" />
+                            </asp:DropDownList>
+                        </div>
                     </div>
 
                     <asp:Panel ID="pnlProjectList" runat="server" CssClass="mp-list">
@@ -166,12 +144,12 @@
 
                     <asp:Panel ID="pnlEmptyProjects" runat="server" CssClass="mp-empty" Visible="false">
                         <div class="mp-empty-icon">&#128193;</div>
-                        <h3>No projects found</h3>
-                        <p>There are no projects available in this section.</p>
+                        <h3><asp:Literal ID="litEmptyTitle" runat="server" Text="No projects found" /></h3>
+                        <p><asp:Literal ID="litEmptyText" runat="server" Text="There are no projects available in this section." /></p>
                     </asp:Panel>
                 </section>
 
-                <!-- RIGHT: information sidebar -->
+                <!-- RIGHT: information sidebar (stationary; Tips top-aligned to filters) -->
                 <aside class="mp-sidebar">
                     <div class="mp-info-card">
                         <h4>Tips for Managing Your Projects</h4>

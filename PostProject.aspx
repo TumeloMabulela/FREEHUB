@@ -17,7 +17,7 @@
 
         <!-- MAIN CONTENT -->
 
-        <section class="freehub-main-content">
+        <section class="freehub-main-content pp-main">
 
 
             <!-- PAGE TITLE -->
@@ -95,6 +95,10 @@
                         </p>
 
                     </div>
+
+
+                    <!-- SCROLLABLE FORM BODY: only this scrolls; the heading above stays fixed -->
+                    <div class="pp-form-body">
 
 
                     <!-- PROJECT TITLE -->
@@ -572,6 +576,8 @@
 
                     </div>
 
+                    </div><%-- /.pp-form-body (scrollable) --%>
+
                 </div>
 
 
@@ -901,6 +907,68 @@
 
 
     <style type="text/css">
+        /* ===== Fixed-middle layout (matches View Progress / My Proposals), scoped to
+           this page via .pp-main. The main content is a NON-scrolling flex column filling
+           the space between the fixed site header and footer; the breadcrumb/heading/
+           description + status message stay fixed; the two-column grid fills the rest; and
+           only the Project Details form card (.post-form-card) scrolls. The Tips card sits
+           in the non-scrolling area, top-aligned to the form. ===== */
+        .freehub-main-content.pp-main {
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .pp-main .post-page-heading,
+        .pp-main .post-status { flex: 0 0 auto; }
+
+        /* ~74% / ~26% two-column split, filling the remaining height. */
+        .pp-main .post-content-grid {
+            grid-template-columns: minmax(0, 74fr) minmax(0, 26fr);
+            align-items: stretch;
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        /* The form card is a flex column: the "Project Details" heading (.post-card-title)
+           is pinned at the top and ONLY the form body (.pp-form-body) scrolls below it. */
+        .pp-main .post-form-card {
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .pp-main .post-form-card > .post-card-title { flex: 0 0 auto; }
+
+        /* The ONLY scrollable section — the fields scroll beneath the fixed heading, with
+           the scrollbar inside the left container (slim green, matching the app). The
+           heading's bottom border + margin give a clean gap above the first field. */
+        .pp-main .pp-form-body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px; /* keep fields clear of the scrollbar */
+            scrollbar-width: thin; scrollbar-color: #2e7d56 #eef3ef;
+        }
+        .pp-main .pp-form-body::-webkit-scrollbar { width: 8px; }
+        .pp-main .pp-form-body::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+        .pp-main .pp-form-body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #2e7d56, #72c94b); border-radius: 8px; border: 2px solid #eef3ef; }
+        .pp-main .pp-form-body::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
+
+        /* Tips column: stationary, top edge aligned with the form card. */
+        .pp-main .post-help-column { align-self: start; min-height: 0; }
+
+        /* Release to natural flow on narrow screens (whole page scrolls). */
+        @media screen and (max-width: 1050px) {
+            .freehub-main-content.pp-main { height: auto; overflow: visible; display: block; }
+            .pp-main .post-content-grid { display: grid; grid-template-columns: 1fr; flex: none; min-height: 0; }
+            .pp-main .post-form-card { overflow: visible; min-height: 0; display: block; }
+            .pp-main .pp-form-body { overflow: visible; min-height: 0; flex: none; padding-right: 0; }
+            .pp-main .post-help-column { align-self: auto; }
+        }
+
         /* Compact inline validation message shown beside a field label.
            Hidden until it has text so it never disrupts the layout. */
         .post-field-error {

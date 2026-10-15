@@ -87,7 +87,7 @@
                                         <small class="comment-role"><%# Eval("userType") %></small>
                                         <small class="comment-time">&bull; <%# GetTimeAgo(Convert.ToDateTime(Eval("commentDate"))) %></small>
                                     </div>
-                                    <p><%# Eval("commentText") %></p>
+                                    <p><%# Server.HtmlEncode(Convert.ToString(Eval("commentText"))) %></p>
                                     <asp:LinkButton ID="btnReply" runat="server"
                                         CommandName="ReplyComment"
                                         CommandArgument='<%# Eval("authorName") %>'
@@ -127,7 +127,7 @@
                         <asp:LinkButton ID="btnCancelReply" runat="server" OnClick="btnCancelReply_Click" style="color:#dc3545; margin-left:10px; font-size:12px;">Cancel</asp:LinkButton>
                     </asp:Panel>
                     <asp:TextBox ID="txtComment" runat="server" CssClass="post-textarea"
-                        TextMode="MultiLine" Rows="5" placeholder="Write your comment..." />
+                        TextMode="MultiLine" Rows="5" data-fh-format="true" placeholder="Write your comment..." />
                     <asp:Button ID="btnPostComment" runat="server" Text="Post Comment"
                         CssClass="post-submit-button" OnClick="btnPostComment_Click"
                         style="width:100%; margin-top:10px;" />
@@ -149,5 +149,8 @@
         </section>
 
     </div>
+
+    <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
 </asp:Content>

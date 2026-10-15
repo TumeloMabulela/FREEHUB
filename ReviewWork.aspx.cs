@@ -65,7 +65,7 @@ namespace FreeHubProject
                 lblProjectBudget.Text = "R" + Convert.ToDecimal(row["budget"]).ToString("N2");
                 lblFreelancerName.Text = Convert.ToString(row["freelancerName"]);
                 lblSubmissionContent.Text = row["submissionContent"] != DBNull.Value
-                    ? Convert.ToString(row["submissionContent"])
+                    ? Server.HtmlEncode(Convert.ToString(row["submissionContent"]))
                     : "No submission notes provided.";
 
                 ViewState["FreelancerUserID"] = Convert.ToInt32(row["freelancerUserID"]);
@@ -199,10 +199,8 @@ namespace FreeHubProject
 
         private void ShowStatus(string message, bool success)
         {
-            pnlStatus.Visible = true;
-            lblStatus.Text = message;
-            pnlStatus.BackColor = success ? System.Drawing.Color.FromArgb(234, 247, 237) : System.Drawing.Color.FromArgb(254, 226, 226);
-            lblStatus.ForeColor = success ? System.Drawing.Color.FromArgb(39, 103, 56) : System.Drawing.Color.FromArgb(153, 27, 27);
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

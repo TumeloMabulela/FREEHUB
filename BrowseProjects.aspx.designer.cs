@@ -195,13 +195,13 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblEmployerName;
 
         /// <summary>
-        /// lblEmployerDetails control.
+        /// pnlEmployerVerified control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblEmployerDetails;
+        protected global::System.Web.UI.WebControls.Panel pnlEmployerVerified;
 
         /// <summary>
         /// lblEmployerRating control.

@@ -270,6 +270,7 @@
                                 Rows="5"
                                 MaxLength="500"
                                 CssClass="rating-comment-box"
+                                data-fh-format="true"
                                 placeholder="Share your experience working with this freelancer..."
                                 onkeyup="updateCharacterCount(this)">
                             </asp:TextBox>
@@ -523,5 +524,8 @@
         }
 
     </script>
+
+    <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
 </asp:Content>

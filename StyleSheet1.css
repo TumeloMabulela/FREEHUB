@@ -193,6 +193,21 @@ button {
     min-height: 0;
 }
 
+/* ===== Dashboard/sidebar pages: stationary sidebar, independently-scrolling content.
+   On these pages the SCROLL MOVES OFF .page-content and ONTO .freehub-main-content.
+   .page-content itself does NOT scroll, so the sidebar (a sibling of the main content
+   inside the non-scrolling .freehub-dashboard-layout) can never move when the content
+   scrolls. Public/marketing pages keep .page-content scrollable (rule above). ===== */
+@media screen and (min-width: 601px) {
+    .page-content:has(.freehub-dashboard-layout),
+    .page-content:has(.my-projects-page),
+    .page-content:has(.wallet-page-layout),
+    .page-content:has(.completed-page-layout),
+    .page-content:has(.rate-page-layout) {
+        overflow: hidden;
+    }
+}
+
 
 /* =========================
    FOOTER
@@ -7898,6 +7913,10 @@ FREEHUB HOME PAGE
         width: 100%;
         min-width: 100%;
         min-height: auto;
+        /* Reset the desktop column sizing for the mobile horizontal strip. */
+        height: auto;
+        max-height: none;
+        flex-direction: row;
         padding: 8px 10px;
         display: flex;
         align-items: center;
@@ -7940,6 +7959,25 @@ FREEHUB HOME PAGE
     .sidebar-heading,
     .freehub-sidebar .sidebar-back {
         display: none;
+    }
+
+    /* Mobile: the layout stacks and the whole page scrolls (.page-content), so the
+       desktop "main content is the scroller" model is reset to natural flow. */
+    .freehub-dashboard-layout,
+    .my-projects-page,
+    .wallet-page-layout,
+    .completed-page-layout,
+    .rate-page-layout {
+        height: auto;
+    }
+    .freehub-dashboard-layout > section,
+    .freehub-dashboard-layout > .freehub-main-content,
+    .my-projects-page > .my-projects-main,
+    .wallet-page-layout > .wallet-main-content,
+    .completed-page-layout > .completed-main-content,
+    .rate-page-layout > .rate-main-content {
+        height: auto;
+        overflow: visible;
     }
 
 
@@ -12630,7 +12668,10 @@ FREEHUB HOME PAGE
 ========================================= */
 
 .my-projects-page {
-    min-height: 100vh;
+    /* Fills the non-scrolling .page-content exactly so the sidebar + main share a
+       definite height between the fixed header and footer (height:100%/min-height:0
+       applied by the shared layout-wrapper rule). No 100vh here — it would overflow
+       the fixed shell. */
     display: flex;
     color: #35434a;
     background: #f5f7f8;
@@ -13221,19 +13262,56 @@ FREEHUB HOME PAGE
     min-width: 260px;
     background-color: #ffffff;
     border-right: 1px solid #e8ece9;
-    padding: 20px 0;
-    /* Share the flex-row height with the main content so both columns end at the
-       same bottom boundary (no mismatched column heights / grey gap). The scroll
-       container is now .page-content (which already sits below the fixed header),
-       so the sidebar sticks to the TOP of that scroll area (top:0). */
+    padding: 16px 0;
+    /* The sidebar is a plain flex child of the NON-scrolling .freehub-dashboard-layout
+       (its .page-content ancestor has overflow:hidden on dashboard pages), so it is
+       completely stationary when the main content scrolls — no sticky/fixed needed.
+       It fills the full row height (header -> footer) and lays the Back button + nav
+       out as a flex column that never scrolls; items distribute to fit, so there is no
+       sidebar scrollbar at supported desktop sizes. */
     align-self: stretch;
-    position: sticky;
-    top: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
+
+
 
 .freehub-sidebar .sidebar-section {
     padding: 0 12px;
-    margin-bottom: 10px;
+    margin-bottom: 0;
+    /* No bottom border/padding here — the bare .sidebar-section rule elsewhere adds a
+       border-bottom that showed as an unwanted line beneath the last nav items
+       (near Trust & Safety / Feedback). Removed for the shared sidebar only. The real
+       Wallet↔FAQs divider is a separate .sidebar-divider element and is kept. */
+    border-bottom: none;
+    padding-bottom: 0;
+    /* Grow to fill the height below the Back button. space-between gives EQUAL gaps
+       between consecutive items with no extra space at the very top/bottom, so the
+       first item (Dashboard) sits close under the Back button and the last item
+       (Feedback & Suggestions) reaches the bottom. The leftover vertical space is
+       therefore redistributed EVENLY between the nav items (balanced, not compressed),
+       and the whole nav still fills the sidebar without scrolling. The small top margin
+       keeps a ~14px gap below the Back button. */
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 14px;
+}
+
+/* Very short desktop viewports ONLY: once items have already compressed to their
+   minimum comfortable size and STILL can't fit, prefer scrolling the sidebar (so no
+   item is ever clipped) over hiding overflow, and pack items tightly from the top.
+   The clamp-based item padding lets the full nav fit without scrolling across the
+   normal desktop range, so this fallback rarely engages. Accessibility over even
+   distribution. */
+@media screen and (min-width: 601px) and (max-height: 560px) {
+    .freehub-sidebar { overflow-y: auto; }
+    .freehub-sidebar .sidebar-section { justify-content: flex-start; }
+    .freehub-sidebar .sidebar-item { padding-top: 7px; padding-bottom: 7px; }
 }
 
 .freehub-sidebar .sidebar-heading {
@@ -13248,14 +13326,24 @@ FREEHUB HOME PAGE
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 16px;
+    /* Items keep a compact, CONSISTENT height so the leftover vertical space is spread
+       as even gaps BETWEEN items (via the section's space-between) rather than being
+       absorbed by taller items. A smaller vertical padding frees up more slack, so the
+       even inter-item gaps are larger and the nav looks balanced (not compressed). The
+       clamp still lets items compress further on short viewports so the longer Employer
+       nav (My Projects / Post a Project / Proposals Received / View Progress) fits
+       between the fixed header and footer without a scrollbar. */
+    padding: clamp(5px, 0.7vh, 8px) 16px;
     border-radius: 8px;
     color: #3d5a47;
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
-    margin-bottom: 2px;
+    /* Allow items to shrink so space-evenly can genuinely fit every item (no clipping). */
+    flex: 0 1 auto;
+    min-height: 0;
+    margin-bottom: 0;
 }
 
 .freehub-sidebar .sidebar-item:hover {
@@ -13276,18 +13364,22 @@ FREEHUB HOME PAGE
 }
 
 /* Layout wrapper for pages using the shared sidebar.
-   Fills the flex-grown .page-content (see the sticky-footer layout on #form1) rather
-   than imposing its own viewport-height calc, so there's no overshoot past the
-   available area and the footer follows naturally. */
+   Fills the NON-scrolling .page-content exactly (height:100%) so the sidebar and main
+   content share a definite height between the fixed header and footer. The sidebar
+   stays put; only the main content scrolls (rule below). */
 .freehub-dashboard-layout,
 .my-projects-page,
 .wallet-page-layout,
 .completed-page-layout,
 .rate-page-layout {
     display: flex;
-    min-height: 100%;
+    height: 100%;
+    min-height: 0;
 }
 
+/* The main content column is the independent scroll area (the sidebar is a static
+   sibling that never scrolls). height:100% + min-height:0 bound it so it scrolls its
+   own overflow instead of growing the row. */
 .freehub-dashboard-layout > section,
 .freehub-dashboard-layout > .freehub-main-content,
 .my-projects-page > .my-projects-content,
@@ -13295,8 +13387,12 @@ FREEHUB HOME PAGE
 .completed-page-layout > .completed-main-content,
 .rate-page-layout > .rate-main-content {
     flex: 1;
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
     padding: 30px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 
@@ -13693,6 +13789,9 @@ FREEHUB HOME PAGE
     color: #444;
     font-size: 14px;
     line-height: 1.5;
+    /* Preserve saved paragraph breaks in displayed comments. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .no-comments {
@@ -14057,10 +14156,77 @@ input[type=number].form-input {
 .details-column { padding: 16px; }
 .details-column .employer-section { margin-top: 12px; }
 
-/* Action buttons — ~20% shorter (46px -> 37px), tighter padding and slightly
-   smaller text; equal height, rounded corners, colours and alignment preserved. */
+/* ===== Two-column details header: name+date (left ~40%) | info grid (right ~60%) ===== */
+.pd-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 14px;
+}
+.pd-header-left {
+    flex: 0 1 40%;
+    min-width: 0;                 /* allow long names to wrap, not overflow */
+}
+.pd-header-left h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
+.pd-header-left .posted-information { margin: 0; }
+.pd-header .details-grid {
+    flex: 1 1 60%;
+    min-width: 0;                 /* values wrap instead of forcing overflow */
+    margin: 0;                    /* grid no longer sits below the description */
+}
+.pd-header .details-grid .detail-box { overflow-wrap: anywhere; }
+
+/* Narrow screens: stack the grid beneath the name + date. */
+@media screen and (max-width: 1100px) {
+    .pd-header { flex-direction: column; gap: 12px; }
+    .pd-header-left,
+    .pd-header .details-grid { flex: 1 1 auto; width: 100%; }
+}
+
+/* ===== About-the-employer block ===== */
+/* Avatar left, two-line text (name + verified) right, vertically centred, 12px gap.
+   The username line was removed in the markup, so no empty space remains. */
+.employer-row { align-items: center; gap: 12px; }
+.employer-information { flex: 1; min-width: 0; }
+/* Name wraps on long values without overlapping the avatar; colour preserved. */
+.employer-information strong { font-size: 12.5px; margin-bottom: 2px; overflow-wrap: anywhere; }
+/* Verified badge: green tick + text, shown only when the employer is verified. */
+.employer-verified {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1e7a46;            /* green verified indicator */
+    font-size: 11.5px;
+    font-weight: 600;
+}
+.employer-verified .employer-verified-tick {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #1e7a46;
+    color: #ffffff;
+    font-size: 9px;
+    flex-shrink: 0;
+}
+
+/* ===== Action buttons: fit-to-text, left-aligned row (not full-width grid) ===== */
+.project-actions {
+    display: flex;
+    flex-wrap: wrap;                 /* wrap neatly on narrow screens */
+    justify-content: flex-start;     /* align with the section's left edge */
+    gap: 12px;
+    margin-top: 18px;
+}
 .submit-button,
-.save-button { font-size: 14.5px; height: 37px; padding: 0 14px; }
+.save-button {
+    width: auto;                     /* override any full-width/stretch */
+    flex: 0 0 auto;                  /* don't grow to fill the row */
+    height: 36px;
+    padding: 0 16px;
+    font-size: 14px;
+}
 
 /* Empty / no-selection states */
 .no-selection-panel h3 { font-size: 20px; }
@@ -14131,3 +14297,59 @@ input[type=number].form-input {
     .projects-column { height: auto; max-height: 60vh; }
     .details-column { height: auto; overflow: visible; }
 }
+
+
+/* ============================================================
+   HOURLY RATE FIELD — R prefix outside a digits-only textbox,
+   with helper text beneath. Used on ChooseRole, CreateFreelancer
+   and ManageProfile. Scoped to the .hr-rate-* classes only.
+   ============================================================ */
+.hr-rate-wrap {
+    display: flex;
+    align-items: stretch;
+}
+.hr-rate-prefix {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #eef3ef;
+    border: 1px solid #d7dedd;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    color: #3d5a47;
+    font-weight: 700;
+}
+/* The textbox keeps its existing form styling; just square off the left corners so
+   it joins the R prefix seamlessly, and let it fill the remaining width. */
+.hr-rate-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+.hr-rate-help {
+    display: block;
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+
+/* Subtle divider between the main sidebar nav and the support links (FAQs, Help,
+   Trust & Safety, Feedback). Matches the thin dividers used elsewhere. */
+.freehub-sidebar .sidebar-divider {
+    height: 0;
+    /* Zero vertical margin so the section's space-between provides the SAME even gap
+       around the separator as between every other item (no double-spacing). The border
+       line itself gives the visual separation between the main nav and support links. */
+    margin: 0 16px;
+    border-top: 1px solid #e5eaec;
+    flex: 0 0 auto;
+}
+
+/* ============================================================
+   Controlled vertical resize for shared paragraph-formatting
+   textareas (data-fh-format="true"). Keeps per-page width and
+   default height; only caps growth and allows vertical resize.
+   ============================================================ */
+textarea[data-fh-format='true'] { resize: vertical; max-height: 400px; overflow-y: auto; }

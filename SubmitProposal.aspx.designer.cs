@@ -14,9 +14,13 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.Label lblProjectBudget;
         protected global::System.Web.UI.WebControls.Label lblProjectDeadline;
         protected global::System.Web.UI.WebControls.Label lblProjectCategory;
+        protected global::System.Web.UI.WebControls.Label lblCoverError;
         protected global::System.Web.UI.WebControls.TextBox txtCoverLetter;
+        protected global::System.Web.UI.WebControls.Label lblRateError;
         protected global::System.Web.UI.WebControls.TextBox txtProposedRate;
-        protected global::System.Web.UI.WebControls.TextBox txtCompletionTime;
+        protected global::System.Web.UI.WebControls.Label lblDateError;
+        protected global::System.Web.UI.WebControls.TextBox txtCompletionDate;
+        protected global::System.Web.UI.WebControls.HiddenField hfCompletionDays;
         protected global::System.Web.UI.WebControls.Button btnCancel;
         protected global::System.Web.UI.WebControls.Button btnSubmitProposal;
     }

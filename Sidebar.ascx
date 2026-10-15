@@ -4,7 +4,7 @@
 
     <div class="sidebar-back">
         <% if (!GetActiveClass("Default").Contains("active")) { %>
-        <a href="javascript:history.back()" class="fh-back-pill" style="margin:10px 16px;">
+        <a href="javascript:history.back()" class="fh-back-pill" style="margin:14px 16px 0;">
             <span class="fh-back-circle">&#8592;</span>
             <span class="fh-back-text">Back</span>
         </a>
@@ -71,22 +71,31 @@
             <span>Wallet</span>
         </a>
 
-    </div>
+        <!-- Subtle divider between the main nav and the support links -->
+        <div class="sidebar-divider"></div>
 
-    <div class="sidebar-heading">PROJECTS</div>
-
-    <div class="sidebar-section">
-
-        <a href="CompletedProjects.aspx"
-           class="sidebar-item <%= GetActiveClass("CompletedProjects") %>">
-            <span class="sidebar-icon">&#9989;</span>
-            <span>Completed Projects</span>
+        <a href="FAQs.aspx"
+           class="sidebar-item <%= GetActiveClass("FAQs") %>">
+            <span class="sidebar-icon">&#10067;</span>
+            <span>FAQs</span>
         </a>
 
-        <a href="RateFreelancer.aspx"
-           class="sidebar-item <%= GetActiveClass("RateFreelancer") %>">
-            <span class="sidebar-icon">&#11088;</span>
-            <span>Ratings</span>
+        <a href="Help.aspx"
+           class="sidebar-item <%= GetActiveClass("Help") %>">
+            <span class="sidebar-icon">&#127911;</span>
+            <span>Help &amp; Support</span>
+        </a>
+
+        <a href="TrustSafety.aspx"
+           class="sidebar-item <%= GetActiveClass("TrustSafety") %>">
+            <span class="sidebar-icon">&#128737;</span>
+            <span>Trust &amp; Safety</span>
+        </a>
+
+        <a href="Feedback.aspx"
+           class="sidebar-item <%= GetActiveClass("Feedback") %>">
+            <span class="sidebar-icon">&#128161;</span>
+            <span>Feedback &amp; Suggestions</span>
         </a>
 
     </div></aside>

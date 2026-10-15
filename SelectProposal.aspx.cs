@@ -78,49 +78,46 @@ namespace FreeHubProject
 
                 bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
-                // Filter tabs apply to the employer view only; freelancers keep their
-                // existing "all my proposals" list unchanged.
-                pnlFilterTabs.Visible = isEmployer;
+                // Pill status filters are shown for both views (All / Pending / Approved
+                // / Rejected). Counts come from the user's own full result set — never
+                // hardcoded — so each freelancer only ever counts/sees their own proposals.
+                pnlFilterTabs.Visible = true;
 
-                if (isEmployer)
+                int totalCount = proposals.Rows.Count;
+                int pendingCount = 0, approvedCount = 0, rejectedCount = 0;
+                foreach (DataRow r in proposals.Rows)
                 {
-                    // Count each category from the full set (dynamic, not hardcoded):
-                    //   Pending Approval = status 'Pending' (genuinely awaiting a decision).
-                    //   Approved = status 'Approved'. Rejected = status 'Rejected'.
-                    //   Withdrawn/Cancelled (if any) are not counted in these three tabs.
-                    int pendingCount = 0, approvedCount = 0, rejectedCount = 0;
-                    foreach (DataRow r in proposals.Rows)
-                    {
-                        string st = Convert.ToString(r["status"]).Trim();
-                        if (st.Equals("Approved", StringComparison.OrdinalIgnoreCase)) approvedCount++;
-                        else if (st.Equals("Rejected", StringComparison.OrdinalIgnoreCase)) rejectedCount++;
-                        else if (st.Equals("Pending", StringComparison.OrdinalIgnoreCase)) pendingCount++;
-                    }
+                    string st = Convert.ToString(r["status"]).Trim();
+                    if (st.Equals("Approved", StringComparison.OrdinalIgnoreCase)) approvedCount++;
+                    else if (st.Equals("Rejected", StringComparison.OrdinalIgnoreCase)) rejectedCount++;
+                    else if (st.Equals("Pending", StringComparison.OrdinalIgnoreCase)) pendingCount++;
+                }
 
-                    // Set each tab's full label + count badge as inline HTML on the LinkButton
-                    // Text, so the labels/counts can never be lost across postbacks.
-                    lnkTabPending.Text = "Pending Approval <span class=\"pl-tab-count\">" + pendingCount + "</span>";
-                    lnkTabApproved.Text = "Approved <span class=\"pl-tab-count\">" + approvedCount + "</span>";
-                    lnkTabRejected.Text = "Rejected <span class=\"pl-tab-count\">" + rejectedCount + "</span>";
+                // "Pending Approval" label on the employer view; plain "Pending" otherwise.
+                string pendingLabel = isEmployer ? "Pending Approval" : "Pending";
 
-                    // Highlight the active tab (FreeHUB green).
-                    lnkTabPending.CssClass = CurrentFilter == "Pending" ? "pl-tab pl-tab-active" : "pl-tab";
-                    lnkTabApproved.CssClass = CurrentFilter == "Approved" ? "pl-tab pl-tab-active" : "pl-tab";
-                    lnkTabRejected.CssClass = CurrentFilter == "Rejected" ? "pl-tab pl-tab-active" : "pl-tab";
+                // Set each tab's full label + count badge as inline HTML on the LinkButton
+                // Text so the labels/counts can never be lost across postbacks.
+                lnkTabAll.Text = "All <span class=\"pl-tab-count\">" + totalCount + "</span>";
+                lnkTabPending.Text = pendingLabel + " <span class=\"pl-tab-count\">" + pendingCount + "</span>";
+                lnkTabApproved.Text = "Approved <span class=\"pl-tab-count\">" + approvedCount + "</span>";
+                lnkTabRejected.Text = "Rejected <span class=\"pl-tab-count\">" + rejectedCount + "</span>";
 
-                    // Build the filtered view for the selected tab.
+                // Highlight the active tab (FreeHUB green).
+                lnkTabAll.CssClass = CurrentFilter == "All" ? "pl-tab pl-tab-active" : "pl-tab";
+                lnkTabPending.CssClass = CurrentFilter == "Pending" ? "pl-tab pl-tab-active" : "pl-tab";
+                lnkTabApproved.CssClass = CurrentFilter == "Approved" ? "pl-tab pl-tab-active" : "pl-tab";
+                lnkTabRejected.CssClass = CurrentFilter == "Rejected" ? "pl-tab pl-tab-active" : "pl-tab";
+
+                // Build the filtered view for the selected tab (each row tested once).
+                if (CurrentFilter != "All")
+                {
                     DataTable view = proposals.Clone();
                     foreach (DataRow r in proposals.Rows)
                     {
                         string st = Convert.ToString(r["status"]).Trim();
-                        bool include;
-                        if (CurrentFilter == "Approved")
-                            include = st.Equals("Approved", StringComparison.OrdinalIgnoreCase);
-                        else if (CurrentFilter == "Rejected")
-                            include = st.Equals("Rejected", StringComparison.OrdinalIgnoreCase);
-                        else
-                            include = st.Equals("Pending", StringComparison.OrdinalIgnoreCase);
-                        if (include) view.ImportRow(r);
+                        if (st.Equals(CurrentFilter, StringComparison.OrdinalIgnoreCase))
+                            view.ImportRow(r);
                     }
                     proposals = view;
                 }
@@ -136,29 +133,36 @@ namespace FreeHubProject
                 // empty-state card takes the content area and no empty scrollbar shows.
                 pnlListWrap.Visible = !isEmpty;
 
-                // Dynamic empty-state heading + description per selected filter.
+                // Dynamic empty-state heading + description per selected filter + role.
                 if (isEmpty)
                 {
-                    if (isEmployer && CurrentFilter == "Approved")
+                    if (CurrentFilter == "Approved")
                     {
                         litEmptyTitle.Text = "No Approved Proposals";
-                        litEmptyText.Text = "Proposals you approve will appear here.";
+                        litEmptyText.Text = isEmployer
+                            ? "Proposals you approve will appear here."
+                            : "Your approved proposals will appear here.";
                     }
-                    else if (isEmployer && CurrentFilter == "Rejected")
+                    else if (CurrentFilter == "Rejected")
                     {
                         litEmptyTitle.Text = "No Rejected Proposals";
-                        litEmptyText.Text = "Proposals you reject will appear here.";
+                        litEmptyText.Text = isEmployer
+                            ? "Proposals you reject will appear here."
+                            : "Your rejected proposals will appear here.";
                     }
-                    else if (isEmployer)
+                    else if (CurrentFilter == "Pending")
                     {
                         litEmptyTitle.Text = "No Pending Proposals";
-                        litEmptyText.Text = "New proposals awaiting your approval will appear here.";
+                        litEmptyText.Text = isEmployer
+                            ? "New proposals awaiting your approval will appear here."
+                            : "Your proposals awaiting a decision will appear here.";
                     }
-                    else
+                    else // All
                     {
-                        // Freelancer view (no filter tabs).
-                        litEmptyTitle.Text = "No Proposals Yet";
-                        litEmptyText.Text = "Your submitted proposals will appear here.";
+                        litEmptyTitle.Text = isEmployer ? "No Proposals Received" : "No Proposals Yet";
+                        litEmptyText.Text = isEmployer
+                            ? "Proposals submitted to your projects will appear here."
+                            : "Your submitted proposals will appear here.";
                     }
                 }
             }
@@ -169,13 +173,13 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>Active approval filter tab: "Pending" (default), "Approved" or "Rejected".</summary>
+        /// <summary>Active status filter tab: "All" (default), "Pending", "Approved" or "Rejected".</summary>
         private string CurrentFilter
         {
             get
             {
                 string f = ViewState["ProposalFilter"] as string;
-                return (f == "Approved" || f == "Rejected") ? f : "Pending";
+                return (f == "Pending" || f == "Approved" || f == "Rejected") ? f : "All";
             }
             set { ViewState["ProposalFilter"] = value; }
         }
@@ -183,7 +187,7 @@ namespace FreeHubProject
         protected void FilterTab_Command(object sender, System.Web.UI.WebControls.CommandEventArgs e)
         {
             string cmd = Convert.ToString(e.CommandName);
-            CurrentFilter = (cmd == "Approved" || cmd == "Rejected") ? cmd : "Pending";
+            CurrentFilter = (cmd == "Pending" || cmd == "Approved" || cmd == "Rejected") ? cmd : "All";
             LoadProposals();
 
             // Reset the proposal list scrollbar to the top on filter switch.
@@ -244,9 +248,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblProposalMessage.Text = message;
-            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
 
         protected bool IsFreelancerView()
@@ -266,10 +269,42 @@ namespace FreeHubProject
             {
                 case "approved": return "pl-badge-approved";
                 case "rejected": return "pl-badge-rejected";
+                case "under review": return "pl-badge-review";
                 case "withdrawn": return "pl-badge-withdrawn";
                 case "pending": return "pl-badge-pending";
                 default: return "pl-badge-default";
             }
+        }
+
+        /// <summary>
+        /// Returns the compact status badge's leading icon (HTML entity) for a given
+        /// existing status. Display only — no status values are added or changed.
+        /// </summary>
+        protected string GetStatusIcon(object status)
+        {
+            string s = Convert.ToString(status).Trim().ToLowerInvariant();
+            switch (s)
+            {
+                case "approved": return "&#9989;";        // ✓ check
+                case "rejected": return "&#10060;";       // ✕ cross
+                case "under review": return "&#8987;";    // ⌛ hourglass
+                case "pending": return "&#9201;";         // ◷ clock
+                default: return "";
+            }
+        }
+
+        /// <summary>
+        /// Returns the compact status badge's label for a given existing status. The
+        /// freelancer view shows "Pending" / "In Review"; "Under Review" maps to the
+        /// friendlier "In Review" wording. Display only — status values are unchanged.
+        /// </summary>
+        protected string GetStatusLabel(object status)
+        {
+            string s = Convert.ToString(status).Trim();
+            if (s.Equals("Under Review", StringComparison.OrdinalIgnoreCase)) return "In Review";
+            if (s.Equals("Pending", StringComparison.OrdinalIgnoreCase))
+                return IsFreelancerView() ? "Pending" : "Pending Approval";
+            return s;
         }
     }
 }

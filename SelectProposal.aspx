@@ -17,17 +17,42 @@
         /* Two containers: scrollable proposals list on the left, tips on the right.
            minmax(0,1fr) lets the left column shrink so its cards never force a
            horizontal scrollbar; a slightly narrower tips column gives the list room. */
-        .pl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px; align-items: start; }
+        /* ===== Fixed middle: static header/filters + Tips, only the list scrolls =====
+           This page's main content is a NON-scrolling flex column that fills the space
+           between the fixed site header and footer (it overrides the shared
+           .freehub-main-content overflow-y:auto). The breadcrumb/heading/description and
+           the message are fixed at the top; the two-column .pl-layout fills the rest; and
+           within the left column only .pl-list scrolls. The Tips column is in the
+           non-scrolling area, so it stays put too. */
+        .freehub-main-content.sp-main {
+            height: 100%;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* Static top band: breadcrumb/heading/description + status message. */
+        .sp-main .pl-header-row,
+        .sp-main .post-status { flex: 0 0 auto; }
+
+        /* The two-column region fills the remaining height. */
+        .pl-layout {
+            display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 20px;
+            align-items: stretch;
+            flex: 1 1 auto; min-height: 0;
+        }
+        /* LEFT column: static "Proposals (N)" + filters on top, scrollable list below. */
+        .pl-list-col { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
 
         /* LEFT container: the proposals list scrolls inside its own box so the page
            doesn't grow endlessly and the tips panel stays visible beside it. */
         .pl-list {
-            /* Fit within the scrollable middle: viewport minus the fixed header,
-               the fixed footer, and the breadcrumb/heading/filter chrome above the
-               list, so the list scrolls on its own without pushing the page under
-               the fixed footer. dvh keeps mobile browser chrome from clipping it. */
-            max-height: calc(100vh - 340px);
-            max-height: calc(100dvh - 340px);
+            /* The list is the ONLY vertically scrollable section. Its height is driven
+               by the flex column (.pl-list-col) that fills the fixed middle below the
+               static heading/filters, so it extends to just above the footer and
+               scrolls its own overflow while everything else stays stationary. */
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
             padding-right: 8px; /* room so cards don't sit under the scrollbar */
@@ -42,23 +67,31 @@
         }
         .pl-list::-webkit-scrollbar-thumb:hover { background: #2e7d56; }
 
-        /* Approval filter tabs */
+        /* Pill-style status filter tabs */
         .pl-tabs {
             display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
         }
+        /* Pills inline on the "Proposals (N)" row — pushed to the right of the heading,
+           wrapping neatly on narrow screens. */
+        .pl-tabs-inline {
+            margin-bottom: 0; justify-content: flex-end; align-items: center;
+            flex: 1 1 auto; margin-left: auto;
+        }
         .pl-tab {
             display: inline-flex; align-items: center; gap: 8px;
-            padding: 9px 16px; border-radius: 22px;
-            background: #f3f6f4; color: #5a6e62; border: 1px solid #e2e8e4;
+            height: 38px; padding: 0 15px; border-radius: 25px;
+            background: #f3f6f4; color: #2e7d56; border: 1px solid #e2e8e4;
             font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
-            white-space: nowrap; width: auto; overflow: visible; line-height: 1.2;
+            white-space: nowrap; width: auto; overflow: visible; line-height: 1;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
         .pl-tab:hover { background: #eaf6ee; color: #12833f; }
         /* Count badge sits inside each tab (rendered as inline HTML in the LinkButton Text) */
         .pl-tab .pl-tab-count {
             display: inline-flex; align-items: center; justify-content: center;
-            min-width: 22px; padding: 2px 7px; border-radius: 11px; margin-left: 2px;
+            min-width: 20px; height: 20px; padding: 0 6px; border-radius: 50%; margin-left: 2px;
             background: #e2e8e4; color: #5a6e62; font-size: 12px; font-weight: 700;
+            transition: background 0.2s ease, color 0.2s ease;
         }
         /* Active tab — FreeHUB green (text stays white & fully visible) */
         .pl-tab.pl-tab-active { background: #2e7d56; color: #ffffff; border-color: #2e7d56; }
@@ -97,16 +130,17 @@
         }
         .pl-card:hover { box-shadow: 0 6px 16px rgba(16, 40, 28, 0.10); }
 
-        /* LEFT zone: avatar + name + project badge */
-        .pl-left { display: flex; align-items: flex-start; gap: 14px; flex: 1 1 260px; min-width: 0; }
+        /* LEFT zone: row 1 = avatar + name; row 2 = project badge below the avatar. */
+        .pl-left { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; flex: 1 1 260px; min-width: 0; }
+        /* Row 1: avatar and name side by side, vertically centred. */
+        .pl-identity { display: flex; align-items: center; gap: 14px; min-width: 0; width: 100%; }
         .pl-avatar {
             width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
             background: #2e7d56; color: #fff;
             display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 15px;
         }
-        .pl-freelancer-text { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
-        .pl-name { color: #10261c; font-size: 16px; font-weight: 700;
+        .pl-name { color: #10261c; font-size: 16px; font-weight: 700; min-width: 0;
                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* Light-green project badge with folder icon (project shown once, here) */
@@ -144,21 +178,29 @@
         .pl-icon-time { background: #e6f0ff; }
         .pl-icon-date { background: #f3e8ff; }
 
-        /* Full-width status bar (shown for Approved/Rejected/Withdrawn; hidden for Pending) */
-        .pl-status-bar {
-            display: flex; align-items: center; gap: 8px;
-            padding: 10px 16px; border-radius: 10px;
-            font-size: 13px; font-weight: 700;
+        /* Compact status badge — only as wide as its icon + label + padding (never
+           stretched across the card). Sits inline on the same row as the action buttons.
+           Hidden for Pending (no badge, like the reference). */
+        .pl-status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 14px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; white-space: nowrap;
+            flex: 0 0 auto; align-self: center;
         }
-        .pl-status-tick { font-size: 14px; }
-        .pl-status-bar.pl-badge-pending { display: none; }   /* no bar for Pending, like the reference */
-        .pl-badge-approved { color: #1e7a46; background: #e5f4ea; }
-        .pl-badge-rejected { color: #721c24; background: #f8d7da; }
+        .pl-status-tick { font-size: 14px; display: inline-flex; align-items: center; }
+        /* Per-status compact badge colours (icon inherits the text colour). */
+        .pl-badge-approved { color: #087d43; background: #e3f3e9; }   /* ✓ green */
+        .pl-badge-pending  { color: #b45309; background: #fef3c7; }   /* ◷ orange */
+        .pl-badge-rejected { color: #b91c1c; background: #fde8e8; }   /* ✕ red */
+        .pl-badge-review   { color: #1d4ed8; background: #e6effe; }   /* ⌛ blue (Under Review / In Review) */
         .pl-badge-withdrawn{ color: #4b5563; background: #e5e7eb; }
         .pl-badge-default  { color: #4b5563; background: #eef2f5; }
 
-        /* Action buttons row (right-aligned, pill buttons) */
-        .pl-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+        /* One horizontal row: compact status badge + action buttons grouped together,
+           vertically centred, directly under the proposal details, with consistent gaps.
+           Replaces the old full-width status bar and separate button row. Right-aligned
+           within the card's right section; wraps neatly on narrow cards. */
+        .pl-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
         .pl-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 7px;
             padding: 10px 20px; border-radius: 24px; font-size: 13px; font-weight: 700;
@@ -171,8 +213,20 @@
         .pl-btn-select { background: #2e7d56; color: #ffffff; border: 1px solid #2e7d56; }
         .pl-btn-select:hover { opacity: .93; }
 
-        /* RIGHT container: tips stacked vertically, sticky so they stay in view. */
-        .pl-tips { position: sticky; top: 90px; }
+        /* "Proposals (N)" heading row — heading on the left, filter pills on the right.
+           Static within the left column (never scrolls). */
+        .pl-list-heading {
+            flex: 0 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; flex-wrap: wrap; min-height: 38px; margin-bottom: 15px;
+        }
+        /* Tips card's top edge aligns with the top of the filter row: both grid columns
+           start at the same Y, so no spacer is needed. */
+        .pl-tips-spacer { display: none; }
+
+        /* RIGHT container: tips stacked vertically. It sits in the non-scrolling middle,
+           so it stays stationary while the proposal list scrolls (no sticky needed). */
+        .pl-tips { align-self: start; }
 
         /* ===== Responsive ===== */
         /* Tablet/narrow: the two card zones stack; the left-border divider moves to top. */
@@ -185,11 +239,14 @@
             }
             .pl-meta { flex-wrap: wrap; gap: 18px 26px; }
         }
-        /* Below this width the two containers stack: list on top, tips below. */
+        /* Below this width the two containers stack: list on top, tips below. The
+           fixed-middle model is released so the page flows and scrolls naturally. */
         @media (max-width: 900px) {
-            .pl-layout { grid-template-columns: 1fr; }
-            .pl-list { max-height: 60vh; }
-            .pl-tips { position: static; }
+            .freehub-main-content.sp-main { height: auto; overflow: visible; display: block; }
+            .pl-layout { grid-template-columns: 1fr; display: grid; flex: none; }
+            .pl-list-col { display: block; }
+            .pl-list { flex: none; max-height: 60vh; }
+            .pl-tips { align-self: auto; }
         }
         /* Mobile: buttons full width, meta items wrap. */
         @media (max-width: 640px) {
@@ -207,23 +264,21 @@
 
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
-        <section class="freehub-main-content">
+        <section class="freehub-main-content sp-main">
 
             <!-- HEADER -->
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
-                <div>
-                    <div class="post-breadcrumb">
-                        <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
-                        <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a> <span>/</span>
-                        <strong>Proposals</strong>
-                    </div>
-                    <h1 style="color:#173f2c; margin-top:5px;">
-                        <%= IsFreelancerView() ? "My Proposals" : "Select Proposal" %>
-                    </h1>
-                    <p style="color:#666; font-size:14px;">
-                        <%= IsFreelancerView() ? "View your submitted proposals and their status." : "Review proposals received and select the best fit for your project." %>
-                    </p>
+            <div class="pl-header-row" style="margin-bottom:18px;">
+                <div class="post-breadcrumb">
+                    <a href="<%= ResolveUrl("~/Dashboard.aspx") %>" class="breadcrumb-link">Dashboard</a> <span>/</span>
+                    <a href="<%= ResolveUrl("~/MyProjects.aspx") %>" class="breadcrumb-link">My Projects</a> <span>/</span>
+                    <strong>Proposals</strong>
                 </div>
+                <h1 style="color:#173f2c; margin-top:5px;">
+                    <%= IsFreelancerView() ? "My Proposals" : "Select Proposal" %>
+                </h1>
+                <p style="color:#666; font-size:14px; margin:0;">
+                    <%= IsFreelancerView() ? "View your submitted proposals and their status." : "Review proposals received and select the best fit for your project." %>
+                </p>
             </div>
 
             <!-- MESSAGE -->
@@ -234,24 +289,26 @@
             <!-- PROPOSALS + TIPS LAYOUT -->
             <div class="pl-layout">
 
-                <!-- PROPOSALS LIST -->
-                <div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                        <h3 style="color:#173f2c;">Proposals (<asp:Label ID="lblProposalCount" runat="server" Text="0" />)</h3>
-                    </div>
+                <!-- PROPOSALS LIST (left column: static heading+filters, scrollable list) -->
+                <div class="pl-list-col">
+                    <!-- "Proposals (N)" heading on the left, status filter pills on the
+                         right — on the same horizontal row (matches the reference). -->
+                    <div class="pl-list-heading">
+                        <h3 style="color:#173f2c; margin:0;">Proposals (<asp:Label ID="lblProposalCount" runat="server" Text="0" />)</h3>
 
-                    <!-- APPROVAL FILTER TABS (employer only).
-                         Each tab's label + count is set entirely via the LinkButton's Text
-                         server-side (no child server controls) so the text/counts can never
-                         be lost across postbacks. -->
-                    <asp:Panel ID="pnlFilterTabs" runat="server" CssClass="pl-tabs">
-                        <asp:LinkButton ID="lnkTabPending" runat="server" CssClass="pl-tab"
-                            CommandName="Pending" OnCommand="FilterTab_Command" CausesValidation="false" />
-                        <asp:LinkButton ID="lnkTabApproved" runat="server" CssClass="pl-tab"
-                            CommandName="Approved" OnCommand="FilterTab_Command" CausesValidation="false" />
-                        <asp:LinkButton ID="lnkTabRejected" runat="server" CssClass="pl-tab"
-                            CommandName="Rejected" OnCommand="FilterTab_Command" CausesValidation="false" />
-                    </asp:Panel>
+                        <!-- STATUS FILTER TABS — each tab's label + count badge is set
+                             server-side on the LinkButton Text so counts survive postbacks. -->
+                        <asp:Panel ID="pnlFilterTabs" runat="server" CssClass="pl-tabs pl-tabs-inline">
+                            <asp:LinkButton ID="lnkTabAll" runat="server" CssClass="pl-tab"
+                                CommandName="All" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            <asp:LinkButton ID="lnkTabPending" runat="server" CssClass="pl-tab"
+                                CommandName="Pending" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            <asp:LinkButton ID="lnkTabApproved" runat="server" CssClass="pl-tab"
+                                CommandName="Approved" OnCommand="FilterTab_Command" CausesValidation="false" />
+                            <asp:LinkButton ID="lnkTabRejected" runat="server" CssClass="pl-tab"
+                                CommandName="Rejected" OnCommand="FilterTab_Command" CausesValidation="false" />
+                        </asp:Panel>
+                    </div>
 
                     <!-- Scrollable list container — hidden when empty so no blank scrollbar shows -->
                     <asp:Panel ID="pnlListWrap" runat="server" CssClass="pl-list">
@@ -261,18 +318,19 @@
                                  content is shown here — it opens only via "View Proposal". --%>
                             <div class="pl-card">
 
-                                <!-- LEFT: avatar + name + project badge (project shown once, in the badge) -->
+                                <!-- LEFT: row 1 = avatar + name (side by side);
+                                     row 2 = project badge below the avatar, left-aligned to it. -->
                                 <div class="pl-left">
-                                    <div class="pl-avatar">
-                                        <%# Eval("freelancerName").ToString().Substring(0,1).ToUpper() %><%# Eval("freelancerName").ToString().Contains(" ") ? Eval("freelancerName").ToString().Split(' ')[1].Substring(0,1).ToUpper() : "" %>
-                                    </div>
-                                    <div class="pl-freelancer-text">
+                                    <div class="pl-identity">
+                                        <div class="pl-avatar">
+                                            <%# Eval("freelancerName").ToString().Substring(0,1).ToUpper() %><%# Eval("freelancerName").ToString().Contains(" ") ? Eval("freelancerName").ToString().Split(' ')[1].Substring(0,1).ToUpper() : "" %>
+                                        </div>
                                         <strong class="pl-name"><%# Server.HtmlEncode(Convert.ToString(Eval("freelancerName"))) %></strong>
-                                        <span class="pl-project-badge">
-                                            <span class="pl-folder" aria-hidden="true">&#128193;</span>
-                                            Project: <strong><%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("projectTitle")))) %></strong>
-                                        </span>
                                     </div>
+                                    <span class="pl-project-badge">
+                                        <span class="pl-folder" aria-hidden="true">&#128193;</span>
+                                        Project: <strong><%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("projectTitle")))) %></strong>
+                                    </span>
                                 </div>
 
                                 <!-- RIGHT: meta fields row on top, then status + action buttons -->
@@ -307,14 +365,14 @@
                                         </div>
                                     </div>
 
-                                    <!-- Status bar (full width, like the Approved bar in the reference) -->
-                                    <div class='<%# "pl-status-bar " + GetStatusClass(Eval("status")) %>'>
-                                        <span class="pl-status-tick" aria-hidden="true"><%# Eval("status").ToString() == "Approved" ? "&#9989;" : "" %></span>
-                                        <%# Server.HtmlEncode(Convert.ToString(Eval("status"))) %>
-                                    </div>
-
-                                    <!-- Action buttons row -->
+                                    <!-- One row: compact status badge + action buttons (badge left, buttons right). -->
                                     <div class="pl-actions">
+                                        <%-- Compact status badge: per-status icon + label, width fits content. --%>
+                                        <span class='<%# "pl-status-badge " + GetStatusClass(Eval("status")) %>'>
+                                            <span class="pl-status-tick" aria-hidden="true"><%# GetStatusIcon(Eval("status")) %></span>
+                                            <%# Server.HtmlEncode(GetStatusLabel(Eval("status"))) %>
+                                        </span>
+
                                         <%-- Employer-only "Select Proposal" for Pending proposals (unchanged business rule) --%>
                                         <asp:Button ID="btnSelect" runat="server"
                                             CommandName="ApproveProposal"
@@ -358,6 +416,25 @@
 
                 <!-- TIPS PANEL (right container) -->
                 <div class="pl-tips">
+                    <%-- Spacer that matches the "Proposals (N)" heading row on the left so the
+                         Tips card's TOP EDGE aligns exactly with the first proposal card. --%>
+                    <div class="pl-tips-spacer" aria-hidden="true"></div>
+                    <% if (IsFreelancerView()) { %>
+                    <%-- FREELANCER: tips for improving the chance of proposal approval.
+                         Slightly tighter padding so all five tips fit without a scrollbar. --%>
+                    <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:18px 20px; margin-bottom:15px;">
+                        <h4 style="color:#173f2c; margin-bottom:10px;">Tips to Improve Your Chances of Proposal Approval</h4>
+                        <ul style="list-style:none; padding:0; margin:0;">
+                            <li style="padding:7px 0; font-size:13px; color:#555; border-bottom:1px solid #f0f0f0;"><strong style="color:#173f2c;">Personalise your proposal</strong> &ndash; Show that you understand the project's requirements.</li>
+                            <li style="padding:7px 0; font-size:13px; color:#555; border-bottom:1px solid #f0f0f0;"><strong style="color:#173f2c;">Highlight your skills</strong> &ndash; Mention relevant experience and previous work.</li>
+                            <li style="padding:7px 0; font-size:13px; color:#555; border-bottom:1px solid #f0f0f0;"><strong style="color:#173f2c;">Offer competitive rates</strong> &ndash; Set fair prices that reflect your skills.</li>
+                            <li style="padding:7px 0; font-size:13px; color:#555; border-bottom:1px solid #f0f0f0;"><strong style="color:#173f2c;">Be realistic</strong> &ndash; Suggest achievable deadlines and deliverables.</li>
+                            <li style="padding:7px 0; font-size:13px; color:#555;"><strong style="color:#173f2c;">Keep it professional</strong> &ndash; Write clearly, confidently, and avoid errors.</li>
+                        </ul>
+                    </div>
+                    <%-- Freelancers do NOT see the "Next Step" card (removed for this role). --%>
+                    <% } else { %>
+                    <%-- EMPLOYER: original tips + Next Step card, unchanged. --%>
                     <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:15px;">
                         <h4 style="color:#173f2c; margin-bottom:12px;">Tips for Choosing the Right Freelancer</h4>
                         <ul style="list-style:none; padding:0; margin:0;">
@@ -373,6 +450,7 @@
                         <h4 style="color:#173f2c; margin-bottom:8px;">Next Step</h4>
                         <p style="font-size:13px; color:#666;">After selecting a proposal, you can review the details before approving.</p>
                     </div>
+                    <% } %>
                 </div>
 
             </div>

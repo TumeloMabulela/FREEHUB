@@ -221,6 +221,9 @@
             min-height: 80px;
         }
 
+        /* Controlled vertical resize for shared paragraph-formatting textareas. */
+        textarea[data-fh-format='true'] { resize: vertical; max-height: 400px; overflow-y: auto; }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -353,7 +356,7 @@
                     <div class="form-field">
                         <label>Work Experience</label>
                         <asp:TextBox ID="txtExperience" runat="server" CssClass="form-textarea"
-                            TextMode="MultiLine" Rows="3" placeholder="Describe your experience..." />
+                            TextMode="MultiLine" Rows="3" data-fh-format="true" placeholder="Describe your experience..." />
                     </div>
 
                     <div class="form-row">
@@ -364,8 +367,13 @@
                         </div>
                         <div class="form-field">
                             <label>Hourly Rate (ZAR) <span>*</span></label>
-                            <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="form-input no-spinner"
-                                TextMode="Number" placeholder="e.g. 250" />
+                            <div class="hr-rate-wrap">
+                                <span class="hr-rate-prefix">R</span>
+                                <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="form-input hr-rate-input"
+                                    placeholder="e.g. 250" MaxLength="4"
+                                    inputmode="numeric" pattern="[0-9]*" />
+                            </div>
+                            <small class="hr-rate-help">Digits only. Maximum hourly rate: R2 000.</small>
                         </div>
                     </div>
 
@@ -410,7 +418,7 @@
                     <div class="form-field">
                         <label>Company Description <span>*</span></label>
                         <asp:TextBox ID="txtCompanyDesc" runat="server" CssClass="form-textarea"
-                            TextMode="MultiLine" Rows="3" placeholder="What does your company do?" />
+                            TextMode="MultiLine" Rows="3" data-fh-format="true" placeholder="What does your company do?" />
                     </div>
 
                     <asp:Button ID="btnSubmitEmployer" runat="server" Text="Create Profile"
@@ -421,6 +429,9 @@
             </asp:Panel>
 
         </div>
+
+        <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+        <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
     </form>
 
     <!-- Modal styles (same as Site1.Master) -->

@@ -75,6 +75,10 @@
     <Content Include="CompletedProjects.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Default.aspx" />
+    <Content Include="FAQs.aspx" />
+    <Content Include="Feedback.aspx" />
+    <Content Include="Help.aspx" />
+    <Content Include="TrustSafety.aspx" />
     <Content Include="EditProject.aspx" />
     <Content Include="FundWallet.aspx" />
     <Content Include="Login.aspx" />
@@ -173,6 +177,34 @@
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FAQs.aspx.cs">
+      <DependentUpon>FAQs.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FAQs.aspx.designer.cs">
+      <DependentUpon>FAQs.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Feedback.aspx.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Feedback.aspx.designer.cs">
+      <DependentUpon>Feedback.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Help.aspx.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Help.aspx.designer.cs">
+      <DependentUpon>Help.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TrustSafety.aspx.cs">
+      <DependentUpon>TrustSafety.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TrustSafety.aspx.designer.cs">
+      <DependentUpon>TrustSafety.aspx</DependentUpon>
     </Compile>
     <Compile Include="FundWallet.aspx.cs">
       <DependentUpon>FundWallet.aspx</DependentUpon>
@@ -304,6 +336,7 @@
       <DependentUpon>EditProject.aspx</DependentUpon>
     </Compile>
     <Compile Include="AuthHelper.cs" />
+    <Compile Include="MessageHelper.cs" />
     <Compile Include="TimeHelper.cs" />
     <Compile Include="TextHelper.cs" />
     <Compile Include="TitleHelper.cs" />

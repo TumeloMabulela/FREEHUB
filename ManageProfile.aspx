@@ -90,7 +90,7 @@
                         <div class="post-field">
                             <label>Work Experience</label>
                             <asp:TextBox ID="txtUpdateExperience" runat="server" CssClass="post-textarea"
-                                TextMode="MultiLine" Rows="4" />
+                                TextMode="MultiLine" Rows="4" data-fh-format="true" />
                         </div>
 
                         <div class="post-field">
@@ -100,7 +100,12 @@
 
                         <div class="post-field">
                             <label>Hourly Rate (ZAR)</label>
-                            <asp:TextBox ID="txtUpdateRate" runat="server" CssClass="post-input no-spinner" TextMode="Number" />
+                            <div class="hr-rate-wrap">
+                                <span class="hr-rate-prefix">R</span>
+                                <asp:TextBox ID="txtUpdateRate" runat="server" CssClass="post-input hr-rate-input"
+                                    MaxLength="4" inputmode="numeric" pattern="[0-9]*" />
+                            </div>
+                            <small class="hr-rate-help">Digits only. Maximum hourly rate: R2 000.</small>
                         </div>
                     </asp:Panel>
 
@@ -129,7 +134,7 @@
                         <div class="post-field">
                             <label>Company Description</label>
                             <asp:TextBox ID="txtUpdateDescription" runat="server" CssClass="post-textarea"
-                                TextMode="MultiLine" Rows="4" />
+                                TextMode="MultiLine" Rows="4" data-fh-format="true" />
                         </div>
                     </asp:Panel>
 
@@ -312,5 +317,8 @@
             return false;
         }
     </script>
+
+    <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
 </asp:Content>

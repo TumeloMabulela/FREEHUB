@@ -23,18 +23,65 @@ namespace FreeHubProject
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
+            // Clear any prior field errors / invalid styling before re-validating.
+            ClearFieldErrors();
+
+            bool valid = true;
+
+            // --- Skills (required) ---
             if (string.IsNullOrWhiteSpace(txtSkills.Text))
             {
-                lblMessage.Text = "Please enter at least one skill.";
-                lblMessage.CssClass = "msg msg-error";
-                return;
+                SetFieldError(lblSkillsError, txtSkills, "Skills are required");
+                valid = false;
             }
 
-            decimal hourlyRate;
-            if (!decimal.TryParse(txtHourlyRate.Text, out hourlyRate) || hourlyRate <= 0)
+            // --- Work Experience: trim, reject empty/whitespace-only, require 30..700.
+            //     Validated on the trimmed string; content is never silently truncated. ---
+            string experience = (txtExperience.Text ?? "").Trim();
+            if (experience.Length == 0)
             {
-                lblMessage.Text = "Please enter a valid hourly rate.";
-                lblMessage.CssClass = "msg msg-error";
+                SetFieldError(lblExperienceError, txtExperience, "Work experience is required");
+                valid = false;
+            }
+            else if (experience.Length < 30)
+            {
+                SetFieldError(lblExperienceError, txtExperience, "Minimum 30 characters");
+                valid = false;
+            }
+            else if (experience.Length > 700)
+            {
+                SetFieldError(lblExperienceError, txtExperience, "Maximum 700 characters");
+                valid = false;
+            }
+
+            // --- Hourly rate: digits only (no commas/dots/spaces/minus/letters), 1..2000.
+            //     Validated on the raw string so "20.50" is rejected, never converted. ---
+            string rawRate = (txtHourlyRate.Text ?? "").Trim();
+            int hourlyRate = 0;
+            if (rawRate.Length == 0)
+            {
+                SetFieldError(lblRateError, txtHourlyRate, "Hourly rate is required");
+                valid = false;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(rawRate, @"^\d+$"))
+            {
+                SetFieldError(lblRateError, txtHourlyRate, "Digits only");
+                valid = false;
+            }
+            else if (!int.TryParse(rawRate, out hourlyRate) || hourlyRate <= 0)
+            {
+                SetFieldError(lblRateError, txtHourlyRate, "Enter a valid rate");
+                valid = false;
+            }
+            else if (hourlyRate > 2000)
+            {
+                SetFieldError(lblRateError, txtHourlyRate, "Maximum R2\u00A0000");
+                valid = false;
+            }
+
+            if (!valid)
+            {
+                // Values are retained automatically across the postback; nothing is saved.
                 return;
             }
 
@@ -48,7 +95,7 @@ namespace FreeHubProject
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@UserID", userId),
                     new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtSkills.Text)),
-                    new SqlParameter("@Experience", txtExperience.Text.Trim()),
+                    new SqlParameter("@Experience", experience),
                     new SqlParameter("@PortfolioLinks", txtPortfolio.Text.Trim()),
                     new SqlParameter("@HourlyRate", hourlyRate));
 
@@ -65,6 +112,27 @@ namespace FreeHubProject
                 lblMessage.Text = "Error: " + ex.Message;
                 lblMessage.CssClass = "msg msg-error";
             }
+        }
+
+        /// <summary>Shows a concise error beside a field's label and flags the input.</summary>
+        private void SetFieldError(System.Web.UI.WebControls.Label errorLabel,
+                                   System.Web.UI.WebControls.TextBox input, string message)
+        {
+            errorLabel.Text = message;
+            if (!input.CssClass.Contains("input-invalid"))
+                input.CssClass = (input.CssClass + " input-invalid").Trim();
+        }
+
+        /// <summary>Clears all field error messages and invalid styling before re-validating.</summary>
+        private void ClearFieldErrors()
+        {
+            lblSkillsError.Text = "";
+            lblExperienceError.Text = "";
+            lblRateError.Text = "";
+            lblMessage.Text = "";
+            txtSkills.CssClass = txtSkills.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            txtExperience.CssClass = txtExperience.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            txtHourlyRate.CssClass = txtHourlyRate.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

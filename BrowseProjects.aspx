@@ -46,12 +46,7 @@
             overflow: hidden;   /* no page-content scroll; the list scrolls instead */
         }
 
-        /* Sidebar: fills the fixed row height; scrolls internally only if its nav
-           exceeds the available height (so it never pushes past the footer). */
-        .browse-shell .freehub-sidebar {
-            min-height: 0;
-            overflow-y: auto;
-        }
+        /* (Sidebar height/no-scroll is handled globally in StyleSheet1.css.) */
 
         /* Fixed top band: the header row (heading + inline filters) and the
            project-count status line stay stationary; only the list scrolls. */
@@ -120,7 +115,6 @@
                 height: auto;
                 overflow: visible;
             }
-            .browse-shell .freehub-sidebar { overflow-y: visible; }
             .browse-main .browse-layout { min-height: 0; }
         }
     </style>
@@ -237,46 +231,54 @@
                     <!-- Project details (hidden until selected) -->
                     <asp:Panel ID="pnlProjectDetails" runat="server" Visible="false">
 
-                        <h2><asp:Label ID="lblProjectTitle" runat="server" /></h2>
+                        <!-- TWO-COLUMN HEADER: name + date (left ~40%), info grid (right ~60%) -->
+                        <div class="pd-header">
 
-                        <p class="posted-information">
-                            <asp:Label ID="lblPosted" runat="server" />
-                        </p>
+                            <div class="pd-header-left">
+                                <h2><asp:Label ID="lblProjectTitle" runat="server" /></h2>
+                                <p class="posted-information">
+                                    <asp:Label ID="lblPosted" runat="server" />
+                                </p>
+                            </div>
+
+                            <!-- PROJECT INFO GRID (Budget | Deadline / Category | Experience) -->
+                            <div class="details-grid">
+                                <div class="detail-box">
+                                    <div>
+                                        <small>Budget</small>
+                                        <strong><asp:Label ID="lblBudget" runat="server" /></strong>
+                                    </div>
+                                </div>
+                                <div class="detail-box">
+                                    <div>
+                                        <small>Deadline</small>
+                                        <strong><asp:Label ID="lblDeadline" runat="server" /></strong>
+                                    </div>
+                                </div>
+                                <div class="detail-box">
+                                    <div>
+                                        <small>Category</small>
+                                        <strong><asp:Label ID="lblCategory" runat="server" /></strong>
+                                    </div>
+                                </div>
+                                <div class="detail-box">
+                                    <div>
+                                        <small>Experience Level</small>
+                                        <strong><asp:Label ID="lblExperience" runat="server" /></strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
 
                         <div class="details-line"></div>
 
-                        <h3>About the project</h3>
+                        <h3>About the Project</h3>
                         <p class="details-description">
                             <asp:Label ID="lblDescription" runat="server" />
                         </p>
 
-                        <!-- PROJECT INFO GRID -->
-                        <div class="details-grid">
-                            <div class="detail-box">
-                                <div>
-                                    <small>Budget</small>
-                                    <strong><asp:Label ID="lblBudget" runat="server" /></strong>
-                                </div>
-                            </div>
-                            <div class="detail-box">
-                                <div>
-                                    <small>Deadline</small>
-                                    <strong><asp:Label ID="lblDeadline" runat="server" /></strong>
-                                </div>
-                            </div>
-                            <div class="detail-box">
-                                <div>
-                                    <small>Category</small>
-                                    <strong><asp:Label ID="lblCategory" runat="server" /></strong>
-                                </div>
-                            </div>
-                            <div class="detail-box">
-                                <div>
-                                    <small>Experience Level</small>
-                                    <strong><asp:Label ID="lblExperience" runat="server" /></strong>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="details-line"></div>
 
                         <!-- EMPLOYER -->
                         <div class="employer-section">
@@ -287,8 +289,13 @@
                                 </div>
                                 <div class="employer-information">
                                     <strong><asp:Label ID="lblEmployerName" runat="server" /></strong>
-                                    <small><asp:Label ID="lblEmployerDetails" runat="server" /></small>
-                                    <span><asp:Label ID="lblEmployerRating" runat="server" /></span>
+                                    <%-- Verified badge: shown only when the employer meets the
+                                         verification condition (set server-side); hidden otherwise
+                                         so unverified employers are not labelled as verified. --%>
+                                    <asp:Panel ID="pnlEmployerVerified" runat="server" Visible="false" CssClass="employer-verified">
+                                        <span class="employer-verified-tick" aria-hidden="true">&#10004;</span>
+                                        <asp:Label ID="lblEmployerRating" runat="server" />
+                                    </asp:Panel>
                                 </div>
                             </div>
                         </div>

@@ -45,7 +45,7 @@
 
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label style="font-weight: bold; display: block; margin-bottom: 6px;">Submission Notes / Comments <span style="color:red;">*</span></label>
-                    <asp:TextBox ID="txtSubmissionNotes" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control" placeholder="Explain what was completed, instructions for the employer, etc." Style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;"></asp:TextBox>
+                    <asp:TextBox ID="txtSubmissionNotes" runat="server" TextMode="MultiLine" Rows="5" CssClass="form-control" data-fh-format="true" placeholder="Explain what was completed, instructions for the employer, etc." Style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;"></asp:TextBox>
                 </div>
 
                 <div style="display: flex; gap: 12px;">
@@ -56,4 +56,7 @@
             </div>
         </section>
     </div>
+
+    <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 </asp:Content>

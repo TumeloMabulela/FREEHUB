@@ -84,8 +84,17 @@ namespace FreeHubProject
                 lblCategory.Text = Convert.ToString(project["category"]);
                 lblExperience.Text = Convert.ToString(project["experienceLevel"]);
                 lblEmployerName.Text = Convert.ToString(project["employerName"]);
-                lblEmployerDetails.Text = Convert.ToString(project["companyName"]);
-                lblEmployerRating.Text = "Verified Employer";
+
+                // Verification badge: shown only for employers that meet the condition,
+                // never for everyone. There is no dedicated "verified" column in the
+                // schema, so we treat an employer with a completed company profile
+                // (non-empty companyName) as verified. The badge is hidden otherwise.
+                bool isVerified = !string.IsNullOrWhiteSpace(Convert.ToString(project["companyName"]));
+                pnlEmployerVerified.Visible = isVerified;
+                if (isVerified)
+                {
+                    lblEmployerRating.Text = "Verified Employer";
+                }
 
                 // Initials
                 string name = Convert.ToString(project["employerName"]);

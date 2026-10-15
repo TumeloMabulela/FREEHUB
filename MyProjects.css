@@ -5,30 +5,107 @@
    StyleSheet1.css; this file adds the new card + layout styles.
    ============================================================ */
 
-.my-projects-main { min-width: 0; }
+/* ============================================================
+   FIXED-MIDDLE LAYOUT (matches My Proposals / SelectProposal).
+   The whole page sits inside the non-scrolling .page-content shell.
+   .my-projects-main is a non-scrolling flex COLUMN: the static top band
+   (breadcrumb, heading, Post button, filters, sort) stays put, and ONLY
+   the project card list (.mp-list) scrolls. The Tips / Next Step panels
+   are stationary, with Tips top aligned to the filter row.
+   ============================================================ */
+.my-projects-main {
+    min-width: 0;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Tighter bottom in the fixed shell so the scroll area gets the space. */
+    padding: 24px 30px 24px;
+}
 
-/* Sort dropdown sits on the tab row, pushed to the right. */
-.my-projects-tabs { align-items: center; }
-.mp-sort { margin-left: auto; }
+/* Static top band — never scrolls (breadcrumb + heading). */
+.my-projects-main > .project-breadcrumb,
+.my-projects-main > .my-projects-heading {
+    flex: 0 0 auto;
+}
 
-/* ---- Two containers: scrollable list (left) + info sidebar (right) ---- */
+/* The "+ Post a Project" button was removed, so the heading no longer needs the
+   two-column flex row. Make it a simple block and tighten the gap below the
+   description so the filter section sits just beneath it (~14px). */
+.my-projects-main > .my-projects-heading {
+    display: block;
+    margin-bottom: 0;
+}
+
+/* ---- Two containers: scrollable list (left) + info sidebar (right) ----
+   The grid fills the remaining height; its children stretch so the left
+   column can host the only internal scroller. */
 .mp-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 300px;
     gap: 22px;
-    align-items: start;
-    margin-top: 16px;
+    align-items: stretch;
+    /* ~14px gap between the description and the filter section (Post button removed). */
+    margin-top: 14px;
+    flex: 1 1 auto;
+    min-height: 0;
 }
 
-.mp-list-wrap { min-width: 0; }
-.mp-list-heading { margin-bottom: 14px; }
-.mp-list-heading h2 { margin: 0 0 4px; color: #173f2c; font-size: 18px; font-weight: 700; }
-.mp-list-heading p { margin: 0; color: #7b878d; font-size: 13px; }
+/* Left column is itself a flex column: heading fixed, list fills + scrolls. */
+.mp-list-wrap {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
 
-/* Scrollable project list with a thin green themed scrollbar. */
+/* "Projects (N)" heading row — count on the left, filter pills + sort on the
+   right, on the same horizontal row. Static within the left column (never
+   scrolls). Matches the Select Proposal "Proposals (N)" row. */
+.mp-list-heading {
+    flex: 0 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; min-height: 38px; margin-bottom: 15px;
+}
+.mp-list-heading h2 { margin: 0; color: #173f2c; font-size: 18px; font-weight: 700; }
+
+/* Filter pills + sort grouped on the right, vertically centred with the count. */
+.mp-filter-cluster {
+    display: flex; align-items: center; gap: 10px;
+    flex: 1 1 auto; justify-content: flex-end; flex-wrap: wrap;
+}
+
+/* ---- Pill status filters (identical styling to Select Proposal's .pl-tab) ---- */
+.mp-tabs { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mp-tab {
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 38px; padding: 0 15px; border-radius: 25px;
+    background: #f3f6f4; color: #2e7d56; border: 1px solid #e2e8e4;
+    font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+    white-space: nowrap; width: auto; overflow: visible; line-height: 1;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.mp-tab:hover { background: #eaf6ee; color: #12833f; }
+/* Count badge rendered as inline HTML inside each pill's LinkButton Text. */
+.mp-tab .mp-tab-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 20px; height: 20px; padding: 0 6px; border-radius: 50%; margin-left: 2px;
+    background: #e2e8e4; color: #5a6e62; font-size: 12px; font-weight: 700;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+/* Selected pill — FreeHUB green (text stays white & fully visible). */
+.mp-tab.mp-tab-active { background: #2e7d56; color: #ffffff; border-color: #2e7d56; }
+.mp-tab.mp-tab-active:hover { background: #276b4a; color: #ffffff; }
+.mp-tab.mp-tab-active .mp-tab-count { background: rgba(255,255,255,.25); color: #ffffff; }
+
+/* Sort dropdown sits neatly at the far right of the filter row. */
+.mp-sort { height: 38px; }
+
+/* The ONLY scrollable section — fills remaining height of the left column. */
 .mp-list {
-    max-height: calc(100vh - 280px);
-    min-height: 300px;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     padding-right: 8px;
@@ -134,7 +211,9 @@
 .mp-empty p { margin: 0; font-size: 13px; }
 
 /* ---- RIGHT info sidebar ---- */
-.mp-sidebar { position: sticky; top: 90px; display: flex; flex-direction: column; gap: 16px; }
+/* Stationary info panels — sit in the non-scrolling area (no sticky needed).
+   align-self:start keeps Tips top aligned to the project list row. */
+.mp-sidebar { align-self: start; display: flex; flex-direction: column; gap: 16px; }
 .mp-info-card {
     background: #ffffff; border: 1px solid #e8ece9; border-radius: 12px; padding: 18px 20px;
 }
@@ -158,11 +237,30 @@
    RESPONSIVE
    ============================================================ */
 
-/* Below 1050px the info sidebar drops under the list. */
+/* Below 1050px the fixed-middle model is released to natural flow: the whole
+   page scrolls, the info sidebar drops under the list. */
 @media screen and (max-width: 1050px) {
-    .mp-layout { grid-template-columns: 1fr; }
-    .mp-list { max-height: none; }
-    .mp-sidebar { position: static; }
+    .my-projects-main {
+        height: auto;
+        min-height: 0;
+        display: block;
+        overflow: visible;
+    }
+    .mp-layout {
+        display: block;
+        flex: none;
+        min-height: 0;
+        grid-template-columns: 1fr;
+    }
+    .mp-list-wrap { display: block; }
+    .mp-list {
+        flex: none;
+        min-height: 0;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+    .mp-sidebar { align-self: auto; margin-top: 22px; }
 }
 
 /* Tablet: card zones stack; divider becomes a top border. */

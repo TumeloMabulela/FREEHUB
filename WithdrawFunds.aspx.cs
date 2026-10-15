@@ -396,16 +396,8 @@ namespace FreeHubProject
             string message,
             bool success)
         {
-            pnlMessage.Visible =
-                true;
-
-            lblMessage.Text =
-                message;
-
-            pnlMessage.CssClass =
-                success
-                    ? "withdraw-message withdraw-success"
-                    : "withdraw-message withdraw-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 

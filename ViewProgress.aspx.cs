@@ -178,6 +178,9 @@ namespace FreeHubProject
                 if (include) view.ImportRow(row);
             }
 
+            // "Project Progress List (N)" count reflects the CURRENT filtered view.
+            litListCount.Text = view.Rows.Count.ToString();
+
             rptProgressProjects.DataSource = view;
             rptProgressProjects.DataBind();
             rptDeadlines.DataSource = view;
@@ -331,10 +334,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblMessage.Text = message;
-            pnlMessage.Style["background-color"] = success ? "#d1fae5" : "#fee2e2";
-            pnlMessage.Style["color"] = success ? "#065f46" : "#991b1b";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

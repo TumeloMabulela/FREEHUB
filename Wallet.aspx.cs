@@ -531,15 +531,8 @@ namespace FreeHubProject
             string message,
             bool success)
         {
-            pnlWalletMessage.Visible = true;
-
-            lblWalletMessage.Text =
-                message;
-
-            pnlWalletMessage.CssClass =
-                success
-                    ? "wallet-message-panel wallet-success-message"
-                    : "wallet-message-panel wallet-warning-message";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

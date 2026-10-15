@@ -109,21 +109,8 @@ namespace FreeHubProject
             string message,
             bool success)
         {
-            pnlRatingMessage.Visible = true;
-
-            lblRatingMessage.Text = message;
-
-
-            if (success)
-            {
-                pnlRatingMessage.CssClass =
-                    "rating-message-panel rating-success-message";
-            }
-            else
-            {
-                pnlRatingMessage.CssClass =
-                    "rating-message-panel rating-error-message";
-            }
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

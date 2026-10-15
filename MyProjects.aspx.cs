@@ -6,15 +6,19 @@ namespace FreeHubProject
 {
     public partial class MyProjects : System.Web.UI.Page
     {
-        protected string SelectedView
+        /// <summary>
+        /// Active status filter pill: "All" (default), "Active", "Completed" or "Cancelled".
+        /// Stored in ViewState so it survives postbacks (sort change, delete) — mirrors the
+        /// Select Proposal page's filter pattern.
+        /// </summary>
+        private string CurrentFilter
         {
             get
             {
-                string view = Request.QueryString["view"];
-                if (string.Equals(view, "Completed", StringComparison.OrdinalIgnoreCase)) return "Completed";
-                if (string.Equals(view, "Cancelled", StringComparison.OrdinalIgnoreCase)) return "Cancelled";
-                return "Active";
+                string f = ViewState["ProjectFilter"] as string;
+                return (f == "Active" || f == "Completed" || f == "Cancelled") ? f : "All";
             }
+            set { ViewState["ProjectFilter"] = value; }
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -35,8 +39,13 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
-                // Restore the saved sort preference so it persists across tab navigations
-                // (the tabs are plain GET links, so the dropdown would otherwise reset).
+                // Allow an initial filter via query string (back-compat with old ?view= links).
+                string view = Request.QueryString["view"];
+                if (string.Equals(view, "Completed", StringComparison.OrdinalIgnoreCase)) CurrentFilter = "Completed";
+                else if (string.Equals(view, "Cancelled", StringComparison.OrdinalIgnoreCase)) CurrentFilter = "Cancelled";
+                else if (string.Equals(view, "Active", StringComparison.OrdinalIgnoreCase)) CurrentFilter = "Active";
+
+                // Restore the saved sort preference so it persists across visits.
                 string savedSort = Session["MyProjectsSort"] as string;
                 if (savedSort == "Oldest" || savedSort == "Newest")
                 {
@@ -64,15 +73,17 @@ namespace FreeHubProject
 
             try
             {
-                // Fetch all projects for employer
+                // Fetch all projects for the employer.
                 DataTable allProjects = DatabaseHelper.GetProjectsByEmployer(userId);
+
+                int totalCount = allProjects.Rows.Count;
                 int activeCount = 0, completedCount = 0, cancelledCount = 0;
 
                 foreach (DataRow row in allProjects.Rows)
                 {
                     string status = Convert.ToString(row["projectStatus"]);
 
-                    // Include 'Under Review' in Active project counts
+                    // Include 'Under Review' in Active project counts.
                     if (status == "Open" || status == "In Progress" || status == "Under Review")
                     {
                         activeCount++;
@@ -87,19 +98,35 @@ namespace FreeHubProject
                     }
                 }
 
-                lblActiveCount.Text = activeCount.ToString();
-                lblCompletedCount.Text = completedCount.ToString();
-                lblCancelledCount.Text = cancelledCount.ToString();
+                // Set each pill's label + count badge as inline HTML on the LinkButton Text
+                // so the labels/counts can never be lost across postbacks. Counts are always
+                // from the employer's own full result set (never hardcoded).
+                pnlFilterTabs.Visible = true;
+                lnkTabAll.Text = "All Projects <span class=\"mp-tab-count\">" + totalCount + "</span>";
+                lnkTabActive.Text = "Active <span class=\"mp-tab-count\">" + activeCount + "</span>";
+                lnkTabCompleted.Text = "Completed <span class=\"mp-tab-count\">" + completedCount + "</span>";
+                lnkTabCancelled.Text = "Cancelled <span class=\"mp-tab-count\">" + cancelledCount + "</span>";
 
-                // Filter by selected view tab
+                // Highlight the active pill (FreeHUB green).
+                lnkTabAll.CssClass = CurrentFilter == "All" ? "mp-tab mp-tab-active" : "mp-tab";
+                lnkTabActive.CssClass = CurrentFilter == "Active" ? "mp-tab mp-tab-active" : "mp-tab";
+                lnkTabCompleted.CssClass = CurrentFilter == "Completed" ? "mp-tab mp-tab-active" : "mp-tab";
+                lnkTabCancelled.CssClass = CurrentFilter == "Cancelled" ? "mp-tab mp-tab-active" : "mp-tab";
+
+                // Build the filtered view for the selected pill (each row tested once).
                 DataTable filtered = allProjects.Clone();
                 foreach (DataRow row in allProjects.Rows)
                 {
                     string status = Convert.ToString(row["projectStatus"]);
-                    bool include = false;
+                    bool include;
 
-                    switch (SelectedView)
+                    switch (CurrentFilter)
                     {
+                        case "Active":
+                            // Open, In Progress AND Under Review are all "active".
+                            include = (status == "Open" || status == "In Progress" || status == "Under Review");
+                            break;
+
                         case "Completed":
                             include = (status == "Completed");
                             break;
@@ -108,9 +135,8 @@ namespace FreeHubProject
                             include = (status == "Cancelled");
                             break;
 
-                        default: // Active Projects tab
-                                 // Include Open, In Progress, AND Under Review
-                            include = (status == "Open" || status == "In Progress" || status == "Under Review");
+                        default: // All Projects — every project regardless of status.
+                            include = true;
                             break;
                     }
 
@@ -123,38 +149,73 @@ namespace FreeHubProject
                 // Sort by the ACTUAL posting DateTime (not a formatted string), with projectID
                 // as a stable tie-breaker. Newest First = DESC, Oldest First = ASC.
                 string direction = CurrentSort == "Oldest" ? "ASC" : "DESC";
-                DataView view = filtered.DefaultView;
-                view.Sort = "dateCreated " + direction + ", projectID " + direction;
-                DataTable sorted = view.ToTable();
+                DataView dv = filtered.DefaultView;
+                dv.Sort = "dateCreated " + direction + ", projectID " + direction;
+                DataTable sorted = dv.ToTable();
 
                 rptProjects.DataSource = sorted;
                 rptProjects.DataBind();
 
-                // Toggle panel visibility
-                pnlProjectList.Visible = (filtered.Rows.Count > 0);
-                pnlEmptyProjects.Visible = (filtered.Rows.Count == 0);
+                // "Projects (N)" count reflects the CURRENT filtered view.
+                lblProjectCount.Text = sorted.Rows.Count.ToString();
 
-                lblSectionTitle.Text = SelectedView == "Completed" ? "Completed Projects" :
-                                       SelectedView == "Cancelled" ? "Cancelled Projects" : "Active Projects";
+                // Toggle list vs empty-state (mutually exclusive).
+                bool isEmpty = (sorted.Rows.Count == 0);
+                pnlProjectList.Visible = !isEmpty;
+                pnlEmptyProjects.Visible = isEmpty;
 
-                // Highlight the active filter tab.
-                lnkTabActive.CssClass = GetTabClass("Active");
-                lnkTabCompleted.CssClass = GetTabClass("Completed");
-                lnkTabCancelled.CssClass = GetTabClass("Cancelled");
+                if (isEmpty)
+                {
+                    switch (CurrentFilter)
+                    {
+                        case "Active":
+                            litEmptyTitle.Text = "No Active Projects";
+                            litEmptyText.Text = "Projects that are open or in progress will appear here.";
+                            break;
+                        case "Completed":
+                            litEmptyTitle.Text = "No Completed Projects";
+                            litEmptyText.Text = "Projects you complete will appear here.";
+                            break;
+                        case "Cancelled":
+                            litEmptyTitle.Text = "No Cancelled Projects";
+                            litEmptyText.Text = "Projects you cancel will appear here.";
+                            break;
+                        default:
+                            litEmptyTitle.Text = "No Projects Yet";
+                            litEmptyText.Text = "Projects you post will appear here.";
+                            break;
+                    }
+                }
             }
-            catch (Exception ex)
+            catch
             {
                 pnlProjectList.Visible = false;
                 pnlEmptyProjects.Visible = true;
-                lblSectionTitle.Text = "Active Projects";
-                lblActiveCount.Text = "0";
-                lblCompletedCount.Text = "0";
-                lblCancelledCount.Text = "0";
+                litEmptyTitle.Text = "No projects found";
+                litEmptyText.Text = "There are no projects available in this section.";
+                lblProjectCount.Text = "0";
+                lnkTabAll.Text = "All Projects <span class=\"mp-tab-count\">0</span>";
+                lnkTabActive.Text = "Active <span class=\"mp-tab-count\">0</span>";
+                lnkTabCompleted.Text = "Completed <span class=\"mp-tab-count\">0</span>";
+                lnkTabCancelled.Text = "Cancelled <span class=\"mp-tab-count\">0</span>";
             }
         }
+
+        protected void FilterTab_Command(object sender, System.Web.UI.WebControls.CommandEventArgs e)
+        {
+            string cmd = Convert.ToString(e.CommandName);
+            CurrentFilter = (cmd == "Active" || cmd == "Completed" || cmd == "Cancelled") ? cmd : "All";
+            LoadProjects();
+
+            // Reset the project list scrollbar to the top on filter switch; the main page
+            // scroll position is left untouched.
+            ClientScript.RegisterStartupScript(GetType(), "mpScrollTop",
+                "var l=document.querySelector('.mp-list'); if(l){l.scrollTop=0;}", true);
+        }
+
         protected void ddlSortProjects_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            // Remember the choice so it carries across the Active/Completed/Cancelled tab links.
+            // Remember the choice so it carries across filter switches and future visits.
             Session["MyProjectsSort"] = CurrentSort;
             LoadProjects();
 
@@ -191,13 +252,6 @@ namespace FreeHubProject
             }
         }
 
-        protected string GetTabClass(string viewName)
-        {
-            return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
-                ? "my-projects-tab my-projects-tab-active"
-                : "my-projects-tab";
-        }
-
         /// <summary>
         /// Maps an existing project status to its badge CSS class (display colour only).
         /// Does not change or add any status values or business logic.
@@ -214,12 +268,6 @@ namespace FreeHubProject
                 case "cancelled": return "mp-status-cancelled";
                 default: return "mp-status-default";
             }
-        }
-
-        protected string GetMiniMenuClass(string viewName)
-        {
-            return string.Equals(SelectedView, viewName, StringComparison.OrdinalIgnoreCase)
-                ? "my-projects-mini-active" : "";
         }
     }
 }

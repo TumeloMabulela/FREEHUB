@@ -1,10 +1,16 @@
 using System;
 using System.Data;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace FreeHubProject
 {
     public partial class SubmitProposal : System.Web.UI.Page
     {
+        private const int CoverMin = 200;
+        private const int CoverMax = 800;
+        private const int RateMin = 1;
+        private const int RateMax = 200000;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -57,38 +63,101 @@ namespace FreeHubProject
 
         protected void btnSubmitProposal_Click(object sender, EventArgs e)
         {
+            // Clear previous field messages.
+            lblCoverError.Text = "";
+            lblRateError.Text = "";
+            lblDateError.Text = "";
+
             // Normalise the pasted/typed cover letter into clean paragraphs before
-            // validating and saving, so the stored value and the 50-char check match.
+            // validating and saving, so the stored value and the length check match.
             txtCoverLetter.Text = TextHelper.NormalizeDescription(txtCoverLetter.Text);
 
-            // Validate
-            if (string.IsNullOrWhiteSpace(txtCoverLetter.Text))
+            bool valid = true;
+
+            // ----- Cover letter: 200..800 characters (trimmed, actual characters) -----
+            string cover = (txtCoverLetter.Text ?? "").Trim();
+            if (cover.Length == 0)
             {
-                ShowMessage("Please enter a cover letter.", false);
+                SetFieldError(lblCoverError, "Minimum 200 characters required.");
+                valid = false;
+            }
+            else if (cover.Length < CoverMin)
+            {
+                SetFieldError(lblCoverError, "Minimum 200 characters required.");
+                valid = false;
+            }
+            else if (cover.Length > CoverMax)
+            {
+                SetFieldError(lblCoverError, "Maximum 800 characters allowed.");
+                valid = false;
+            }
+
+            // ----- Proposed rate: positive whole number, R1..R200000 (no decimals/commas) -----
+            string rateRaw = (txtProposedRate.Text ?? "").Trim();
+            int rate = 0;
+            if (rateRaw.Length == 0)
+            {
+                SetFieldError(lblRateError, "Proposed rate is required.");
+                valid = false;
+            }
+            else if (!Regex.IsMatch(rateRaw, @"^[0-9]+$"))
+            {
+                SetFieldError(lblRateError, "Enter a valid positive amount.");
+                valid = false;
+            }
+            else if (!int.TryParse(rateRaw, NumberStyles.None, CultureInfo.InvariantCulture, out rate) || rate < RateMin)
+            {
+                SetFieldError(lblRateError, "Minimum amount is R1.00.");
+                valid = false;
+            }
+            else if (rate > RateMax)
+            {
+                SetFieldError(lblRateError, "Maximum allowed is R200,000.00.");
+                valid = false;
+            }
+
+            // ----- Completion date: today or future; compute days using LOCAL date -----
+            int completionDays = -1;
+            string dateRaw = (txtCompletionDate.Text ?? "").Trim();
+            DateTime selectedDate;
+            if (dateRaw.Length == 0)
+            {
+                SetFieldError(lblDateError, "Please select a completion date.");
+                valid = false;
+            }
+            else if (!DateTime.TryParseExact(dateRaw, "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                        DateTimeStyles.None, out selectedDate)
+                     && !DateTime.TryParse(dateRaw, CultureInfo.CurrentCulture, DateTimeStyles.None, out selectedDate))
+            {
+                SetFieldError(lblDateError, "Please select a completion date.");
+                valid = false;
+            }
+            else
+            {
+                DateTime today = DateTime.Now.Date;              // local date, not UTC
+                DateTime sel = selectedDate.Date;
+                if (sel < today)
+                {
+                    SetFieldError(lblDateError, "Past dates are not allowed.");
+                    valid = false;
+                }
+                else
+                {
+                    completionDays = (int)(sel - today).TotalDays;
+                }
+            }
+
+            if (!valid)
+            {
+                // Preserve entered values (ViewState keeps the textboxes) and show a summary.
+                ShowMessage("Please correct the highlighted fields and try again.", false);
                 return;
             }
 
-            if (txtCoverLetter.Text.Trim().Length < 50)
-            {
-                ShowMessage("Cover letter must be at least 50 characters.", false);
-                return;
-            }
+            decimal proposedRate = rate;   // whole number -> DECIMAL(12,2)
 
-            decimal proposedRate;
-            if (!decimal.TryParse(txtProposedRate.Text.Trim(), out proposedRate) || proposedRate <= 0)
-            {
-                ShowMessage("Please enter a valid proposed rate.", false);
-                return;
-            }
-
-            int completionDays;
-            if (!int.TryParse(txtCompletionTime.Text.Trim(), out completionDays) || completionDays <= 0)
-            {
-                ShowMessage("Please enter the estimated completion time as a number of days (e.g. 15).", false);
-                return;
-            }
-
-            // Store a friendly, converted duration (e.g. "15 days (about 2 weeks)").
+            // Preserve the existing days-based storage: store a friendly, converted
+            // duration string in estimatedCompletionTime (e.g. "15 days (about 2 weeks)").
             string completionTime = DescribeDuration(completionDays);
 
             // Try to submit to database
@@ -104,8 +173,7 @@ namespace FreeHubProject
                 int userId = AuthHelper.GetCurrentUserId(this);
 
                 // Server-side ownership guard: a user must never apply to a project
-                // posted by their OWN Employer profile (same registered account),
-                // regardless of how the projectId was supplied. Reject before saving.
+                // posted by their OWN Employer profile (same registered account).
                 if (projectId > 0 && DatabaseHelper.IsProjectOwnedByUser(projectId, userId))
                 {
                     ShowMessage("You cannot submit a proposal for a project posted by your own Employer profile.", false);
@@ -117,7 +185,7 @@ namespace FreeHubProject
                     int result = DatabaseHelper.SubmitProposal(
                         projectId,
                         userId,
-                        txtCoverLetter.Text.Trim(),
+                        cover,
                         proposedRate,
                         completionTime
                     );
@@ -127,8 +195,7 @@ namespace FreeHubProject
                         ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
                         btnSubmitProposal.Enabled = false;
                         btnSubmitProposal.Text = "Proposal Submitted";
-                        // Inside btnSubmitProposal_Click upon successful database submission (result > 0):
-                     
+
                         string proposalMsg = "You have successfully submitted a proposal.";
                         NotificationHelper.CreateNotification(userId, "Proposal", proposalMsg);
                     }
@@ -153,7 +220,7 @@ namespace FreeHubProject
                     btnSubmitProposal.Text = "Proposal Submitted";
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 ShowMessage("Your proposal has been submitted successfully! The employer will review it shortly.", true);
                 btnSubmitProposal.Enabled = false;
@@ -166,11 +233,18 @@ namespace FreeHubProject
             Response.Redirect("BrowseProjects.aspx");
         }
 
+        /// <summary>Shows an error beside a field label (red text) and keeps the field marked.</summary>
+        private static void SetFieldError(System.Web.UI.WebControls.Label label, string message)
+        {
+            label.Text = message;
+            label.CssClass = "sp2-msg err";
+        }
+
         // Converts a number of days into a friendly description that also shows
-        // the equivalent in weeks / months / years.
+        // the equivalent in weeks / months / years. Preserved from the original.
         private static string DescribeDuration(int days)
         {
-            if (days <= 0) return "";
+            if (days <= 0) return "0 days";
 
             string dayLabel = days + (days == 1 ? " day" : " days");
 
@@ -194,11 +268,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblMessage.Text = message;
-            pnlMessage.CssClass = success
-                ? "post-status post-success"
-                : "post-status post-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

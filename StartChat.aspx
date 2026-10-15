@@ -264,6 +264,7 @@
         .fh-bubble {
             padding: 9px 13px; font-size: 14px; line-height: 1.4; color: #10261c;
             box-shadow: 0 1px 2px rgba(16,40,28,.08); position: relative;
+            white-space: pre-wrap; overflow-wrap: anywhere;
         }
         .fh-row.recv .fh-bubble { background: #ffffff; border-radius: 4px 14px 14px 14px; }
         .fh-row.sent .fh-bubble { background: #d9fdd3; border-radius: 14px 4px 14px 14px; }
@@ -634,7 +635,7 @@
                 </asp:DropDownList>
                 <br /><br />
                 <label style="font-weight:600; display:block; color:#173f2c;">Feedback Comment (Optional):</label>
-                <asp:TextBox ID="txtRatingComment" runat="server" TextMode="MultiLine" Rows="3" CssClass="rating-comment-input" placeholder="Write a short review..."></asp:TextBox>
+                <asp:TextBox ID="txtRatingComment" runat="server" TextMode="MultiLine" Rows="3" CssClass="rating-comment-input" data-fh-format="true" placeholder="Write a short review..."></asp:TextBox>
             </div>
             <div style="margin-top:20px; text-align:right;">
                 <asp:Button ID="btnSubmitRating" runat="server" Text="Submit Rating" CssClass="submit-rating-button" OnClick="btnSubmitRating_Click" />
@@ -642,5 +643,8 @@
             </div>
         </div>
     </asp:Panel>
+
+    <%-- Shared paragraph-formatting helper (same as Project Description). --%>
+    <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
 </asp:Content>

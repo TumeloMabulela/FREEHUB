@@ -87,6 +87,9 @@
                                 <a href="ManageProfile.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
                                     👤 Profile
                                 </a>
+                                <a href="RateFreelancer.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
+                                    ⭐ Ratings
+                                </a>
                                 <a href="SwitchRole.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
                                     🔄 Switch Role
                                 </a>
@@ -310,6 +313,71 @@
             85% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-4px); }
         }
+
+        /* ============================================================
+           GLOBAL MESSAGE POPUP SYSTEM (centre-screen, reusable)
+           Drives success / error / warning / info messages site-wide via
+           fhShowMessage(). Confirmations reuse .fh-modal above.
+           ============================================================ */
+        .fhmsg-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 10001;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.22s ease;
+        }
+        .fhmsg-overlay.fhmsg-show { opacity: 1; }
+
+        .fhmsg-card {
+            position: relative;
+            background: #fff; border-radius: 16px;
+            padding: 30px 30px 24px;
+            text-align: center;
+            max-width: 360px; width: 90%;
+            box-shadow: 0 18px 50px rgba(16,40,28,0.22);
+            transform: translateY(8px) scale(0.97);
+            transition: transform 0.22s ease;
+            overflow: hidden;
+        }
+        .fhmsg-overlay.fhmsg-show .fhmsg-card { transform: translateY(0) scale(1); }
+
+        .fhmsg-icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin: 0 auto 16px; font-weight: 700;
+        }
+        .fhmsg-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0 0 8px; }
+        .fhmsg-text { font-size: 13.5px; color: #5a5a5a; line-height: 1.55; margin: 0 0 6px; white-space: pre-line; overflow-wrap: anywhere; }
+
+        .fhmsg-close {
+            position: absolute; top: 10px; right: 12px;
+            background: none; border: none; cursor: pointer;
+            font-size: 20px; line-height: 1; color: #9aa6a0; padding: 4px;
+        }
+        .fhmsg-close:hover { color: #4b5563; }
+
+        /* Animated progress bar for auto-dismissed messages. */
+        .fhmsg-progress {
+            position: absolute; left: 0; bottom: 0; height: 4px; width: 100%;
+            transform-origin: left center;
+            animation: fhmsgCountdown linear forwards;
+        }
+        @keyframes fhmsgCountdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+        /* Type palettes (icon chip background/colour + progress bar colour). */
+        .fhmsg-success .fhmsg-icon { background: #e3f3e9; color: #0f7a44; }
+        .fhmsg-success .fhmsg-progress { background: #2e7d56; }
+        .fhmsg-error   .fhmsg-icon { background: #fde8e8; color: #b91c1c; }
+        .fhmsg-error   .fhmsg-progress { background: #dc2626; }
+        .fhmsg-warning .fhmsg-icon { background: #fef3c7; color: #b45309; }
+        .fhmsg-warning .fhmsg-progress { background: #d97706; }
+        .fhmsg-info    .fhmsg-icon { background: #dbeafe; color: #1d4ed8; }
+        .fhmsg-info    .fhmsg-progress { background: #2563eb; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .fhmsg-overlay, .fhmsg-card { transition: none; }
+            .fhmsg-progress { animation: none; }
+        }
     </style>
 
     <script type="text/javascript">
@@ -402,6 +470,114 @@
             document.getElementById('fhAlertModalGlobal').style.display = 'none';
         }
 
+        /* ============================================================
+           GLOBAL MESSAGE POPUP API — fhShowMessage(type, title, message)
+           Centre-screen popup for success / error / warning / info with an
+           overlay, status icon, close (x), animated countdown progress bar and
+           automatic dismissal. Single-instance (never overlaps). Accessible:
+           role=alertdialog, Escape to dismiss, focus trap on the close button,
+           focus restored to the previously focused element on close.
+           ============================================================ */
+        (function () {
+            var AUTO = { success: 4000, info: 4000, warning: 5000, error: 5000 };
+            var ICON = { success: '\u2713', error: '\u2715', warning: '\u26A0', info: '\u2139' };
+            var DEFTITLE = { success: 'Success', error: 'Error', warning: 'Warning', info: 'Information' };
+
+            var current = null;      // the active overlay element
+            var timer = null;        // auto-dismiss timeout
+            var lastFocus = null;    // element to restore focus to
+
+            function esc(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            function reduceMotion() {
+                return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            }
+
+            function close() {
+                if (!current) return;
+                var o = current; current = null;
+                if (timer) { clearTimeout(timer); timer = null; }
+                document.removeEventListener('keydown', onKey, true);
+                o.classList.remove('fhmsg-show');
+                var done = function () { if (o && o.parentNode) o.parentNode.removeChild(o); };
+                if (reduceMotion()) { done(); } else { setTimeout(done, 220); }
+                if (lastFocus && typeof lastFocus.focus === 'function') {
+                    try { lastFocus.focus(); } catch (e) {}
+                }
+                lastFocus = null;
+            }
+
+            function onKey(e) {
+                var k = e.keyCode || e.which;
+                if (k === 27) { e.preventDefault(); close(); }       // Escape dismisses
+                else if (k === 9 && current) {                        // Tab: trap on close btn
+                    var btn = current.querySelector('.fhmsg-close');
+                    if (btn) { e.preventDefault(); btn.focus(); }
+                }
+            }
+
+            // Public API. type: success|error|warning|info. Returns nothing.
+            window.fhShowMessage = function (type, title, message) {
+                type = (type || 'info').toLowerCase();
+                if (!AUTO.hasOwnProperty(type)) type = 'info';
+
+                // Single instance: replace any existing popup.
+                if (current) { if (timer) clearTimeout(timer); if (current.parentNode) current.parentNode.removeChild(current); current = null; }
+                else { lastFocus = document.activeElement; }
+
+                var duration = AUTO[type];
+                var heading = (title && String(title).trim()) ? title : DEFTITLE[type];
+
+                var overlay = document.createElement('div');
+                overlay.className = 'fhmsg-overlay fhmsg-' + type;
+                overlay.setAttribute('role', 'alertdialog');
+                overlay.setAttribute('aria-modal', 'true');
+                overlay.setAttribute('aria-label', heading);
+
+                var progStyle = reduceMotion() ? 'display:none;' : ('animation-duration:' + duration + 'ms;');
+
+                overlay.innerHTML =
+                    '<div class="fhmsg-card">' +
+                        '<button type="button" class="fhmsg-close" aria-label="Close">\u00D7</button>' +
+                        '<div class="fhmsg-icon" aria-hidden="true">' + esc(ICON[type]) + '</div>' +
+                        '<h3 class="fhmsg-title">' + esc(heading) + '</h3>' +
+                        '<p class="fhmsg-text">' + esc(message) + '</p>' +
+                        '<div class="fhmsg-progress" style="' + progStyle + '"></div>' +
+                    '</div>';
+
+                document.body.appendChild(overlay);
+                current = overlay;
+
+                // Fade/scale in.
+                requestAnimationFrame(function () { overlay.classList.add('fhmsg-show'); });
+
+                // Close interactions.
+                overlay.querySelector('.fhmsg-close').addEventListener('click', close);
+                overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+                document.addEventListener('keydown', onKey, true);
+
+                // Focus the close button for keyboard users.
+                var cb = overlay.querySelector('.fhmsg-close');
+                if (cb) { try { cb.focus(); } catch (e) {} }
+
+                // Auto-dismiss (success/info 4s, warning/error 5s).
+                timer = setTimeout(close, duration);
+            };
+
+            window.fhHideMessage = close;
+
+            // Back-compat: route the old fhAlert() through the info popup so existing
+            // calls get the new design. (Confirmations still use the .fh-modal dialog.)
+            window.fhAlert = function (message, title) {
+                window.fhShowMessage('info', title || 'Notice', message || '');
+                return false;
+            };
+        })();
+
         // ---- Numeric-only enforcement for money / numeric fields ----
         // Applies to inputs with money/number classes: allows digits and a single
         // decimal point, blocks letters and the "e", "+", "-" that number inputs
@@ -453,6 +629,52 @@
                 window.addEventListener('load', attach);
             } else {
                 window.attachEvent('onload', attach);
+            }
+        })();
+
+        // ---- Hourly-rate: digits only (0-9), no commas/dots/spaces/minus/letters,
+        //      capped at a maximum of 2000. Applies while typing, on input and on
+        //      paste for any .hr-rate-input field. Server-side validation still runs. ----
+        (function () {
+            var HR_MAX = 2000;
+
+            function sanitizeRate(el) {
+                // Strip everything except digits.
+                var v = (el.value || '').replace(/[^0-9]/g, '');
+                // Drop leading zeros (so "007" -> "7"), but allow a lone "0" while typing.
+                v = v.replace(/^0+(?=\d)/, '');
+                // Enforce the maximum without rounding/truncating silently: if the typed
+                // number exceeds 2000, clamp to 2000.
+                if (v !== '' && parseInt(v, 10) > HR_MAX) {
+                    v = String(HR_MAX);
+                }
+                if (el.value !== v) el.value = v;
+            }
+
+            function attachRate() {
+                var nodes = document.querySelectorAll('.hr-rate-input');
+                for (var i = 0; i < nodes.length; i++) {
+                    (function (el) {
+                        el.addEventListener('keydown', function (e) {
+                            var key = e.keyCode || e.which;
+                            var control = [8, 9, 13, 46, 37, 38, 39, 40, 35, 36];
+                            if (control.indexOf(key) !== -1) return;      // nav/edit keys
+                            if (e.ctrlKey || e.metaKey) return;            // allow copy/paste shortcuts
+                            var isDigit = (key >= 48 && key <= 57) || (key >= 96 && key <= 105);
+                            if (!isDigit) e.preventDefault();              // block . , - space letters etc.
+                        });
+                        el.addEventListener('input', function () { sanitizeRate(el); });
+                        el.addEventListener('paste', function () {
+                            setTimeout(function () { sanitizeRate(el); }, 0);
+                        });
+                    })(nodes[i]);
+                }
+            }
+
+            if (window.addEventListener) {
+                window.addEventListener('load', attachRate);
+            } else {
+                window.attachEvent('onload', attachRate);
             }
         })();
 

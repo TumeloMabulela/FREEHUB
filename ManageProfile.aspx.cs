@@ -172,6 +172,31 @@ namespace FreeHubProject
                 return;
             }
 
+            // For freelancers, validate the hourly rate BEFORE any database update so an
+            // invalid/over-max value rejects the whole save (nothing is persisted).
+            // Digits only, 1..2000; validated on the raw string so "20.50" is rejected,
+            // never converted to 2050.
+            if (GetUserType().Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            {
+                string rawRate = (txtUpdateRate.Text ?? "").Trim();
+                if (!System.Text.RegularExpressions.Regex.IsMatch(rawRate, @"^\d+$"))
+                {
+                    ShowMessage("Enter digits only, without spaces, commas or decimal points.", false);
+                    return;
+                }
+                int parsedRate;
+                if (!int.TryParse(rawRate, out parsedRate) || parsedRate <= 0)
+                {
+                    ShowMessage("Please enter a valid hourly rate.", false);
+                    return;
+                }
+                if (parsedRate > 2000)
+                {
+                    ShowMessage("Hourly rate cannot exceed R2 000.", false);
+                    return;
+                }
+            }
+
             int userId = GetUserId();
 
             try
@@ -196,8 +221,8 @@ namespace FreeHubProject
                 {
                     string flQuery = @"UPDATE Freelancer SET skills = @Skills, experience = @Experience,
                                        portfolioLinks = @Portfolio, hourlyRate = @Rate WHERE userID = @UserID";
-                    decimal rate;
-                    decimal.TryParse(txtUpdateRate.Text, out rate);
+                    // Already validated above as digits-only, 1..2000.
+                    int rate = int.Parse(txtUpdateRate.Text.Trim());
 
                     DatabaseHelper.ExecuteNonQuery(flQuery,
                         new SqlParameter("@Skills", DatabaseHelper.CapitalizeSkills(txtUpdateSkills.Text)),
@@ -503,9 +528,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblMessage.Text = message;
-            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

@@ -751,15 +751,8 @@ namespace FreeHubProject
             string message,
             bool success)
         {
-            pnlMessage.Visible = true;
-
-            lblMessage.Text =
-                message;
-
-            pnlMessage.CssClass =
-                success
-                    ? "tx-message tx-message-success"
-                    : "tx-message tx-message-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

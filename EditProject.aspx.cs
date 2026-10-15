@@ -211,9 +211,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblMessage.Text = message;
-            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

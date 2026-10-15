@@ -80,7 +80,10 @@ namespace FreeHubProject
                 lblRate.Text = "R" + Convert.ToDecimal(proposal["proposedRate"]).ToString("N0");
                 lblTime.Text = Convert.ToString(proposal["estimatedCompletionTime"]);
                 lblDate.Text = Convert.ToDateTime(proposal["date"]).ToString("dd MMM yyyy");
-                lblCoverLetter.Text = Convert.ToString(proposal["coverLetter"]);
+                // HTML-encode so any markup/script in the saved cover letter is shown as
+                // plain text (not executed). The paragraph breaks are preserved visually by
+                // the display container's white-space:pre-wrap.
+                lblCoverLetter.Text = Server.HtmlEncode(Convert.ToString(proposal["coverLetter"]));
                 lblStatus.Text = Convert.ToString(proposal["status"]);
 
                 // Hide action buttons if already approved/rejected
@@ -301,9 +304,8 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
-            pnlMessage.Visible = true;
-            lblReviewMessage.Text = message;
-            pnlMessage.CssClass = success ? "post-status post-success" : "post-status post-error";
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

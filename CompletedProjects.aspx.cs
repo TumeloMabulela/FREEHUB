@@ -71,9 +71,7 @@ namespace FreeHubProject
         private void ShowMessage(
             string message)
         {
-            pnlCompletedMessage.Visible = true;
-
-            lblCompletedMessage.Text = message;
+            MessageHelper.Success(this, message);
         }
     }
 }

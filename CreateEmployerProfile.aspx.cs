@@ -23,24 +23,47 @@ namespace FreeHubProject
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
+            // Clear any prior field errors / invalid styling before re-validating.
+            ClearFieldErrors();
+
+            bool valid = true;
+
+            // --- Company Name (required) ---
             if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
             {
-                lblMessage.Text = "Please enter your company name.";
-                lblMessage.CssClass = "msg msg-error";
-                return;
+                SetFieldError(lblCompanyError, txtCompanyName, "Company name is required");
+                valid = false;
             }
 
+            // --- Industry (required) ---
             if (string.IsNullOrWhiteSpace(ddlIndustry.SelectedValue))
             {
-                lblMessage.Text = "Please select an industry.";
-                lblMessage.CssClass = "msg msg-error";
-                return;
+                SetFieldError(lblIndustryError, ddlIndustry, "Select an industry");
+                valid = false;
             }
 
-            if (string.IsNullOrWhiteSpace(txtCompanyDesc.Text))
+            // --- Company Description: trim, reject empty/whitespace-only, require 30..700.
+            //     Validated on the trimmed string; content is never silently truncated. ---
+            string description = (txtCompanyDesc.Text ?? "").Trim();
+            if (description.Length == 0)
             {
-                lblMessage.Text = "Please enter a company description.";
-                lblMessage.CssClass = "msg msg-error";
+                SetFieldError(lblDescError, txtCompanyDesc, "Company description is required");
+                valid = false;
+            }
+            else if (description.Length < 30)
+            {
+                SetFieldError(lblDescError, txtCompanyDesc, "Minimum 30 characters");
+                valid = false;
+            }
+            else if (description.Length > 700)
+            {
+                SetFieldError(lblDescError, txtCompanyDesc, "Maximum 700 characters");
+                valid = false;
+            }
+
+            if (!valid)
+            {
+                // Values are retained automatically across the postback; nothing is saved.
                 return;
             }
 
@@ -57,7 +80,7 @@ namespace FreeHubProject
                     new SqlParameter("@UserID", userId),
                     new SqlParameter("@CompanyName", txtCompanyName.Text.Trim()),
                     new SqlParameter("@Industry", ddlIndustry.SelectedValue),
-                    new SqlParameter("@Description", txtCompanyDesc.Text.Trim()),
+                    new SqlParameter("@Description", description),
                     new SqlParameter("@ContactEmail", contactEmail));
 
                 // Set user type and activate
@@ -73,6 +96,27 @@ namespace FreeHubProject
                 lblMessage.Text = "Error: " + ex.Message;
                 lblMessage.CssClass = "msg msg-error";
             }
+        }
+
+        /// <summary>Shows a concise error beside a field's label and flags the input.</summary>
+        private void SetFieldError(System.Web.UI.WebControls.Label errorLabel,
+                                   System.Web.UI.WebControls.WebControl input, string message)
+        {
+            errorLabel.Text = message;
+            if (!input.CssClass.Contains("input-invalid"))
+                input.CssClass = (input.CssClass + " input-invalid").Trim();
+        }
+
+        /// <summary>Clears all field error messages and invalid styling before re-validating.</summary>
+        private void ClearFieldErrors()
+        {
+            lblCompanyError.Text = "";
+            lblIndustryError.Text = "";
+            lblDescError.Text = "";
+            lblMessage.Text = "";
+            txtCompanyName.CssClass = txtCompanyName.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            ddlIndustry.CssClass = ddlIndustry.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            txtCompanyDesc.CssClass = txtCompanyDesc.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

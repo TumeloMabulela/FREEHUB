@@ -195,10 +195,8 @@ namespace FreeHubProject
 
         private void ShowStatus(string message, bool success)
         {
-            pnlStatus.Visible = true;
-            lblStatus.Text = message;
-            pnlStatus.BackColor = success ? System.Drawing.Color.FromArgb(234, 247, 237) : System.Drawing.Color.FromArgb(254, 226, 226);
-            lblStatus.ForeColor = success ? System.Drawing.Color.FromArgb(39, 103, 56) : System.Drawing.Color.FromArgb(153, 27, 27);
+            if (success) MessageHelper.Success(this, message);
+            else MessageHelper.Error(this, message);
         }
     }
 }

@@ -12,9 +12,12 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.TextBox txtFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
         protected global::System.Web.UI.WebControls.TextBox txtSkills;
+        protected global::System.Web.UI.WebControls.Label lblSkillsError;
         protected global::System.Web.UI.WebControls.TextBox txtExperience;
+        protected global::System.Web.UI.WebControls.Label lblExperienceError;
         protected global::System.Web.UI.WebControls.TextBox txtPortfolio;
         protected global::System.Web.UI.WebControls.TextBox txtHourlyRate;
+        protected global::System.Web.UI.WebControls.Label lblRateError;
         protected global::System.Web.UI.WebControls.Button btnSubmit;
         protected global::System.Web.UI.WebControls.Label lblMessage;
     }
