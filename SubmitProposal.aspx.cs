@@ -36,7 +36,7 @@ namespace FreeHubProject
                 DataRow project = DatabaseHelper.GetProjectById(Convert.ToInt32(projectId));
                 if (project != null)
                 {
-                    lblProjectTitle.Text = Convert.ToString(project["title"]);
+                    lblProjectTitle.Text = TitleHelper.TitleCase(Convert.ToString(project["title"]));
                     lblProjectBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2");
                     lblProjectDeadline.Text = Convert.ToDateTime(project["deadline"]).ToString("dd MMM yyyy");
                     lblProjectCategory.Text = Convert.ToString(project["category"]);

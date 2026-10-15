@@ -53,8 +53,9 @@ namespace FreeHubProject
         // POST PROJECT - Save to database
         protected void btnSubmitProject_Click(object sender, EventArgs e)
         {
-            // Normalise the pasted/typed description into clean paragraphs BEFORE validating
-            // and saving, so the stored value and the 50-char check use the cleaned text.
+            // Smart Title Capitalisation on the project title + clean the description,
+            // BEFORE validating/saving so stored values and the checks use the final text.
+            txtProjectTitle.Text = TitleHelper.TitleCase(txtProjectTitle.Text);
             txtDescription.Text = TextHelper.NormalizeDescription(txtDescription.Text);
 
             if (!ValidateProject()) return;

@@ -61,7 +61,7 @@ namespace FreeHubProject
                     return;
                 }
 
-                lblProjectTitle.Text = Convert.ToString(row["title"]);
+                lblProjectTitle.Text = TitleHelper.TitleCase(Convert.ToString(row["title"]));
                 lblProjectBudget.Text = "R" + Convert.ToDecimal(row["budget"]).ToString("N2");
                 lblFreelancerName.Text = Convert.ToString(row["freelancerName"]);
                 lblSubmissionContent.Text = row["submissionContent"] != DBNull.Value

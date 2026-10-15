@@ -103,7 +103,7 @@
                                     <div class="mp-left">
                                         <span class="mp-folder-icon" aria-hidden="true">&#128193;</span>
                                         <div class="mp-left-text">
-                                            <h3 class="mp-name"><%# Server.HtmlEncode(Convert.ToString(Eval("title"))) %></h3>
+                                            <h3 class="mp-name"><%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("title")))) %></h3>
                                             <span class='<%# "mp-status " + GetStatusClass(Eval("projectStatus")) %>'><%# Server.HtmlEncode(Convert.ToString(Eval("projectStatus"))) %></span>
                                         </div>
                                     </div>

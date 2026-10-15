@@ -76,7 +76,7 @@ namespace FreeHubProject
                 string freelancerName = Convert.ToString(proposal["freelancerName"]);
                 lblFreelancerName.Text = freelancerName;
                 lblFreelancerInitials.Text = GetInitials(freelancerName);
-                lblProjectTitle.Text = Convert.ToString(proposal["projectTitle"]);
+                lblProjectTitle.Text = TitleHelper.TitleCase(Convert.ToString(proposal["projectTitle"]));
                 lblRate.Text = "R" + Convert.ToDecimal(proposal["proposedRate"]).ToString("N0");
                 lblTime.Text = Convert.ToString(proposal["estimatedCompletionTime"]);
                 lblDate.Text = Convert.ToDateTime(proposal["date"]).ToString("dd MMM yyyy");

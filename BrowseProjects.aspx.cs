@@ -70,7 +70,7 @@ namespace FreeHubProject
                 pnlProjectDetails.Visible = true;
 
                 // Fill in details
-                lblProjectTitle.Text = Convert.ToString(project["title"]);
+                lblProjectTitle.Text = TitleHelper.TitleCase(Convert.ToString(project["title"]));
                 lblPosted.Text = "Posted " + Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
                 lblDescription.Text = Convert.ToString(project["description"]);
                 lblBudget.Text = "R" + Convert.ToDecimal(project["budget"]).ToString("N2") + " - " + 

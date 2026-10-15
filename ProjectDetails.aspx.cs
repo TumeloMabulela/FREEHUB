@@ -48,7 +48,7 @@ namespace FreeHubProject
                     return;
                 }
 
-                lblTitle.Text = Convert.ToString(project["title"]);
+                lblTitle.Text = TitleHelper.TitleCase(Convert.ToString(project["title"]));
                 lblEmployerName.Text = Convert.ToString(project["employerName"]);
                 lblPosted.Text = Convert.ToDateTime(project["dateCreated"]).ToString("dd MMM yyyy");
                 lblDescription.Text = Convert.ToString(project["description"]);

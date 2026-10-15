@@ -76,7 +76,7 @@
                                 <div style="background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 4px;">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                                         <div>
-                                            <h4 style="font-size: 15px; font-weight: 700; color: #111827; margin: 0 0 4px;"><%# Eval("Title") %></h4>
+                                            <h4 style="font-size: 15px; font-weight: 700; color: #111827; margin: 0 0 4px;"><%# TitleHelper.TitleCase(Convert.ToString(Eval("Title"))) %></h4>
                                             <span style="font-size: 13px; color: #6b7280;"><%# Eval("PartnerLabel") %>: <%# Eval("PartnerName") %></span>
                                         </div>
                                         <span style='<%# GetStatusBadgeStyle(Eval("Status").ToString()) %>'><%# Eval("Status") %></span>
@@ -161,7 +161,7 @@
                                 <ItemTemplate>
                                     <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #f3f4f6;">
                                         <div>
-                                            <strong style="font-size: 13px; color: #111827; display: block;"><%# Eval("Title") %></strong>
+                                            <strong style="font-size: 13px; color: #111827; display: block;"><%# TitleHelper.TitleCase(Convert.ToString(Eval("Title"))) %></strong>
                                             <small style="color: #6b7280; font-size: 11px;">Due: <%# Convert.ToDateTime(Eval("Deadline")).ToString("dd MMM yyyy") %></small>
                                         </div>
                                         <span style='<%# GetDeadlineBadgeStyle(Eval("Status").ToString(), Eval("Deadline")) %>'><%# GetDeadlineLabel(Eval("Status").ToString(), Eval("Deadline")) %></span>

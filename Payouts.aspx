@@ -310,7 +310,7 @@
                                     <div>
 
                                         <strong>
-                                            <%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %>
+                                            <%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("Title")))) %>
                                         </strong>
 
                                         <small>

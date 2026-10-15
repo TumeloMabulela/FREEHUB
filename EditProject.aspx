@@ -40,7 +40,7 @@
                     <div class="post-two-columns">
                         <div class="post-field">
                             <label>Project Title <span>*</span></label>
-                            <asp:TextBox ID="txtProjectTitle" runat="server" CssClass="post-input" />
+                            <asp:TextBox ID="txtProjectTitle" runat="server" CssClass="post-input" data-fh-title="true" />
                         </div>
                         <div class="post-field">
                             <label>Category <span>*</span></label>
@@ -156,6 +156,7 @@
     </div>
 
     <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/fhTitle.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
 

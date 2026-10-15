@@ -94,7 +94,7 @@
                                 CommandArgument='<%# Eval("projectID") %>'>
 
                                 <span class="project-info">
-                                    <span class="project-name"><%# Eval("title") %></span>
+                                    <span class="project-name"><%# TitleHelper.TitleCase(Convert.ToString(Eval("title"))) %></span>
                                     <span class="project-category"><%# Eval("category") %></span>
                                     <span class="project-meta">
                                         Posted <%# TimeHelper.ToSast(Eval("dateCreated")).ToString("dd MMM yyyy") %>

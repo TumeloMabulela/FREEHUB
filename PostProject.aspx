@@ -116,6 +116,7 @@
                             ID="txtProjectTitle"
                             runat="server"
                             CssClass="post-input"
+                            data-fh-title="true"
                             placeholder="Example: Build a responsive e-commerce website">
                         </asp:TextBox>
 
@@ -929,6 +930,7 @@
     </style>
 
     <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
+    <script src="<%= ResolveUrl("~/fhTitle.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
 

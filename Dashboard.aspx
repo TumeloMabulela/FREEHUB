@@ -341,7 +341,7 @@
                     </HeaderTemplate>
                     <ItemTemplate>
                         <tr>
-                            <td style="font-weight: 600;"><%# Eval("Title") %></td>
+                            <td style="font-weight: 600;"><%# TitleHelper.TitleCase(Convert.ToString(Eval("Title"))) %></td>
                             <td><%# Eval("EmployerName") %></td>
                             <td style="font-weight: bold; color: #173f2c;">
                                 R<%# Convert.ToDecimal(Eval("Budget")).ToString("N2") %>

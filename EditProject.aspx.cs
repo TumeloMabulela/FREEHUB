@@ -108,7 +108,8 @@ namespace FreeHubProject
                 return;
             }
 
-            // Normalise the description into clean paragraphs before validating/saving.
+            // Smart Title Capitalisation + description clean-up before validating/saving.
+            txtProjectTitle.Text = TitleHelper.TitleCase(txtProjectTitle.Text);
             txtDescription.Text = TextHelper.NormalizeDescription(txtDescription.Text);
 
             // Validation checks...

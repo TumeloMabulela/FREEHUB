@@ -261,7 +261,7 @@
                                         <strong class="pl-name"><%# Server.HtmlEncode(Convert.ToString(Eval("freelancerName"))) %></strong>
                                         <span class="pl-project-badge">
                                             <span class="pl-folder" aria-hidden="true">&#128193;</span>
-                                            Project: <strong><%# Server.HtmlEncode(Convert.ToString(Eval("projectTitle"))) %></strong>
+                                            Project: <strong><%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("projectTitle")))) %></strong>
                                         </span>
                                     </div>
                                 </div>
