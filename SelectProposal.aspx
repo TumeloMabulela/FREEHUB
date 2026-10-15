@@ -192,12 +192,26 @@
             .pl-actions .pl-btn { flex: 1 1 auto; }
         }
 
-        /* The shared dashboard layout forces min-height:calc(100vh - 75px), which leaves
-           a large blank band above the footer when the proposal content is short. Scoped
-           to this page only, let the layout size to its content so the footer follows
-           naturally. Scrollbars / scroll areas are untouched. */
+        /* ------------------------------------------------------------------
+           Layout alignment (scoped to this page via .sp-layout).
+
+           Root cause of the misaligned bottoms: the shared .freehub-sidebar
+           sets `align-self:flex-start` + its own `min-height:calc(100vh-75px)`,
+           which opts it OUT of the flex row's stretch and sizes it independently
+           of the main content. The main content stretches to its own content
+           height, so the two column backgrounds end at different vertical points.
+
+           Fix: let BOTH columns share the same flex row height so they terminate
+           at the same bottom boundary, and let the layout size to its content so
+           the footer follows after it (keeping only the footer's intended 70px gap).
+           Scroll areas (.pl-list) and the sidebar's sticky top are untouched.
+           ------------------------------------------------------------------ */
         .page-content:has(.sp-layout) { min-height: 0; }
-        .sp-layout { min-height: 0; }
+        .sp-layout { min-height: 0; align-items: stretch; }
+        .sp-layout .freehub-sidebar {
+            align-self: stretch;   /* stretch to the row height instead of flex-start */
+            min-height: 0;         /* drop the independent 100vh min-height */
+        }
     </style>
 
     <div class="freehub-dashboard-layout sp-layout">
