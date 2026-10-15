@@ -13921,3 +13921,61 @@ input[type=number].form-input {
     -moz-appearance: textfield;
     appearance: textfield;
 }
+
+
+/* ============================================================
+   BROWSE PROJECTS — readability pass.
+   Bumps the historically tiny font-sizes up to a consistent,
+   readable scale (normal text ~16px, matching the requested
+   baseline). Scoped to Browse Projects classes only; layout,
+   colours, borders and functionality are unchanged.
+   ============================================================ */
+
+/* ---- Page heading: already 27px site-wide (within the 28-30px target) and
+   shared by other pages, so it is intentionally left unchanged here. ---- */
+
+/* ---- Filters ---- */
+.filter-group label { font-size: 14px; }
+.filter-dropdown { font-size: 16px; height: 42px; }
+.filter-button { font-size: 16px; height: 42px; }
+.reset-button { font-size: 15px; height: 42px; }
+.filter-message { font-size: 14px; }
+
+/* ---- Project list cards ---- */
+.project-card { padding: 16px; gap: 14px; }
+
+.project-name {
+    font-size: 16px; font-weight: 700; margin-bottom: 6px;
+    /* Long names wrap neatly without breaking the card layout. */
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; overflow-wrap: anywhere;
+}
+.project-category { font-size: 15px; margin-bottom: 6px; }
+.project-meta { font-size: 14px; }
+
+.project-budget > span { font-size: 16px; font-weight: 700; }
+.project-budget small { font-size: 14px; }
+
+/* ---- Right-hand details panel ---- */
+.posted-information { font-size: 14px; }
+.details-column h2 { font-size: 20px; font-weight: 700; }   /* project title */
+.details-column h3 { font-size: 18px; font-weight: 700; }   /* section headings */
+.details-description { font-size: 16px; line-height: 1.7; }
+
+.detail-box small { font-size: 14px; }
+.detail-box strong { font-size: 16px; }
+.detail-box em { font-size: 14px; }
+
+.employer-information strong { font-size: 16px; }
+.employer-information small { font-size: 14px; }
+.employer-information span { font-size: 14px; }
+
+/* Action buttons */
+.submit-button,
+.save-button { font-size: 16px; height: 46px; }
+
+/* Empty / no-selection states */
+.no-selection-panel h3 { font-size: 20px; }
+.no-selection-panel p { font-size: 15px; }
+.no-projects-message h3 { font-size: 20px; }
+.no-projects-message p { font-size: 15px; }

@@ -111,7 +111,7 @@
 
                     <asp:Button ID="btnLoadMore" runat="server" Text="Load More Projects"
                         OnClick="btnLoadMore_Click"
-                        style="display:block;margin:15px auto;color:#173f2c;background:#fff;border:1px solid #ccc;padding:10px 24px;border-radius:20px;font-size:13px;cursor:pointer;" />
+                        style="display:block;margin:15px auto;color:#173f2c;background:#fff;border:1px solid #ccc;padding:10px 24px;border-radius:20px;font-size:15px;cursor:pointer;" />
 
                 </section>
 
@@ -129,7 +129,7 @@
 
                         <asp:Button ID="btnReturnToList" runat="server" Text="← Return to List"
                             OnClick="btnReturnToList_Click"
-                            style="display:inline-block;color:#0f5132;background-color:#eaf6ee;text-decoration:none;font-size:13px;font-weight:700;padding:9px 20px;border-radius:30px;border:none;cursor:pointer;margin-bottom:15px;" />
+                            style="display:inline-block;color:#0f5132;background-color:#eaf6ee;text-decoration:none;font-size:16px;font-weight:700;padding:10px 22px;border-radius:30px;border:none;cursor:pointer;margin-bottom:15px;" />
 
                         <p class="posted-information">
                             <asp:Label ID="lblPosted" runat="server" />
