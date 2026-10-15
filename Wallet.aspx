@@ -548,7 +548,7 @@
 
                                         <td>
 
-                                            <%# Convert.ToDateTime(Eval("TransactionDate"))
+                                            <%# TimeHelper.ToSast(Eval("TransactionDate"))
                                                 .ToString("dd MMM yyyy, hh:mm tt") %>
 
                                         </td>

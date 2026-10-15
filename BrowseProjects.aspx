@@ -97,7 +97,7 @@
                                     <span class="project-name"><%# Eval("title") %></span>
                                     <span class="project-category"><%# Eval("category") %></span>
                                     <span class="project-meta">
-                                        Posted <%# Convert.ToDateTime(Eval("dateCreated")).ToString("dd MMM yyyy") %>
+                                        Posted <%# TimeHelper.ToSast(Eval("dateCreated")).ToString("dd MMM yyyy") %>
                                     </span>
                                 </span>
                                 <span class="project-budget">

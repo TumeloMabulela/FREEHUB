@@ -219,7 +219,7 @@
                                         <tr>
 
                                             <td>
-                                                <%# Convert.ToDateTime(Eval("TransactionDate")).ToString("dd MMM yyyy") %>
+                                                <%# TimeHelper.ToSast(Eval("TransactionDate")).ToString("dd MMM yyyy") %>
                                             </td>
 
                                             <td>
@@ -315,7 +315,7 @@
 
                                         <small>
                                             <%# Server.HtmlEncode(Convert.ToString(Eval("FreelancerName"))) %>
-                                            &#8226; Posted <%# Convert.ToDateTime(Eval("DateCreated")).ToString("dd MMM yyyy") %>
+                                            &#8226; Posted <%# TimeHelper.ToSast(Eval("DateCreated")).ToString("dd MMM yyyy") %>
                                         </small>
 
                                     </div>

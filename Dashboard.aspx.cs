@@ -202,11 +202,12 @@ namespace FreeHubProject
 
         private string FormatDate(DateTime date)
         {
-            TimeSpan diff = DateTime.Now - date;
+            // Stored dates are UTC (Azure SQL). Measure age against UTC and display in SA time.
+            TimeSpan diff = DateTime.UtcNow - DateTime.SpecifyKind(date, DateTimeKind.Utc);
             if (diff.TotalMinutes < 60) return ((int)diff.TotalMinutes) + " min ago";
             if (diff.TotalHours < 24) return ((int)diff.TotalHours) + "h ago";
             if (diff.TotalDays < 7) return ((int)diff.TotalDays) + "d ago";
-            return date.ToString("dd MMM yyyy");
+            return TimeHelper.ToSast(date).ToString("dd MMM yyyy");
         }
 
         public class ActivityItem

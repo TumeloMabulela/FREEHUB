@@ -251,7 +251,7 @@ namespace FreeHubProject
                         withdrawalId,
 
                     RequestDate =
-                        DateTime.Now,
+                        TimeHelper.Now,
 
                     Amount =
                         withdrawalAmount,

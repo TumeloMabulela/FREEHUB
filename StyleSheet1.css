@@ -69,6 +69,15 @@ body {
     gap: 25px;
 }
 
+    /* The nav links are grouped inside asp:Panel wrappers (freelancer/employer/logged-in).
+       display:contents makes each panel's <a> links become direct flex children of
+       .main-navigation, so the single 25px gap applies evenly between every link
+       regardless of which panel it lives in. */
+    .main-navigation > span,
+    .main-navigation > div {
+        display: contents;
+    }
+
     .main-navigation a {
         color: #f4f6f2;
         text-decoration: none;
@@ -76,6 +85,7 @@ body {
         font-weight: 500;
         padding: 10px 4px;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
         .main-navigation a:hover {
@@ -13700,4 +13710,38 @@ FREEHUB HOME PAGE
 .proposal-time small {
     color: #888;
     font-size: 11px;
+}
+
+
+/* ============================================================
+   Remove number-input spinner arrows on money / numeric fields
+   (the up/down arrows increment by 1 rand which is misleading).
+   ============================================================ */
+.budget-input::-webkit-outer-spin-button,
+.budget-input::-webkit-inner-spin-button,
+.fw-amount-input::-webkit-outer-spin-button,
+.fw-amount-input::-webkit-inner-spin-button,
+.withdraw-amount-input::-webkit-outer-spin-button,
+.withdraw-amount-input::-webkit-inner-spin-button,
+.refunds-amount-input::-webkit-outer-spin-button,
+.refunds-amount-input::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button,
+input[type=number].post-input::-webkit-outer-spin-button,
+input[type=number].post-input::-webkit-inner-spin-button,
+input[type=number].form-input::-webkit-outer-spin-button,
+input[type=number].form-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.budget-input,
+.fw-amount-input,
+.withdraw-amount-input,
+.refunds-amount-input,
+.no-spinner,
+input[type=number].post-input,
+input[type=number].form-input {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }

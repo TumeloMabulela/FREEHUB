@@ -53,7 +53,7 @@ namespace FreeHubProject
                         content AS Title,
                         content AS Description,
                         content AS Preview,
-                        FORMAT(notificationTimestamp, 'dd MMM yyyy, hh:mm tt') AS Time,
+                        FORMAT(DATEADD(HOUR, 2, notificationTimestamp), 'dd MMM yyyy, hh:mm tt') AS Time,
                         status AS Status
                     FROM dbo.Notification
                     WHERE userID = @UserID";
@@ -171,7 +171,7 @@ namespace FreeHubProject
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
                 string query = @"
-                    SELECT notificationID, type, content, FORMAT(notificationTimestamp, 'dd MMM yyyy, hh:mm tt') AS notificationTimestamp, status 
+                    SELECT notificationID, type, content, FORMAT(DATEADD(HOUR, 2, notificationTimestamp), 'dd MMM yyyy, hh:mm tt') AS notificationTimestamp, status 
                     FROM dbo.Notification 
                     WHERE notificationID = @NotificationID AND userID = @UserID";
 

@@ -74,10 +74,14 @@
                         </div>
 
                         <div class="post-field">
-                            <label>Estimated Completion Time <span>*</span></label>
+                            <label>Estimated Completion Time (days) <span>*</span></label>
                             <asp:TextBox ID="txtCompletionTime" runat="server"
                                 CssClass="post-input"
-                                placeholder="e.g. 15 days, 2 weeks, 1 month" />
+                                TextMode="Number" min="1" step="1"
+                                placeholder="Enter number of days, e.g. 15"
+                                onkeydown="return blockNonNumericKeys(event);"
+                                oninput="updateDurationPreview();" />
+                            <small id="durationPreview" style="display:block; margin-top:6px; color:#2e7d56; font-size:12px;"></small>
                         </div>
                     </div>
 
@@ -139,5 +143,59 @@
         </section>
 
     </div>
+
+    <script type="text/javascript">
+
+        // Allow only digits (and control keys) in the completion-time field.
+        function blockNonNumericKeys(e) {
+            var key = e.keyCode || e.which;
+            // Allow: backspace, tab, enter, delete, arrows, home, end
+            var control = [8, 9, 13, 46, 37, 38, 39, 40, 35, 36];
+            if (control.indexOf(key) !== -1) return true;
+            // Allow Ctrl/Cmd combos (copy/paste/select-all)
+            if (e.ctrlKey || e.metaKey) return true;
+            // Allow digits 0-9 (top row and numpad)
+            if ((key >= 48 && key <= 57) || (key >= 96 && key <= 105)) return true;
+            e.preventDefault();
+            return false;
+        }
+
+        // Convert a number of days into a friendly weeks/months description.
+        function describeDuration(days) {
+            days = parseInt(days, 10);
+            if (isNaN(days) || days <= 0) return "";
+            if (days < 7) {
+                return days + (days === 1 ? " day" : " days");
+            }
+            if (days < 30) {
+                var weeks = days / 7;
+                var w = (Math.round(weeks * 10) / 10);
+                return days + " days (about " + w + (w === 1 ? " week)" : " weeks)");
+            }
+            if (days < 365) {
+                var months = days / 30;
+                var m = (Math.round(months * 10) / 10);
+                return days + " days (about " + m + (m === 1 ? " month)" : " months)");
+            }
+            var years = days / 365;
+            var y = (Math.round(years * 10) / 10);
+            return days + " days (about " + y + (y === 1 ? " year)" : " years)");
+        }
+
+        function updateDurationPreview() {
+            var input = document.getElementById('<%= txtCompletionTime.ClientID %>');
+            var preview = document.getElementById('durationPreview');
+            if (!input || !preview) return;
+            var text = describeDuration(input.value);
+            preview.innerText = text ? ("Estimated: " + text) : "";
+        }
+
+        if (window.addEventListener) {
+            window.addEventListener('load', updateDurationPreview);
+        } else {
+            window.attachEvent('onload', updateDurationPreview);
+        }
+
+    </script>
 
 </asp:Content>

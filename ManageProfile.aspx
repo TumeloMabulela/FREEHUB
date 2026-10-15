@@ -98,7 +98,7 @@
 
                         <div class="post-field">
                             <label>Hourly Rate (ZAR)</label>
-                            <asp:TextBox ID="txtUpdateRate" runat="server" CssClass="post-input" TextMode="Number" />
+                            <asp:TextBox ID="txtUpdateRate" runat="server" CssClass="post-input no-spinner" TextMode="Number" />
                         </div>
                     </asp:Panel>
 

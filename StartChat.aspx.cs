@@ -23,10 +23,13 @@ namespace FreeHubProject
                 DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
 
                 BindApprovedChatUsers("");
+                BindDashboard();
 
                 string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
 
+                // Deep links (e.g. a "Message" button elsewhere) open the popup straight away.
+                // A plain visit to Messages shows the dashboard first (popup stays closed).
                 if (!string.IsNullOrWhiteSpace(queryUserId))
                 {
                     int uid;
@@ -39,11 +42,81 @@ namespace FreeHubProject
                 {
                     SelectUserByName(userFromQuery);
                 }
-                else if (SelectedOtherUserId > 0)
+                else
                 {
-                    SelectUserById(SelectedOtherUserId);
+                    // Fresh Messages visit: dashboard only, no auto-opened conversation.
+                    ChatOpen = false;
                 }
             }
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            // The floating chat popup is shown only when a conversation is open.
+            pnlChatPopup.Visible = ChatOpen;
+
+            // After the popup renders (initial load or an AJAX switch), scroll it to the newest message.
+            if (ChatOpen)
+            {
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "scrollPopup",
+                    "if (window.scrollPopupToBottom) { scrollPopupToBottom(); }", true);
+            }
+        }
+
+        /// <summary>
+        /// Fills the dashboard widgets shown before/behind the popup: pinned contacts
+        /// (the user's chat contacts) and recently shared files across conversations.
+        /// </summary>
+        private void BindDashboard()
+        {
+            // Pinned contacts = the same approved chat contacts, capped to a few for the card.
+            DataTable contacts = new DataTable();
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = @"
+                    SELECT DISTINCT TOP 5
+                        u.userID AS UserID,
+                        (u.firstName + ' ' + u.lastName) AS Name,
+                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON (
+                        CASE WHEN e.userID = @CurrentUserID THEN f.userID
+                             WHEN f.userID = @CurrentUserID THEN e.userID END = u.userID)
+                    WHERE prop.status = 'Approved'
+                      AND (e.userID = @CurrentUserID OR f.userID = @CurrentUserID)";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(contacts); }
+                }
+            }
+            rptPinnedContacts.DataSource = contacts;
+            rptPinnedContacts.DataBind();
+            lblNoPinned.Visible = contacts.Rows.Count == 0;
+
+            // Recently shared files = latest messages (to/from the user) that carry an attachment.
+            DataTable files = new DataTable();
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = @"
+                    SELECT TOP 5 attachmentUrl, timeStamp
+                    FROM dbo.Message
+                    WHERE (senderID = @CurrentUserID OR receiverID = @CurrentUserID)
+                      AND attachmentUrl IS NOT NULL AND attachmentUrl <> ''
+                    ORDER BY timeStamp DESC";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd)) { da.Fill(files); }
+                }
+            }
+            rptRecentFiles.DataSource = files;
+            rptRecentFiles.DataBind();
+            lblNoRecentFiles.Visible = files.Rows.Count == 0;
         }
 
         public int CurrentUserId
@@ -55,6 +128,16 @@ namespace FreeHubProject
         {
             get { return Session["SelectedOtherUserId"] != null ? Convert.ToInt32(Session["SelectedOtherUserId"]) : 0; }
             set { Session["SelectedOtherUserId"] = value; }
+        }
+
+        /// <summary>
+        /// True when a conversation is open, so the floating chat popup is shown over the
+        /// Messages dashboard. False shows the dashboard/workspace only.
+        /// </summary>
+        public bool ChatOpen
+        {
+            get { return ViewState["ChatOpen"] != null && (bool)ViewState["ChatOpen"]; }
+            set { ViewState["ChatOpen"] = value; }
         }
 
         private int ActiveProjectId
@@ -69,15 +152,20 @@ namespace FreeHubProject
 
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
+                // One row PER CONTACT (other user), not per project. A freelancer and an
+                // employer who have worked on several projects together share a single chat,
+                // so a completed project followed by a new one reuses the same conversation
+                // instead of creating a duplicate contact row.
                 string query = @"
-                    SELECT DISTINCT 
+                    SELECT
                         u.userID AS UserID,
                         (u.firstName + ' ' + u.lastName) AS Name,
                         (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
-                        p.projectID AS ProjectID,
-                        p.title AS ProjectTitle,
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
-                        ISNULL((SELECT TOP 1 FORMAT(timeStamp, 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime
+                        -- Displayed time, converted from stored UTC to South Africa time (UTC+2)
+                        ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
+                        -- Sortable raw timestamp of the latest message (NULL sorts last)
+                        (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort
                     FROM dbo.Proposal prop
                     INNER JOIN dbo.Project p ON prop.projectID = p.projectID
                     INNER JOIN dbo.Employer e ON p.employerID = e.employerID
@@ -93,8 +181,15 @@ namespace FreeHubProject
 
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
-                    query += " AND (u.firstName + ' ' + u.lastName LIKE @Search OR p.title LIKE @Search)";
+                    query += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
                 }
+
+                // Collapse to a single row per contact regardless of how many shared projects.
+                query += @"
+                    GROUP BY u.userID, u.firstName, u.lastName";
+
+                // Newest conversation first; contacts with no messages fall to the bottom.
+                query += " ORDER BY LastTimeSort DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -114,11 +209,6 @@ namespace FreeHubProject
             rptUsers.DataSource = dt;
             rptUsers.DataBind();
             lblNoUsers.Visible = (dt.Rows.Count == 0);
-
-            if (dt.Rows.Count > 0 && SelectedOtherUserId == 0)
-            {
-                SelectUserById(Convert.ToInt32(dt.Rows[0]["UserID"]));
-            }
         }
 
         protected void btnToggleDetails_Click(object sender, EventArgs e)
@@ -230,6 +320,7 @@ namespace FreeHubProject
         private void SelectUserById(int otherUserId)
         {
             SelectedOtherUserId = otherUserId;
+            ChatOpen = true;   // opening/switching a conversation shows the floating popup
 
             // Fetch user profile info
             DataRow user = DatabaseHelper.GetUserById(otherUserId);
@@ -245,10 +336,16 @@ namespace FreeHubProject
                 if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
                 {
                     lblPartnerStatus.Text = "Account Deactivated 🔴";
+                    statusDot.Attributes["class"] = "status-dot offline";
                 }
                 else
                 {
-                    lblPartnerStatus.Text = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                    string onlineStatus = DatabaseHelper.GetUserOnlineStatus(otherUserId);
+                    lblPartnerStatus.Text = onlineStatus;
+
+                    // Green dot only when actually online; red otherwise (last seen / offline).
+                    bool isOnline = onlineStatus.IndexOf("Online", StringComparison.OrdinalIgnoreCase) >= 0;
+                    statusDot.Attributes["class"] = isOnline ? "status-dot" : "status-dot offline";
                 }
             }
 
@@ -271,7 +368,21 @@ namespace FreeHubProject
             // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus FROM dbo.Proposal prop INNER JOIN dbo.Project p ON prop.projectID = p.projectID INNER JOIN dbo.Employer e ON p.employerID = e.employerID INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID INNER JOIN dbo.[User] u ON e.userID = u.userID WHERE prop.status = 'Approved' AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))";
+                // Pick the MOST RECENT approved project between these two users, and prefer a
+                // project that is still active. This way, when an old project is completed and
+                // a new one is approved with the same people, the existing chat reopens for the
+                // new project instead of staying locked on the completed one.
+                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus
+                    FROM dbo.Proposal prop
+                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
+                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
+                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
+                    INNER JOIN dbo.[User] u ON e.userID = u.userID
+                    WHERE prop.status = 'Approved'
+                      AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))
+                    ORDER BY
+                        CASE WHEN p.projectStatus IN ('Completed', 'Cancelled') THEN 1 ELSE 0 END ASC,
+                        p.dateCreated DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -558,6 +669,53 @@ namespace FreeHubProject
         {
             pnlStatus.Visible = true;
             lblStatus.Text = message;
+        }
+
+        /// <summary>
+        /// Closes the floating conversation popup and returns to the Messages dashboard,
+        /// keeping the user on the Messages page.
+        /// </summary>
+        protected void btnCloseChat_Click(object sender, EventArgs e)
+        {
+            ChatOpen = false;
+            SelectedOtherUserId = 0;
+            pnlRatingModal.Visible = false;
+            pnlUserDetailsModal.Visible = false;
+            // Refresh the contact list so the previously-selected row is no longer highlighted.
+            BindApprovedChatUsers("");
+        }
+
+        /// <summary>
+        /// Returns true if the stored attachment actually exists on disk for the running app.
+        /// Used by the markup to avoid rendering dead links that 404.
+        /// </summary>
+        public bool AttachmentExists(object attachmentUrl)
+        {
+            if (attachmentUrl == null || attachmentUrl == DBNull.Value) return false;
+
+            string url = attachmentUrl.ToString();
+            if (string.IsNullOrWhiteSpace(url)) return false;
+
+            try
+            {
+                string physicalPath = Server.MapPath(url);
+                return !string.IsNullOrEmpty(physicalPath) && File.Exists(physicalPath);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Resolves a stored attachment url (e.g. "~/Uploads/x.pdf") to a browser url.
+        /// </summary>
+        public string ResolveAttachmentUrl(object attachmentUrl)
+        {
+            if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "#";
+            string url = attachmentUrl.ToString();
+            if (string.IsNullOrWhiteSpace(url)) return "#";
+            return ResolveUrl(url);
         }
     }
 }

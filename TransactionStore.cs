@@ -95,7 +95,7 @@ namespace FreeHubProject
                 CreateTransactionId();
 
             row["TransactionDate"] =
-                DateTime.Now;
+                TimeHelper.Now;
 
             row["Title"] =
                 title ?? "";
