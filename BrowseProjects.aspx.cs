@@ -216,10 +216,5 @@ namespace FreeHubProject
             pnlNoSelection.Visible = true;
             ViewState["SelectedProjectId"] = null;
         }
-
-        protected void btnLoadMore_Click(object sender, EventArgs e)
-        {
-            lblFilterMessage.Text = "All available projects are displayed.";
-        }
     }
 }

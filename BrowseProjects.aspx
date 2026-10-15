@@ -109,10 +109,6 @@
                         </ItemTemplate>
                     </asp:Repeater>
 
-                    <asp:Button ID="btnLoadMore" runat="server" Text="Load More Projects"
-                        OnClick="btnLoadMore_Click"
-                        style="display:block;margin:15px auto;color:#173f2c;background:#fff;border:1px solid #ccc;padding:10px 24px;border-radius:20px;font-size:15px;cursor:pointer;" />
-
                 </section>
 
                 <!-- RIGHT: PROJECT DETAILS -->
