@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Disputes.css?v=1") %>"
+    <link href="<%= ResolveUrl("~/Disputes.css?v=4") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -57,49 +57,8 @@
 
                 </div>
 
-                <div class="disputes-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="disputes-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="disputes-wallet-icon">
-                        &#128179;
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- MESSAGE -->
-            <asp:Panel
-                ID="pnlMessage"
-                runat="server"
-                CssClass="disputes-message"
-                Visible="false">
-
-                <asp:Label
-                    ID="lblMessage"
-                    runat="server">
-                </asp:Label>
-
-            </asp:Panel>
-
-
-            <!-- SUMMARY CARDS -->
-            <section class="disputes-summary-grid">
+                <!-- SUMMARY CARDS (beside the page heading) -->
+                <section class="disputes-summary-grid">
 
                 <div class="disputes-summary-item">
 
@@ -170,7 +129,24 @@
 
                 </div>
 
-            </section>
+                </section>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+            <asp:Panel
+                ID="pnlMessage"
+                runat="server"
+                CssClass="disputes-message"
+                Visible="false">
+
+                <asp:Label
+                    ID="lblMessage"
+                    runat="server">
+                </asp:Label>
+
+            </asp:Panel>
 
 
             <div class="disputes-layout">
@@ -331,53 +307,6 @@
                 <!-- RIGHT COLUMN -->
                 <aside class="disputes-right-column">
 
-                    <!-- DISPUTE GUIDELINES -->
-                    <section class="disputes-side-card">
-
-                        <div class="disputes-side-heading">
-
-                            <h3>
-                                Dispute Guidelines
-                            </h3>
-
-                            <span>
-                                &#9432;
-                            </span>
-
-                        </div>
-
-                        <ul class="disputes-info-list">
-
-                            <li>
-                                Disputes are reviewed within
-                                3-5 business days.
-                            </li>
-
-                            <li>
-                                Provide accurate reference IDs
-                                to expedite the review process.
-                            </li>
-
-                            <li>
-                                Include all relevant details
-                                in your description.
-                            </li>
-
-                            <li>
-                                An administrator may contact you
-                                for additional information.
-                            </li>
-
-                            <li>
-                                Resolved disputes cannot be
-                                reopened.
-                            </li>
-
-                        </ul>
-
-                    </section>
-
-
                     <!-- RECENT DISPUTES -->
                     <section class="disputes-side-card">
 
@@ -396,6 +325,8 @@
                                 OnClick="btnViewAll_Click" />
 
                         </div>
+
+                        <div class="disputes-history-list">
 
                         <asp:Repeater
                             ID="rptDisputes"
@@ -464,6 +395,9 @@
                             </p>
 
                         </asp:Panel>
+
+                        </div>
+                        <!-- /disputes-history-list -->
 
                     </section>
 

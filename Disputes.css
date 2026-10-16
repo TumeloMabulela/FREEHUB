@@ -4,15 +4,27 @@
 
 .disputes-page {
     display: flex;
-    min-height: 100vh;
+    min-height: 0;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Keep the whole page fixed; only the form card scrolls. Overrides the global
+   `.disputes-page > .disputes-main` (padding:30px + overflow-y:auto). */
+.disputes-page > .disputes-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .disputes-main {
     flex: 1;
-    padding: 32px 36px;
     max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.disputes-main > .disputes-header,
+.disputes-main > .disputes-message {
+    flex-shrink: 0;
 }
 
 
@@ -22,12 +34,14 @@
 
 .disputes-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 16px 24px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
 }
+.disputes-header > div:first-child { flex-shrink: 0; }
 
 .disputes-header h1 {
     font-size: 26px;
@@ -117,31 +131,37 @@
    SUMMARY CARDS
 ========================================= */
 
+/* Summary cards sit beside the heading: compact, equal, fill remaining width. */
 .disputes-summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    flex: 1;
+    min-width: 320px;
 }
 
 .disputes-summary-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     background: #ffffff;
     border: 1px solid #e3e8ea;
     border-radius: 10px;
-    padding: 18px 20px;
+    padding: 10px 12px;
+    min-width: 0;
 }
+.disputes-summary-item > div { min-width: 0; }
 
 .disputes-summary-icon {
-    font-size: 24px;
-    width: 44px;
-    height: 44px;
+    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 9px;
 }
 
 .disputes-open-icon {
@@ -161,15 +181,17 @@
 
 .disputes-summary-item small {
     color: #8a949a;
-    font-size: 12px;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 .disputes-summary-value {
     display: block;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     color: #1a2233;
-    margin-top: 2px;
+    margin-top: 1px;
+    white-space: nowrap;
 }
 
 
@@ -181,7 +203,31 @@
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 24px;
-    align-items: start;
+    align-items: stretch;
+    /* Fill remaining height so the page itself never scrolls. */
+    flex: 1;
+    min-height: 0;
+}
+/* Right column fills the row height; the Recent Disputes card scrolls its list. */
+.disputes-right-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.disputes-right-column > .disputes-side-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    flex: 1;
+}
+.disputes-right-column > .disputes-side-card > .disputes-side-heading {
+    flex-shrink: 0;
+}
+.disputes-history-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 
@@ -194,6 +240,9 @@
     border: 1px solid #e3e8ea;
     border-radius: 12px;
     padding: 28px 28px 32px;
+    /* The only scrollable area on the page. */
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .disputes-form-card h2 {
@@ -473,13 +522,34 @@
 
 @media (max-width: 900px) {
 
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .disputes-page > .disputes-main { overflow: visible; }
+    .disputes-main { display: block; }
     .disputes-layout {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
+    }
+    .disputes-form-card {
+        overflow: visible;
+        min-height: 0;
     }
 
+    /* Header stacks; right column + list flow naturally when stacked. */
     .disputes-header {
         flex-direction: column;
+        align-items: stretch;
     }
+    .disputes-summary-grid { min-width: 0; }
+    .disputes-right-column { display: block; min-height: 0; }
+    .disputes-right-column > .disputes-side-card {
+        display: block;
+        overflow: visible;
+        min-height: 0;
+        flex: none;
+    }
+    .disputes-history-list { flex: none; max-height: 360px; }
 
     .disputes-summary-grid {
         grid-template-columns: 1fr;

@@ -5,8 +5,20 @@
 ========================================= */
 
 /* MAIN */
+/* MAIN — keep the whole page fixed; only the form card scrolls. Overrides the
+   global `.withdraw-page > .withdraw-main` (padding:30px + overflow-y:auto). */
+.withdraw-page > .withdraw-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .withdraw-main {
-    padding: 32px 36px 45px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.withdraw-main > .withdraw-header,
+.withdraw-main > .withdraw-message {
+    flex-shrink: 0;
 }
 
 /* HEADER */
@@ -105,15 +117,42 @@
 
 /* LAYOUT */
 .withdraw-layout {
+    display: grid;
     grid-template-columns: 1fr 340px;
     gap: 24px;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+}
+/* Right column fills the row height; the Recent Withdrawals card scrolls its list. */
+.withdraw-right-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+.withdraw-right-column > .withdraw-side-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    flex: 1;
+}
+.withdraw-right-column > .withdraw-side-card > .withdraw-side-heading {
+    flex-shrink: 0;
+}
+.withdraw-history-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
-/* FORM CARD */
+/* FORM CARD — the only scrollable area on the page. */
 .withdraw-form-card {
     padding: 28px;
     border: 1px solid #e3e8ea;
     border-radius: 12px;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .withdraw-form-card > h2 {
@@ -417,9 +456,28 @@
 
 /* RESPONSIVE */
 @media screen and (max-width: 950px) {
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .withdraw-page > .withdraw-main { overflow: visible; }
+    .withdraw-main { display: block; }
     .withdraw-layout {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
     }
+    .withdraw-form-card {
+        overflow: visible;
+        min-height: 0;
+    }
+    /* Right column + list flow naturally when stacked. */
+    .withdraw-right-column { display: block; min-height: 0; }
+    .withdraw-right-column > .withdraw-side-card {
+        display: block;
+        overflow: visible;
+        min-height: 0;
+        flex: none;
+    }
+    .withdraw-history-list { flex: none; max-height: 360px; }
 }
 
 @media screen and (max-width: 780px) {

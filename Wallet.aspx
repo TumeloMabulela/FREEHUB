@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Wallet.css?v=5") %>"
+    <link href="<%= ResolveUrl("~/Wallet.css?v=21") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -34,7 +34,8 @@
                 <div>
 
                     <h1>
-                        Manage Wallet
+                        <span class="wallet-h1-navy">Manage</span>
+                        <span class="wallet-h1-green">Wallet</span>
                     </h1>
 
                     <div class="wallet-breadcrumb">
@@ -51,35 +52,7 @@
 
                     </div>
 
-                    <p>
-                        View your wallet balance, manage funds
-                        and access wallet actions.
-                    </p>
-
                 </div>
-
-                <section class="wallet-current-balance">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentWalletBalance"
-                            runat="server"
-                            CssClass="wallet-current-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="wallet-balance-icon">
-                        &#128176;
-                    </span>
-
-                </section>
 
             </div>
 
@@ -97,16 +70,12 @@
 
             </asp:Panel>
 
-            <!-- WALLET OVERVIEW -->
-            <section class="wallet-card wallet-overview-card">
-
-                <h2>
-                    Wallet Overview
-                </h2>
+            <!-- WALLET OVERVIEW (four pastel balance cards) -->
+            <section class="wallet-overview-section">
 
                 <div class="wallet-overview-grid">
 
-                    <div class="wallet-overview-item">
+                    <div class="wallet-overview-item ov-available">
 
                         <span class="overview-icon available-icon">
                             &#128178;
@@ -129,7 +98,7 @@
 
                     </div>
 
-                    <div class="wallet-overview-item">
+                    <div class="wallet-overview-item ov-hold">
 
                         <span class="overview-icon hold-icon">
                             &#9203;
@@ -152,7 +121,7 @@
 
                     </div>
 
-                    <div class="wallet-overview-item">
+                    <div class="wallet-overview-item ov-pending">
 
                         <span class="overview-icon withdrawal-icon">
                             &#128228;
@@ -175,7 +144,7 @@
 
                     </div>
 
-                    <div class="wallet-overview-item">
+                    <div class="wallet-overview-item ov-total">
 
                         <span class="overview-icon total-icon">
                             &#128142;
@@ -202,13 +171,14 @@
 
             </section>
 
-            <!-- ACTIONS AND SUMMARY -->
+            <!-- WALLET ACTIONS (full-width horizontal row) -->
             <div class="wallet-middle-layout">
 
                 <!-- WALLET ACTIONS -->
                 <section class="wallet-card wallet-actions-card">
 
                     <h2>
+                        <span class="wallet-h2-ic" aria-hidden="true">&#9889;</span>
                         Wallet Actions
                     </h2>
 
@@ -236,11 +206,6 @@
                                     Fund Wallet
                                 </strong>
 
-                                <small>
-                                    Add money to your wallet using
-                                    supported payment methods.
-                                </small>
-
                             </span>
 
                             <span class="wallet-action-arrow">
@@ -267,11 +232,6 @@
                                     Withdraw Funds
                                 </strong>
 
-                                <small>
-                                    Withdraw your earnings to
-                                    your bank account.
-                                </small>
-
                             </span>
 
                             <span class="wallet-action-arrow">
@@ -296,11 +256,6 @@
                                 <strong>
                                     View Transactions
                                 </strong>
-
-                                <small>
-                                    View your complete transaction
-                                    history and activity.
-                                </small>
 
                             </span>
 
@@ -327,11 +282,6 @@
                                     Payouts
                                 </strong>
 
-                                <small>
-                                    Manage payouts to freelancers
-                                    and contractors.
-                                </small>
-
                             </span>
 
                             <span class="wallet-action-arrow">
@@ -356,11 +306,6 @@
                                 <strong>
                                     Disputes
                                 </strong>
-
-                                <small>
-                                    Manage and track wallet-related
-                                    disputes.
-                                </small>
 
                             </span>
 
@@ -387,11 +332,6 @@
                                     Refunds
                                 </strong>
 
-                                <small>
-                                    View and manage returned
-                                    wallet funds.
-                                </small>
-
                             </span>
 
                             <span class="wallet-action-arrow">
@@ -404,100 +344,20 @@
 
                 </section>
 
-                <!-- WALLET SUMMARY -->
-                <aside class="wallet-card wallet-summary-card">
-
-                    <h2>
-                        Wallet Summary
-                    </h2>
-
-                    <div class="wallet-summary-line">
-
-                        <span>
-                            Available Balance
-                        </span>
-
-                        <asp:Label
-                            ID="lblSummaryAvailable"
-                            runat="server"
-                            CssClass="summary-green"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <div class="wallet-summary-line">
-
-                        <span>
-                            On Hold
-                        </span>
-
-                        <asp:Label
-                            ID="lblSummaryOnHold"
-                            runat="server"
-                            CssClass="summary-orange"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <div class="wallet-summary-line">
-
-                        <span>
-                            Pending Withdrawals
-                        </span>
-
-                        <asp:Label
-                            ID="lblSummaryPending"
-                            runat="server"
-                            CssClass="summary-blue"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <div class="wallet-summary-total">
-
-                        <span>
-                            Total Balance
-                        </span>
-
-                        <asp:Label
-                            ID="lblSummaryTotal"
-                            runat="server"
-                            CssClass="summary-total-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <asp:Panel ID="pnlSummaryFundBtn" runat="server">
-                    <asp:Button
-                        ID="btnSummaryFundWallet"
-                        runat="server"
-                        Text="Fund Wallet"
-                        CssClass="wallet-fund-button"
-                        CausesValidation="false"
-                        OnClick="btnFundWallet_Click" />
-                    </asp:Panel>
-
-                </aside>
-
-            </div>
-
-            <!-- RECENT TRANSACTIONS -->
+            <!-- RECENT TRANSACTIONS (right column) -->
             <section class="wallet-card wallet-transactions-card">
 
                 <div class="wallet-transactions-heading">
 
                     <h2>
+                        <span class="wallet-h2-ic" aria-hidden="true">&#128336;</span>
                         Recent Transactions
                     </h2>
 
                     <asp:Button
                         ID="btnViewAllTop"
                         runat="server"
-                        Text="View All"
+                        Text="View All &#8594;"
                         CssClass="wallet-view-all-link"
                         CausesValidation="false"
                         OnClick="btnViewTransactions_Click" />
@@ -512,14 +372,10 @@
 
                             <tr>
 
-                                <th></th>
                                 <th>Date</th>
-                                <th>Description</th>
                                 <th>Type</th>
-                                <th>Amount</th>
+                                <th class="tx-amount-col">Amount</th>
                                 <th>Status</th>
-                                <th>Reference</th>
-                                <th></th>
 
                             </tr>
 
@@ -536,30 +392,19 @@
 
                                     <tr>
 
-                                        <td>
+                                        <td class="tx-date-cell">
 
-                                            <span class='<%# GetTransactionIconClass(Convert.ToString(Eval("Type"))) %>'>
-
-                                                <%# GetTransactionIcon(Convert.ToString(Eval("Type"))) %>
-
-                                            </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <%# TimeHelper.ToSast(Eval("TransactionDate"))
-                                                .ToString("dd MMM yyyy, hh:mm tt") %>
-
-                                        </td>
-
-                                        <td>
-
-                                            <%# Server.HtmlEncode(
-                                                Convert.ToString(
-                                                    Eval("Description")
-                                                )
-                                            ) %>
+                                            <%-- Date doubles as the row's "open transaction" link,
+                                                 preserving the existing ViewTransaction command. --%>
+                                            <asp:LinkButton
+                                                ID="btnViewTransaction"
+                                                runat="server"
+                                                CssClass="tx-date-link"
+                                                CommandName="ViewTransaction"
+                                                CommandArgument='<%# Eval("TransactionId") %>'
+                                                CausesValidation="false"
+                                                Text='<%# TimeHelper.ToSast(Eval("TransactionDate")).ToString("dd MMM yyyy, hh:mm tt") %>'>
+                                            </asp:LinkButton>
 
                                         </td>
 
@@ -577,7 +422,7 @@
 
                                         </td>
 
-                                        <td class='<%# GetAmountClass(Convert.ToString(Eval("Type"))) %>'>
+                                        <td class='tx-amount-col <%# GetAmountClass(Convert.ToString(Eval("Type"))) %>'>
 
                                             <%# FormatTransactionAmount(
                                                 Convert.ToDecimal(Eval("Amount")),
@@ -597,30 +442,6 @@
                                                 ) %>
 
                                             </span>
-
-                                        </td>
-
-                                        <td>
-
-                                            <%# Server.HtmlEncode(
-                                                Convert.ToString(
-                                                    Eval("Reference")
-                                                )
-                                            ) %>
-
-                                        </td>
-
-                                        <td>
-
-                                            <asp:LinkButton
-                                                ID="btnViewTransaction"
-                                                runat="server"
-                                                CssClass="transaction-view-button"
-                                                Text="&#128065;"
-                                                CommandName="ViewTransaction"
-                                                CommandArgument='<%# Eval("TransactionId") %>'
-                                                CausesValidation="false">
-                                            </asp:LinkButton>
 
                                         </td>
 
@@ -666,6 +487,9 @@
                     OnClick="btnViewTransactions_Click" />
 
             </section>
+
+            </div>
+            <!-- /wallet-middle-layout -->
 
         </main>
 

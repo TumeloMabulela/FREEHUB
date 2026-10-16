@@ -4,15 +4,27 @@
 
 .refunds-page {
     display: flex;
-    min-height: 100vh;
+    min-height: 0;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Keep the whole page fixed; only the form card scrolls. Overrides the global
+   `.refunds-page > .refunds-main` (padding:30px + overflow-y:auto). */
+.refunds-page > .refunds-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .refunds-main {
     flex: 1;
-    padding: 32px 36px;
     max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.refunds-main > .refunds-header,
+.refunds-main > .refunds-message {
+    flex-shrink: 0;
 }
 
 
@@ -22,12 +34,14 @@
 
 .refunds-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 16px 24px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
 }
+.refunds-header > div:first-child { flex-shrink: 0; }
 
 .refunds-header h1 {
     font-size: 26px;
@@ -117,31 +131,37 @@
    SUMMARY CARDS
 ========================================= */
 
+/* Summary cards sit beside the heading: compact, equal, fill remaining width. */
 .refunds-summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    flex: 1;
+    min-width: 320px;
 }
 
 .refunds-summary-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     background: #ffffff;
     border: 1px solid #e3e8ea;
     border-radius: 10px;
-    padding: 18px 20px;
+    padding: 10px 12px;
+    min-width: 0;
 }
+.refunds-summary-item > div { min-width: 0; }
 
 .refunds-summary-icon {
-    font-size: 24px;
-    width: 44px;
-    height: 44px;
+    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 9px;
 }
 
 .refunds-total-icon {
@@ -161,15 +181,17 @@
 
 .refunds-summary-item small {
     color: #8a949a;
-    font-size: 12px;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 .refunds-summary-value {
     display: block;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     color: #1a2233;
-    margin-top: 2px;
+    margin-top: 1px;
+    white-space: nowrap;
 }
 
 
@@ -181,8 +203,11 @@
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 24px;
-    align-items: start;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
 }
+
 
 
 /* =========================================
@@ -194,6 +219,9 @@
     border: 1px solid #e3e8ea;
     border-radius: 12px;
     padding: 28px 28px 32px;
+    /* The only scrollable area on the page. */
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .refunds-form-card h2 {
@@ -343,6 +371,23 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-height: 0;
+}
+/* The Recent Refunds card fills the column and scrolls its list. */
+.refunds-right-column > .refunds-side-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    flex: 1;
+}
+.refunds-right-column > .refunds-side-card > .refunds-side-heading {
+    flex-shrink: 0;
+}
+.refunds-history-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 .refunds-side-card {
@@ -511,13 +556,35 @@
 
 @media (max-width: 900px) {
 
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .refunds-page > .refunds-main { overflow: visible; }
+    .refunds-main { display: block; }
     .refunds-layout {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
+    }
+    .refunds-form-card {
+        overflow: visible;
+        min-height: 0;
     }
 
     .refunds-header {
         flex-direction: column;
+        align-items: stretch;
     }
+    .refunds-summary-grid { min-width: 0; }
+
+    /* Right column + list flow naturally when stacked. */
+    .refunds-right-column { display: block; min-height: 0; }
+    .refunds-right-column > .refunds-side-card {
+        display: block;
+        overflow: visible;
+        min-height: 0;
+        flex: none;
+    }
+    .refunds-history-list { flex: none; max-height: 360px; }
 
     .refunds-summary-grid {
         grid-template-columns: 1fr;

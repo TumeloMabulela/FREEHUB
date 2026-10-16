@@ -4,15 +4,28 @@
 
 .payouts-page {
     display: flex;
-    min-height: 100vh;
+    min-height: 0;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Keep the whole page fixed; only the inner panels scroll. Overrides the global
+   `.payouts-page > .payouts-main` (padding:30px + overflow-y:auto). */
+.payouts-page > .payouts-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .payouts-main {
     flex: 1;
-    padding: 32px 36px;
-    max-width: 1100px;
+    max-width: 1280px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.payouts-main > .payouts-header,
+.payouts-main > .payouts-message {
+    flex-shrink: 0;
 }
 
 
@@ -22,12 +35,15 @@
 
 .payouts-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
     flex-wrap: wrap;
-    gap: 16px;
+    gap: 16px 24px;
+    margin-bottom: 20px;
+    flex-shrink: 0;
 }
+/* Title column doesn't stretch; the summary cards sit beside it. */
+.payouts-header > div:first-child { flex-shrink: 0; }
 
 .payouts-header h1 {
     font-size: 26px;
@@ -117,31 +133,38 @@
    SUMMARY CARDS
 ========================================= */
 
+/* Summary cards now sit beside the heading: compact, equal, fill the remaining
+   header width. */
 .payouts-summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    flex: 1;
+    min-width: 320px;
 }
 
 .payouts-summary-item {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
     background: #ffffff;
     border: 1px solid #e3e8ea;
     border-radius: 10px;
-    padding: 18px 20px;
+    padding: 10px 12px;
+    min-width: 0;
 }
+.payouts-summary-item > div { min-width: 0; }
 
 .payouts-summary-icon {
-    font-size: 24px;
-    width: 44px;
-    height: 44px;
+    font-size: 18px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
+    border-radius: 9px;
 }
 
 .payouts-total-icon {
@@ -161,15 +184,17 @@
 
 .payouts-summary-item small {
     color: #8a949a;
-    font-size: 12px;
+    font-size: 11px;
+    white-space: nowrap;
 }
 
 .payouts-summary-value {
     display: block;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     color: #1a2233;
-    margin-top: 2px;
+    margin-top: 1px;
+    white-space: nowrap;
 }
 
 
@@ -181,7 +206,32 @@
     display: grid;
     grid-template-columns: 1fr 340px;
     gap: 24px;
-    align-items: start;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
+}
+/* Right column fills the row height; its first card (Funds in Escrow) scrolls
+   its list, the second (How Payouts Work) stays natural height. */
+.payouts-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 0;
+}
+/* Funds in Escrow card: flex column, heading fixed, list scrolls. */
+.payouts-right-column > .payouts-side-card:first-child {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+.payouts-right-column > .payouts-side-card:first-child > .payouts-side-heading {
+    flex-shrink: 0;
+}
+.payouts-escrow-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
 }
 
 
@@ -194,6 +244,11 @@
     border: 1px solid #e3e8ea;
     border-radius: 12px;
     padding: 24px 28px;
+    /* Flex column so the heading stays fixed and the table area scrolls. */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .payouts-table-heading {
@@ -201,6 +256,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 16px;
+    flex-shrink: 0;
 }
 
 .payouts-table-heading h2 {
@@ -215,6 +271,9 @@
 }
 
 .payouts-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
     overflow-x: auto;
 }
 
@@ -233,6 +292,11 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 1px solid #e3e8ea;
+    /* Keep the header visible while rows scroll. */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #ffffff;
 }
 
 .payouts-table tbody tr {
@@ -467,13 +531,33 @@
 
 @media (max-width: 900px) {
 
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .payouts-page > .payouts-main { overflow: visible; }
+    .payouts-main { display: block; }
     .payouts-layout {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
     }
+    .payouts-table-card { overflow: visible; min-height: 0; }
+    .payouts-table-wrapper { flex: none; max-height: 420px; }
+
+    /* Right column + escrow list flow naturally when stacked. */
+    .payouts-right-column { display: block; min-height: 0; }
+    .payouts-right-column > .payouts-side-card:first-child {
+        display: block;
+        overflow: visible;
+        min-height: 0;
+        margin-bottom: 20px;
+    }
+    .payouts-escrow-list { flex: none; max-height: 360px; }
 
     .payouts-header {
         flex-direction: column;
+        align-items: stretch;
     }
+    .payouts-summary-grid { min-width: 0; }
 
     .payouts-summary-grid {
         grid-template-columns: 1fr;

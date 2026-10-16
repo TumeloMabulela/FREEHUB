@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/FundWallet.css?v=11") %>"
+    <link href="<%= ResolveUrl("~/FundWallet.css?v=12") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -74,29 +74,6 @@
                         Add money to your wallet using one
                         of the available payment methods.
                     </p>
-
-                </div>
-
-                <div class="fw-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="fw-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="fw-wallet-icon">
-                        &#128176;
-                    </span>
 
                 </div>
 
@@ -274,59 +251,6 @@
 
                 <!-- RIGHT COLUMN -->
                 <aside class="fw-right-column">
-
-                    <section class="fw-side-card">
-
-                        <div class="fw-side-heading">
-
-                            <h3>How It Works</h3>
-
-                            <span>i</span>
-
-                        </div>
-
-                        <div class="fw-step-row">
-
-                            <span>1</span>
-
-                            <p>
-                                Enter the amount you want to add.
-                            </p>
-
-                        </div>
-
-                        <div class="fw-step-row">
-
-                            <span>2</span>
-
-                            <p>
-                                Select your preferred payment method.
-                            </p>
-
-                        </div>
-
-                        <div class="fw-step-row">
-
-                            <span>3</span>
-
-                            <p>
-                                Confirm and complete your payment.
-                            </p>
-
-                        </div>
-
-                        <div class="fw-step-row">
-
-                            <span>4</span>
-
-                            <p>
-                                Your wallet is updated after confirmation.
-                            </p>
-
-                        </div>
-
-                    </section>
-
 
                     <section class="fw-side-card">
 

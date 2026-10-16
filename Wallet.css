@@ -1,433 +1,418 @@
 /* =========================================
-   FREEHUB - MANAGE WALLET PAGE
-   Overrides compressed styles from StyleSheet1.css
-   to match Disputes page visual scale
+   FREEHUB — MANAGE WALLET PAGE
+   Redesigned content area (sidebar comes from the shared control + global
+   layout rules; header/footer are the Master Page and untouched here).
+   All selectors are wallet-scoped so other pages are unaffected.
+   Palette: gradient #118A9B→#65CA43 | navy #192B40 | green #0B8F43
+   bg #F5F8F7 | border #E5ECEA
 ========================================= */
 
-/* MAIN CONTENT - match Disputes padding/scale */
+/* MAIN CONTENT — inherit the site's base font (Arial) and match the content
+   width/padding used by sibling pages (Disputes/Payouts/Refunds) so the wallet
+   page sits as a natural part of the project. */
+/* Override the global `.wallet-page-layout > .wallet-main-content` rule (which
+   sets padding:30px + overflow-y:auto). Same specificity, declared later, so
+   this wins: smaller top padding pulls the content up, and overflow:hidden stops
+   the whole column from scrolling — only the inner panels scroll. */
+.wallet-page-layout > .wallet-main-content {
+    padding: 14px 32px 18px;
+    overflow: hidden;
+}
 .wallet-main-content {
-    padding: 32px 36px 45px;
+    max-width: 1200px;
+    background: #f5f7f8;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1a2233;
+    /* Flex column that exactly fills the fixed content area, so the heading and
+       overview take their natural size and the two panels below flex to fill the
+       remaining space — the page never scrolls. */
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
+/* Heading, status message and overview keep their natural height. */
+.wallet-heading-row,
+.wallet-message-panel,
+.wallet-overview-section { flex-shrink: 0; }
 
-/* PAGE HEADING - match Disputes h1 */
+/* ---------- Page heading ---------- */
 .wallet-heading-row {
-    margin-bottom: 24px;
-    gap: 16px;
+    display: block;
+    margin-bottom: 14px;
 }
-
 .wallet-heading-row h1 {
     font-size: 26px;
-    color: #1a2233;
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1.2;
 }
-
+/* Single solid heading colour matching other page headings (#1a2233). */
+.wallet-h1-navy,
+.wallet-h1-green { color: #1a2233; }
 .wallet-heading-row p {
     font-size: 14px;
     color: #6b7a8a;
     margin: 6px 0 0;
 }
 
-/* BREADCRUMB - match Disputes 13px */
+/* Breadcrumb — matches the sibling pages. */
 .wallet-breadcrumb {
     font-size: 13px;
     color: #8a949a;
     margin-bottom: 2px;
 }
+.wallet-breadcrumb .breadcrumb-link { color: #2983e0; text-decoration: none; }
+.wallet-breadcrumb .breadcrumb-link:hover { text-decoration: underline; }
+.wallet-breadcrumb span { margin: 0 4px; }
+.wallet-breadcrumb strong { color: #1a2233; }
 
-.wallet-breadcrumb .breadcrumb-link {
-    color: #2983e0;
-    text-decoration: none;
-}
-
-.wallet-breadcrumb .breadcrumb-link:hover {
-    text-decoration: underline;
-}
-
-.wallet-breadcrumb span {
-    margin: 0 4px;
-}
-
-.wallet-breadcrumb strong {
-    color: #1a2233;
-}
-
-/* BALANCE CARD - match Disputes balance card */
-.wallet-current-balance {
-    min-width: auto;
-    padding: 16px 22px;
-    background: #ffffff;
-    border: 1px solid #e3e8ea;
-    border-radius: 10px;
-    gap: 14px;
-}
-
-.wallet-current-balance small {
-    font-size: 12px;
-    color: #8a949a;
-}
-
-.wallet-current-balance-value {
-    font-size: 22px;
-    font-weight: 700;
-    color: #1a2233;
-    margin-top: 2px;
-}
-
-.wallet-balance-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    font-size: 22px;
-    background: #e8f4fd;
-    color: #2983e0;
-}
-
-/* MESSAGE - match Disputes message panel */
+/* ---------- Status message ---------- */
 .wallet-message-panel {
     padding: 14px 18px;
     border-radius: 8px;
     margin-bottom: 20px;
     font-size: 14px;
-    font-weight: normal;
     line-height: 1.5;
 }
+.wallet-success-message { background: #e6f9ed; color: #157a3b; border: 1px solid #b6ecc8; }
+.wallet-warning-message { background: #fdeaea; color: #b22a2a; border: 1px solid #f5c2c2; }
 
-.wallet-success-message {
-    background: #e6f9ed;
-    color: #157a3b;
-    border: 1px solid #b6ecc8;
-}
-
-.wallet-warning-message {
-    background: #fdeaea;
-    color: #b22a2a;
-    border: 1px solid #f5c2c2;
-}
-
-/* CARDS - match Disputes card sizing */
+/* ---------- Generic card (matches sibling pages' white cards) ---------- */
 .wallet-card {
-    padding: 24px 28px;
-    margin-bottom: 24px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
     border: 1px solid #e3e8ea;
     border-radius: 12px;
     background: #ffffff;
 }
-
 .wallet-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 18px;
     color: #1a2233;
-    margin: 0 0 16px;
+    margin: 0 0 10px;
 }
-
+.wallet-h2-ic { color: #157a3b; font-size: 17px; }
 .wallet-card-description {
     font-size: 13px;
     color: #6b7a8a;
-    margin: -8px 0 18px;
+    margin: -6px 0 12px;
 }
 
-/* OVERVIEW - match Disputes summary cards scale */
-.wallet-overview-card h2 {
-    margin-bottom: 18px;
-}
-
+/* ---------- Wallet Overview — four pastel balance cards ---------- */
+.wallet-overview-section { margin-bottom: 14px; }
 .wallet-overview-grid {
-    gap: 16px;
-}
-
-.wallet-overview-item {
-    gap: 14px;
-    padding: 14px 18px;
-    border-right: none;
-    background: #f9fafb;
-    border-radius: 10px;
-    border: 1px solid #f0f2f4;
-}
-
-.wallet-overview-item:first-child {
-    padding-left: 18px;
-}
-
-.overview-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    font-size: 20px;
-}
-
-.wallet-overview-item small {
-    font-size: 12px;
-    color: #8a949a;
-    margin-bottom: 2px;
-}
-
-.wallet-overview-amount {
-    font-size: 18px;
-    font-weight: 700;
-}
-
-/* MIDDLE LAYOUT - match Disputes 2-col grid */
-.wallet-middle-layout {
-    grid-template-columns: 1fr 320px;
-    gap: 24px;
-}
-
-/* ACTIONS - match Disputes form card scale */
-.wallet-actions-card {
-    padding: 24px 28px;
-}
-
-.wallet-actions-grid {
-    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
 }
-
-.wallet-action-item {
-    gap: 14px;
-    min-height: auto;
-    padding: 16px 18px;
+.wallet-overview-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
     border: 1px solid #e3e8ea;
-    border-radius: 10px;
+    background: #ffffff;
+    min-width: 0;
+}
+/* Let the text column shrink so large amounts (e.g. R200 000,00) fit. */
+.wallet-overview-item > div { min-width: 0; }
+.overview-icon {
+    width: 34px; height: 34px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 9px;
+    font-size: 16px;
+}
+.wallet-overview-item small {
+    display: block;
+    font-size: 11px;
+    color: #8a949a;
+    margin-bottom: 1px;
+}
+.wallet-overview-amount {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #1a2233;
+    white-space: nowrap;
 }
 
+/* Icon tints use the project's status palette (same tones as Disputes). The
+   amounts stay the project navy for a clean, consistent look. */
+/* Card 1 — Available (green) */
+.ov-available .overview-icon { background: #e6f9ed; color: #157a3b; }
+.ov-available .available-amount { color: #157a3b; }
+
+/* Card 2 — On Hold (orange) */
+.ov-hold .overview-icon { background: #fff4e5; color: #e68a00; }
+
+/* Card 3 — Pending Withdrawals (blue) */
+.ov-pending .overview-icon { background: #e8f1fc; color: #2983e0; }
+
+/* Card 4 — Total (navy accent) */
+.ov-total .overview-icon { background: #eef1f4; color: #1a2233; }
+
+/* ---------- Two panels: Actions (≈47%) + Transactions (≈53%) ---------- */
+.wallet-middle-layout {
+    display: grid;
+    grid-template-columns: 1.05fr 1.15fr;
+    gap: 20px;
+    align-items: stretch;
+    /* Fill whatever vertical space remains under the heading + overview, so the
+       panels fit the page exactly and the page itself never scrolls. Only the
+       panels' own bodies scroll if their content is long. */
+    flex: 1;
+    min-height: 0;
+}
+.wallet-middle-layout > .wallet-card { margin-bottom: 0; }
+
+/* Both panels fill their column height; their heading stays fixed and the body
+   below it scrolls. */
+.wallet-middle-layout > .wallet-actions-card,
+.wallet-middle-layout > .wallet-transactions-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+.wallet-middle-layout > .wallet-actions-card > h2,
+.wallet-middle-layout > .wallet-actions-card > .wallet-card-description {
+    flex-shrink: 0;
+}
+
+/* ---------- Wallet Actions panel — scrolls internally ---------- */
+.wallet-actions-card { padding: 20px 22px; }
+.wallet-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(0, 1fr);   /* three equal rows that can shrink */
+    gap: 12px;
+    /* Fill the panel height evenly; if the viewport is short, scroll instead of
+       clipping the bottom row. */
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    align-content: stretch;
+}
+.wallet-action-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid #e3e8ea;
+    border-radius: 12px;
+    background: #ffffff;
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 .wallet-action-item:hover {
     border-color: #2983e0;
     box-shadow: 0 2px 8px rgba(41, 131, 224, 0.08);
 }
-
 .wallet-action-icon {
-    width: 42px;
-    height: 42px;
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 17px;
 }
-
+.wallet-action-information {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
 .wallet-action-information strong {
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
     color: #1a2233;
-    margin-bottom: 3px;
 }
-
-.wallet-action-information small {
-    font-size: 12px;
-    color: #6b7a8a;
-    line-height: 1.4;
-}
-
 .wallet-action-arrow {
+    display: flex;
+    align-items: center;
     font-size: 18px;
-    color: #8a949a;
+    color: #b4bec6;
+    flex-shrink: 0;
 }
+.wallet-action-item:hover .wallet-action-arrow { color: #2983e0; }
 
-/* SUMMARY CARD - match Disputes right panel */
-.wallet-summary-card {
-    padding: 22px 24px;
-}
+/* Action icon tints — project status palette (green/blue/orange/red) + a
+   teal for refunds, consistent with the rest of the system. */
+.fund-icon { background: #e6f9ed; color: #157a3b; }
+.withdraw-icon { background: #e8f1fc; color: #2983e0; }
+.transactions-icon { background: #eef1f4; color: #4a5568; }
+.payouts-icon { background: #e6f9ed; color: #157a3b; }
+.disputes-icon { background: #fdeaea; color: #b22a2a; }
+.refunds-icon { background: #fff4e5; color: #e68a00; }
 
-.wallet-summary-card h2 {
-    margin-bottom: 16px;
-}
-
-.wallet-summary-line {
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f2f4;
-}
-
-.wallet-summary-line > span:first-child {
-    font-size: 13px;
-    color: #4a5568;
-}
-
-.wallet-summary-line .summary-green,
-.wallet-summary-line .summary-orange,
-.wallet-summary-line .summary-blue {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.summary-green {
-    color: #157a3b;
-}
-
-.summary-orange {
-    color: #e68a00;
-}
-
-.summary-blue {
-    color: #2983e0;
-}
-
-.wallet-summary-total {
-    margin-top: 4px;
-    padding: 14px 0 10px;
-    border-top: 1px solid #e3e8ea;
-}
-
-.wallet-summary-total > span:first-child {
-    font-size: 14px;
-    font-weight: 700;
-    color: #1a2233;
-}
-
-.summary-total-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: #1a2233;
-}
-
-.wallet-fund-button {
-    width: 100%;
-    height: auto;
-    padding: 12px 20px;
-    margin-top: 16px;
-    background: #2983e0;
-    color: #ffffff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.wallet-fund-button:hover {
-    background: #1d6bbf;
-}
-
-/* TRANSACTIONS TABLE - match Disputes scale */
+/* ---------- Recent Transactions panel ---------- */
 .wallet-transactions-card {
-    padding: 24px 28px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
 }
-
 .wallet-transactions-heading {
-    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    flex-shrink: 0;
 }
-
-.wallet-transactions-heading h2 {
-    margin-bottom: 0;
-}
-
+.wallet-transactions-heading h2 { margin: 0; }
 .wallet-view-all-link {
     font-size: 13px;
     font-weight: 600;
     color: #2983e0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
+.wallet-view-all-link:hover { text-decoration: underline; }
 
+/* Transactions list: fills the panel height and scrolls on its own, with a
+   sticky header. No horizontal scroll on desktop (the four columns fit). */
+.wallet-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid #e3e8ea;
+    border-radius: 10px;
+}
+.wallet-transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
 .wallet-transactions-table th {
-    padding: 12px 12px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 11px 12px;
+    font-size: 11px;
+    font-weight: 700;
     color: #8a949a;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    text-align: left;
+    background: #f5f7f8;
     border-bottom: 1px solid #e3e8ea;
+    position: sticky;
+    top: 0;
+    z-index: 2;
 }
-
 .wallet-transactions-table td {
-    padding: 14px 12px;
+    padding: 12px;
     font-size: 13px;
     color: #4a5568;
-    border-bottom: 1px solid #f0f2f4;
-    white-space: normal;
+    border-bottom: 1px solid #f0f4f3;
+    vertical-align: top;
 }
+.wallet-transactions-table tbody tr:last-child td { border-bottom: none; }
+.wallet-transactions-table tbody tr:hover { background: #f9fbfa; }
 
-.transaction-icon {
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    font-size: 14px;
-}
+/* Column widths so the four columns fit without horizontal scroll. */
+.wallet-transactions-table th:nth-child(1),
+.wallet-transactions-table td:nth-child(1) { width: 40%; }
+.wallet-transactions-table th:nth-child(2),
+.wallet-transactions-table td:nth-child(2) { width: 22%; }
+.wallet-transactions-table th.tx-amount-col,
+.wallet-transactions-table td.tx-amount-col { width: 20%; text-align: right; }
+.wallet-transactions-table th:nth-child(4),
+.wallet-transactions-table td:nth-child(4) { width: 18%; }
 
+.tx-date-cell { white-space: nowrap; }
+.tx-date-link { color: #4a5568; text-decoration: none; font-size: 13px; }
+.tx-date-link:hover { color: #2983e0; text-decoration: underline; }
+
+/* Type + status badges — match the sibling pages' badge shape (4px radius). */
 .transaction-type,
 .transaction-status {
-    padding: 4px 10px;
+    display: inline-block;
+    padding: 3px 8px;
     border-radius: 4px;
     font-size: 11px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
-.transaction-view-button {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    font-size: 14px;
-    background: #f5f7f8;
-    color: #2983e0;
-}
+/* Amount colours (sign conventions preserved by the code-behind) */
+.transaction-credit-amount { color: #157a3b; font-weight: 700; }
+.transaction-debit-amount { color: #b22a2a; font-weight: 700; }
 
-.transaction-view-button:hover {
-    background: #e8f4fd;
+/* Empty state */
+.wallet-empty-transactions {
+    padding: 40px 20px;
+    text-align: center;
 }
+.wallet-empty-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 10px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    font-size: 22px;
+    background: #f0f4f3;
+}
+.wallet-empty-transactions strong { display: block; font-size: 15px; color: #192B40; margin-bottom: 6px; }
+.wallet-empty-transactions p { font-size: 13px; color: #6B7280; margin: 0; }
 
+/* Bottom "view all" button */
 .wallet-bottom-view-button {
     display: block;
     width: 100%;
-    padding: 12px 20px;
-    margin: 16px 0 0;
+    padding: 11px 20px;
+    margin: 14px 0 0;
     background: #f5f7f8;
-    color: #2983e0;
-    border: 1px solid #e3e8ea;
-    border-radius: 8px;
+    color: #0B8F43;
+    border: 1px solid #E5ECEA;
+    border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     text-align: center;
+    flex-shrink: 0;
+}
+.wallet-bottom-view-button:hover { background: #e8f7ec; }
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media screen and (max-width: 1100px) {
+    /* Tablet: two balance cards per row. */
+    .wallet-overview-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.wallet-bottom-view-button:hover {
-    background: #e8f4fd;
-}
-
-/* EMPTY STATE */
-.wallet-empty-transactions {
-    padding: 40px 20px;
-    border-top: none;
-}
-
-.wallet-empty-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    font-size: 22px;
-}
-
-.wallet-empty-transactions strong {
-    font-size: 15px;
-    color: #1a2233;
-    margin-bottom: 6px;
-}
-
-.wallet-empty-transactions p {
-    font-size: 13px;
-    color: #6b7a8a;
-}
-
-/* RESPONSIVE - keep Disputes breakpoints */
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1000px) {
+    /* Stack vertically and flow naturally (page scrolls on small screens). */
+    .wallet-main-content { display: block; }
     .wallet-middle-layout {
         grid-template-columns: 1fr;
+        flex: none;
+        height: auto;
+        min-height: 0;
+    }
+    .wallet-middle-layout > .wallet-actions-card,
+    .wallet-middle-layout > .wallet-transactions-card {
+        overflow: visible;
     }
     .wallet-actions-grid {
-        grid-template-columns: repeat(2, 1fr);
+        overflow: visible;
+        flex: none;
     }
-    .wallet-overview-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .wallet-table-wrapper {
+        flex: none;
+        max-height: 340px;
     }
 }
 
-@media screen and (max-width: 780px) {
-    .wallet-heading-row {
-        flex-direction: column;
-    }
-    .wallet-current-balance {
-        width: 100%;
-    }
-}
-
-@media screen and (max-width: 580px) {
-    .wallet-main-content {
-        padding: 20px 16px 40px;
-    }
-    .wallet-overview-grid,
-    .wallet-actions-grid {
-        grid-template-columns: 1fr;
-    }
+@media screen and (max-width: 680px) {
+    .wallet-main-content { padding: 18px 16px 40px; }
+    .wallet-overview-grid { grid-template-columns: 1fr; }
+    .wallet-actions-grid { grid-template-columns: 1fr; }
+    .wallet-heading-row h1 { font-size: 26px; }
+    /* Allow the table to scroll horizontally only on small screens. */
+    .wallet-table-wrapper { overflow-x: auto; }
+    .wallet-transactions-table { table-layout: auto; min-width: 520px; }
 }

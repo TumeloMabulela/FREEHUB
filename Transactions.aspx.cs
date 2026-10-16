@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -85,9 +87,6 @@ namespace FreeHubProject
 
                 Session["AvailableBalance"] = balance;
             }
-
-            lblCurrentBalance.Text =
-                FormatCurrency(balance);
         }
 
 
@@ -466,85 +465,124 @@ namespace FreeHubProject
                     transaction["transactionAmount"]
                 );
 
-            StringBuilder receipt =
-                new StringBuilder();
+            // Build the receipt as individual lines, then render them to a PDF.
+            var lines = new List<string>
+            {
+                "FREEHUB TRANSACTION RECEIPT",
+                "--------------------------------",
+                "",
+                "Transaction ID: " + Convert.ToString(transaction["transactionID"]),
+                "Reference: " + Convert.ToString(transaction["reference"]),
+                "Date: " + Convert.ToDateTime(transaction["transactionDate"]).ToString("dd MMM yyyy, hh:mm tt"),
+                "Type: " + type,
+                "Amount: " + FormatTransactionAmount(amount, type),
+                "Status: " + Convert.ToString(transaction["transactionStatus"]),
+                "Payment Method: " + Convert.ToString(transaction["paymentMethod"]),
+                "Description: " + Convert.ToString(transaction["itemDescription"]),
+                "",
+                "--------------------------------",
+                "Generated " + DateTime.Now.ToString("dd MMM yyyy, hh:mm tt"),
+                "Thank you for using FreeHUB."
+            };
 
-            receipt.AppendLine(
-                "FREEHUB TRANSACTION RECEIPT"
-            );
-
-            receipt.AppendLine(
-                "--------------------------------"
-            );
-
-            receipt.AppendLine(
-                "Transaction ID: " +
-                transaction["transactionID"]
-            );
-
-            receipt.AppendLine(
-                "Reference: " +
-                transaction["reference"]
-            );
-
-            receipt.AppendLine(
-                "Date: " +
-                Convert.ToDateTime(
-                    transaction["transactionDate"]
-                ).ToString(
-                    "dd MMM yyyy, hh:mm tt"
-                )
-            );
-
-            receipt.AppendLine(
-                "Type: " +
-                type
-            );
-
-            receipt.AppendLine(
-                "Amount: " +
-                FormatTransactionAmount(
-                    amount,
-                    type
-                )
-            );
-
-            receipt.AppendLine(
-                "Status: " +
-                transaction["transactionStatus"]
-            );
-
-            receipt.AppendLine(
-                "Payment Method: " +
-                transaction["paymentMethod"]
-            );
-
-            receipt.AppendLine(
-                "Description: " +
-                transaction["itemDescription"]
-            );
+            byte[] pdf = BuildReceiptPdf(lines);
 
             Response.Clear();
-
-            Response.ContentType =
-                "text/plain";
-
+            Response.ContentType = "application/pdf";
             Response.AddHeader(
                 "content-disposition",
-                "attachment;filename=" +
-                transactionId +
-                "-receipt.txt"
-            );
-
-            Response.Write(
-                receipt.ToString()
-            );
-
+                "attachment;filename=" + transactionId + "-receipt.pdf");
+            Response.BinaryWrite(pdf);
             Response.Flush();
 
             HttpContext.Current
                 .ApplicationInstance
                 .CompleteRequest();
+        }
+
+        /// <summary>
+        /// Builds a minimal, valid single-page PDF (A4) containing the given lines
+        /// of text using the built-in Helvetica font. No external library needed.
+        /// </summary>
+        private static byte[] BuildReceiptPdf(List<string> lines)
+        {
+            // Build the page content stream: start text at (56, 780), 14pt leading.
+            var content = new StringBuilder();
+            content.Append("BT\n/F1 12 Tf\n14 TL\n56 780 Td\n");
+            for (int i = 0; i < lines.Count; i++)
+            {
+                content.Append("(").Append(EscapePdfText(lines[i])).Append(") Tj\n");
+                content.Append("T*\n"); // next line
+            }
+            content.Append("ET");
+
+            byte[] contentBytes = Encoding.ASCII.GetBytes(content.ToString());
+
+            // Five PDF objects: catalog, pages, page, font, content stream.
+            var objects = new List<string>
+            {
+                "<< /Type /Catalog /Pages 2 0 R >>",
+                "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+                "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] " +
+                    "/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+                "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+                "<< /Length " + contentBytes.Length + " >>\nstream\n" +
+                    content + "\nendstream"
+            };
+
+            var pdf = new StringBuilder();
+            pdf.Append("%PDF-1.4\n");
+
+            var offsets = new List<int>();
+            for (int i = 0; i < objects.Count; i++)
+            {
+                offsets.Add(Encoding.ASCII.GetByteCount(pdf.ToString()));
+                pdf.Append(i + 1).Append(" 0 obj\n").Append(objects[i]).Append("\nendobj\n");
+            }
+
+            int xrefPos = Encoding.ASCII.GetByteCount(pdf.ToString());
+            pdf.Append("xref\n0 ").Append(objects.Count + 1).Append("\n");
+            pdf.Append("0000000000 65535 f \n");
+            foreach (int off in offsets)
+            {
+                pdf.Append(off.ToString("D10")).Append(" 00000 n \n");
+            }
+            pdf.Append("trailer\n<< /Size ").Append(objects.Count + 1)
+               .Append(" /Root 1 0 R >>\nstartxref\n")
+               .Append(xrefPos).Append("\n%%EOF");
+
+            return Encoding.ASCII.GetBytes(pdf.ToString());
+        }
+
+        /// <summary>Escapes characters that are special inside a PDF text string.</summary>
+        private static string EscapePdfText(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+            // Replace the Rand sign and any non-ASCII with safe equivalents, since
+            // the base Helvetica font / our encoding only covers ASCII reliably.
+            var sb = new StringBuilder();
+            foreach (char c in text)
+            {
+                if (c == '\\' || c == '(' || c == ')')
+                {
+                    sb.Append('\\').Append(c);
+                }
+                else if (c == 'R' || c <= 0x7E)
+                {
+                    sb.Append(c);
+                }
+                else if (c == '\u00A0')
+                {
+                    sb.Append(' ');
+                }
+                else
+                {
+                    // Drop other non-ASCII glyphs (e.g. stray symbols) to keep the
+                    // stream valid; amounts already use "R" + digits.
+                    sb.Append('?');
+                }
+            }
+            return sb.ToString();
         }
 
 

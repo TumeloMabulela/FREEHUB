@@ -4,9 +4,21 @@
    to match Disputes page visual scale
 ========================================= */
 
-/* MAIN - match Disputes padding */
+/* MAIN — keep the whole page fixed: override the global
+   `.fw-page > .fw-main` (padding:30px + overflow-y:auto) so the column fills the
+   content area and does NOT scroll; only the Fund Wallet form card scrolls. */
+.fw-page > .fw-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .fw-main {
-    padding: 32px 36px 45px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+.fw-main > .fw-header,
+.fw-main > .fw-message {
+    flex-shrink: 0;
 }
 
 /* HEADER - match Disputes scale */
@@ -103,16 +115,27 @@
     border: 1px solid #f5c2c2;
 }
 
-/* LAYOUT */
+/* LAYOUT — fills the remaining height so the page itself never scrolls. */
 .fw-layout {
+    display: grid;
     grid-template-columns: 1fr 340px;
     gap: 24px;
+    align-items: stretch;
+    flex: 1;
+    min-height: 0;
 }
 
-/* FORM CARD */
+/* Right column keeps its natural height and never scrolls. */
+.fw-right-column {
+    align-self: start;
+}
+
+/* FORM CARD — the only scrollable area on the page. */
 .fw-form-card {
     padding: 28px;
     border: 1px solid #e3e8ea;
+    min-height: 0;
+    overflow-y: auto;
     border-radius: 12px;
 }
 
@@ -313,8 +336,18 @@
 
 /* RESPONSIVE */
 @media screen and (max-width: 950px) {
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .fw-page > .fw-main { overflow: visible; }
+    .fw-main { display: block; }
     .fw-layout {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
+    }
+    .fw-form-card {
+        overflow: visible;
+        min-height: 0;
     }
 }
 

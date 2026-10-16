@@ -203,7 +203,13 @@ button {
     .page-content:has(.my-projects-page),
     .page-content:has(.wallet-page-layout),
     .page-content:has(.completed-page-layout),
-    .page-content:has(.rate-page-layout) {
+    .page-content:has(.rate-page-layout),
+    .page-content:has(.disputes-page),
+    .page-content:has(.payouts-page),
+    .page-content:has(.refunds-page),
+    .page-content:has(.transactions-page),
+    .page-content:has(.withdraw-page),
+    .page-content:has(.fw-page) {
         overflow: hidden;
     }
 }
@@ -7967,7 +7973,13 @@ FREEHUB HOME PAGE
     .my-projects-page,
     .wallet-page-layout,
     .completed-page-layout,
-    .rate-page-layout {
+    .rate-page-layout,
+    .disputes-page,
+    .payouts-page,
+    .refunds-page,
+    .transactions-page,
+    .withdraw-page,
+    .fw-page {
         height: auto;
     }
     .freehub-dashboard-layout > section,
@@ -7975,7 +7987,13 @@ FREEHUB HOME PAGE
     .my-projects-page > .my-projects-main,
     .wallet-page-layout > .wallet-main-content,
     .completed-page-layout > .completed-main-content,
-    .rate-page-layout > .rate-main-content {
+    .rate-page-layout > .rate-main-content,
+    .disputes-page > .disputes-main,
+    .payouts-page > .payouts-main,
+    .refunds-page > .refunds-main,
+    .transactions-page > .transactions-main,
+    .withdraw-page > .withdraw-main,
+    .fw-page > .fw-main {
         height: auto;
         overflow: visible;
     }
@@ -9991,7 +10009,7 @@ FREEHUB HOME PAGE
 ========================================= */
 
 .fw-page {
-    min-height: 100vh;
+    min-height: 0;
     display: flex;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
@@ -10498,7 +10516,7 @@ FREEHUB HOME PAGE
 ========================================= */
 
 .withdraw-page {
-    min-height: 100vh;
+    min-height: 0;
     display: flex;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
@@ -11174,7 +11192,7 @@ FREEHUB HOME PAGE
 ========================================= */
 
 .transactions-page {
-    min-height: 100vh;
+    min-height: 0;
     display: flex;
     background: #f5f7f8;
     font-family: Arial, Helvetica, sans-serif;
@@ -13371,7 +13389,13 @@ FREEHUB HOME PAGE
 .my-projects-page,
 .wallet-page-layout,
 .completed-page-layout,
-.rate-page-layout {
+.rate-page-layout,
+.disputes-page,
+.payouts-page,
+.refunds-page,
+.transactions-page,
+.withdraw-page,
+.fw-page {
     display: flex;
     height: 100%;
     min-height: 0;
@@ -13385,7 +13409,13 @@ FREEHUB HOME PAGE
 .my-projects-page > .my-projects-content,
 .wallet-page-layout > .wallet-main-content,
 .completed-page-layout > .completed-main-content,
-.rate-page-layout > .rate-main-content {
+.rate-page-layout > .rate-main-content,
+.disputes-page > .disputes-main,
+.payouts-page > .payouts-main,
+.refunds-page > .refunds-main,
+.transactions-page > .transactions-main,
+.withdraw-page > .withdraw-main,
+.fw-page > .fw-main {
     flex: 1;
     min-width: 0;
     height: 100%;

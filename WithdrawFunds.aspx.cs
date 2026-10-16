@@ -50,9 +50,6 @@ namespace FreeHubProject
                     availableBalance
                 );
 
-            lblCurrentBalance.Text =
-                formattedBalance;
-
             lblAvailableBalance.Text =
                 formattedBalance;
         }

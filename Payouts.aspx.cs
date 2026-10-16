@@ -35,7 +35,6 @@ namespace FreeHubProject
                 Session["AvailableBalance"] = balance;
             }
 
-            lblCurrentBalance.Text = FormatCurrency(balance);
         }
 
 

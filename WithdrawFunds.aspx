@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/WithdrawFunds.css?v=2") %>"
+    <link href="<%= ResolveUrl("~/WithdrawFunds.css?v=4") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -59,29 +59,6 @@
 
                 </div>
 
-
-                <div class="withdraw-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="withdraw-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="withdraw-wallet-icon">
-                        &#128176;
-                    </span>
-
-                </div>
 
             </div>
 
@@ -273,46 +250,6 @@
                 <!-- RIGHT SIDE -->
                 <aside class="withdraw-right-column">
 
-                    <!-- IMPORTANT INFORMATION -->
-                    <section class="withdraw-side-card">
-
-                        <div class="withdraw-side-heading">
-
-                            <h3>
-                                Important Information
-                            </h3>
-
-                            <span>
-                                &#9432;
-                            </span>
-
-                        </div>
-
-                        <ul class="withdraw-information-list">
-
-                            <li>
-                                Withdrawals remain pending until
-                                approved by an administrator.
-                            </li>
-
-                            <li>
-                                Approved withdrawals are processed
-                                within 1-3 business days.
-                            </li>
-
-                            <li>
-                                Make sure your bank details are correct.
-                            </li>
-
-                            <li>
-                                Minimum withdrawal amount is R100.00.
-                            </li>
-
-                        </ul>
-
-                    </section>
-
-
                     <!-- RECENT WITHDRAWALS -->
                     <section class="withdraw-side-card">
 
@@ -332,6 +269,7 @@
 
                         </div>
 
+                        <div class="withdraw-history-list">
 
                         <asp:Repeater
                             ID="rptWithdrawals"
@@ -406,6 +344,9 @@
                             </p>
 
                         </asp:Panel>
+
+                        </div>
+                        <!-- /withdraw-history-list -->
 
                     </section>
 

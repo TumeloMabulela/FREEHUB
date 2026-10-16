@@ -15,15 +15,6 @@ namespace FreeHubProject
     {
 
         /// <summary>
-        /// lblCurrentWalletBalance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCurrentWalletBalance;
-
-        /// <summary>
         /// pnlWalletMessage control.
         /// </summary>
         /// <remarks>
@@ -132,53 +123,6 @@ namespace FreeHubProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.LinkButton btnRefunds;
-
-        /// <summary>
-        /// lblSummaryAvailable control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSummaryAvailable;
-
-        /// <summary>
-        /// lblSummaryOnHold control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSummaryOnHold;
-
-        /// <summary>
-        /// lblSummaryPending control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSummaryPending;
-
-        /// <summary>
-        /// lblSummaryTotal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblSummaryTotal;
-
-        /// <summary>
-        /// btnSummaryFundWallet control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSummaryFundWallet;
-
-        protected global::System.Web.UI.WebControls.Panel pnlSummaryFundBtn;
 
         /// <summary>
         /// btnViewAllTop control.

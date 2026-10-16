@@ -4,15 +4,42 @@
    visual scale exactly
 ========================================= */
 
-/* MAIN */
+/* MAIN — override the global `.transactions-page > .transactions-main` rule
+   (padding:30px + overflow-y:auto). Keep the whole page fixed: the column is a
+   flex layout that fills the content area and does NOT scroll; only the two
+   lower cards' bodies scroll. */
+.transactions-page > .transactions-main {
+    padding: 16px 32px 20px;
+    overflow: hidden;
+}
 .transactions-main {
-    padding: 32px 36px 50px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+/* Header, message and filter keep their natural height. */
+.transactions-main > .transactions-header,
+.transactions-main > .tx-message {
+    flex-shrink: 0;
 }
 
 /* HEADER */
 .transactions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
     margin-bottom: 24px;
-    gap: 16px;
+    gap: 16px 24px;
+}
+
+/* Filter now lives beside the heading: inline, no separate card frame. */
+.transactions-header .transactions-filter-card {
+    margin-bottom: 0;
+    padding: 0;
+    border: none;
+    flex-wrap: wrap;
+    align-items: flex-end;
 }
 
 .transactions-header h1 {
@@ -174,8 +201,14 @@
 
 /* CONTENT GRID */
 .transactions-content-grid {
+    display: grid;
     grid-template-columns: 1fr 320px;
     gap: 24px;
+    align-items: stretch;
+    /* Fill the space left under the header + filter so the page itself never
+       scrolls — only the two cards below scroll their own bodies. */
+    flex: 1;
+    min-height: 0;
 }
 
 /* HISTORY CARD */
@@ -184,6 +217,30 @@
     border: 1px solid #e3e8ea;
     border-radius: 12px;
     box-shadow: none;
+    /* Each card is a flex column that fits its content and flexes with the
+       layout; its heading stays fixed and its body scrolls. */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+.transactions-history-heading,
+.transactions-details-heading {
+    flex-shrink: 0;
+}
+/* The transaction list is the scroll area of the history card. */
+.transactions-table-wrapper {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+/* Keep the table header visible while rows scroll. */
+.transactions-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #ffffff;
 }
 
 .transactions-history-heading {
@@ -273,8 +330,17 @@
 
 /* DETAILS CARD */
 .transactions-details-card {
-    min-height: auto;
+    min-height: 0;
     padding: 22px 24px;
+}
+/* The visible details panel (empty state or selected details) fills the card
+   body and scrolls on its own. */
+.transactions-details-card > .transactions-empty-details,
+.transactions-details-card > .transactions-details-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .transactions-details-heading h3 {
@@ -446,8 +512,28 @@
 
 /* RESPONSIVE */
 @media screen and (max-width: 1050px) {
+    /* Stack and flow naturally (page scrolls on small screens). */
+    .transactions-page > .transactions-main { overflow: visible; }
+    .transactions-main { display: block; }
     .transactions-content-grid {
+        display: block;
         grid-template-columns: 1fr;
+        flex: none;
+        min-height: 0;
+    }
+    .transactions-history-card,
+    .transactions-details-card {
+        overflow: visible;
+        margin-bottom: 20px;
+    }
+    .transactions-table-wrapper {
+        flex: none;
+        max-height: 420px;
+    }
+    .transactions-details-card > .transactions-empty-details,
+    .transactions-details-card > .transactions-details-body {
+        flex: none;
+        overflow: visible;
     }
     .transactions-filter-card {
         flex-direction: column;

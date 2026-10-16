@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Refunds.css?v=1") %>"
+    <link href="<%= ResolveUrl("~/Refunds.css?v=4") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -57,49 +57,8 @@
 
                 </div>
 
-                <div class="refunds-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="refunds-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="refunds-wallet-icon">
-                        &#128176;
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- MESSAGE -->
-            <asp:Panel
-                ID="pnlMessage"
-                runat="server"
-                CssClass="refunds-message"
-                Visible="false">
-
-                <asp:Label
-                    ID="lblMessage"
-                    runat="server">
-                </asp:Label>
-
-            </asp:Panel>
-
-
-            <!-- SUMMARY CARDS -->
-            <section class="refunds-summary-grid">
+                <!-- SUMMARY CARDS (beside the page heading) -->
+                <section class="refunds-summary-grid">
 
                 <div class="refunds-summary-item">
 
@@ -170,7 +129,24 @@
 
                 </div>
 
-            </section>
+                </section>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+            <asp:Panel
+                ID="pnlMessage"
+                runat="server"
+                CssClass="refunds-message"
+                Visible="false">
+
+                <asp:Label
+                    ID="lblMessage"
+                    runat="server">
+                </asp:Label>
+
+            </asp:Panel>
 
 
             <div class="refunds-layout">
@@ -317,53 +293,6 @@
                 <!-- RIGHT COLUMN -->
                 <aside class="refunds-right-column">
 
-                    <!-- IMPORTANT INFORMATION -->
-                    <section class="refunds-side-card">
-
-                        <div class="refunds-side-heading">
-
-                            <h3>
-                                Refund Policy
-                            </h3>
-
-                            <span>
-                                &#9432;
-                            </span>
-
-                        </div>
-
-                        <ul class="refunds-info-list">
-
-                            <li>
-                                Refund requests are reviewed within
-                                2-3 business days.
-                            </li>
-
-                            <li>
-                                Approved refunds are credited directly
-                                to your wallet balance.
-                            </li>
-
-                            <li>
-                                Partial refunds are allowed for
-                                eligible transactions.
-                            </li>
-
-                            <li>
-                                Refund requests must include a valid
-                                transaction reference.
-                            </li>
-
-                            <li>
-                                Disputed transactions may require
-                                additional review time.
-                            </li>
-
-                        </ul>
-
-                    </section>
-
-
                     <!-- RECENT REFUNDS -->
                     <section class="refunds-side-card">
 
@@ -382,6 +311,8 @@
                                 OnClick="btnViewAll_Click" />
 
                         </div>
+
+                        <div class="refunds-history-list">
 
                         <asp:Repeater
                             ID="rptRefunds"
@@ -456,6 +387,9 @@
                             </p>
 
                         </asp:Panel>
+
+                        </div>
+                        <!-- /refunds-history-list -->
 
                     </section>
 

@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Transactions.css?v=21") %>"
+    <link href="<%= ResolveUrl("~/Transactions.css?v=23") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -58,49 +58,8 @@
 
                 </div>
 
-
-                <section class="transactions-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="transactions-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="transactions-wallet-icon">
-                        &#128176;
-                    </span>
-
-                </section>
-
-            </div>
-
-
-            <asp:Panel
-                ID="pnlMessage"
-                runat="server"
-                CssClass="tx-message"
-                Visible="false">
-
-                <asp:Label
-                    ID="lblMessage"
-                    runat="server">
-                </asp:Label>
-
-            </asp:Panel>
-
-
-            <!-- FILTER -->
-            <section class="transactions-filter-card">
+                <!-- FILTER (sits beside the page heading) -->
+                <section class="transactions-filter-card">
 
                 <div class="transactions-filter-field">
 
@@ -192,7 +151,23 @@
                     CausesValidation="false"
                     OnClick="btnClear_Click" />
 
-            </section>
+                </section>
+
+            </div>
+
+
+            <asp:Panel
+                ID="pnlMessage"
+                runat="server"
+                CssClass="tx-message"
+                Visible="false">
+
+                <asp:Label
+                    ID="lblMessage"
+                    runat="server">
+                </asp:Label>
+
+            </asp:Panel>
 
 
             <div class="transactions-content-grid">
@@ -379,7 +354,8 @@
                     <asp:Panel
                         ID="pnlSelectedDetails"
                         runat="server"
-                        Visible="false">
+                        Visible="false"
+                        CssClass="transactions-details-body">
 
                         <div class="transactions-selected-summary">
 
@@ -504,38 +480,6 @@
                 </aside>
 
             </div>
-
-
-            <section class="transactions-help-card">
-
-                <div class="transactions-help-icon">
-                    i
-                </div>
-
-                <div>
-
-
-
-
-                    <strong>
-                        Need help?
-                    </strong>
-
-                    <p>
-                        Contact support if you have questions
-                        about a transaction.
-                    </p>
-
-                </div>
-
-                <a href="StartChat.aspx?help=1&userId=1"
-                   class="transactions-support-button">
-
-                    Contact Support
-
-                </a>
-
-            </section>
 
         </main>
 

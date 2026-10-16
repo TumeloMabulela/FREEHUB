@@ -413,6 +413,30 @@ namespace FreeHubProject
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblDetailsProjectStatus;
 
+        /// <summary>pnlNoProjectNote control (info note + create-project button).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlNoProjectNote;
+
+        /// <summary>pnlNoSharedFiles control (shared-files empty state card).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlNoSharedFiles;
+
+        /// <summary>lblAboutInitials control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAboutInitials;
+
+        /// <summary>lblAboutName control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAboutName;
+
+        /// <summary>lblAboutStatus control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAboutStatus;
+
+        /// <summary>lblAboutCountry control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAboutCountry;
+
+        /// <summary>lblAboutRole control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAboutRole;
+
+        /// <summary>btnViewProfile control.</summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnViewProfile;
+
         /// <summary>
         /// btnViewProject control.
         /// </summary>

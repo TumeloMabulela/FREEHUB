@@ -17,6 +17,12 @@ namespace FreeHubProject
         {
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // The chat styles are inline in this page's HTML. Prevent the browser
+            // from serving a stale cached copy so UI updates always take effect.
+            Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
+            Response.Cache.SetNoStore();
+            Response.Cache.SetExpires(DateTime.UtcNow.AddDays(-1));
+
             if (!IsPostBack)
             {
                 // Heartbeat: update current user's last seen timestamp
@@ -104,6 +110,9 @@ namespace FreeHubProject
                     lblProjectBarStatus.Text = status;
                     lblDetailsProjectTitle.Text = title;
                     lblDetailsProjectStatus.Text = status;
+
+                    // A real linked project exists — hide the "no project / create one" note.
+                    if (pnlNoProjectNote != null) pnlNoProjectNote.Visible = false;
                 }
                 else
                 {
@@ -115,6 +124,10 @@ namespace FreeHubProject
                 SetNoProjectLabels();
             }
 
+            // Populate the "About this contact" block in the details panel from the
+            // selected user's profile (read-only; mirrors the chat header info).
+            BindAboutContact();
+
             // Shared files for the details panel — files exchanged between the two users.
             LoadSharedFilesForDetailsPanel();
         }
@@ -122,9 +135,51 @@ namespace FreeHubProject
         private void SetNoProjectLabels()
         {
             lblProjectBarTitle.Text = "No active project";
-            lblProjectBarStatus.Text = "—";
+            lblProjectBarStatus.Text = "Open for discussion";
             lblDetailsProjectTitle.Text = "No active project";
-            lblDetailsProjectStatus.Text = "—";
+            lblDetailsProjectStatus.Text = "Open for discussion";
+
+            // No linked project — show the info note + "Create a project" button.
+            if (pnlNoProjectNote != null) pnlNoProjectNote.Visible = true;
+        }
+
+        /// <summary>
+        /// Fills the "About this contact" section of the details panel using the
+        /// selected contact's profile. Read-only; no new data sources are introduced.
+        /// </summary>
+        private void BindAboutContact()
+        {
+            if (SelectedOtherUserId <= 0) return;
+
+            DataRow user = DatabaseHelper.GetUserById(SelectedOtherUserId);
+            if (user == null) return;
+
+            string firstName = Convert.ToString(user["firstName"]);
+            string lastName = Convert.ToString(user["lastName"]);
+            string fullName = (firstName + " " + lastName).Trim();
+
+            if (lblAboutName != null) lblAboutName.Text = Server.HtmlEncode(fullName);
+            if (lblAboutInitials != null)
+            {
+                string initials = (firstName.Length > 0 ? firstName.Substring(0, 1) : "") +
+                                  (lastName.Length > 0 ? lastName.Substring(0, 1) : "");
+                lblAboutInitials.Text = initials.ToUpper();
+            }
+            if (lblAboutRole != null) lblAboutRole.Text = Server.HtmlEncode(Convert.ToString(user["userType"]));
+
+            // Reflect the same online/last-seen status shown in the chat header.
+            if (lblAboutStatus != null)
+            {
+                string accountStatus = Convert.ToString(user["accountStatus"]);
+                if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
+                {
+                    lblAboutStatus.Text = "Account deactivated";
+                }
+                else
+                {
+                    lblAboutStatus.Text = DatabaseHelper.GetUserOnlineStatus(SelectedOtherUserId);
+                }
+            }
         }
 
         /// <summary>
@@ -156,7 +211,9 @@ namespace FreeHubProject
 
                         rptSharedFiles.DataSource = dtFiles;
                         rptSharedFiles.DataBind();
-                        lblNoSharedFiles.Visible = dtFiles.Rows.Count == 0;
+                        bool noFiles = dtFiles.Rows.Count == 0;
+                        lblNoSharedFiles.Visible = false; // superseded by the empty-state card
+                        if (pnlNoSharedFiles != null) pnlNoSharedFiles.Visible = noFiles;
                     }
                 }
             }

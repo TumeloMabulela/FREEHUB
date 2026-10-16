@@ -24,7 +24,6 @@ namespace FreeHubProject
                 string userType = Session["UserType"] as string ?? "";
                 bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
                 pnlFundWalletAction.Visible = isEmployer;
-                pnlSummaryFundBtn.Visible = isEmployer;
             }
         }
 
@@ -101,9 +100,6 @@ namespace FreeHubProject
                 FormatCurrency(totalBalance);
 
 
-            lblCurrentWalletBalance.Text =
-                availableText;
-
             lblAvailableBalance.Text =
                 availableText;
 
@@ -114,19 +110,6 @@ namespace FreeHubProject
                 pendingText;
 
             lblTotalBalance.Text =
-                totalText;
-
-
-            lblSummaryAvailable.Text =
-                availableText;
-
-            lblSummaryOnHold.Text =
-                onHoldText;
-
-            lblSummaryPending.Text =
-                pendingText;
-
-            lblSummaryTotal.Text =
                 totalText;
         }
 

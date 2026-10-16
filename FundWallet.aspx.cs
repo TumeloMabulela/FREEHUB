@@ -28,11 +28,12 @@ namespace FreeHubProject
 
         private void LoadWalletBalance()
         {
+            // Keep the session balance current for other wallet pages; the on-page
+            // balance card was removed, so there is no label to update here.
             decimal balance =
                 GetSessionDecimal("AvailableBalance");
 
-            lblCurrentBalance.Text =
-                FormatCurrency(balance);
+            Session["AvailableBalance"] = balance;
         }
 
         // Quick-amount buttons. In normal use the client-side addQuickAmount() handles
@@ -201,9 +202,6 @@ namespace FreeHubProject
                 reference,
                 paymentMethod
             );
-
-            lblCurrentBalance.Text =
-                FormatCurrency(newBalance);
 
             txtAmount.Text = "";
             // Inside btnProceed_Click, right after updating the wallet balance and adding the transaction:

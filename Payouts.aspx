@@ -10,7 +10,7 @@
     ContentPlaceHolderID="HeadContent"
     runat="server">
 
-    <link href="<%= ResolveUrl("~/Payouts.css?v=1") %>"
+    <link href="<%= ResolveUrl("~/Payouts.css?v=6") %>"
           rel="stylesheet"
           type="text/css" />
 
@@ -57,49 +57,8 @@
 
                 </div>
 
-                <div class="payouts-balance-card">
-
-                    <div>
-
-                        <small>
-                            Current Wallet Balance
-                        </small>
-
-                        <asp:Label
-                            ID="lblCurrentBalance"
-                            runat="server"
-                            CssClass="payouts-balance-value"
-                            Text="R0.00">
-                        </asp:Label>
-
-                    </div>
-
-                    <span class="payouts-wallet-icon">
-                        &#128179;
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            <!-- MESSAGE -->
-            <asp:Panel
-                ID="pnlMessage"
-                runat="server"
-                CssClass="payouts-message"
-                Visible="false">
-
-                <asp:Label
-                    ID="lblMessage"
-                    runat="server">
-                </asp:Label>
-
-            </asp:Panel>
-
-
-            <!-- SUMMARY CARDS -->
-            <section class="payouts-summary-grid">
+                <!-- SUMMARY CARDS (beside the page heading) -->
+                <section class="payouts-summary-grid">
 
                 <div class="payouts-summary-item">
 
@@ -170,7 +129,24 @@
 
                 </div>
 
-            </section>
+                </section>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+            <asp:Panel
+                ID="pnlMessage"
+                runat="server"
+                CssClass="payouts-message"
+                Visible="false">
+
+                <asp:Label
+                    ID="lblMessage"
+                    runat="server">
+                </asp:Label>
+
+            </asp:Panel>
 
 
             <div class="payouts-layout">
@@ -298,6 +274,8 @@
 
                         </div>
 
+                        <div class="payouts-escrow-list">
+
                         <asp:Repeater
                             ID="rptEscrowProjects"
                             runat="server"
@@ -312,11 +290,6 @@
                                         <strong>
                                             <%# Server.HtmlEncode(TitleHelper.TitleCase(Convert.ToString(Eval("Title")))) %>
                                         </strong>
-
-                                        <small>
-                                            <%# Server.HtmlEncode(Convert.ToString(Eval("FreelancerName"))) %>
-                                            &#8226; Posted <%# TimeHelper.ToSast(Eval("DateCreated")).ToString("dd MMM yyyy") %>
-                                        </small>
 
                                     </div>
 
@@ -362,52 +335,11 @@
 
                         </asp:Panel>
 
-                    </section>
-
-
-                    <!-- HOW PAYOUTS WORK -->
-                    <section class="payouts-side-card">
-
-                        <div class="payouts-side-heading">
-
-                            <h3>
-                                How Payouts Work
-                            </h3>
-
-                            <span>&#9432;</span>
-
                         </div>
-
-                        <ul class="payouts-info-list">
-
-                            <li>
-                                Project budget is held in escrow
-                                when you post a project.
-                            </li>
-
-                            <li>
-                                Freelancer completes the work and
-                                submits for review.
-                            </li>
-
-                            <li>
-                                You approve the work and the
-                                payout is released.
-                            </li>
-
-                            <li>
-                                Freelancer receives 90% of the budget.
-                                10% platform fee applies.
-                            </li>
-
-                            <li>
-                                Payouts are processed immediately
-                                upon approval.
-                            </li>
-
-                        </ul>
+                        <!-- /payouts-escrow-list -->
 
                     </section>
+
 
                 </aside>
 

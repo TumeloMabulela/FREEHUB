@@ -13,9 +13,7 @@
 
     <div class="ad-shell">
 
-        <!-- ============================================================
-             CONTEXTUAL SIDEBAR (secondary tools — NOT a copy of the top nav)
-             ============================================================ -->
+       
         <aside class="ad-sidebar">
 
             <a href="Default.aspx" class="ad-back">

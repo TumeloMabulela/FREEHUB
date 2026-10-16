@@ -38,8 +38,6 @@ namespace FreeHubProject
                     availableBalance;
             }
 
-            lblCurrentBalance.Text =
-                FormatCurrency(availableBalance);
         }
 
 
