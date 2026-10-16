@@ -13262,7 +13262,9 @@ FREEHUB HOME PAGE
     min-width: 260px;
     background-color: #ffffff;
     border-right: 1px solid #e8ece9;
-    padding: 16px 0;
+    /* Tighter top padding pulls the Back button closer to the fixed header; the freed
+       space flows into the nav's even inter-item gaps (via space-between below). */
+    padding: 8px 0 16px;
     /* The sidebar is a plain flex child of the NON-scrolling .freehub-dashboard-layout
        (its .page-content ancestor has overflow:hidden on dashboard pages), so it is
        completely stationary when the main content scrolls — no sticky/fixed needed.
@@ -13299,7 +13301,10 @@ FREEHUB HOME PAGE
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: 14px;
+    /* Smaller gap below the Back button; the space-between distribution turns the space
+       freed here (and from the tighter sidebar top padding) into larger, even gaps
+       between the menu items below Dashboard. */
+    margin-top: 8px;
 }
 
 /* Very short desktop viewports ONLY: once items have already compressed to their
@@ -13326,14 +13331,12 @@ FREEHUB HOME PAGE
     display: flex;
     align-items: center;
     gap: 12px;
-    /* Items keep a compact, CONSISTENT height so the leftover vertical space is spread
-       as even gaps BETWEEN items (via the section's space-between) rather than being
-       absorbed by taller items. A smaller vertical padding frees up more slack, so the
-       even inter-item gaps are larger and the nav looks balanced (not compressed). The
-       clamp still lets items compress further on short viewports so the longer Employer
-       nav (My Projects / Post a Project / Proposals Received / View Progress) fits
-       between the fixed header and footer without a scrollbar. */
-    padding: clamp(5px, 0.7vh, 8px) 16px;
+    /* Items are kept compact (small, consistent vertical padding) so MORE leftover
+       vertical space is freed for the section's space-between to spread as larger, even
+       gaps BETWEEN items. The clamp still lets items compress further on short viewports
+       so the longer Employer nav (My Projects / Post a Project / Proposals Received /
+       View Progress) fits between the fixed header and footer without a scrollbar. */
+    padding: clamp(3px, 0.5vh, 6px) 16px;
     border-radius: 8px;
     color: #3d5a47;
     text-decoration: none;

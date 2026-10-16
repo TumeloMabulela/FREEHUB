@@ -3,7 +3,7 @@
     Inherits="FreeHubProject.Sidebar" %><aside class="freehub-sidebar">
 
     <div class="sidebar-back">
-        <% if (!GetActiveClass("Default").Contains("active")) { %>
+        <% if (!GetActiveClass("Dashboard").Contains("active")) { %>
         <a href="javascript:history.back()" class="fh-back-pill" style="margin:14px 16px 0;">
             <span class="fh-back-circle">&#8592;</span>
             <span class="fh-back-text">Back</span>
@@ -13,17 +13,22 @@
 
     <div class="sidebar-section">
 
-        <a href="Default.aspx"
-           class="sidebar-item <%= GetActiveClass("Default") %>">
+        <%-- Dashboard opens the authenticated, role-aware dashboard (Dashboard.aspx renders
+             Employer or Freelancer content by role) — NOT the public home page. --%>
+        <a href="Dashboard.aspx"
+           class="sidebar-item <%= GetActiveClass("Dashboard") %>">
             <span class="sidebar-icon">&#127968;</span>
             <span>Dashboard</span>
         </a>
 
+        <%-- Browse Projects is for Freelancers only; Employers post projects instead. --%>
+        <% if (CurrentUserType != "Employer") { %>
         <a href="BrowseProjects.aspx"
            class="sidebar-item <%= GetActiveClass("BrowseProjects") %>">
             <span class="sidebar-icon">&#128269;</span>
             <span>Browse Projects</span>
         </a>
+        <% } %>
 
         <% if (CurrentUserType == "Employer") { %>
         <a href="MyProjects.aspx"
@@ -63,6 +68,13 @@
            class="sidebar-item <%= GetActiveClass("StartChat") %>">
             <span class="sidebar-icon">&#128172;</span>
             <span>Messages</span>
+        </a>
+
+        <%-- Notifications: previously a Dashboard Quick Action, now a first-class nav item. --%>
+        <a href="Notifications.aspx"
+           class="sidebar-item <%= GetActiveClass("Notifications") %>">
+            <span class="sidebar-icon">&#128276;</span>
+            <span>Notifications</span>
         </a>
 
         <a href="Wallet.aspx"

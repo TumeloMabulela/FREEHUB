@@ -38,7 +38,7 @@
 
                     <asp:Panel ID="pnlLoggedInNav" runat="server" Visible="false" style="display:contents;">
                         <a href="Dashboard.aspx">Dashboard</a>
-                        <a href="BrowseProjects.aspx">Browse Projects</a>
+                        <a id="navBrowseProjects" runat="server" href="BrowseProjects.aspx">Browse Projects</a>
                         <a href="Wallet.aspx">Wallet</a>
                         <a href="StartChat.aspx" style="position: relative; display: inline-flex; align-items: center;">
                             Messages

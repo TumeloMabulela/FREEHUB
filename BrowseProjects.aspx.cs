@@ -11,6 +11,16 @@ namespace FreeHubProject
         {
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // Browse Projects is a Freelancer feature. Employers who reach this URL
+            // directly are redirected to their Employer Dashboard. Freelancers (and any
+            // other role) retain full access.
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("Dashboard.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 LoadProjects();

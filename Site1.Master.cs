@@ -108,6 +108,14 @@ namespace FreeHubProject
                 pnlFreelancerNav.Visible =
                     userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
 
+                // Browse Projects is hidden for Employers (they post, not browse); it stays
+                // visible for Freelancers and any other role.
+                if (navBrowseProjects != null)
+                {
+                    navBrowseProjects.Visible =
+                        !userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+                }
+
                 // Set user display info
                 string firstName = Session["FirstName"] as string ?? "";
                 string lastName = Session["LastName"] as string ?? "";
