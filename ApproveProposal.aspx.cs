@@ -172,11 +172,11 @@ namespace FreeHubProject
 
         protected void btnContactSupport_Click(object sender, EventArgs e)
         {
-            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+            HelpHelper.StartHelpChat(this, null, "Approve Proposal");
         }
         protected void btnHelp_Click(object sender, EventArgs e)
         {
-            lblApprovalMessage.Text = "For support, please email support@freehub.co.za";
+            HelpHelper.StartHelpChat(this, null, "Approve Proposal");
         }
     }
 }

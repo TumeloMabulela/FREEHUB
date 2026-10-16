@@ -60,9 +60,7 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
-            ShowMessage(
-                "Your support request has been received."
-            );
+            HelpHelper.StartHelpChat(this, null, "Completed Projects");
         }
 
 

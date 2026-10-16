@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Select Proposal"
+<%@ Page Title="Select Proposal"
     Language="C#"
     MasterPageFile="~/Site1.Master"
     AutoEventWireup="true"
@@ -445,6 +445,11 @@
                         </ul>
                     </div>
 
+                    <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px; margin-bottom:15px;">
+                        <h4 style="color:#173f2c; margin-bottom:8px;">Need Help?</h4>
+                        <p style="font-size:13px; color:#666; margin-bottom:12px;">If you need assistance in choosing the right freelancer, our support team is here.</p>
+                        <a href="StartChat.aspx?help=1&userId=1" style="display:inline-block;color:#2e7d56;border:1px solid #2e7d56;padding:8px 16px;border-radius:20px;font-size:12px;text-decoration:none;">Contact Support</a>
+                    </div>
 
                     <div style="background:#fff; border:1px solid #e8ece9; border-radius:10px; padding:20px;">
                         <h4 style="color:#173f2c; margin-bottom:8px;">Next Step</h4>

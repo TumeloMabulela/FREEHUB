@@ -10,6 +10,15 @@ namespace FreeHubProject
         {
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // Ratings are not applicable to the platform admin. Block the page
+            // server-side so a direct URL can't reach it for an admin account.
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("AdminDashboard.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 pnlRatingMessage.Visible = false;

@@ -46,6 +46,17 @@
                         </a>
                     </asp:Panel>
 
+                    <asp:Panel ID="pnlAdminNav" runat="server" Visible="false" style="display:contents;">
+                        <a href="AdminDashboard.aspx">Admin Panel</a>
+                        <a href="AdminInbox.aspx" style="position: relative; display: inline-flex; align-items: center;">
+                            Support Inbox
+                            <asp:Literal ID="litAdminHelpBadge" runat="server" />
+                        </a>
+                        <a href="AdminDisputes.aspx">Disputes</a>
+                        <a href="AdminRefunds.aspx">Refunds</a>
+                        <a href="AdminWithdrawals.aspx">Withdrawals</a>
+                    </asp:Panel>
+
                 </nav>
 
                 <div class="nav-buttons" style="display: flex; align-items: center; gap: 18px;">
@@ -87,12 +98,16 @@
                                 <a href="ManageProfile.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
                                     👤 Profile
                                 </a>
+                                <asp:Panel ID="pnlRatingsItem" runat="server" style="display:contents;">
                                 <a href="RateFreelancer.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
                                     ⭐ Ratings
                                 </a>
+                                </asp:Panel>
+                                <asp:Panel ID="pnlSwitchRoleItem" runat="server" style="display:contents;">
                                 <a href="SwitchRole.aspx" style="display: block; padding: 12px 16px; color: #1f2937; text-decoration: none; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;">
                                     🔄 Switch Role
                                 </a>
+                                </asp:Panel>
                                 <asp:LinkButton ID="btnLogout" runat="server"
                                     CssClass="logout-dropdown-btn" OnClick="btnLogout_Click"
                                     OnClientClick="return showLogoutModal();"
