@@ -397,7 +397,7 @@
                 <asp:Panel ID="pnlDeactivateAccount" runat="server" Visible="false" CssClass="mp2-card mp2-mode-card">
                     <div class="mp2-card-head">
                         <h2>Deactivate Account</h2>
-                        <p>Deactivating your account will disable access to FreeHUB. You can reactivate it anytime by logging in.</p>
+                        <p>Deactivating your account permanently removes it from FreeHUB. This is final — your account cannot be recovered or reactivated afterwards.</p>
                     </div>
                     <div class="mp2-mode-body">
                         <div class="deactivate-warning deactivate-danger">
@@ -406,7 +406,7 @@
                                 <li>Disable your account access</li>
                                 <li>Hide your profile and data from others</li>
                                 <li>Cancel ongoing activities</li>
-                                <li>Keep your data safe for reactivation</li>
+                                <li>Permanently delete your account — this cannot be undone</li>
                             </ul>
                         </div>
                         <div class="post-field">
