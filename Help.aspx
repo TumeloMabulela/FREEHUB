@@ -47,7 +47,7 @@
                 <div class="help-topics">
                     <div class="help-topic-card">
                         <h3>Getting Started</h3>
-                        <p>Set up your profile and learn how FreeHUB works. See the <a href="<%= ResolveUrl("~/FAQs.aspx") %>">FAQs</a>.</p>
+                        <p>Set up your profile and learn how FreeHUB works.</p>
                     </div>
                     <div class="help-topic-card">
                         <h3>Projects &amp; Proposals</h3>
@@ -56,10 +56,6 @@
                     <div class="help-topic-card">
                         <h3>Payments &amp; Wallet</h3>
                         <p>Funding your wallet, viewing transactions and withdrawing earnings.</p>
-                    </div>
-                    <div class="help-topic-card">
-                        <h3>Trust &amp; Safety</h3>
-                        <p>Staying safe and reporting issues. Visit <a href="<%= ResolveUrl("~/TrustSafety.aspx") %>">Trust &amp; Safety</a>.</p>
                     </div>
                 </div>
 
@@ -89,7 +85,6 @@
                                 <asp:ListItem>Projects &amp; Proposals</asp:ListItem>
                                 <asp:ListItem>Payments &amp; Wallet</asp:ListItem>
                                 <asp:ListItem>Withdrawals</asp:ListItem>
-                                <asp:ListItem>Trust &amp; Safety</asp:ListItem>
                                 <asp:ListItem>Other</asp:ListItem>
                             </asp:DropDownList>
                         </div>

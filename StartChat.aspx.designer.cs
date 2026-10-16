@@ -158,9 +158,6 @@ namespace FreeHubProject
         /// <summary>lblDetailsProjectStatus control.</summary>
         protected global::System.Web.UI.WebControls.Label lblDetailsProjectStatus;
 
-        /// <summary>lnkDetailsViewProject control.</summary>
-        protected global::System.Web.UI.WebControls.HyperLink lnkDetailsViewProject;
-
         /// <summary>rptSharedFiles control.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptSharedFiles;
 

@@ -111,31 +111,13 @@
             <span>Wallet</span>
         </a>
 
-        <!-- Subtle divider between the main nav and the support links -->
+        <!-- Subtle divider between the main nav and the support link -->
         <div class="sidebar-divider"></div>
-
-        <a href="FAQs.aspx"
-           class="sidebar-item <%= GetActiveClass("FAQs") %>">
-            <span class="sidebar-icon">&#10067;</span>
-            <span>FAQs</span>
-        </a>
 
         <a href="StartChat.aspx?help=1&userId=1"
            class="sidebar-item <%= GetActiveClass("StartChat") %>">
             <span class="sidebar-icon">&#127911;</span>
             <span>Help &amp; Support</span>
-        </a>
-
-        <a href="TrustSafety.aspx"
-           class="sidebar-item <%= GetActiveClass("TrustSafety") %>">
-            <span class="sidebar-icon">&#128737;</span>
-            <span>Trust &amp; Safety</span>
-        </a>
-
-        <a href="Feedback.aspx"
-           class="sidebar-item <%= GetActiveClass("Feedback") %>">
-            <span class="sidebar-icon">&#128161;</span>
-            <span>Feedback &amp; Suggestions</span>
         </a>
 
     </div>
