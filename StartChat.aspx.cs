@@ -570,6 +570,13 @@ namespace FreeHubProject
             pnlComposer.Visible = active;
             pnlEndedNotice.Visible = !active;
 
+            // Ended-notice reason reflects WHY the chat ended (cancelled vs completed vs other).
+            if (!active)
+            {
+                litEndedReason.Text = Server.HtmlEncode(
+                    !string.IsNullOrEmpty(avail.ReasonMessage) ? avail.ReasonMessage : "This conversation has ended.");
+            }
+
             btnSend.Enabled = active;
             fileUploadControl.Enabled = active;
             txtMessage.Enabled = active;
@@ -692,6 +699,14 @@ namespace FreeHubProject
             }
 
             if (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile) return;
+
+            // Voice notes are no longer supported: reject audio uploads server-side (never
+            // save them). Text and document/image attachments continue to work.
+            if (fileUploadControl.HasFile && IsAudioFileName(fileUploadControl.FileName))
+            {
+                MessageHelper.Warning(this, "Voice notes are no longer supported. Please send a text message or a document/image.", "Not supported");
+                return; // draft preserved
+            }
 
             string savedAttachmentUrl = null;
 
@@ -950,6 +965,59 @@ namespace FreeHubProject
                 if (!string.IsNullOrEmpty(rest)) return rest;
             }
             return stored;
+        }
+
+        /// <summary>Lowercased file extension (no dot) of the stored attachment, or "".</summary>
+        private string AttachmentExt(object attachmentUrl)
+        {
+            string name = OriginalFileName(attachmentUrl);
+            string ext = System.IO.Path.GetExtension(name);
+            return string.IsNullOrEmpty(ext) ? "" : ext.TrimStart('.').ToLowerInvariant();
+        }
+
+        /// <summary>True when the attachment is a renderable image (by extension).</summary>
+        public bool IsImageAttachment(object attachmentUrl)
+        {
+            switch (AttachmentExt(attachmentUrl))
+            {
+                case "jpg": case "jpeg": case "png": case "gif": case "webp": case "bmp": case "svg":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>True when the attachment is a playable audio clip / voice note (by extension).</summary>
+        public bool IsAudioAttachment(object attachmentUrl)
+        {
+            switch (AttachmentExt(attachmentUrl))
+            {
+                case "mp3": case "wav": case "webm": case "ogg": case "oga": case "m4a": case "aac":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>True when a raw uploaded filename is an audio/voice-note type (blocked).</summary>
+        private bool IsAudioFileName(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return false;
+            string ext = System.IO.Path.GetExtension(fileName);
+            if (string.IsNullOrEmpty(ext)) return false;
+            switch (ext.TrimStart('.').ToLowerInvariant())
+            {
+                case "mp3": case "wav": case "webm": case "ogg": case "oga": case "m4a": case "aac":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>True when the attachment is neither image nor audio (a document card).</summary>
+        public bool IsDocAttachment(object attachmentUrl)
+        {
+            return !IsImageAttachment(attachmentUrl) && !IsAudioAttachment(attachmentUrl);
         }
 
         /// <summary>Short uppercase extension label for the file icon (e.g. "PDF").</summary>
