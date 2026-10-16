@@ -20,9 +20,9 @@ namespace FreeHubProject
     /// </summary>
     public static class MessageHelper
     {
-        public static void Success(Page page, string message, string title = null)
+        public static void Success(Page page, string message, string title = null, int durationMs = 0)
         {
-            Show(page, "success", message, title);
+            Show(page, "success", message, title, durationMs);
         }
 
         public static void Error(Page page, string message, string title = null)
@@ -48,15 +48,17 @@ namespace FreeHubProject
         /// message being queued twice on a single response, while using the current
         /// request means it will not re-fire on a later refresh/postback.
         /// </summary>
-        public static void Show(Page page, string type, string message, string title = null)
+        public static void Show(Page page, string type, string message, string title = null, int durationMs = 0)
         {
             if (page == null) return;
 
             string t = (type ?? "info").ToLowerInvariant();
             if (t != "success" && t != "error" && t != "warning" && t != "info") t = "info";
 
+            // Optional 4th arg overrides the per-type auto-dismiss duration (ms). 0 = default.
+            string durationArg = durationMs > 0 ? ("," + durationMs) : "";
             string script = "if(window.fhShowMessage){fhShowMessage('" + t + "','" +
-                            JsEscape(title) + "','" + JsEscape(message) + "');}";
+                            JsEscape(title) + "','" + JsEscape(message) + "'" + durationArg + ");}";
 
             string key = "fhMsg_" + Guid.NewGuid().ToString("N");
 

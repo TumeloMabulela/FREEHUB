@@ -14,413 +14,199 @@ namespace FreeHubProject
     public partial class StartChat
     {
 
-        /// <summary>
-        /// pnlStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>pnlStatus control (legacy, hidden).</summary>
         protected global::System.Web.UI.WebControls.Panel pnlStatus;
 
-        /// <summary>
-        /// lblStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblStatus control.</summary>
         protected global::System.Web.UI.WebControls.Label lblStatus;
 
-        /// <summary>
-        /// txtSearch control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>chatScriptManager control.</summary>
+        protected global::System.Web.UI.ScriptManager chatScriptManager;
+
+        /// <summary>workspacePanel control (3-column messages root).</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl workspacePanel;
+
+        /// <summary>pnlUnreadTotal control (unread-count badge by the Messages heading).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlUnreadTotal;
+
+        /// <summary>litUnreadTotal control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litUnreadTotal;
+
+        /// <summary>pnlChatSearch control (search box wrapper).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlChatSearch;
+
+        /// <summary>txtSearch control.</summary>
         protected global::System.Web.UI.WebControls.TextBox txtSearch;
 
-        /// <summary>
-        /// btnSearchUser control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>btnSearchUser control.</summary>
         protected global::System.Web.UI.WebControls.Button btnSearchUser;
 
-        /// <summary>
-        /// Conversation-list filter tabs.
-        /// </summary>
+        /// <summary>Conversation-list filter tabs: All / Unread / Ended.</summary>
         protected global::System.Web.UI.WebControls.LinkButton btnFilterAll;
         protected global::System.Web.UI.WebControls.LinkButton btnFilterUnread;
+        protected global::System.Web.UI.WebControls.LinkButton btnFilterEnded;
+
+        /// <summary>ddlContactFilter control (All contacts / Clients / Freelancers).</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlContactFilter;
+
+        /// <summary>Hidden role chips (retained for existing handler wiring).</summary>
         protected global::System.Web.UI.WebControls.LinkButton btnFilterClients;
         protected global::System.Web.UI.WebControls.LinkButton btnFilterFreelancers;
 
-        /// <summary>
-        /// pnlSearchResults control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>pnlSearchResults control.</summary>
         protected global::System.Web.UI.WebControls.Panel pnlSearchResults;
 
-        /// <summary>
-        /// rptSearchResults control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>rptSearchResults control.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptSearchResults;
 
-        /// <summary>
-        /// lblNoUsersFound control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblNoUsersFound control.</summary>
         protected global::System.Web.UI.WebControls.Label lblNoUsersFound;
 
-        /// <summary>
-        /// rptUsers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>rptUsers control.</summary>
         protected global::System.Web.UI.WebControls.Repeater rptUsers;
 
-        /// <summary>
-        /// lblNoUsers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        /// <summary>lblNoUsers control.</summary>
         protected global::System.Web.UI.WebControls.Label lblNoUsers;
 
-        /// <summary>
-        /// btnOpenHeaderModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnOpenHeaderModal;
-
-        /// <summary>
-        /// lblChatInitials control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblChatInitials;
-
-        /// <summary>
-        /// lblChatName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblChatName;
-
-        /// <summary>
-        /// lblPartnerStatus control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblPartnerStatus;
-
-        /// <summary>
-        /// btnInfoIcon control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnInfoIcon;
-
-        /// <summary>
-        /// rptMessages control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptMessages;
-
-        /// <summary>
-        /// fileUploadControl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fileUploadControl;
-
-        /// <summary>
-        /// txtMessage control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtMessage;
-
-        /// <summary>
-        /// btnSend control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSend;
-
-        /// <summary>
-        /// lblAttachedFileName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAttachedFileName;
-
-        /// <summary>
-        /// pnlUserDetailsModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlUserDetailsModal;
-
-        /// <summary>
-        /// btnCloseDetails control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnCloseDetails;
-
-        /// <summary>
-        /// lblDetailName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDetailName;
-
-        /// <summary>
-        /// lblDetailUserType control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDetailUserType;
-
-        /// <summary>
-        /// lblDetailEmail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDetailEmail;
-
-        /// <summary>
-        /// lblDetailContact control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDetailContact;
-
-        /// <summary>
-        /// lblDetailRating control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDetailRating;
-
-        /// <summary>
-        /// rptSharedFiles control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptSharedFiles;
-
-        /// <summary>
-        /// lblNoSharedFiles control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNoSharedFiles;
-
-        /// <summary>
-        /// btnCloseModalBtn control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCloseModalBtn;
-
-        /// <summary>
-        /// pnlRatingModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlRatingModal;
-
-        /// <summary>
-        /// ddlRatingStars control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlRatingStars;
-
-        /// <summary>
-        /// txtRatingComment control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRatingComment;
-
-        /// <summary>
-        /// btnSubmitRating control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSubmitRating;
-
-        /// <summary>
-        /// btnCloseModal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCloseModal;
-
-        /// <summary>
-        /// chatScriptManager control.
-        /// </summary>
-        protected global::System.Web.UI.ScriptManager chatScriptManager;
-
-        /// <summary>
-        /// upChat control.
-        /// </summary>
-        protected global::System.Web.UI.UpdatePanel upChat;
-
-        /// <summary>
-        /// pnlChatPopup control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Panel pnlChatPopup;
-
-        /// <summary>
-        /// btnCloseChat control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.LinkButton btnCloseChat;
-
-        /// <summary>
-        /// statusDot control.
-        /// </summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl statusDot;
-
-        /// <summary>
-        /// workspacePanel control (right-hand chat/dashboard column).
-        /// </summary>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl workspacePanel;
-
-        /// <summary>
-        /// rptPinnedContacts control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Repeater rptPinnedContacts;
-
-        /// <summary>
-        /// lblNoPinned control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblNoPinned;
-
-        /// <summary>
-        /// rptRecentFiles control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Repeater rptRecentFiles;
-
-        /// <summary>
-        /// lblNoRecentFiles control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblNoRecentFiles;
-
-        /// <summary>
-        /// pnlWelcome control (shown until a conversation is selected).
-        /// </summary>
+        /// <summary>pnlWelcome control (empty state).</summary>
         protected global::System.Web.UI.WebControls.Panel pnlWelcome;
 
-        /// <summary>
-        /// pnlProjectBar control (project sub-bar under the chat header).
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Panel pnlProjectBar;
+        /// <summary>upChat control.</summary>
+        protected global::System.Web.UI.UpdatePanel upChat;
 
-        /// <summary>
-        /// lblProjectBarTitle control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblProjectBarTitle;
+        /// <summary>pnlChatPopup control (active conversation panel).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlChatPopup;
 
-        /// <summary>
-        /// lblProjectBarStatus control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblProjectBarStatus;
+        /// <summary>btnBack control (mobile back / close conversation).</summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
-        /// <summary>
-        /// pnlProjectDetails control (collapsible project details side panel).
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Panel pnlProjectDetails;
+        /// <summary>btnOpenHeaderModal control (header avatar/name → contact info).</summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnOpenHeaderModal;
 
-        /// <summary>
-        /// lblDetailsProjectTitle control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblDetailsProjectTitle;
+        /// <summary>lblChatInitials control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblChatInitials;
 
-        /// <summary>
-        /// lblDetailsProjectStatus control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblDetailsProjectStatus;
+        /// <summary>lblChatName control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblChatName;
 
-        /// <summary>
-        /// btnViewProject control.
-        /// </summary>
+        /// <summary>statusDot control.</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl statusDot;
+
+        /// <summary>lblPartnerStatus control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblPartnerStatus;
+
+        /// <summary>lnkViewProject control (opens the selected project).</summary>
+        protected global::System.Web.UI.WebControls.HyperLink lnkViewProject;
+
+        /// <summary>btnViewProject control (retained server-side handler, hidden).</summary>
         protected global::System.Web.UI.WebControls.LinkButton btnViewProject;
 
-        /// <summary>
-        /// btnBack control (mobile back button).
-        /// </summary>
-        protected global::System.Web.UI.WebControls.LinkButton btnBack;
+        /// <summary>btnInfoIcon control.</summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnInfoIcon;
+
+        /// <summary>pnlProjectBar control (compact project strip).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlProjectBar;
+
+        /// <summary>lblProjectBarTitle control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblProjectBarTitle;
+
+        /// <summary>projBarDot control (project-status dot in the strip).</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl projBarDot;
+
+        /// <summary>lblProjectBarStatus control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblProjectBarStatus;
+
+        /// <summary>ddlProjectSelect control (compact multi-project selector).</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlProjectSelect;
+
+        /// <summary>rptMessages control.</summary>
+        protected global::System.Web.UI.WebControls.Repeater rptMessages;
+
+        /// <summary>pnlComposer control (message composer wrapper).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlComposer;
+
+        /// <summary>pnlChatInput control (composer input row).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlChatInput;
+
+        /// <summary>fileUploadControl control.</summary>
+        protected global::System.Web.UI.WebControls.FileUpload fileUploadControl;
+
+        /// <summary>txtMessage control.</summary>
+        protected global::System.Web.UI.WebControls.TextBox txtMessage;
+
+        /// <summary>btnSend control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnSend;
+
+        /// <summary>lblAttachedFileName control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblAttachedFileName;
+
+        /// <summary>pnlEndedNotice control (replaces composer when the chat has ended).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEndedNotice;
+
+        /// <summary>pnlProjectDetails control (right panel).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlProjectDetails;
+
+        /// <summary>lblDetailsProjectTitle control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailsProjectTitle;
+
+        /// <summary>detailsStatusDot control.</summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl detailsStatusDot;
+
+        /// <summary>lblDetailsProjectStatus control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailsProjectStatus;
+
+        /// <summary>lnkDetailsViewProject control.</summary>
+        protected global::System.Web.UI.WebControls.HyperLink lnkDetailsViewProject;
+
+        /// <summary>rptSharedFiles control.</summary>
+        protected global::System.Web.UI.WebControls.Repeater rptSharedFiles;
+
+        /// <summary>lblNoSharedFiles control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblNoSharedFiles;
+
+        /// <summary>pnlStatusActive control (conversation status = active).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlStatusActive;
+
+        /// <summary>pnlStatusEnded control (conversation status = ended).</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlStatusEnded;
+
+        /// <summary>pnlUserDetailsModal control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlUserDetailsModal;
+
+        /// <summary>btnCloseDetails control.</summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnCloseDetails;
+
+        /// <summary>lblDetailName control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailName;
+
+        /// <summary>lblDetailUserType control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailUserType;
+
+        /// <summary>lblDetailEmail control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailEmail;
+
+        /// <summary>lblDetailContact control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailContact;
+
+        /// <summary>lblDetailRating control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblDetailRating;
+
+        /// <summary>btnCloseModalBtn control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCloseModalBtn;
+
+        /// <summary>pnlRatingModal control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlRatingModal;
+
+        /// <summary>ddlRatingStars control.</summary>
+        protected global::System.Web.UI.WebControls.DropDownList ddlRatingStars;
+
+        /// <summary>txtRatingComment control.</summary>
+        protected global::System.Web.UI.WebControls.TextBox txtRatingComment;
+
+        /// <summary>btnSubmitRating control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnSubmitRating;
+
+        /// <summary>btnCloseModal control.</summary>
+        protected global::System.Web.UI.WebControls.Button btnCloseModal;
     }
 }

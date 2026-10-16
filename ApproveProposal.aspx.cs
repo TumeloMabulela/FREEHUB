@@ -147,6 +147,11 @@ namespace FreeHubProject
                 string employerMsg = $"You can start conversation with the \"{freelancerUsername}\".";
                 NotificationHelper.CreateNotification(employerUserId, "Proposal", employerMsg);
 
+                // Chat lifecycle: reopen the existing conversation between these two users
+                // for the newly-approved project (idempotent — repeated approvals/postbacks
+                // never duplicate the separator or the conversation).
+                ChatLifecycle.OnProposalApproved(projectId, employerUserId, projectTitle);
+
                 string successMessage = "Proposal approved successfully! The project status has changed to 'In Progress'.";
                 if (additionalRequired > 0m)
                 {

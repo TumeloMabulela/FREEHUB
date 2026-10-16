@@ -19,12 +19,6 @@ namespace FreeHubProject
         /// <summary>btnMarkAllRead control.</summary>
         protected global::System.Web.UI.WebControls.Button btnMarkAllRead;
 
-        /// <summary>pnlNotificationStatus control.</summary>
-        protected global::System.Web.UI.WebControls.Panel pnlNotificationStatus;
-
-        /// <summary>lblNotificationStatus control.</summary>
-        protected global::System.Web.UI.WebControls.Label lblNotificationStatus;
-
         /// <summary>txtSearch control.</summary>
         protected global::System.Web.UI.WebControls.TextBox txtSearch;
 
@@ -84,6 +78,15 @@ namespace FreeHubProject
 
         /// <summary>lblSelectedPreview control.</summary>
         protected global::System.Web.UI.WebControls.Label lblSelectedPreview;
+
+        /// <summary>pnlViewFull control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlViewFull;
+
+        /// <summary>litFullMessage control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litFullMessage;
+
+        /// <summary>lblFullTitle control.</summary>
+        protected global::System.Web.UI.WebControls.Label lblFullTitle;
 
         /// <summary>btnOpenTarget control.</summary>
         protected global::System.Web.UI.WebControls.Button btnOpenTarget;

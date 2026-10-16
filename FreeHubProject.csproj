@@ -310,6 +310,7 @@
       <DependentUpon>EditProject.aspx</DependentUpon>
     </Compile>
     <Compile Include="AuthHelper.cs" />
+    <Compile Include="ChatLifecycle.cs" />
     <Compile Include="MessageHelper.cs" />
     <Compile Include="HelpHelper.cs" />
     <Compile Include="AdminDashboard.aspx.cs">

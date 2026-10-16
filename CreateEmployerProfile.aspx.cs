@@ -61,6 +61,20 @@ namespace FreeHubProject
                 valid = false;
             }
 
+            // --- Contact Email (required + basic format) ---
+            string contactEmailRaw = (txtContactEmail.Text ?? "").Trim();
+            if (contactEmailRaw.Length == 0)
+            {
+                SetFieldError(lblContactEmailError, txtContactEmail, "Contact email is required");
+                valid = false;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(contactEmailRaw,
+                        @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                SetFieldError(lblContactEmailError, txtContactEmail, "Enter a valid email");
+                valid = false;
+            }
+
             if (!valid)
             {
                 // Values are retained automatically across the postback; nothing is saved.
@@ -68,8 +82,7 @@ namespace FreeHubProject
             }
 
             int userId = Convert.ToInt32(Session["UserID"]);
-            string contactEmail = string.IsNullOrWhiteSpace(txtContactEmail.Text)
-                ? Session["Email"] as string ?? "" : txtContactEmail.Text.Trim();
+            string contactEmail = contactEmailRaw;
 
             try
             {
@@ -113,10 +126,12 @@ namespace FreeHubProject
             lblCompanyError.Text = "";
             lblIndustryError.Text = "";
             lblDescError.Text = "";
+            lblContactEmailError.Text = "";
             lblMessage.Text = "";
             txtCompanyName.CssClass = txtCompanyName.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
             ddlIndustry.CssClass = ddlIndustry.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
             txtCompanyDesc.CssClass = txtCompanyDesc.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            txtContactEmail.CssClass = txtContactEmail.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

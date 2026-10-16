@@ -79,6 +79,13 @@ namespace FreeHubProject
                 valid = false;
             }
 
+            // --- Portfolio Links (required) ---
+            if (string.IsNullOrWhiteSpace(txtPortfolio.Text))
+            {
+                SetFieldError(lblPortfolioError, txtPortfolio, "Portfolio link is required");
+                valid = false;
+            }
+
             if (!valid)
             {
                 // Values are retained automatically across the postback; nothing is saved.
@@ -129,10 +136,12 @@ namespace FreeHubProject
             lblSkillsError.Text = "";
             lblExperienceError.Text = "";
             lblRateError.Text = "";
+            lblPortfolioError.Text = "";
             lblMessage.Text = "";
             txtSkills.CssClass = txtSkills.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
             txtExperience.CssClass = txtExperience.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
             txtHourlyRate.CssClass = txtHourlyRate.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
+            txtPortfolio.CssClass = txtPortfolio.CssClass.Replace("input-invalid", "").Replace("  ", " ").Trim();
         }
 
         protected void btnLogout_Click(object sender, EventArgs e)

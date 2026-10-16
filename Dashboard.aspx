@@ -349,30 +349,58 @@
         .emp-stat-value { font-size: 19px; font-weight: 700; color: #1e293b; line-height: 1.1; white-space: nowrap; }
 
         /* Three-column grid:
-             col 1 = Quick Actions (~28%, spans both rows, full height)
-             col 2 = My Projects (row 1) + Upcoming Deadlines (row 2)
-             col 3 = Recent Activity (row 1) + Need assistance? (row 2)
-           Row 1 is the flexible/equal-height row; row 2 (deadlines/help) is auto. */
+             col 1 = Quick Actions
+             col 2 = middle stack: My Projects on top + Upcoming Deadlines beneath (10px gap)
+             col 3 = right stack: Recent Activity on top + Need assistance? beneath
+           Each column stacks its cards independently so the small 10px gap between
+           My Projects and Upcoming Deadlines is NOT inflated by the taller right column. */
         .emp-dash-grid {
             display: grid;
-            grid-template-columns: minmax(0, 28fr) minmax(0, 40fr) minmax(0, 32fr);
-            grid-template-rows: minmax(0, 1fr) auto;
+            /* Col 1 is a fixed 230px track matching the Quick Actions card exactly (no empty
+               track space), so the 20px column-gap is the real distance from its right edge
+               to the middle column. Cols 2 & 3 flex to share the remaining width. */
+            grid-template-columns: 230px minmax(0, 52fr) minmax(0, 48fr);
             gap: 20px;
-            align-items: stretch;
+            align-items: start;
         }
-        .emp-card-quick     { grid-column: 1; grid-row: 1 / span 2; }
-        .emp-card-projects  { grid-column: 2; grid-row: 1; }
-        .emp-card-activity  { grid-column: 3; grid-row: 1; }
-        .emp-card-deadlines { grid-column: 2; grid-row: 2; }
-        .emp-card-help      { grid-column: 3; grid-row: 2; }
+        /* Each column's two cards stack vertically with a tight 10px gap and content-sized
+           heights (no stretching), so the cards hug each other directly. */
+        .emp-stack { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
+        .emp-stack-mid   { grid-column: 2; }
+        .emp-stack-right { grid-column: 3; }
+
+        /* STATIONARY QUICK ACTIONS:
+           On normal-height screens the whole employer grid fits, so the page region doesn't
+           scroll at all and every card (including Quick Actions) is stationary. Each list
+           card (.emp-scroll) scrolls on its own. As a safety net on short viewports where
+           the region would scroll, Quick Actions sticks to the top of its own column so it
+           never moves. This uses position:sticky (NOT absolute/fixed), so it can never
+           overlap the footer -- it stays confined to its grid column. */
+        .emp-dash-host { min-height: 0; }
+        /* Quick Actions hugs its content; narrower than its column so the chevron sits close
+           to the label. justify-self:start keeps the left edge pinned; max-width stops the
+           grid from stretching it back to the full column width. position:sticky top:0 keeps
+           it pinned to the top of its column if the page region ever scrolls. */
+        .emp-card-quick {
+            grid-column: 1; align-self: start; justify-self: start;
+            height: auto; width: 100%; max-width: 230px;
+            position: -webkit-sticky; position: sticky; top: 0;
+        }
+        /* Projects list shows ~2.5 rows (~75px each incl. padding + divider) before the
+           internal scrollbar takes over; all remaining projects stay reachable by scrolling. */
+        .emp-card-projects .emp-scroll { max-height: 195px; }
+        /* Deadlines list shows exactly three full rows (~57px each incl. padding + divider)
+           before the internal scrollbar takes over; the first item is fully visible under
+           the stationary heading. Remaining deadlines stay reachable by scrolling. */
+        .emp-card-deadlines .emp-scroll { max-height: 184px; }
 
         /* Quick Actions: vertical list stacked naturally from the top (NOT stretched to
            fill the card). Consistent ~52px rows with ~10px gaps; all visible, no scroll. */
-        .emp-quick-body { display: block; }
+        .emp-quick-body { display: block; padding: 8px 12px 16px; }
         .emp-quick-list { display: flex; flex-direction: column; gap: 10px; }
         .emp-quick-row {
             display: flex; align-items: center; gap: 12px;
-            min-height: 52px; padding: 0 10px; border-radius: 8px;
+            min-height: 52px; padding: 0 16px 0 10px; border-radius: 8px;
             text-decoration: none; color: #1e293b;
             transition: background 0.15s;
         }
@@ -382,7 +410,7 @@
             display: flex; align-items: center; justify-content: center; font-size: 16px;
             background: #e3f3e9; color: #0f7a44; font-weight: 700;
         }
-        .emp-quick-label { flex: 1 1 auto; font-size: 14px; font-weight: 600; }
+        .emp-quick-label { flex: 1 1 auto; font-size: 14px; font-weight: 600; white-space: nowrap; }
         .emp-quick-chev { color: #94a3b8; font-size: 18px; flex-shrink: 0; }
 
         .emp-card {
@@ -450,18 +478,6 @@
         .emp-deadline-sub { font-size: 11.5px; color: #94a3b8; }
         .emp-deadline-date { font-size: 12.5px; font-weight: 700; color: #b45309; background: #fef3c7; padding: 5px 10px; border-radius: 10px; white-space: nowrap; }
 
-        /* Help & Support card */
-        .emp-card-help { background: #f3faf5; border-color: #d7ecde; }
-        .emp-help-inner { padding: 22px 20px; }
-        .emp-help-icon { width: 40px; height: 40px; border-radius: 50%; background: #e3f3e9; color: #0f7a44; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
-        .emp-help-inner h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin: 0 0 6px; }
-        .emp-help-inner p { font-size: 13px; color: #64748b; margin: 0 0 14px; }
-        .emp-help-btn {
-            display: inline-block; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 700;
-            text-decoration: none; color: #0f7a44; background: #fff; border: 1.5px solid #2e7d56;
-        }
-        .emp-help-btn:hover { background: #eaf6ee; }
-
         .emp-empty { padding: 24px 8px; text-align: center; color: #94a3b8; font-size: 13px; }
         .emp-empty p { margin: 0; }
 
@@ -470,12 +486,18 @@
         @media (max-width: 1050px) {
             .dashboard-welcome { align-items: flex-start; }
             .emp-dash-stats { justify-content: flex-start; }
-            .emp-dash-grid { grid-template-columns: 1fr; grid-template-rows: none; }
-            .emp-card-quick, .emp-card-projects, .emp-card-activity,
-            .emp-card-deadlines, .emp-card-help {
-                grid-column: auto; grid-row: auto;
+            .emp-dash-grid { grid-template-columns: 1fr; }
+            .emp-card-quick, .emp-stack-mid, .emp-stack-right {
+                grid-column: auto;
             }
+            /* Single-column reflow: Quick Actions returns to normal flow (no sticky) so
+               every action is reachable by normal page scroll on small screens. */
+            .emp-card-quick { max-width: none; position: static; }
             .emp-scroll { max-height: 320px; }
+            /* In the stacked single-column layout give My Projects and Deadlines more room
+               than the tight desktop heights. */
+            .emp-card-projects .emp-scroll { max-height: 320px; }
+            .emp-card-deadlines .emp-scroll { max-height: 320px; }
         }
         @media (max-width: 560px) {
             .emp-stat-card { flex: 1 1 100%; }
@@ -553,7 +575,7 @@
              EMPLOYER DASHBOARD (matches the approved mockup). All values are
              live from the existing employer queries — nothing hardcoded.
              ============================================================ -->
-        <asp:Panel ID="pnlEmployerDash" runat="server" Visible="false">
+        <asp:Panel ID="pnlEmployerDash" runat="server" Visible="false" CssClass="emp-dash-host">
 
             <!-- MAIN THREE-COLUMN GRID: Quick Actions | My Projects+Deadlines | Activity+Help -->
             <div class="emp-dash-grid">
@@ -637,6 +659,9 @@
                     </div>
                 </div>
 
+                <!-- MIDDLE COLUMN STACK: My Projects on top, Upcoming Deadlines directly beneath (10px gap) -->
+                <div class="emp-stack emp-stack-mid">
+
                 <!-- MIDDLE: My Projects -->
                 <div class="emp-card emp-card-projects">
                     <div class="emp-card-head">
@@ -666,6 +691,32 @@
                     </div>
                 </div>
 
+                <!-- Upcoming Deadlines: directly beneath My Projects in the same column stack -->
+                <div class="emp-card emp-card-deadlines">
+                    <div class="emp-card-head"><h2>Upcoming Deadlines</h2></div>
+                    <div class="emp-card-body emp-scroll">
+                        <asp:Repeater ID="rptEmpDeadlines" runat="server">
+                            <ItemTemplate>
+                                <div class="emp-deadline-item">
+                                    <div class="emp-deadline-main">
+                                        <strong class="emp-deadline-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %></strong>
+                                        <span class="emp-deadline-sub">Project deadline</span>
+                                    </div>
+                                    <span class="emp-deadline-date">&#128197; <%# Convert.ToDateTime(Eval("Deadline")).ToString("dd MMM yyyy") %></span>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <asp:Panel ID="pnlEmpNoDeadlines" runat="server" Visible="false" CssClass="emp-empty">
+                            <p>No upcoming deadlines.</p>
+                        </asp:Panel>
+                    </div>
+                </div>
+
+                </div><!-- /emp-stack-mid -->
+
+                <!-- RIGHT COLUMN STACK: Recent Activity on top, Help & Support beneath -->
+                <div class="emp-stack emp-stack-right">
+
                 <!-- RIGHT: Recent Activity -->
                 <div class="emp-card emp-card-activity">
                     <div class="emp-card-head"><h2>Recent Activity</h2></div>
@@ -687,36 +738,8 @@
                     </div>
                 </div>
 
-                <!-- LEFT (row 2): Upcoming Deadlines -->
-                <div class="emp-card emp-card-deadlines">
-                    <div class="emp-card-head"><h2>Upcoming Deadlines</h2></div>
-                    <div class="emp-card-body emp-scroll">
-                        <asp:Repeater ID="rptEmpDeadlines" runat="server">
-                            <ItemTemplate>
-                                <div class="emp-deadline-item">
-                                    <div class="emp-deadline-main">
-                                        <strong class="emp-deadline-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %></strong>
-                                        <span class="emp-deadline-sub">Project deadline</span>
-                                    </div>
-                                    <span class="emp-deadline-date">&#128197; <%# Convert.ToDateTime(Eval("Deadline")).ToString("dd MMM yyyy") %></span>
-                                </div>
-                            </ItemTemplate>
-                        </asp:Repeater>
-                        <asp:Panel ID="pnlEmpNoDeadlines" runat="server" Visible="false" CssClass="emp-empty">
-                            <p>No upcoming deadlines.</p>
-                        </asp:Panel>
-                    </div>
-                </div>
 
-                <!-- RIGHT (row 2): Help & Support -->
-                <div class="emp-card emp-card-help">
-                    <div class="emp-help-inner">
-                        <div class="emp-help-icon">&#63;</div>
-                        <h3>Need assistance?</h3>
-                        <p>Visit Help &amp; Support for guidance.</p>
-                        <a href="Help.aspx" class="emp-help-btn">Get Help</a>
-                    </div>
-                </div>
+                </div><!-- /emp-stack-right -->
 
             </div>
 

@@ -77,8 +77,12 @@
                         <!-- PROFILE DROPDOWN CONTAINER -->
                         <div class="nav-profile-dropdown-container" style="position: relative; display: inline-block;">
                             
-                            <!-- Clickable Profile Header Trigger -->
-                            <a href="javascript:void(0);" onclick="toggleProfileDropdown();" class="nav-profile-trigger" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; cursor: pointer;">
+                            <!-- Clickable Profile Header Trigger (mint pill) -->
+                            <a href="javascript:void(0);" onclick="toggleProfileDropdown();"
+                               onkeydown="return handleProfileTriggerKey(event);"
+                               class="nav-profile-trigger" role="button" tabindex="0"
+                               aria-haspopup="true" aria-expanded="false"
+                               aria-label="Open profile menu">
                                 <span class="user-nav-initials">
                                     <asp:Literal ID="litInitials" runat="server" />
                                 </span>
@@ -90,7 +94,9 @@
                                         <asp:Literal ID="litUserRole" runat="server" />
                                     </span>
                                 </div>
-                                <span style="font-size: 10px; margin-left: 2px; opacity: 0.8;">▼</span>
+                                <span class="user-nav-arrow" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </span>
                             </a>
 
                             <!-- Dropdown Menu Items -->
@@ -396,13 +402,32 @@
     </style>
 
     <script type="text/javascript">
+        function setProfileExpanded(expanded) {
+            var trigger = document.querySelector('.nav-profile-trigger');
+            if (trigger) trigger.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        }
+
         function toggleProfileDropdown() {
             var menu = document.getElementById('profileDropdownMenu');
-            if (menu.style.display === 'block') {
-                menu.style.display = 'none';
-            } else {
-                menu.style.display = 'block';
+            if (!menu) return;
+            var open = menu.style.display === 'block';
+            menu.style.display = open ? 'none' : 'block';
+            setProfileExpanded(!open);
+        }
+
+        // Keyboard support: Enter/Space toggles, Escape closes and returns focus.
+        function handleProfileTriggerKey(event) {
+            if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+                event.preventDefault();
+                toggleProfileDropdown();
+                return false;
             }
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                var menu = document.getElementById('profileDropdownMenu');
+                if (menu) { menu.style.display = 'none'; setProfileExpanded(false); }
+                return false;
+            }
+            return true;
         }
 
         // Close dropdown when clicking outside
@@ -411,6 +436,7 @@
                 var menu = document.getElementById('profileDropdownMenu');
                 if (menu && menu.style.display === 'block') {
                     menu.style.display = 'none';
+                    setProfileExpanded(false);
                 }
             }
         }
@@ -535,8 +561,9 @@
                 }
             }
 
-            // Public API. type: success|error|warning|info. Returns nothing.
-            window.fhShowMessage = function (type, title, message) {
+            // Public API. type: success|error|warning|info.
+            // Optional durationMs overrides the per-type auto-dismiss time (ms).
+            window.fhShowMessage = function (type, title, message, durationMs) {
                 type = (type || 'info').toLowerCase();
                 if (!AUTO.hasOwnProperty(type)) type = 'info';
 
@@ -544,7 +571,7 @@
                 if (current) { if (timer) clearTimeout(timer); if (current.parentNode) current.parentNode.removeChild(current); current = null; }
                 else { lastFocus = document.activeElement; }
 
-                var duration = AUTO[type];
+                var duration = (typeof durationMs === 'number' && durationMs > 0) ? durationMs : AUTO[type];
                 var heading = (title && String(title).trim()) ? title : DEFTITLE[type];
 
                 var overlay = document.createElement('div');

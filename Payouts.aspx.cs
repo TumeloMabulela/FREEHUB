@@ -282,6 +282,10 @@ namespace FreeHubProject
                 "UPDATE Project SET projectStatus = 'Completed' WHERE projectID = @ProjectID",
                 new SqlParameter("@ProjectID", projectID));
 
+            // Chat lifecycle: end the conversation (idempotently) now the project is
+            // completed, unless another qualifying active project remains between the pair.
+            ChatLifecycle.OnProjectCompleted(projectID, userID);
+
             // 2. Mark the escrow transaction as Released
             string releaseEscrowQuery = @"
                 UPDATE [Transaction]

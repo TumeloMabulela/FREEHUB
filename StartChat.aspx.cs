@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -19,11 +20,10 @@ namespace FreeHubProject
 
             if (!IsPostBack)
             {
-                // Heartbeat: update current user's last seen timestamp
+                // Heartbeat: update current user's last seen timestamp.
                 DatabaseHelper.UpdateUserLastSeen(CurrentUserId);
 
-                // The user has opened Messages, so any messages still 'Sent' to them
-                // have now been delivered. Senders will see ✓✓ (delivered) going forward.
+                // Opening Messages delivers any still-'Sent' messages to the current user.
                 DatabaseHelper.MarkMessagesAsDelivered(CurrentUserId);
 
                 BindApprovedChatUsers("");
@@ -31,8 +31,6 @@ namespace FreeHubProject
                 string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
 
-                // Deep links (e.g. a "Message" button elsewhere) open the popup straight away.
-                // A plain visit to Messages shows the dashboard first (popup stays closed).
                 if (!string.IsNullOrWhiteSpace(queryUserId))
                 {
                     int uid;
@@ -47,7 +45,6 @@ namespace FreeHubProject
                 }
                 else
                 {
-                    // Fresh Messages visit: dashboard only, no auto-opened conversation.
                     ChatOpen = false;
                 }
             }
@@ -55,15 +52,11 @@ namespace FreeHubProject
 
         protected void Page_PreRender(object sender, EventArgs e)
         {
-            // Welcome screen vs active chat.
             pnlWelcome.Visible = !ChatOpen;
             pnlChatPopup.Visible = ChatOpen;
 
-            // Add 'chat-open' class for mobile responsive (hides sidebar, shows chat).
             workspacePanel.Attributes["class"] = ChatOpen ? "fh-msg-root chat-open" : "fh-msg-root";
 
-            // Project details side-panel and sub-bar: shown on every open conversation.
-            // Displays the relevant project between the two users (active or completed).
             if (ChatOpen)
             {
                 pnlProjectBar.Visible = true;
@@ -76,7 +69,6 @@ namespace FreeHubProject
                 pnlProjectDetails.Visible = false;
             }
 
-            // Scroll the thread to the newest message after it renders (open or switch).
             if (ChatOpen)
             {
                 ScriptManager.RegisterStartupScript(
@@ -85,13 +77,14 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>
-        /// Fills the project-details side panel and project sub-bar with data from
-        /// the active project between the current user and the selected contact.
-        /// Also binds the shared files repeater inside the details panel.
-        /// </summary>
+        // ============================================================
+        // PROJECT DETAILS / STATUS PANEL
+        // ============================================================
+
         private void BindProjectDetails()
         {
+            bool active = ChatIsActive;
+
             if (ActiveProjectId > 0)
             {
                 DataRow project = DatabaseHelper.GetProjectById(ActiveProjectId);
@@ -100,10 +93,22 @@ namespace FreeHubProject
                     string title = Convert.ToString(project["title"]);
                     string status = Convert.ToString(project["projectStatus"]);
 
-                    lblProjectBarTitle.Text = title;
-                    lblProjectBarStatus.Text = status;
-                    lblDetailsProjectTitle.Text = title;
-                    lblDetailsProjectStatus.Text = status;
+                    lblProjectBarTitle.Text = Server.HtmlEncode(title);
+                    lblProjectBarStatus.Text = Server.HtmlEncode(status);
+                    lblDetailsProjectTitle.Text = Server.HtmlEncode(title);
+                    lblDetailsProjectStatus.Text = Server.HtmlEncode(status);
+
+                    string viewUrl = ResolveUrl("~/ProjectDetails.aspx?projectId=" + ActiveProjectId);
+                    lnkViewProject.NavigateUrl = viewUrl;
+                    lnkDetailsViewProject.NavigateUrl = viewUrl;
+                    lnkViewProject.Visible = true;
+                    lnkDetailsViewProject.Visible = true;
+
+                    // Project-status dot reflects the PROJECT status (distinct from chat status).
+                    bool projActive = !status.Equals("Completed", StringComparison.OrdinalIgnoreCase) &&
+                                      !status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+                    projBarDot.Attributes["class"] = projActive ? "fh-dot-green" : "fh-dot-grey";
+                    detailsStatusDot.Attributes["class"] = projActive ? "fh-dot-green" : "fh-dot-grey";
                 }
                 else
                 {
@@ -115,22 +120,25 @@ namespace FreeHubProject
                 SetNoProjectLabels();
             }
 
-            // Shared files for the details panel — files exchanged between the two users.
+            // Conversation status card (distinct from project status).
+            pnlStatusActive.Visible = active;
+            pnlStatusEnded.Visible = !active;
+
             LoadSharedFilesForDetailsPanel();
         }
 
         private void SetNoProjectLabels()
         {
             lblProjectBarTitle.Text = "No active project";
-            lblProjectBarStatus.Text = "—";
+            lblProjectBarStatus.Text = "&#8212;";
             lblDetailsProjectTitle.Text = "No active project";
-            lblDetailsProjectStatus.Text = "—";
+            lblDetailsProjectStatus.Text = "&#8212;";
+            lnkViewProject.Visible = false;
+            lnkDetailsViewProject.Visible = false;
+            projBarDot.Attributes["class"] = "fh-dot-grey";
+            detailsStatusDot.Attributes["class"] = "fh-dot-grey";
         }
 
-        /// <summary>
-        /// Binds the shared-files repeater inside the collapsible project details panel
-        /// with files exchanged between the current user and the selected contact.
-        /// </summary>
         private void LoadSharedFilesForDetailsPanel()
         {
             using (SqlConnection conn = new SqlConnection(_connStr))
@@ -162,6 +170,10 @@ namespace FreeHubProject
             }
         }
 
+        // ============================================================
+        // STATE
+        // ============================================================
+
         public int CurrentUserId
         {
             get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
@@ -173,10 +185,6 @@ namespace FreeHubProject
             set { Session["SelectedOtherUserId"] = value; }
         }
 
-        /// <summary>
-        /// True when a conversation is open, so the floating chat popup is shown over the
-        /// Messages dashboard. False shows the dashboard/workspace only.
-        /// </summary>
         public bool ChatOpen
         {
             get { return ViewState["ChatOpen"] != null && (bool)ViewState["ChatOpen"]; }
@@ -190,7 +198,17 @@ namespace FreeHubProject
         }
 
         /// <summary>
-        /// The active conversation-list filter: All, Unread, Clients, or Freelancers.
+        /// Whether the OPEN conversation is currently active (messaging allowed). Set during
+        /// SelectUserById from the authoritative derived availability; defaults to active.
+        /// </summary>
+        private bool ChatIsActive
+        {
+            get { return ViewState["ChatIsActive"] == null || (bool)ViewState["ChatIsActive"]; }
+            set { ViewState["ChatIsActive"] = value; }
+        }
+
+        /// <summary>
+        /// The active conversation-list filter: All, Unread, Ended, Clients, or Freelancers.
         /// </summary>
         private string ContactFilter
         {
@@ -198,16 +216,21 @@ namespace FreeHubProject
             set { ViewState["ContactFilter"] = value; }
         }
 
+        // ============================================================
+        // CONVERSATION LIST
+        // ============================================================
+
         private void BindApprovedChatUsers(string searchText)
         {
             DataTable dt = new DataTable();
 
             using (SqlConnection conn = new SqlConnection(_connStr))
             {
-                // One row PER CONTACT (other user), not per project. A freelancer and an
-                // employer who have worked on several projects together share a single chat,
-                // so a completed project followed by a new one reuses the same conversation
-                // instead of creating a duplicate contact row.
+                // One row PER CONTACT (other user). A freelancer and employer who have worked
+                // on several projects share ONE conversation, so completed-then-new projects
+                // reuse the same contact row instead of duplicating it. The IsActive column is
+                // derived authoritatively: active = any Approved proposal between the two users
+                // whose project is NOT Completed/Cancelled.
                 string query = @"
                     SELECT
                         u.userID AS UserID,
@@ -215,12 +238,18 @@ namespace FreeHubProject
                         (u.firstName + ' ' + u.lastName) AS Name,
                         (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), 'No messages yet') AS LastMessage,
-                        -- Displayed time, converted from stored UTC to South Africa time (UTC+2)
                         ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
-                        -- Sortable raw timestamp of the latest message (NULL sorts last)
                         (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort,
-                        -- Count of unread messages FROM this contact TO the current user
-                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount
+                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount,
+                        CAST(CASE WHEN EXISTS (
+                                SELECT 1 FROM dbo.Proposal prop2
+                                INNER JOIN dbo.Project p2 ON prop2.projectID = p2.projectID
+                                INNER JOIN dbo.Employer e2 ON p2.employerID = e2.employerID
+                                INNER JOIN dbo.Freelancer f2 ON prop2.freelancerID = f2.freelancerID
+                                WHERE prop2.status = 'Approved'
+                                  AND p2.projectStatus NOT IN ('Completed','Cancelled')
+                                  AND ((e2.userID = @CurrentUserID AND f2.userID = u.userID) OR (f2.userID = @CurrentUserID AND e2.userID = u.userID))
+                            ) THEN 1 ELSE 0 END AS BIT) AS IsActive
                     FROM dbo.Proposal prop
                     INNER JOIN dbo.Project p ON prop.projectID = p.projectID
                     INNER JOIN dbo.Employer e ON p.employerID = e.employerID
@@ -239,7 +268,7 @@ namespace FreeHubProject
                     query += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
                 }
 
-                // Role filters: Clients = contacts who are Employers; Freelancers = contacts who are Freelancers.
+                // Role filters: Clients = Employers; Freelancers = Freelancers.
                 if (ContactFilter == "Clients")
                 {
                     query += " AND u.userType = 'Employer'";
@@ -249,21 +278,30 @@ namespace FreeHubProject
                     query += " AND u.userType = 'Freelancer'";
                 }
 
-                // Collapse to a single row per contact regardless of how many shared projects.
                 query += @"
                     GROUP BY u.userID, u.userType, u.firstName, u.lastName";
 
-                // Unread filter is applied after grouping (depends on the aggregated unread count).
+                // Unread filter applies after grouping.
                 if (ContactFilter == "Unread")
                 {
                     query += @"
                     HAVING (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') > 0";
                 }
+                else if (ContactFilter == "Ended")
+                {
+                    // Ended = NO active shared project remains between the two users.
+                    query += @"
+                    HAVING NOT EXISTS (
+                        SELECT 1 FROM dbo.Proposal prop3
+                        INNER JOIN dbo.Project p3 ON prop3.projectID = p3.projectID
+                        INNER JOIN dbo.Employer e3 ON p3.employerID = e3.employerID
+                        INNER JOIN dbo.Freelancer f3 ON prop3.freelancerID = f3.freelancerID
+                        WHERE prop3.status = 'Approved'
+                          AND p3.projectStatus NOT IN ('Completed','Cancelled')
+                          AND ((e3.userID = @CurrentUserID AND f3.userID = u.userID) OR (f3.userID = @CurrentUserID AND e3.userID = u.userID)))";
+                }
 
-                // Also surface the FreeHub Support (admin) conversation if the user has
-                // ever messaged the admin via a Help link. The admin is not part of any
-                // proposal/project, so it is unioned in separately (respecting the role
-                // filters: it only appears under All/Unread, not Clients/Freelancers).
+                // Also surface the FreeHub Support (admin) conversation under All/Unread.
                 bool includeAdmin = (ContactFilter == "All" || ContactFilter == "Unread");
                 if (includeAdmin)
                 {
@@ -277,7 +315,8 @@ namespace FreeHubProject
                         ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastMessage,
                         ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
                         (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort,
-                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount
+                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount,
+                        CAST(1 AS BIT) AS IsActive
                     FROM dbo.[User] u
                     WHERE u.userType = 'Admin'
                       AND u.userID <> @CurrentUserID
@@ -293,7 +332,6 @@ namespace FreeHubProject
                     query += adminRow;
                 }
 
-                // Newest conversation first; contacts with no messages fall to the bottom.
                 query += " ORDER BY LastTimeSort DESC";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -315,12 +353,14 @@ namespace FreeHubProject
             rptUsers.DataBind();
             lblNoUsers.Visible = (dt.Rows.Count == 0);
 
-            // Reflect the active filter in the tab styling.
+            UpdateUnreadBadge();
             SetActiveFilterTab();
         }
 
         /// <summary>
-        /// Handles clicks on the All / Unread / Clients / Freelancers filter tabs.
+        /// Handles the All / Unread / Ended segmented tabs (and the hidden role chips).
+        /// Searching/filtering must NOT clear an already-open conversation, so we only
+        /// rebind the list — the selected conversation and its messages stay in place.
         /// </summary>
         protected void Filter_Click(object sender, EventArgs e)
         {
@@ -330,18 +370,69 @@ namespace FreeHubProject
                 ContactFilter = btn.CommandArgument;
             }
             BindApprovedChatUsers(txtSearch.Text.Trim());
+
+            // Preserve the open conversation (and its message thread) across a filter change.
+            if (ChatOpen && SelectedOtherUserId > 0)
+            {
+                LoadChatMessages();
+            }
+        }
+
+        /// <summary>Contact-role dropdown (All contacts / Clients / Freelancers).</summary>
+        protected void ddlContactFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string val = ddlContactFilter.SelectedValue;
+            ContactFilter = (val == "Clients" || val == "Freelancers") ? val : "All";
+
+            // Keep the All/Unread/Ended segment visually consistent.
+            BindApprovedChatUsers(txtSearch.Text.Trim());
+
+            if (ChatOpen && SelectedOtherUserId > 0)
+            {
+                LoadChatMessages();
+            }
         }
 
         /// <summary>
-        /// Adds the 'active' CSS class to whichever filter tab is currently selected.
+        /// Shows the real total unread-message count next to the Messages heading. Counted
+        /// from live data (all messages to the current user not yet Read), independent of the
+        /// active filter. Hidden when zero.
         /// </summary>
+        private void UpdateUnreadBadge()
+        {
+            int unread = 0;
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = "SELECT COUNT(*) FROM dbo.Message WHERE receiverID = @Me AND status <> 'Read'";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Me", CurrentUserId);
+                    conn.Open();
+                    unread = Convert.ToInt32(cmd.ExecuteScalar());
+                }
+            }
+
+            if (unread > 0)
+            {
+                litUnreadTotal.Text = unread > 99 ? "99+" : unread.ToString();
+                pnlUnreadTotal.Visible = true;
+            }
+            else
+            {
+                pnlUnreadTotal.Visible = false;
+            }
+        }
+
         private void SetActiveFilterTab()
         {
             btnFilterAll.CssClass = "fh-filter" + (ContactFilter == "All" ? " active" : "");
             btnFilterUnread.CssClass = "fh-filter" + (ContactFilter == "Unread" ? " active" : "");
-            btnFilterClients.CssClass = "fh-filter-chip" + (ContactFilter == "Clients" ? " active" : "");
-            btnFilterFreelancers.CssClass = "fh-filter-chip" + (ContactFilter == "Freelancers" ? " active" : "");
+            btnFilterEnded.CssClass = "fh-filter" + (ContactFilter == "Ended" ? " active" : "");
         }
+
+        // ============================================================
+        // CONTACT INFO MODAL
+        // ============================================================
 
         protected void btnToggleDetails_Click(object sender, EventArgs e)
         {
@@ -358,56 +449,19 @@ namespace FreeHubProject
 
         private void LoadUserDetailsAndSharedFiles(int targetUserId)
         {
-            // 1. Load User Profile Details
             DataRow user = DatabaseHelper.GetUserById(targetUserId);
             if (user != null)
             {
-                lblDetailName.Text = Convert.ToString(user["firstName"]) + " " + Convert.ToString(user["lastName"]);
-                lblDetailEmail.Text = Convert.ToString(user["email"]);
-                lblDetailContact.Text = user["contactNumber"] != DBNull.Value ? Convert.ToString(user["contactNumber"]) : "N/A";
-                lblDetailUserType.Text = Convert.ToString(user["userType"]);
+                lblDetailName.Text = Server.HtmlEncode(Convert.ToString(user["firstName"]) + " " + Convert.ToString(user["lastName"]));
+                lblDetailEmail.Text = Server.HtmlEncode(Convert.ToString(user["email"]));
+                lblDetailContact.Text = user["contactNumber"] != DBNull.Value ? Server.HtmlEncode(Convert.ToString(user["contactNumber"])) : "N/A";
+                lblDetailUserType.Text = Server.HtmlEncode(Convert.ToString(user["userType"]));
 
                 decimal rating = user["ratingScore"] != DBNull.Value ? Convert.ToDecimal(user["ratingScore"]) : 0.0m;
                 lblDetailRating.Text = rating.ToString("F1");
             }
 
-            // 2. Load Shared File Attachments History
-            using (SqlConnection conn = new SqlConnection(_connStr))
-            {
-                string query = @"
-                    SELECT attachmentUrl, timeStamp 
-                    FROM dbo.Message 
-                    WHERE ((senderID = @CurrentUserID AND receiverID = @OtherUserID) 
-                        OR (senderID = @OtherUserID AND receiverID = @CurrentUserID))
-                      AND attachmentUrl IS NOT NULL 
-                      AND attachmentUrl != ''
-                    ORDER BY timeStamp DESC";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
-                    cmd.Parameters.AddWithValue("@OtherUserID", targetUserId);
-
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dtFiles = new DataTable();
-                        da.Fill(dtFiles);
-
-                        if (dtFiles.Rows.Count > 0)
-                        {
-                            rptSharedFiles.DataSource = dtFiles;
-                            rptSharedFiles.DataBind();
-                            lblNoSharedFiles.Visible = false;
-                        }
-                        else
-                        {
-                            rptSharedFiles.DataSource = null;
-                            rptSharedFiles.DataBind();
-                            lblNoSharedFiles.Visible = true;
-                        }
-                    }
-                }
-            }
+            LoadSharedFilesForDetailsPanel();
         }
 
         public string GetAvatarClass(string initials)
@@ -421,6 +475,10 @@ namespace FreeHubProject
                 default: return "avatar-ml";
             }
         }
+
+        // ============================================================
+        // CONVERSATION SELECTION
+        // ============================================================
 
         protected void rptUsers_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
@@ -452,164 +510,191 @@ namespace FreeHubProject
         private void SelectUserById(int otherUserId)
         {
             SelectedOtherUserId = otherUserId;
-            ChatOpen = true;   // opening/switching a conversation shows the floating popup
+            ChatOpen = true;
 
-            // Fetch user profile info
+            // Header identity + partner last-seen (existing, authoritative — no invented data).
             DataRow user = DatabaseHelper.GetUserById(otherUserId);
             if (user != null)
             {
-                string firstName = user["firstName"].ToString();
-                string lastName = user["lastName"].ToString();
-                lblChatName.Text = firstName + " " + lastName;
-                lblChatInitials.Text = (!string.IsNullOrEmpty(firstName) ? firstName[0].ToString() : "") +
-                                       (!string.IsNullOrEmpty(lastName) ? lastName[0].ToString() : "");
+                string firstName = Convert.ToString(user["firstName"]);
+                string lastName = Convert.ToString(user["lastName"]);
+                lblChatName.Text = Server.HtmlEncode(firstName + " " + lastName);
+                lblChatInitials.Text = Server.HtmlEncode(
+                    (!string.IsNullOrEmpty(firstName) ? firstName[0].ToString() : "") +
+                    (!string.IsNullOrEmpty(lastName) ? lastName[0].ToString() : ""));
 
                 string accountStatus = Convert.ToString(user["accountStatus"]);
                 if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
                 {
-                    lblPartnerStatus.Text = "Account Deactivated 🔴";
+                    lblPartnerStatus.Text = "Account deactivated";
                     statusDot.Attributes["class"] = "status-dot offline";
                 }
                 else
                 {
                     string onlineStatus = DatabaseHelper.GetUserOnlineStatus(otherUserId);
-                    lblPartnerStatus.Text = onlineStatus;
-
-                    // Green dot only when actually online; red otherwise (last seen / offline).
+                    lblPartnerStatus.Text = Server.HtmlEncode(onlineStatus);
                     bool isOnline = onlineStatus.IndexOf("Online", StringComparison.OrdinalIgnoreCase) >= 0;
                     statusDot.Attributes["class"] = isOnline ? "status-dot" : "status-dot offline";
                 }
             }
 
-            bool isChatEndedOrDeactivated = false;
-            string lockReasonMessage = string.Empty;
+            // Derive availability + governing project from authoritative records.
+            ChatLifecycle.ChatAvailability avail = ChatLifecycle.GetAvailability(_connStr, CurrentUserId, otherUserId);
+            ActiveProjectId = avail.SelectedProjectId;
+            ChatIsActive = avail.IsActive;
 
-            // 1. Check if partner account status is Deactivated, Deleted, or Inactive
-            if (user != null)
-            {
-                string accountStatus = Convert.ToString(user["accountStatus"]);
-                if (accountStatus.Equals("Deactivated", StringComparison.OrdinalIgnoreCase) ||
-                    accountStatus.Equals("Deleted", StringComparison.OrdinalIgnoreCase) ||
-                    accountStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
-                {
-                    isChatEndedOrDeactivated = true;
-                    lockReasonMessage = "The profile has been deactivated";
-                }
-            }
+            // Project selector: show only when more than one approved project is shared.
+            BindProjectSelector(otherUserId);
 
-            // 2. Check if there is an active/completed proposal/project between these two users (with proper JOINs)
-            using (SqlConnection conn = new SqlConnection(_connStr))
-            {
-                // Pick the MOST RECENT approved project between these two users, and prefer a
-                // project that is still active. This way, when an old project is completed and
-                // a new one is approved with the same people, the existing chat reopens for the
-                // new project instead of staying locked on the completed one.
-                string query = @"SELECT TOP 1 p.projectID, p.projectStatus, u.accountStatus AS EmployerAccountStatus
-                    FROM dbo.Proposal prop
-                    INNER JOIN dbo.Project p ON prop.projectID = p.projectID
-                    INNER JOIN dbo.Employer e ON p.employerID = e.employerID
-                    INNER JOIN dbo.Freelancer f ON prop.freelancerID = f.freelancerID
-                    INNER JOIN dbo.[User] u ON e.userID = u.userID
-                    WHERE prop.status = 'Approved'
-                      AND ((e.userID = @CurrentUserID AND f.userID = @OtherUserID) OR (f.userID = @CurrentUserID AND e.userID = @OtherUserID))
-                    ORDER BY
-                        CASE WHEN p.projectStatus IN ('Completed', 'Cancelled') THEN 1 ELSE 0 END ASC,
-                        p.dateCreated DESC";
+            ApplyAvailabilityUi(avail);
 
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
-                    cmd.Parameters.AddWithValue("@OtherUserID", otherUserId);
-                    conn.Open();
+            // Rating modal: only when the governing project is Completed and not yet rated.
+            MaybeShowRatingModal(avail);
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (dr.Read())
-                        {
-                            ActiveProjectId = Convert.ToInt32(dr["projectID"]);
-                            string projectStatus = dr["projectStatus"].ToString();
-                            string empAccountStatus = dr["EmployerAccountStatus"].ToString();
-
-                            if (projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase) ||
-                                projectStatus.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
-                            {
-                                isChatEndedOrDeactivated = true;
-                                lockReasonMessage = "Project completed";
-
-                                // Close data reader so we can execute a scalar check safely on the same connection
-                                dr.Close();
-
-                                // Check if the current user has already rated this project
-                                string checkRatingQuery = "SELECT COUNT(*) FROM dbo.Rating WHERE projectID = @ProjectID AND raterUserID = @RaterUserID";
-                                int existingRatings = 0;
-                                using (SqlCommand ratingCmd = new SqlCommand(checkRatingQuery, conn))
-                                {
-                                    ratingCmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId);
-                                    ratingCmd.Parameters.AddWithValue("@RaterUserID", CurrentUserId);
-                                    existingRatings = Convert.ToInt32(ratingCmd.ExecuteScalar());
-                                }
-
-                                // Only show rating modal if completed AND the current user hasn't rated yet
-                                if (ActiveProjectId > 0 && existingRatings == 0 && projectStatus.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    pnlRatingModal.Visible = true;
-                                }
-                                else
-                                {
-                                    pnlRatingModal.Visible = false;
-                                }
-                            }
-                            else if (empAccountStatus.Equals("Deactivated", StringComparison.OrdinalIgnoreCase) ||
-                                     empAccountStatus.Equals("Deleted", StringComparison.OrdinalIgnoreCase) ||
-                                     empAccountStatus.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
-                            {
-                                isChatEndedOrDeactivated = true;
-                                lockReasonMessage = "The profile has been deactivated";
-                            }
-                        }
-                        else
-                        {
-                            ActiveProjectId = 0;
-                        }
-                    }
-                }
-            }
-
-            // Apply Chat Locking UI Rules (Preserving DB History)
-            if (isChatEndedOrDeactivated)
-            {
-                btnSend.Enabled = false;
-                fileUploadControl.Enabled = false;
-                txtMessage.Enabled = false;
-                txtMessage.Attributes["placeholder"] = "Chat has ended. Messages are read-only.";
-
-                ShowStatus(lockReasonMessage);
-            }
-            else
-            {
-                btnSend.Enabled = true;
-                fileUploadControl.Enabled = true;
-                txtMessage.Enabled = true;
-                txtMessage.Attributes["placeholder"] = "Type your message...";
-            }
-
-            // Mark ALL unread messages from this contact as Read (across every project),
-            // because the conversation is one continuous chat per contact and the unread
-            // badge counts unread messages per contact regardless of project.
+            // Mark ALL unread messages from this contact as Read (one continuous chat per contact).
             DatabaseHelper.MarkMessagesAsRead(CurrentUserId, otherUserId, null);
 
             LoadChatMessages();
 
-            // Rebind the contact list so the unread badge for this contact clears immediately.
+            // Rebind the list so this contact's unread badge clears immediately.
             BindApprovedChatUsers(txtSearch != null ? txtSearch.Text.Trim() : "");
         }
+
+        /// <summary>
+        /// Enables/disables the composer and shows the ended-notice based on derived availability.
+        /// </summary>
+        private void ApplyAvailabilityUi(ChatLifecycle.ChatAvailability avail)
+        {
+            bool active = avail.IsActive;
+
+            pnlComposer.Visible = active;
+            pnlEndedNotice.Visible = !active;
+
+            btnSend.Enabled = active;
+            fileUploadControl.Enabled = active;
+            txtMessage.Enabled = active;
+            txtMessage.Attributes["placeholder"] = active ? "Write a message..." : "Messaging is unavailable in ended chats.";
+        }
+
+        private void MaybeShowRatingModal(ChatLifecycle.ChatAvailability avail)
+        {
+            pnlRatingModal.Visible = false;
+            if (ActiveProjectId <= 0) return;
+            if (!string.Equals(avail.ProjectStatus, "Completed", StringComparison.OrdinalIgnoreCase)) return;
+
+            using (SqlConnection conn = new SqlConnection(_connStr))
+            {
+                string q = "SELECT COUNT(*) FROM dbo.Rating WHERE projectID = @ProjectID AND raterUserID = @RaterUserID";
+                using (SqlCommand cmd = new SqlCommand(q, conn))
+                {
+                    cmd.Parameters.AddWithValue("@ProjectID", ActiveProjectId);
+                    cmd.Parameters.AddWithValue("@RaterUserID", CurrentUserId);
+                    conn.Open();
+                    int existing = Convert.ToInt32(cmd.ExecuteScalar());
+                    if (existing == 0) pnlRatingModal.Visible = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Populates the compact project selector when the two users share more than one
+        /// approved project. Picking one updates the governing project context (View Project,
+        /// details panel). History/attachments stay with their original projects.
+        /// </summary>
+        private void BindProjectSelector(int otherUserId)
+        {
+            List<ChatLifecycle.SharedProject> projects = ChatLifecycle.GetSharedProjects(_connStr, CurrentUserId, otherUserId);
+
+            if (projects.Count > 1)
+            {
+                ddlProjectSelect.Items.Clear();
+                foreach (var p in projects)
+                {
+                    string label = p.Title + (p.IsActive ? "" : " (ended)");
+                    ddlProjectSelect.Items.Add(new ListItem(label, p.ProjectId.ToString()));
+                }
+
+                // Keep the currently governing project selected.
+                if (ActiveProjectId > 0)
+                {
+                    ListItem sel = ddlProjectSelect.Items.FindByValue(ActiveProjectId.ToString());
+                    if (sel != null)
+                    {
+                        ddlProjectSelect.ClearSelection();
+                        sel.Selected = true;
+                    }
+                }
+                ddlProjectSelect.Visible = true;
+            }
+            else
+            {
+                ddlProjectSelect.Items.Clear();
+                ddlProjectSelect.Visible = false;
+            }
+        }
+
+        /// <summary>
+        /// Switches the governing project when several are active. Re-derives availability
+        /// for the chosen project's status so the composer/ended-notice stay accurate.
+        /// </summary>
+        protected void ddlProjectSelect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int projId;
+            if (!int.TryParse(ddlProjectSelect.SelectedValue, out projId) || projId <= 0) return;
+
+            ActiveProjectId = projId;
+
+            // Re-derive availability from the chosen project's authoritative status.
+            DataRow project = DatabaseHelper.GetProjectById(projId);
+            bool projActive = false;
+            if (project != null)
+            {
+                string status = Convert.ToString(project["projectStatus"]);
+                projActive = !status.Equals("Completed", StringComparison.OrdinalIgnoreCase) &&
+                             !status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+            }
+            ChatIsActive = projActive;
+
+            var avail = new ChatLifecycle.ChatAvailability
+            {
+                IsActive = projActive,
+                SelectedProjectId = projId,
+                ProjectStatus = project != null ? Convert.ToString(project["projectStatus"]) : ""
+            };
+            ApplyAvailabilityUi(avail);
+
+            LoadChatMessages();
+        }
+
+        // ============================================================
+        // SEND
+        // ============================================================
+
         protected void btnSend_Click(object sender, EventArgs e)
         {
-            if (SelectedOtherUserId <= 0 || (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile)) return;
+            if (SelectedOtherUserId <= 0) return;
+
+            // SERVER-SIDE RECHECK: availability can change while the page is open (e.g. the
+            // project completes in another tab). Never trust the client — re-derive here.
+            bool allowed = IsAdminContact(SelectedOtherUserId) ||
+                           ChatLifecycle.HasActiveSharedProject(_connStr, CurrentUserId, SelectedOtherUserId);
+
+            if (!allowed)
+            {
+                // Reflect the ended state and reject the send/upload. The textbox keeps the
+                // user's draft (we do NOT clear txtMessage) so nothing is lost.
+                ChatIsActive = false;
+                ApplyAvailabilityUi(new ChatLifecycle.ChatAvailability { IsActive = false, SelectedProjectId = ActiveProjectId });
+                LoadChatMessages();
+                BindApprovedChatUsers(txtSearch != null ? txtSearch.Text.Trim() : "");
+                MessageHelper.Warning(this, "This conversation has ended because the project is completed. Your message history remains available.", "Messaging unavailable");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile) return;
 
             string savedAttachmentUrl = null;
 
-            // Handle file attachment upload
             if (fileUploadControl.HasFile)
             {
                 try
@@ -620,9 +705,6 @@ namespace FreeHubProject
                         Directory.CreateDirectory(folderPath);
                     }
 
-                    // Keep the original filename for display, but prefix a GUID to guarantee
-                    // uniqueness on disk. Stored as "<guid>_<original name>"; the display
-                    // helper strips the "<guid>_" prefix to show the original name again.
                     string originalName = Path.GetFileName(fileUploadControl.FileName);
                     string safeOriginal = MakeSafeFileName(originalName);
                     string fileName = Guid.NewGuid().ToString("N") + "_" + safeOriginal;
@@ -633,7 +715,8 @@ namespace FreeHubProject
                 }
                 catch (Exception ex)
                 {
-                    ShowStatus("Error uploading file: " + ex.Message);
+                    // Draft preserved: do not clear txtMessage on a failed upload.
+                    MessageHelper.Error(this, "Error uploading file: " + ex.Message);
                     return;
                 }
             }
@@ -660,11 +743,12 @@ namespace FreeHubProject
             string senderName = Session["FirstName"] != null ? Session["FirstName"].ToString() : "A user";
             NotificationHelper.CreateNotification(SelectedOtherUserId, "Message", $"{senderName} sent you a message.");
 
+            // Only clear the draft + attachment AFTER a successful send.
             txtMessage.Text = "";
             lblAttachedFileName.Text = "";
 
             LoadChatMessages();
-            BindApprovedChatUsers("");
+            BindApprovedChatUsers(txtSearch != null ? txtSearch.Text.Trim() : "");
         }
 
         private void LoadChatMessages()
@@ -680,13 +764,7 @@ namespace FreeHubProject
             {
                 string query = @"
                     SELECT 
-                        messageID, 
-                        senderID, 
-                        receiverID, 
-                        content, 
-                        attachmentUrl, 
-                        status, 
-                        timeStamp
+                        messageID, senderID, receiverID, content, attachmentUrl, status, timeStamp
                     FROM dbo.Message
                     WHERE (senderID = @CurrentUserID AND receiverID = @OtherUserID)
                        OR (senderID = @OtherUserID AND receiverID = @CurrentUserID)
@@ -709,6 +787,16 @@ namespace FreeHubProject
             }
         }
 
+        private bool IsAdminContact(int otherUserId)
+        {
+            DataRow u = DatabaseHelper.GetUserById(otherUserId);
+            return u != null && string.Equals(Convert.ToString(u["userType"]), "Admin", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // ============================================================
+        // SEARCH (system user lookup)
+        // ============================================================
+
         protected void btnSearchUser_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtSearch.Text))
@@ -718,7 +806,6 @@ namespace FreeHubProject
             }
 
             DataTable dtUsers = DatabaseHelper.SearchRegisteredUsers(txtSearch.Text.Trim(), CurrentUserId);
-
             pnlSearchResults.Visible = true;
 
             if (dtUsers != null && dtUsers.Rows.Count > 0)
@@ -740,13 +827,15 @@ namespace FreeHubProject
             if (e.CommandName == "StartChatWithUser")
             {
                 int targetUserId = Convert.ToInt32(e.CommandArgument);
-
                 pnlSearchResults.Visible = false;
                 txtSearch.Text = "";
-
                 SelectUserById(targetUserId);
             }
         }
+
+        // ============================================================
+        // RATING
+        // ============================================================
 
         protected void btnSubmitRating_Click(object sender, EventArgs e)
         {
@@ -787,7 +876,7 @@ namespace FreeHubProject
             }
 
             pnlRatingModal.Visible = false;
-            ShowStatus($"Rating submitted! Reputation score updated to {updatedScore:F1} / 5.0.");
+            MessageHelper.Success(this, $"Rating submitted! Reputation score updated to {updatedScore:F1} / 5.0.", "Thank you");
         }
 
         protected void btnCloseModal_Click(object sender, EventArgs e)
@@ -798,37 +887,30 @@ namespace FreeHubProject
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             BindApprovedChatUsers(txtSearch.Text.Trim());
+            if (ChatOpen && SelectedOtherUserId > 0) LoadChatMessages();
         }
 
         protected void txtSearch_TextChanged(object sender, EventArgs e)
         {
             BindApprovedChatUsers(txtSearch.Text.Trim());
+            // Searching must not clear an already-opened conversation.
+            if (ChatOpen && SelectedOtherUserId > 0) LoadChatMessages();
         }
 
-        private void ShowStatus(string message)
-        {
-            pnlStatus.Visible = true;
-            lblStatus.Text = message;
-        }
-
-        /// <summary>
-        /// Closes the floating conversation popup and returns to the Messages dashboard,
-        /// keeping the user on the Messages page.
-        /// </summary>
+        /// <summary>Closes the conversation and returns to the Messages list.</summary>
         protected void btnCloseChat_Click(object sender, EventArgs e)
         {
             ChatOpen = false;
             SelectedOtherUserId = 0;
             pnlRatingModal.Visible = false;
             pnlUserDetailsModal.Visible = false;
-            // Refresh the contact list so the previously-selected row is no longer highlighted.
             BindApprovedChatUsers("");
         }
 
-        /// <summary>
-        /// Returns true if the stored attachment actually exists on disk for the running app.
-        /// Used by the markup to avoid rendering dead links that 404.
-        /// </summary>
+        // ============================================================
+        // ATTACHMENT HELPERS (used by markup)
+        // ============================================================
+
         public bool AttachmentExists(object attachmentUrl)
         {
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return false;
@@ -847,9 +929,6 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>
-        /// Resolves a stored attachment url (e.g. "~/Uploads/x.pdf") to a browser url.
-        /// </summary>
         public string ResolveAttachmentUrl(object attachmentUrl)
         {
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "#";
@@ -858,11 +937,6 @@ namespace FreeHubProject
             return ResolveUrl(url);
         }
 
-        /// <summary>
-        /// Returns the original uploaded filename for display. Stored files are named
-        /// "&lt;guid&gt;_&lt;original&gt;" so we strip the GUID prefix. Older files that were
-        /// saved as just "&lt;guid&gt;.ext" (no underscore) fall back to the stored name.
-        /// </summary>
         public string OriginalFileName(object attachmentUrl)
         {
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "";
@@ -870,7 +944,6 @@ namespace FreeHubProject
             if (string.IsNullOrEmpty(stored)) return "";
 
             int underscore = stored.IndexOf('_');
-            // A 32-char hex GUID prefix followed by '_' means we can recover the original name.
             if (underscore == 32)
             {
                 string rest = stored.Substring(underscore + 1);
@@ -879,10 +952,77 @@ namespace FreeHubProject
             return stored;
         }
 
+        /// <summary>Short uppercase extension label for the file icon (e.g. "PDF").</summary>
+        public string FileExtLabel(object attachmentUrl)
+        {
+            string name = OriginalFileName(attachmentUrl);
+            string ext = System.IO.Path.GetExtension(name);
+            if (string.IsNullOrEmpty(ext)) return "\U0001F4C4"; // generic doc glyph
+            ext = ext.TrimStart('.').ToUpperInvariant();
+            if (ext.Length > 4) ext = ext.Substring(0, 4);
+            return ext;
+        }
+
         /// <summary>
-        /// Strips characters that are invalid in a Windows filename so the original name
-        /// can be safely embedded in the stored file name.
+        /// File type + size when available (never fabricated). If the file is missing on
+        /// disk we only report the type; size is shown only for files that actually exist.
         /// </summary>
+        public string FileMeta(object attachmentUrl)
+        {
+            string name = OriginalFileName(attachmentUrl);
+            string ext = System.IO.Path.GetExtension(name);
+            string type = string.IsNullOrEmpty(ext) ? "File" : ext.TrimStart('.').ToUpperInvariant();
+
+            if (AttachmentExists(attachmentUrl))
+            {
+                try
+                {
+                    string physicalPath = Server.MapPath(attachmentUrl.ToString());
+                    var fi = new FileInfo(physicalPath);
+                    return type + " \u00B7 " + FormatSize(fi.Length);
+                }
+                catch
+                {
+                    return type;
+                }
+            }
+            return type;
+        }
+
+        private static string FormatSize(long bytes)
+        {
+            if (bytes < 1024) return bytes + " B";
+            double kb = bytes / 1024.0;
+            if (kb < 1024) return kb.ToString("0.#") + " KB";
+            double mb = kb / 1024.0;
+            return mb.ToString("0.#") + " MB";
+        }
+
+        // ============================================================
+        // SYSTEM / LIFECYCLE MESSAGE HELPERS (used by markup)
+        // ============================================================
+
+        public bool IsSystemRow(object content)
+        {
+            return ChatLifecycle.IsSystemMessage(content);
+        }
+
+        public string SystemText(object content)
+        {
+            return ChatLifecycle.StripSystem(content);
+        }
+
+        /// <summary>
+        /// Conversation-list preview: system rows show their stripped text; "No messages yet"
+        /// passes through unchanged.
+        /// </summary>
+        public string ConversationPreview(object content)
+        {
+            if (content == null || content == DBNull.Value) return "";
+            if (ChatLifecycle.IsSystemMessage(content)) return ChatLifecycle.StripSystem(content);
+            return Convert.ToString(content);
+        }
+
         private static string MakeSafeFileName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "file";
@@ -890,8 +1030,6 @@ namespace FreeHubProject
             {
                 name = name.Replace(c, '-');
             }
-            // Also drop underscores from the original so our "guid_original" split stays clean,
-            // and collapse spaces for tidy URLs.
             name = name.Replace('_', '-');
             return string.IsNullOrWhiteSpace(name) ? "file" : name;
         }

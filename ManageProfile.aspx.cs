@@ -18,8 +18,9 @@ namespace FreeHubProject
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
-                ShowTab("update");
-                LoadProfileData();
+                ShowMode("overview");
+                LoadReadOnly();
+                LoadProfileData();   // pre-fill the edit form so Update Profile shows current values
             }
         }
 
@@ -34,38 +35,148 @@ namespace FreeHubProject
         }
 
         // ============================================================
-        // TAB NAVIGATION
+        // MODE SWITCHING: overview (read-only) / edit / deactivate*
         // ============================================================
 
-        protected void btnTabUpdate_Click(object sender, EventArgs e)
+        /// <summary>Shows exactly one left-column panel; the right-column Actions/Privacy
+        /// cards are always visible (outside these panels).</summary>
+        private void ShowMode(string mode)
         {
-            pnlMessage.Visible = false;
-            ShowTab("update");
-            LoadProfileData();
+            pnlOverview.Visible = mode == "overview";
+            pnlUpdateProfile.Visible = mode == "edit";
+            pnlDeactivateProfile.Visible = mode == "deactivateProfile";
+            pnlDeactivateAccount.Visible = mode == "deactivateAccount";
         }
 
-        protected void btnTabDeactivateProfile_Click(object sender, EventArgs e)
+        // Right-column action buttons -> switch the left column into the chosen mode.
+        protected void btnActUpdate_Click(object sender, EventArgs e)
         {
             pnlMessage.Visible = false;
-            ShowTab("deactivateProfile");
+            ShowMode("edit");
+            LoadProfileData();   // repopulate current saved values into the edit form
+        }
+
+        protected void btnActDeactivateProfile_Click(object sender, EventArgs e)
+        {
+            pnlMessage.Visible = false;
+            ShowMode("deactivateProfile");
             SetupDeactivateProfileTab();
         }
 
-        protected void btnTabDeactivateAccount_Click(object sender, EventArgs e)
+        protected void btnActDeactivateAccount_Click(object sender, EventArgs e)
         {
             pnlMessage.Visible = false;
-            ShowTab("deactivateAccount");
+            ShowMode("deactivateAccount");
         }
 
-        private void ShowTab(string tab)
+        // Cancel from any mode -> back to the read-only overview (no save).
+        protected void btnCancelEdit_Click(object sender, EventArgs e)
         {
-            pnlUpdateProfile.Visible = tab == "update";
-            pnlDeactivateProfile.Visible = tab == "deactivateProfile";
-            pnlDeactivateAccount.Visible = tab == "deactivateAccount";
+            pnlMessage.Visible = false;
+            ShowMode("overview");
+            LoadReadOnly();
+        }
 
-            btnTabUpdate.CssClass = tab == "update" ? "profile-tab active-tab" : "profile-tab";
-            btnTabDeactivateProfile.CssClass = tab == "deactivateProfile" ? "profile-tab active-tab" : "profile-tab";
-            btnTabDeactivateAccount.CssClass = tab == "deactivateAccount" ? "profile-tab active-tab" : "profile-tab";
+        // ============================================================
+        // READ-ONLY OVERVIEW
+        // ============================================================
+
+        /// <summary>Populates the read-only overview literals from live data. All
+        /// user-generated values are HTML-encoded; missing optional values show
+        /// "Not provided".</summary>
+        private void LoadReadOnly()
+        {
+            int userId = GetUserId();
+            string userType = GetUserType();
+            bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+            bool isFreelancer = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+
+            litRoleWord.Text = isFreelancer ? "freelancer" : "employer";
+            litRoleBadge.Text = Server.HtmlEncode(userType);
+
+            try
+            {
+                DataRow user = DatabaseHelper.GetUserById(userId);
+                string firstName = user != null ? Convert.ToString(user["firstName"]) : "";
+                string lastName = user != null ? Convert.ToString(user["lastName"]) : "";
+                string email = user != null ? Convert.ToString(user["email"]) : "";
+                string contact = user != null ? Convert.ToString(user["contactNumber"]) : "";
+
+                string initials = "";
+                if (firstName.Length > 0) initials += firstName[0];
+                if (lastName.Length > 0) initials += lastName[0];
+                litInitials.Text = Server.HtmlEncode(initials.ToUpper());
+                litFullName.Text = Server.HtmlEncode((firstName + " " + lastName).Trim());
+
+                litFirstNameVal.Text = Val(firstName);
+                litLastNameVal.Text = Val(lastName);
+                litEmailVal.Text = Val(email);
+                litContactVal.Text = Val(contact);
+
+                // Status badge from the actual account status, where available.
+                string status = Session["AccountStatus"] as string;
+                if (user != null && user.Table.Columns.Contains("accountStatus") && user["accountStatus"] != DBNull.Value)
+                    status = Convert.ToString(user["accountStatus"]);
+                SetStatusBadge(status);
+
+                if (isEmployer)
+                {
+                    pnlEmployerView.Visible = true;
+                    pnlFreelancerView.Visible = false;
+
+                    DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
+                    litCompanyVal.Text = Val(employer != null ? Convert.ToString(employer["companyName"]) : "");
+                    litIndustryVal.Text = Val(employer != null ? Convert.ToString(employer["industry"]) : "");
+                    litCompanyDescVal.Text = Val(employer != null ? Convert.ToString(employer["description"]) : "");
+                }
+                else if (isFreelancer)
+                {
+                    pnlFreelancerView.Visible = true;
+                    pnlEmployerView.Visible = false;
+
+                    DataRow fl = DatabaseHelper.GetFreelancerByUserId(userId);
+                    litSkillsVal.Text = Val(fl != null ? Convert.ToString(fl["skills"]) : "");
+                    litExperienceVal.Text = Val(fl != null ? Convert.ToString(fl["experience"]) : "");
+                    litPortfolioVal.Text = Val(fl != null ? Convert.ToString(fl["portfolioLinks"]) : "");
+                    if (fl != null && fl["hourlyRate"] != DBNull.Value)
+                        litRateVal.Text = "R" + Convert.ToDecimal(fl["hourlyRate"]).ToString("0");
+                    else
+                        litRateVal.Text = NotProvided();
+                }
+                else
+                {
+                    pnlEmployerView.Visible = false;
+                    pnlFreelancerView.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage("Error loading profile: " + ex.Message, false);
+            }
+        }
+
+        /// <summary>HTML-encodes a value for read-only display; shows "Not provided" when empty.</summary>
+        private string Val(string raw)
+        {
+            if (string.IsNullOrWhiteSpace(raw)) return NotProvided();
+            return Server.HtmlEncode(raw.Trim());
+        }
+
+        private string NotProvided()
+        {
+            return "<span class=\"muted\">Not provided</span>";
+        }
+
+        private void SetStatusBadge(string status)
+        {
+            string s = (status ?? "").Trim();
+            string css, label;
+            if (s.Equals("Active", StringComparison.OrdinalIgnoreCase)) { css = "mp2-status-active"; label = "Active"; }
+            else if (s.Equals("Inactive", StringComparison.OrdinalIgnoreCase) || s.Equals("Deactivated", StringComparison.OrdinalIgnoreCase)) { css = "mp2-status-inactive"; label = string.IsNullOrEmpty(s) ? "Inactive" : s; }
+            else if (string.IsNullOrEmpty(s)) { litStatusBadge.Text = ""; return; }
+            else { css = "mp2-status-default"; label = s; }
+
+            litStatusBadge.Text = "<span class=\"mp2-status-badge " + css + "\"><span class=\"mp2-status-dot\"></span>" + Server.HtmlEncode(label) + "</span>";
         }
 
         // ============================================================
@@ -110,8 +221,6 @@ namespace FreeHubProject
         {
             int userId = GetUserId();
             string userType = GetUserType();
-
-            if (litLoggedInRole != null) litLoggedInRole.Text = userType;
 
             try
             {
@@ -165,36 +274,78 @@ namespace FreeHubProject
 
         protected void btnSaveProfile_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
-                string.IsNullOrWhiteSpace(txtLastName.Text))
+            string userType = GetUserType();
+            bool isFreelancer = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+            bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+
+            // Clear previous beside-label errors before re-validating.
+            ClearEditErrors();
+
+            bool valid = true;
+
+            // ----- Common personal fields (both roles) -----
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text))
             {
-                ShowMessage("First name and last name are required.", false);
-                return;
+                lblErrFirstName.Text = "First name is required"; valid = false;
+            }
+            if (string.IsNullOrWhiteSpace(txtLastName.Text))
+            {
+                lblErrLastName.Text = "Last name is required"; valid = false;
+            }
+            // Contact Number is optional — not validated.
+
+            // ----- Role-specific fields: ONLY the current role's visible fields are
+            //       validated, so hidden other-role fields never block the save. -----
+            if (isFreelancer)
+            {
+                if (string.IsNullOrWhiteSpace(txtUpdateSkills.Text))
+                {
+                    lblErrSkills.Text = "Skills are required"; valid = false;
+                }
+
+                string experience = (txtUpdateExperience.Text ?? "").Trim();
+                if (experience.Length == 0) { lblErrExperience.Text = "Work experience is required"; valid = false; }
+                else if (experience.Length < 30) { lblErrExperience.Text = "Minimum 30 characters"; valid = false; }
+                else if (experience.Length > 700) { lblErrExperience.Text = "Maximum 700 characters"; valid = false; }
+
+                if (string.IsNullOrWhiteSpace(txtUpdatePortfolio.Text))
+                {
+                    lblErrPortfolio.Text = "Portfolio link is required"; valid = false;
+                }
+
+                // Hourly rate: digits only, 1..2000, validated on the raw string.
+                string rawRate = (txtUpdateRate.Text ?? "").Trim();
+                if (rawRate.Length == 0) { lblErrRate.Text = "Hourly rate is required"; valid = false; }
+                else if (!System.Text.RegularExpressions.Regex.IsMatch(rawRate, @"^\d+$")) { lblErrRate.Text = "Digits only"; valid = false; }
+                else
+                {
+                    int parsedRate;
+                    if (!int.TryParse(rawRate, out parsedRate) || parsedRate <= 0) { lblErrRate.Text = "Enter a valid rate"; valid = false; }
+                    else if (parsedRate > 2000) { lblErrRate.Text = "Maximum R2 000"; valid = false; }
+                }
+            }
+            else if (isEmployer)
+            {
+                if (string.IsNullOrWhiteSpace(txtUpdateCompanyName.Text))
+                {
+                    lblErrCompany.Text = "Company name is required"; valid = false;
+                }
+                if (string.IsNullOrWhiteSpace(ddlUpdateIndustry.SelectedValue))
+                {
+                    lblErrIndustry.Text = "Select an industry"; valid = false;
+                }
+
+                string description = (txtUpdateDescription.Text ?? "").Trim();
+                if (description.Length == 0) { lblErrDescription.Text = "Company description is required"; valid = false; }
+                else if (description.Length < 30) { lblErrDescription.Text = "Minimum 30 characters"; valid = false; }
+                else if (description.Length > 700) { lblErrDescription.Text = "Maximum 700 characters"; valid = false; }
             }
 
-            // For freelancers, validate the hourly rate BEFORE any database update so an
-            // invalid/over-max value rejects the whole save (nothing is persisted).
-            // Digits only, 1..2000; validated on the raw string so "20.50" is rejected,
-            // never converted to 2050.
-            if (GetUserType().Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+            if (!valid)
             {
-                string rawRate = (txtUpdateRate.Text ?? "").Trim();
-                if (!System.Text.RegularExpressions.Regex.IsMatch(rawRate, @"^\d+$"))
-                {
-                    ShowMessage("Enter digits only, without spaces, commas or decimal points.", false);
-                    return;
-                }
-                int parsedRate;
-                if (!int.TryParse(rawRate, out parsedRate) || parsedRate <= 0)
-                {
-                    ShowMessage("Please enter a valid hourly rate.", false);
-                    return;
-                }
-                if (parsedRate > 2000)
-                {
-                    ShowMessage("Hourly rate cannot exceed R2 000.", false);
-                    return;
-                }
+                // Stay in edit mode (ViewState keeps the panel visible) and preserve all
+                // entered values; nothing is saved until every applicable field is valid.
+                return;
             }
 
             int userId = GetUserId();
@@ -215,9 +366,8 @@ namespace FreeHubProject
                 Session["FirstName"] = DatabaseHelper.CapitalizeName(txtFirstName.Text);
                 Session["LastName"] = DatabaseHelper.CapitalizeName(txtLastName.Text);
 
-                string userType = GetUserType();
-
-                if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
+                // userType / isFreelancer / isEmployer are already set at the top of this method.
+                if (isFreelancer)
                 {
                     string flQuery = @"UPDATE Freelancer SET skills = @Skills, experience = @Experience,
                                        portfolioLinks = @Portfolio, hourlyRate = @Rate WHERE userID = @UserID";
@@ -243,6 +393,9 @@ namespace FreeHubProject
                         new SqlParameter("@UserID", userId));
                 }
 
+                // Return to the read-only overview with refreshed values + success popup.
+                ShowMode("overview");
+                LoadReadOnly();
                 ShowMessage("Profile updated successfully!", true);
             }
             catch (Exception ex)
@@ -254,15 +407,6 @@ namespace FreeHubProject
         // ============================================================
         // A400: DEACTIVATE PROFILE & AUTO-SWITCH LOGIC
         // ============================================================
-
-        protected void btnCancelDeactivate_Click(object sender, EventArgs e)
-        {
-            pnlMessage.Visible = false;
-            ShowTab("update");
-            LoadProfileData();
-        }
-
-        protected void btnShowDeactivateConfirm_Click(object sender, EventArgs e) { }
 
         protected void btnDeactivateProfile_Click(object sender, EventArgs e)
         {
@@ -411,15 +555,6 @@ namespace FreeHubProject
         // A600: DEACTIVATE ACCOUNT
         // ============================================================
 
-        protected void btnCancelDelete_Click(object sender, EventArgs e)
-        {
-            pnlMessage.Visible = false;
-            ShowTab("update");
-            LoadProfileData();
-        }
-
-        protected void btnShowDeleteConfirm_Click(object sender, EventArgs e) { }
-
         protected void btnDeactivateAccount_Click(object sender, EventArgs e)
         {
             int userId = GetUserId();
@@ -524,6 +659,21 @@ namespace FreeHubProject
             {
                 ShowMessage("Error: " + ex.Message, false);
             }
+        }
+
+        /// <summary>Clears all beside-label error messages on the edit form before re-validating.</summary>
+        private void ClearEditErrors()
+        {
+            if (lblErrFirstName != null) lblErrFirstName.Text = "";
+            if (lblErrLastName != null) lblErrLastName.Text = "";
+            if (lblErrContact != null) lblErrContact.Text = "";
+            if (lblErrSkills != null) lblErrSkills.Text = "";
+            if (lblErrExperience != null) lblErrExperience.Text = "";
+            if (lblErrPortfolio != null) lblErrPortfolio.Text = "";
+            if (lblErrRate != null) lblErrRate.Text = "";
+            if (lblErrCompany != null) lblErrCompany.Text = "";
+            if (lblErrIndustry != null) lblErrIndustry.Text = "";
+            if (lblErrDescription != null) lblErrDescription.Text = "";
         }
 
         private void ShowMessage(string message, bool success)

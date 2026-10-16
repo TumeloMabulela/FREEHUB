@@ -8,50 +8,83 @@ namespace FreeHubProject
 {
     public partial class ManageProfile
     {
+        protected global::System.Web.UI.WebControls.Literal litRoleWord;
         protected global::System.Web.UI.WebControls.Panel pnlMessage;
         protected global::System.Web.UI.WebControls.Label lblMessage;
-        protected global::System.Web.UI.WebControls.Literal litLoggedInRole;
-        protected global::System.Web.UI.WebControls.Button btnTabUpdate;
-        protected global::System.Web.UI.WebControls.Button btnTabDeactivateProfile;
-        protected global::System.Web.UI.WebControls.Button btnTabDeactivateAccount;
+
+        // ----- Read-only overview -----
+        protected global::System.Web.UI.WebControls.Panel pnlOverview;
+        protected global::System.Web.UI.WebControls.Literal litInitials;
+        protected global::System.Web.UI.WebControls.Literal litFullName;
+        protected global::System.Web.UI.WebControls.Literal litRoleBadge;
+        protected global::System.Web.UI.WebControls.Literal litStatusBadge;
+        protected global::System.Web.UI.WebControls.Literal litFirstNameVal;
+        protected global::System.Web.UI.WebControls.Literal litLastNameVal;
+        protected global::System.Web.UI.WebControls.Literal litEmailVal;
+        protected global::System.Web.UI.WebControls.Literal litContactVal;
+        protected global::System.Web.UI.WebControls.Panel pnlEmployerView;
+        protected global::System.Web.UI.WebControls.Literal litCompanyVal;
+        protected global::System.Web.UI.WebControls.Literal litIndustryVal;
+        protected global::System.Web.UI.WebControls.Literal litCompanyDescVal;
+        protected global::System.Web.UI.WebControls.Panel pnlFreelancerView;
+        protected global::System.Web.UI.WebControls.Literal litSkillsVal;
+        protected global::System.Web.UI.WebControls.Literal litExperienceVal;
+        protected global::System.Web.UI.WebControls.Literal litPortfolioVal;
+        protected global::System.Web.UI.WebControls.Literal litRateVal;
+
+        // ----- Edit mode (Update Profile) -----
         protected global::System.Web.UI.WebControls.Panel pnlUpdateProfile;
+        protected global::System.Web.UI.WebControls.Label lblErrFirstName;
         protected global::System.Web.UI.WebControls.TextBox txtFirstName;
+        protected global::System.Web.UI.WebControls.Label lblErrLastName;
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
+        protected global::System.Web.UI.WebControls.Label lblErrContact;
         protected global::System.Web.UI.WebControls.TextBox txtContactNumber;
         protected global::System.Web.UI.WebControls.Panel pnlFreelancerFields;
+        protected global::System.Web.UI.WebControls.Label lblErrSkills;
         protected global::System.Web.UI.WebControls.TextBox txtUpdateSkills;
+        protected global::System.Web.UI.WebControls.Label lblErrExperience;
         protected global::System.Web.UI.WebControls.TextBox txtUpdateExperience;
+        protected global::System.Web.UI.WebControls.Label lblErrPortfolio;
         protected global::System.Web.UI.WebControls.TextBox txtUpdatePortfolio;
+        protected global::System.Web.UI.WebControls.Label lblErrRate;
         protected global::System.Web.UI.WebControls.TextBox txtUpdateRate;
         protected global::System.Web.UI.WebControls.Panel pnlEmployerFields;
+        protected global::System.Web.UI.WebControls.Label lblErrCompany;
         protected global::System.Web.UI.WebControls.TextBox txtUpdateCompanyName;
+        protected global::System.Web.UI.WebControls.Label lblErrIndustry;
         protected global::System.Web.UI.WebControls.DropDownList ddlUpdateIndustry;
+        protected global::System.Web.UI.WebControls.Label lblErrDescription;
         protected global::System.Web.UI.WebControls.TextBox txtUpdateDescription;
+        protected global::System.Web.UI.WebControls.Button btnCancelEdit;
         protected global::System.Web.UI.WebControls.Button btnSaveProfile;
+
+        // ----- Deactivate Profile mode -----
         protected global::System.Web.UI.WebControls.Panel pnlDeactivateProfile;
-        protected global::System.Web.UI.WebControls.Panel pnlDeactivateReady;
         protected global::System.Web.UI.WebControls.Literal litHeadingRole;
         protected global::System.Web.UI.WebControls.Literal litSubtitleRole;
+        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Button btnDeactivateProfile;
+
+        // ----- Deactivate Account mode -----
+        protected global::System.Web.UI.WebControls.Panel pnlDeactivateAccount;
+        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateAccount;
+        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateAccount;
+        protected global::System.Web.UI.WebControls.Button btnDeactivateAccount;
+
+        // ----- Right-column Profile Actions -----
+        protected global::System.Web.UI.WebControls.Button btnActUpdate;
+        protected global::System.Web.UI.WebControls.Button btnActDeactivateProfile;
+        protected global::System.Web.UI.WebControls.Button btnActDeactivateAccount;
+
+        // ----- Reactivation (kept; code-behind null-guards these) -----
+        protected global::System.Web.UI.WebControls.Panel pnlDeactivateReady;
         protected global::System.Web.UI.WebControls.Panel pnlWarningFreelancer;
         protected global::System.Web.UI.WebControls.Panel pnlWarningEmployer;
-        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateProfile;
-        protected global::System.Web.UI.WebControls.Button btnShowDeactivateConfirm;
         protected global::System.Web.UI.WebControls.Panel pnlReactivateProfile;
         protected global::System.Web.UI.WebControls.Literal litDeactivatedRole;
         protected global::System.Web.UI.WebControls.Button btnReactivateProfile;
-        protected global::System.Web.UI.WebControls.Panel pnlDeactivateConfirm;
-        protected global::System.Web.UI.WebControls.Button btnDeactivateProfile;
-        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateProfile;
-        protected global::System.Web.UI.WebControls.Label lblDeactivateEmail;
-        protected global::System.Web.UI.WebControls.Literal litCurrentRole;
-        protected global::System.Web.UI.WebControls.Panel pnlDeactivateAccount;
-        protected global::System.Web.UI.WebControls.Panel pnlDeleteReady;
-        protected global::System.Web.UI.WebControls.Button btnCancelDeactivateAccount;
-        protected global::System.Web.UI.WebControls.Button btnShowDeleteConfirm;
-        protected global::System.Web.UI.WebControls.Panel pnlDeleteConfirm;
-        protected global::System.Web.UI.WebControls.Button btnDeactivateAccount;
-        protected global::System.Web.UI.WebControls.CheckBox chkConfirmDeactivateAccount;
-        protected global::System.Web.UI.WebControls.Label lblDeleteEmail;
     }
 }

@@ -16,6 +16,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.DropDownList ddlIndustry;
         protected global::System.Web.UI.WebControls.Label lblIndustryError;
         protected global::System.Web.UI.WebControls.TextBox txtContactEmail;
+        protected global::System.Web.UI.WebControls.Label lblContactEmailError;
         protected global::System.Web.UI.WebControls.TextBox txtCompanyDesc;
         protected global::System.Web.UI.WebControls.Label lblDescError;
         protected global::System.Web.UI.WebControls.Button btnSubmit;
