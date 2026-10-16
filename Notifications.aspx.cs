@@ -57,7 +57,7 @@ namespace FreeHubProject
         // ============================================================
         // BINDING
         // ============================================================
-        private void BindNotifications()
+        private void BindNotifications(bool preserveSelection = false)
         {
             DataTable dt = new DataTable();
 
@@ -151,9 +151,18 @@ namespace FreeHubProject
             UpdateMarkAllButton();
 
             // Keep the right-hand detail panel in sync with the current selection across
-            // filter/tab/search postbacks. If the selected notification is no longer part of
-            // the visible list (e.g. filtered or archived away), fall back to the placeholder.
-            if (SelectedNotificationId > 0 && SelectionIsVisible(dt, SelectedNotificationId))
+            // filter/tab/search postbacks. If the selected notification is still in the
+            // visible list, show it. Otherwise, when preserveSelection is set (i.e. the user
+            // just clicked a notification), keep its details on the right even though it has
+            // dropped out of the current filtered list — this is what the Unread filter needs:
+            // opening an unread item reads it, so it leaves the Unread list, but its full
+            // contents must stay visible. The selection is resolved by its unique ID directly
+            // from the DB (independent of the filtered list). On a plain filter/tab switch
+            // (preserveSelection = false) a selection that no longer matches is cleared, so
+            // the other filters keep their existing behaviour unchanged.
+            if (SelectedNotificationId > 0 &&
+                (SelectionIsVisible(dt, SelectedNotificationId)
+                 || (preserveSelection && NotificationExists(SelectedNotificationId))))
             {
                 LoadSelectedNotification(SelectedNotificationId);
             }
@@ -164,6 +173,12 @@ namespace FreeHubProject
                 pnlDetail.Visible = false;
                 pnlNoSelection.Visible = true;
             }
+        }
+
+        /// <summary>True if the notification still exists and is owned by the current user.</summary>
+        private bool NotificationExists(int notificationId)
+        {
+            return GetNotificationType(notificationId) != null;
         }
 
         /// <summary>True if the selected notification id is present in the currently bound list.</summary>
@@ -346,7 +361,8 @@ namespace FreeHubProject
                     cmd.ExecuteNonQuery();
                 }
             }
-            ShowNotificationStatus("All notifications marked as read.");
+            // Mark-all success -> centred global popup (5s), not the inline banner.
+            MessageHelper.Success(this, "All notifications marked as read.", "Success!", 5000);
             BindNotifications();
         }
 
@@ -379,9 +395,10 @@ namespace FreeHubProject
                         Session["SelectedNotificationId"] = notificationId; // keep detail handlers in sync
                         UpdateNotificationStatus(notificationId, "Read");   // reading it marks it read
                     }
-                    // BindNotifications() re-populates (or clears) the right detail panel
-                    // based on the current SelectedNotificationId.
-                    BindNotifications();
+                    // Re-populate the list, PRESERVING the just-opened selection on the right
+                    // even if reading it dropped it from the current filter (e.g. Unread), so
+                    // its full contents stay visible — including the final unread item.
+                    BindNotifications(SelectedNotificationId > 0);
                     break;
 
                 case "ViewDetails":
@@ -395,7 +412,10 @@ namespace FreeHubProject
                         string status = GetNotificationStatus(notificationId);
                         string newStatus = status == "Read" ? "Unread" : "Read";
                         UpdateNotificationStatus(notificationId, newStatus);
-                        ShowNotificationStatus(newStatus == "Read" ? "Notification marked as read." : "Notification marked as unread.");
+                        // Mark read/unread success -> centred global popup (5s), not the inline banner.
+                        MessageHelper.Success(this,
+                            newStatus == "Read" ? "Notification marked as read." : "Notification marked as unread.",
+                            "Success!", 5000);
                         BindNotifications();
                     }
                     break;
@@ -406,12 +426,14 @@ namespace FreeHubProject
                         if (status == "Archived")
                         {
                             UpdateNotificationStatus(notificationId, "Read");
-                            ShowNotificationStatus("Notification unarchived.");
+                            // Unarchive success -> centred global popup (5s), not the inline banner.
+                            MessageHelper.Success(this, "Notification unarchived.", "Success!", 5000);
                         }
                         else
                         {
                             UpdateNotificationStatus(notificationId, "Archived");
-                            ShowNotificationStatus("Notification archived.");
+                            // Archive success -> centred global popup (5s), not the inline banner.
+                            MessageHelper.Success(this, "Notification archived.", "Success!", 5000);
                         }
                         BindNotifications();
                     }
@@ -474,8 +496,17 @@ namespace FreeHubProject
 
                             lblSelectedTitle.Text = TitleForType(type);
                             lblSelectedCategory.Text = CategoryForType(type);
-                            lblSelectedPreview.Text = content;
+                            lblSelectedPreview.Text = Server.HtmlEncode(content);
                             lblSelectedTime.Text = dr["Time"].ToString();
+
+                            // Full message (for the "View Full Message" dialog) + its title.
+                            litFullMessage.Text = Server.HtmlEncode(content);
+                            lblFullTitle.Text = Server.HtmlEncode(TitleForType(type));
+
+                            // Offer the dialog only when the message is long enough that the
+                            // clamped preview might hide part of it, so the panel never scrolls.
+                            string plain = content ?? "";
+                            pnlViewFull.Visible = plain.Length > 280 || plain.Split('\n').Length > 8;
                             lblSelectedIcon.Text = IconForType(type);
                             lblReadStatus.Text = status;
                             DetailIconClass = IconClassForType(type);
@@ -532,7 +563,10 @@ namespace FreeHubProject
             string status = GetNotificationStatus(id);
             string newStatus = status == "Read" ? "Unread" : "Read";
             UpdateNotificationStatus(id, newStatus);
-            ShowNotificationStatus(newStatus == "Read" ? "Notification marked as read." : "Notification marked as unread.");
+            // Mark read/unread success -> centred global popup (5s), not the inline banner.
+            MessageHelper.Success(this,
+                newStatus == "Read" ? "Notification marked as read." : "Notification marked as unread.",
+                "Success!", 5000);
             LoadSelectedNotification(id); // refresh right panel labels/buttons
             BindNotifications();
         }
@@ -546,12 +580,14 @@ namespace FreeHubProject
             if (status == "Archived")
             {
                 UpdateNotificationStatus(id, "Read");
-                ShowNotificationStatus("Notification unarchived.");
+                // Unarchive success -> centred global popup (5s), not the inline banner.
+                MessageHelper.Success(this, "Notification unarchived.", "Success!", 5000);
             }
             else
             {
                 UpdateNotificationStatus(id, "Archived");
-                ShowNotificationStatus("Notification archived.");
+                // Archive success -> centred global popup (5s), not the inline banner.
+                MessageHelper.Success(this, "Notification archived.", "Success!", 5000);
             }
             // Archiving removes it from the current (non-archived) view, so close the panel.
             SelectedNotificationId = 0;
@@ -629,10 +665,5 @@ namespace FreeHubProject
             }
         }
 
-        private void ShowNotificationStatus(string message)
-        {
-            pnlNotificationStatus.Visible = true;
-            lblNotificationStatus.Text = message;
-        }
     }
 }

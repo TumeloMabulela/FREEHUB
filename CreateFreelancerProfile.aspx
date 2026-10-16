@@ -66,6 +66,8 @@
         .form-field label { font-size: 13px; font-weight: 600; color: #374638; }
         .form-field label span { color: #dc2626; }
         .field-error { color: #dc2626; font-size: 12px; font-weight: 600; text-align: left; }
+        .req-star { color: #dc2626; font-weight: 700; }
+        .required-note { margin: 0 0 16px; font-size: 12.5px; color: #6b7280; }
 
         .form-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d9d3; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; min-height: 46px; }
         .form-input:focus { outline: none; border-color: #b7d68c; }
@@ -140,6 +142,8 @@
                 <!-- SECTION B: scrollable form fields (only this scrolls) -->
                 <div class="form-scroll">
 
+                <p class="required-note">Fields marked with <span class="req-star">*</span> are required.</p>
+
                 <!-- First / Last name -->
                 <div class="form-row">
                     <div class="form-field">
@@ -155,20 +159,20 @@
                 <!-- Skills (full width) -->
                 <div class="form-field">
                     <div class="label-row">
-                        <label>Skills <span>*</span></label>
+                        <label>Skills <span class="req-star">*</span></label>
                         <asp:Label ID="lblSkillsError" runat="server" CssClass="field-error" />
                     </div>
-                    <asp:TextBox ID="txtSkills" runat="server" CssClass="form-input" placeholder="e.g. Web Design, JavaScript, React" />
+                    <asp:TextBox ID="txtSkills" runat="server" CssClass="form-input" placeholder="e.g. Web Design, JavaScript, React" required="required" aria-required="true" />
                 </div>
 
                 <!-- Work Experience (full width, enlarged) -->
                 <div class="form-field">
                     <div class="label-row">
-                        <label>Work Experience <span>*</span></label>
+                        <label>Work Experience <span class="req-star">*</span></label>
                         <asp:Label ID="lblExperienceError" runat="server" CssClass="field-error" />
                     </div>
                     <asp:TextBox ID="txtExperience" runat="server" CssClass="form-textarea" TextMode="MultiLine"
-                        data-fh-format="true"
+                        data-fh-format="true" required="required" aria-required="true"
                         placeholder="Describe your employment, coursework, skills or personal projects..." />
                     <div class="field-footer">
                         <span class="field-hint">30&#8211;700 characters</span>
@@ -179,18 +183,21 @@
                 <!-- Portfolio / Hourly Rate -->
                 <div class="form-row">
                     <div class="form-field">
-                        <div class="label-row"><label>Portfolio Links</label></div>
-                        <asp:TextBox ID="txtPortfolio" runat="server" CssClass="form-input" placeholder="e.g. https://portfolio.com" />
+                        <div class="label-row">
+                            <label>Portfolio Links <span class="req-star">*</span></label>
+                            <asp:Label ID="lblPortfolioError" runat="server" CssClass="field-error" />
+                        </div>
+                        <asp:TextBox ID="txtPortfolio" runat="server" CssClass="form-input" placeholder="e.g. https://portfolio.com" required="required" aria-required="true" />
                     </div>
                     <div class="form-field">
                         <div class="label-row">
-                            <label>Hourly Rate (ZAR) <span>*</span></label>
+                            <label>Hourly Rate (ZAR) <span class="req-star">*</span></label>
                             <asp:Label ID="lblRateError" runat="server" CssClass="field-error" />
                         </div>
                         <div class="hr-rate-wrap">
                             <span class="hr-rate-prefix">R</span>
                             <asp:TextBox ID="txtHourlyRate" runat="server" CssClass="form-input hr-rate-input"
-                                placeholder="e.g. 250" MaxLength="4" inputmode="numeric" pattern="[0-9]*" />
+                                placeholder="e.g. 250" MaxLength="4" inputmode="numeric" pattern="[0-9]*" required="required" aria-required="true" />
                         </div>
                         <small class="hr-rate-help">Digits only. Maximum hourly rate: <span class="nowrap">R2&#160;000</span>.</small>
                     </div>

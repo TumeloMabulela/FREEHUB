@@ -248,6 +248,10 @@ namespace FreeHubProject
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
 
+                // Chat lifecycle: reopen the existing conversation between the employer and
+                // freelancer for this newly-approved project (idempotent — safe to repeat).
+                ChatLifecycle.OnProposalApproved(projectId, employerUserId, projectTitle);
+
                 string successMessage =
                     "Proposal approved! The project is now In Progress and the freelancer has been assigned.";
                 if (additionalRequired > 0m)

@@ -82,29 +82,163 @@ namespace FreeHubProject
             pnlEmployerActions.Visible = true;
             pnlFreelancerActions.Visible = false;
 
-            // Get employer's projects
-            litProjectsLabel.Text = "My Projects";
-            DataTable projects = DatabaseHelper.GetProjectsByEmployer(userID);
-            litProjectsCount.Text = projects != null ? projects.Rows.Count.ToString() : "0";
+            // Show the employer dashboard body; hide the freelancer generic layout.
+            pnlEmployerDash.Visible = true;
+            pnlFreelancerDash.Visible = false;
 
-            // Count proposals received on employer's projects
+            // Quick Actions (left column, employer set) + overview cards beside welcome.
+            pnlEmployerQuick.Visible = true;
+            pnlFreelancerQuick.Visible = false;
+            pnlEmployerStats.Visible = true;
+
+            // Employer wallet-balance stat card (same live value as the shared balance).
+            decimal empBalance = Session["AvailableBalance"] != null
+                ? Convert.ToDecimal(Session["AvailableBalance"]) : 0.00m;
+            litBalanceEmp.Text = empBalance.ToString("N2");
+
+            // Keep the legacy freelancer-style labels in sync (used only if the generic
+            // stat row is ever shown); the employer stat row uses its own literals below.
+            litProjectsLabel.Text = "My Projects";
             litProposalsLabel.Text = "Proposals Received";
-            int totalProposals = 0;
+
+            DataTable projects = DatabaseHelper.GetProjectsByEmployer(userID);
+
+            int activeCount = 0, completedCount = 0, totalProposals = 0;
+
             if (projects != null)
             {
                 foreach (DataRow row in projects.Rows)
                 {
+                    string status = Convert.ToString(row["projectStatus"]).Trim();
+
+                    // "Active" = Open / In Progress / Under Review (same definition used on
+                    // the My Projects page). "Completed" = officially completed projects.
+                    if (status.Equals("Open", StringComparison.OrdinalIgnoreCase)
+                        || status.Equals("In Progress", StringComparison.OrdinalIgnoreCase)
+                        || status.Equals("Under Review", StringComparison.OrdinalIgnoreCase))
+                    {
+                        activeCount++;
+                    }
+                    else if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                    {
+                        completedCount++;
+                    }
+
                     if (row["proposalCount"] != DBNull.Value)
                         totalProposals += Convert.ToInt32(row["proposalCount"]);
                 }
             }
+
+            // Legacy literals (kept for compatibility with any shared markup).
+            litProjectsCount.Text = projects != null ? projects.Rows.Count.ToString() : "0";
             litProposalsCount.Text = totalProposals.ToString();
+
+            // Employer stat cards (live data; nothing hardcoded).
+            litActiveCount.Text = activeCount.ToString();
+            litProposalsReceived.Text = totalProposals.ToString();
+            litCompletedCount.Text = completedCount.ToString();
+
+            // ----- My Projects list (most recent first; query already orders by dateCreated DESC) -----
+            var projectItems = new List<EmployerProjectItem>();
+            var deadlineItems = new List<EmployerDeadlineItem>();
+
+            if (projects != null)
+            {
+                foreach (DataRow row in projects.Rows)
+                {
+                    string status = Convert.ToString(row["projectStatus"]).Trim();
+                    string title = TitleHelper.TitleCase(Convert.ToString(row["title"]));
+                    decimal budget = row["budget"] != DBNull.Value ? Convert.ToDecimal(row["budget"]) : 0m;
+                    int proposalCount = row["proposalCount"] != DBNull.Value ? Convert.ToInt32(row["proposalCount"]) : 0;
+
+                    projectItems.Add(new EmployerProjectItem
+                    {
+                        Title = title,
+                        Status = status,
+                        StatusClass = GetStatusBadgeClass(status),
+                        BudgetFormatted = "R" + budget.ToString("N2"),
+                        ProposalCount = proposalCount,
+                        Progress = GetProgressPercent(status, row),
+                        ProjectId = Convert.ToInt32(row["projectID"])
+                    });
+
+                    // Upcoming deadlines: everything not completed/cancelled, that has a date.
+                    bool finished = status.Equals("Completed", StringComparison.OrdinalIgnoreCase)
+                                    || status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase);
+                    if (!finished && row["deadline"] != DBNull.Value)
+                    {
+                        deadlineItems.Add(new EmployerDeadlineItem
+                        {
+                            Title = title,
+                            Deadline = Convert.ToDateTime(row["deadline"])
+                        });
+                    }
+                }
+            }
+
+            // Show the five most recent projects in the My Projects card.
+            List<EmployerProjectItem> topProjects = projectItems.Count > 5
+                ? projectItems.GetRange(0, 5) : projectItems;
+            rptEmpProjects.DataSource = topProjects;
+            rptEmpProjects.DataBind();
+            pnlEmpNoProjects.Visible = (topProjects.Count == 0);
+
+            // Upcoming deadlines sorted by soonest first; show up to five.
+            deadlineItems.Sort((a, b) => a.Deadline.CompareTo(b.Deadline));
+            List<EmployerDeadlineItem> topDeadlines = deadlineItems.Count > 5
+                ? deadlineItems.GetRange(0, 5) : deadlineItems;
+            rptEmpDeadlines.DataSource = topDeadlines;
+            rptEmpDeadlines.DataBind();
+            pnlEmpNoDeadlines.Visible = (topDeadlines.Count == 0);
+        }
+
+        /// <summary>
+        /// Progress percentage for a project, reusing the exact status-based formula from
+        /// the View Progress page (Completed=100, Under Review=85, In Progress started=50 /
+        /// not started=15, otherwise 0). No new/invented calculation.
+        /// </summary>
+        private int GetProgressPercent(string status, DataRow row)
+        {
+            if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase)) return 100;
+            if (status.Equals("Under Review", StringComparison.OrdinalIgnoreCase)) return 85;
+            if (status.Equals("In Progress", StringComparison.OrdinalIgnoreCase))
+            {
+                bool started = false;
+                if (row.Table.Columns.Contains("isStarted") && row["isStarted"] != DBNull.Value)
+                    started = Convert.ToInt32(row["isStarted"]) == 1;
+                return started ? 50 : 15;
+            }
+            return 0; // Open / other
+        }
+
+        /// <summary>Maps a project status to a badge CSS class (display colour only).</summary>
+        private string GetStatusBadgeClass(string status)
+        {
+            string s = (status ?? "").Trim().ToLowerInvariant();
+            switch (s)
+            {
+                case "open": return "emp-badge-open";
+                case "in progress": return "emp-badge-progress";
+                case "under review": return "emp-badge-review";
+                case "completed": return "emp-badge-completed";
+                case "cancelled": return "emp-badge-cancelled";
+                default: return "emp-badge-default";
+            }
         }
 
         private void LoadFreelancerDashboard(int userID)
         {
             pnlFreelancerActions.Visible = true;
             pnlEmployerActions.Visible = false;
+
+            // The new employer dashboard body is employer-only; keep it hidden here so the
+            // freelancer view is completely unchanged.
+            pnlEmployerDash.Visible = false;
+            pnlFreelancerDash.Visible = true;
+
+            // Quick Actions beside the welcome heading (freelancer set).
+            pnlFreelancerQuick.Visible = true;
+            pnlEmployerQuick.Visible = false;
 
             // Get freelancer's proposals
             litProposalsLabel.Text = "My Proposals";
@@ -183,20 +317,25 @@ namespace FreeHubProject
                 // Silently handle any data errors
             }
 
-            if (activities.Count > 0)
-            {
-                // Sort by most recent and take top 5
-                activities.Sort((a, b) => string.Compare(b.DateFormatted, a.DateFormatted));
-                if (activities.Count > 5)
-                    activities = activities.GetRange(0, 5);
+            if (activities.Count > 5)
+                activities = activities.GetRange(0, 5);
 
-                rptActivity.DataSource = activities;
-                rptActivity.DataBind();
-                pnlNoActivity.Visible = false;
+            bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+            bool hasActivity = activities.Count > 0;
+
+            if (isEmployer)
+            {
+                // Bind the employer dashboard's Recent Activity card.
+                rptEmpActivity.DataSource = activities;
+                rptEmpActivity.DataBind();
+                pnlEmpNoActivity.Visible = !hasActivity;
             }
             else
             {
-                pnlNoActivity.Visible = true;
+                // Freelancer dashboard's Recent Activity list (unchanged behaviour).
+                rptActivity.DataSource = activities;
+                rptActivity.DataBind();
+                pnlNoActivity.Visible = !hasActivity;
             }
         }
 
@@ -214,6 +353,25 @@ namespace FreeHubProject
         {
             public string Description { get; set; }
             public string DateFormatted { get; set; }
+        }
+
+        /// <summary>A single row in the employer "My Projects" dashboard card.</summary>
+        public class EmployerProjectItem
+        {
+            public int ProjectId { get; set; }
+            public string Title { get; set; }
+            public string Status { get; set; }
+            public string StatusClass { get; set; }
+            public string BudgetFormatted { get; set; }
+            public int ProposalCount { get; set; }
+            public int Progress { get; set; }
+        }
+
+        /// <summary>A single row in the employer "Upcoming Deadlines" dashboard card.</summary>
+        public class EmployerDeadlineItem
+        {
+            public string Title { get; set; }
+            public DateTime Deadline { get; set; }
         }
     }
 }

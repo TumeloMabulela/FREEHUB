@@ -66,6 +66,8 @@
         .form-field label { font-size: 13px; font-weight: 600; color: #374638; }
         .form-field label span { color: #dc2626; }
         .field-error { color: #dc2626; font-size: 12px; font-weight: 600; text-align: left; }
+        .req-star { color: #dc2626; font-weight: 700; }
+        .required-note { margin: 0 0 16px; font-size: 12.5px; color: #6b7280; }
 
         .form-input { width: 100%; padding: 12px 14px; border: 1px solid #d1d9d3; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; min-height: 46px; }
         .form-input:focus { outline: none; border-color: #b7d68c; }
@@ -133,6 +135,8 @@
                 <!-- SECTION B: scrollable form fields (only this scrolls) -->
                 <div class="form-scroll">
 
+                <p class="required-note">Fields marked with <span class="req-star">*</span> are required.</p>
+
                 <!-- First / Last name -->
                 <div class="form-row">
                     <div class="form-field">
@@ -148,20 +152,20 @@
                 <!-- Company Name (full width) -->
                 <div class="form-field">
                     <div class="label-row">
-                        <label>Company Name <span>*</span></label>
+                        <label>Company Name <span class="req-star">*</span></label>
                         <asp:Label ID="lblCompanyError" runat="server" CssClass="field-error" />
                     </div>
-                    <asp:TextBox ID="txtCompanyName" runat="server" CssClass="form-input" placeholder="Your company or business name" />
+                    <asp:TextBox ID="txtCompanyName" runat="server" CssClass="form-input" placeholder="Your company or business name" required="required" aria-required="true" />
                 </div>
 
                 <!-- Industry / Contact Email -->
                 <div class="form-row">
                     <div class="form-field">
                         <div class="label-row">
-                            <label>Industry <span>*</span></label>
+                            <label>Industry <span class="req-star">*</span></label>
                             <asp:Label ID="lblIndustryError" runat="server" CssClass="field-error" />
                         </div>
-                        <asp:DropDownList ID="ddlIndustry" runat="server" CssClass="form-input">
+                        <asp:DropDownList ID="ddlIndustry" runat="server" CssClass="form-input" aria-required="true">
                             <asp:ListItem Text="Select Industry" Value="" />
                             <asp:ListItem Text="Information Technology" Value="Information Technology" />
                             <asp:ListItem Text="Finance" Value="Finance" />
@@ -173,19 +177,23 @@
                         </asp:DropDownList>
                     </div>
                     <div class="form-field">
-                        <div class="label-row"><label>Contact Email</label></div>
-                        <asp:TextBox ID="txtContactEmail" runat="server" CssClass="form-input" placeholder="business@example.com" />
+                        <div class="label-row">
+                            <label>Contact Email <span class="req-star">*</span></label>
+                            <asp:Label ID="lblContactEmailError" runat="server" CssClass="field-error" />
+                        </div>
+                        <asp:TextBox ID="txtContactEmail" runat="server" CssClass="form-input" placeholder="business@example.com"
+                            TextMode="Email" required="required" aria-required="true" />
                     </div>
                 </div>
 
                 <!-- Company Description (full width, enlarged) -->
                 <div class="form-field">
                     <div class="label-row">
-                        <label>Company Description <span>*</span></label>
+                        <label>Company Description <span class="req-star">*</span></label>
                         <asp:Label ID="lblDescError" runat="server" CssClass="field-error" />
                     </div>
                     <asp:TextBox ID="txtCompanyDesc" runat="server" CssClass="form-textarea" TextMode="MultiLine"
-                        data-fh-format="true"
+                        data-fh-format="true" required="required" aria-required="true"
                         placeholder="What does your company do? Describe your products, services and what you're hiring for..." />
                     <div class="field-footer">
                         <span class="field-hint">30&#8211;700 characters</span>

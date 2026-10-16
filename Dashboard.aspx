@@ -27,9 +27,11 @@
         .dashboard-topband {
             flex: 0 0 auto;
             width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 20px 0;
+            /* Left-aligned to the content area (no centred max-width wrapper), with a
+               comfortable ~28px gutter on both sides so the content uses the available
+               width next to the sidebar. */
+            margin: 0;
+            padding: 16px 28px 0;
             box-sizing: border-box;
         }
 
@@ -42,17 +44,24 @@
             overflow-y: auto;
             overflow-x: hidden;
             width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 20px 24px;
+            /* Left-aligned (no centred max-width wrapper); ~28px side gutters so stats and
+               sections sit close to the content area's left edge and use the full width. */
+            margin: 0;
+            padding: 16px 28px 24px;
             box-sizing: border-box;
         }
 
         .dashboard-welcome {
-            /* Sits in the fixed top band (which supplies the vertical padding), so a
-               small bottom margin keeps the band compact above the scroll area. */
+            /* Welcome text on the left, four compact overview cards on the far right,
+               vertically aligned. Cards wrap below the text on narrow screens. */
             margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px 20px;
         }
+        .welcome-text { min-width: 0; flex: 0 1 auto; }
 
         /* Heading + role badge share one horizontal line, badge vertically centred
            and immediately after the name. Wraps naturally on narrow screens. */
@@ -310,6 +319,189 @@
             max-width: 420px;
             text-align: center;
         }
+
+        /* ============================================================
+           EMPLOYER DASHBOARD (approved mockup). Scoped via .emp-dash-* / .emp-*
+           so no other page is affected. Uses the FreeHUB teal-to-green gradient,
+           white cards, pale grey background, slate headings, muted secondary text.
+           ============================================================ */
+        /* Compact overview cards sitting on the far right of the welcome row. */
+        .emp-dash-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .emp-stat-card {
+            display: flex; align-items: center; gap: 10px;
+            background: #fff; border: 1px solid #e6ece8; border-radius: 10px;
+            padding: 10px 14px; box-shadow: 0 1px 3px rgba(16,40,28,0.05);
+            min-width: 150px;
+        }
+        .emp-stat-icon {
+            width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 17px;
+            background: #e3f3e9; color: #0f7a44;
+        }
+        .emp-stat-label { font-size: 12px; color: #64748b; margin-bottom: 1px; white-space: nowrap; }
+        .emp-stat-value { font-size: 19px; font-weight: 700; color: #1e293b; line-height: 1.1; white-space: nowrap; }
+
+        /* Three-column grid:
+             col 1 = Quick Actions
+             col 2 = middle stack: My Projects on top + Upcoming Deadlines beneath (10px gap)
+             col 3 = right stack: Recent Activity on top + Need assistance? beneath
+           Each column stacks its cards independently so the small 10px gap between
+           My Projects and Upcoming Deadlines is NOT inflated by the taller right column. */
+        .emp-dash-grid {
+            display: grid;
+            /* Col 1 is a fixed 230px track matching the Quick Actions card exactly (no empty
+               track space), so the 20px column-gap is the real distance from its right edge
+               to the middle column. Cols 2 & 3 flex to share the remaining width. */
+            grid-template-columns: 230px minmax(0, 52fr) minmax(0, 48fr);
+            gap: 20px;
+            align-items: start;
+        }
+        /* Each column's two cards stack vertically with a tight 10px gap and content-sized
+           heights (no stretching), so the cards hug each other directly. */
+        .emp-stack { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
+        .emp-stack-mid   { grid-column: 2; }
+        .emp-stack-right { grid-column: 3; }
+
+        /* STATIONARY QUICK ACTIONS:
+           On normal-height screens the whole employer grid fits, so the page region doesn't
+           scroll at all and every card (including Quick Actions) is stationary. Each list
+           card (.emp-scroll) scrolls on its own. As a safety net on short viewports where
+           the region would scroll, Quick Actions sticks to the top of its own column so it
+           never moves. This uses position:sticky (NOT absolute/fixed), so it can never
+           overlap the footer -- it stays confined to its grid column. */
+        .emp-dash-host { min-height: 0; }
+        /* Quick Actions hugs its content; narrower than its column so the chevron sits close
+           to the label. justify-self:start keeps the left edge pinned; max-width stops the
+           grid from stretching it back to the full column width. position:sticky top:0 keeps
+           it pinned to the top of its column if the page region ever scrolls. */
+        .emp-card-quick {
+            grid-column: 1; align-self: start; justify-self: start;
+            height: auto; width: 100%; max-width: 230px;
+            position: -webkit-sticky; position: sticky; top: 0;
+        }
+        /* Projects list shows ~2.5 rows (~75px each incl. padding + divider) before the
+           internal scrollbar takes over; all remaining projects stay reachable by scrolling. */
+        .emp-card-projects .emp-scroll { max-height: 195px; }
+        /* Deadlines list shows exactly three full rows (~57px each incl. padding + divider)
+           before the internal scrollbar takes over; the first item is fully visible under
+           the stationary heading. Remaining deadlines stay reachable by scrolling. */
+        .emp-card-deadlines .emp-scroll { max-height: 184px; }
+
+        /* Quick Actions: vertical list stacked naturally from the top (NOT stretched to
+           fill the card). Consistent ~52px rows with ~10px gaps; all visible, no scroll. */
+        .emp-quick-body { display: block; padding: 8px 12px 16px; }
+        .emp-quick-list { display: flex; flex-direction: column; gap: 10px; }
+        .emp-quick-row {
+            display: flex; align-items: center; gap: 12px;
+            min-height: 52px; padding: 0 16px 0 10px; border-radius: 8px;
+            text-decoration: none; color: #1e293b;
+            transition: background 0.15s;
+        }
+        .emp-quick-row:hover { background: #eef7f1; }
+        .emp-quick-ic {
+            width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+            background: #e3f3e9; color: #0f7a44; font-weight: 700;
+        }
+        .emp-quick-label { flex: 1 1 auto; font-size: 14px; font-weight: 600; white-space: nowrap; }
+        .emp-quick-chev { color: #94a3b8; font-size: 18px; flex-shrink: 0; }
+
+        .emp-card {
+            background: #fff; border: 1px solid #e6ece8; border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(16,40,28,0.05);
+            display: flex; flex-direction: column; min-height: 0;
+        }
+        .emp-card-head {
+            flex: 0 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 20px 12px; border-bottom: 1px solid #f0f3f1;
+        }
+        .emp-card-head h2 { font-size: 17px; font-weight: 700; color: #1e293b; margin: 0; }
+        .emp-view-all { font-size: 13px; font-weight: 600; color: #0f7a44; text-decoration: none; }
+        .emp-view-all:hover { text-decoration: underline; }
+
+        /* Lists scroll inside their card; headings (.emp-card-head) stay visible. */
+        .emp-card-body { padding: 8px 20px 16px; }
+        .emp-scroll {
+            overflow-y: auto; overflow-x: hidden; min-height: 0; max-height: 300px;
+            scrollbar-width: thin; scrollbar-color: #2e7d56 #eef3ef;
+        }
+        .emp-scroll::-webkit-scrollbar { width: 8px; }
+        .emp-scroll::-webkit-scrollbar-track { background: #eef3ef; border-radius: 8px; }
+        .emp-scroll::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #2e7d56, #72c94b); border-radius: 8px; border: 2px solid #eef3ef; }
+
+        /* My Projects rows */
+        .emp-project-row { padding: 14px 0; border-bottom: 1px solid #f0f3f1; }
+        .emp-project-row:last-child { border-bottom: none; }
+        .emp-project-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+        .emp-project-title { margin: 0; font-size: 14.5px; font-weight: 700; color: #1e293b; overflow-wrap: anywhere; }
+        .emp-project-meta { display: flex; align-items: center; gap: 12px; }
+        .emp-project-budget { font-size: 14px; font-weight: 700; color: #1e293b; white-space: nowrap; }
+        .emp-proposal-count { font-size: 12.5px; color: #64748b; }
+        .emp-progress { flex: 1 1 auto; height: 8px; background: #e5e7eb; border-radius: 5px; overflow: hidden; min-width: 80px; }
+        .emp-progress-bar {
+            height: 100%; border-radius: 5px;
+            background: linear-gradient(90deg, #148D98 0%, #2DA66E 55%, #70C843 100%);
+        }
+        .emp-progress-pct { font-size: 12.5px; font-weight: 700; color: #334155; white-space: nowrap; }
+
+        /* Status badges */
+        .emp-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+        .emp-badge-open      { color: #1e7a46; background: #e5f4ea; }
+        .emp-badge-progress  { color: #1d6fd1; background: #e6f0ff; }
+        .emp-badge-review    { color: #b45309; background: #fef3c7; }
+        .emp-badge-completed { color: #155724; background: #d4edda; }
+        .emp-badge-cancelled { color: #b4232e; background: #fdeaea; }
+        .emp-badge-default   { color: #4b5563; background: #eef2f5; }
+
+        /* Recent Activity */
+        .emp-activity-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f3f1; }
+        .emp-activity-item:last-child { border-bottom: none; }
+        .emp-activity-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;
+            background: linear-gradient(135deg, #148D98, #70C843); }
+        .emp-activity-text { display: flex; flex-direction: column; min-width: 0; }
+        .emp-activity-desc { font-size: 13.5px; color: #334155; }
+        .emp-activity-date { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
+
+        /* Upcoming Deadlines */
+        .emp-deadline-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f0f3f1; }
+        .emp-deadline-item:last-child { border-bottom: none; }
+        .emp-deadline-main { display: flex; flex-direction: column; min-width: 0; }
+        .emp-deadline-title { font-size: 13.5px; color: #1e293b; overflow-wrap: anywhere; }
+        .emp-deadline-sub { font-size: 11.5px; color: #94a3b8; }
+        .emp-deadline-date { font-size: 12.5px; font-weight: 700; color: #b45309; background: #fef3c7; padding: 5px 10px; border-radius: 10px; white-space: nowrap; }
+
+        .emp-empty { padding: 24px 8px; text-align: center; color: #94a3b8; font-size: 13px; }
+        .emp-empty p { margin: 0; }
+
+        /* Responsive: overview cards wrap below the welcome text; the 3-column grid
+           collapses to a single column with cards flowing naturally. */
+        @media (max-width: 1050px) {
+            .dashboard-welcome { align-items: flex-start; }
+            .emp-dash-stats { justify-content: flex-start; }
+            .emp-dash-grid { grid-template-columns: 1fr; }
+            .emp-card-quick, .emp-stack-mid, .emp-stack-right {
+                grid-column: auto;
+            }
+            /* Single-column reflow: Quick Actions returns to normal flow (no sticky) so
+               every action is reachable by normal page scroll on small screens. */
+            .emp-card-quick { max-width: none; position: static; }
+            .emp-scroll { max-height: 320px; }
+            /* In the stacked single-column layout give My Projects and Deadlines more room
+               than the tight desktop heights. */
+            .emp-card-projects .emp-scroll { max-height: 320px; }
+            .emp-card-deadlines .emp-scroll { max-height: 320px; }
+        }
+        @media (max-width: 560px) {
+            .emp-stat-card { flex: 1 1 100%; }
+        }
     </style>
 </asp:Content>
 
@@ -329,19 +521,235 @@
                 <asp:Literal ID="litDashboardMessage" runat="server" />
             </asp:Panel>
 
-            <!-- Welcome Section -->
+            <!-- Welcome Section: text on the left, four compact overview cards on the
+                 far right (employer). Quick Actions live in the left column below. -->
             <div class="dashboard-welcome">
-                <div class="welcome-heading-row">
-                    <h1>Welcome back, <asp:Literal ID="litFirstName" runat="server" /></h1>
-                    <span class="role-badge"><asp:Literal ID="litRole" runat="server" /></span>
+                <div class="welcome-text">
+                    <div class="welcome-heading-row">
+                        <h1>Welcome back, <asp:Literal ID="litFirstName" runat="server" /></h1>
+                        <span class="role-badge"><asp:Literal ID="litRole" runat="server" /></span>
+                    </div>
+                    <p>Here's an overview of your FreeHUB activity.</p>
                 </div>
-                <p>Here's an overview of your FreeHUB activity.</p>
+
+                <!-- OVERVIEW STAT CARDS (employer) — compact row beside the welcome text.
+                     Live values; nothing hardcoded. -->
+                <asp:Panel ID="pnlEmployerStats" runat="server" Visible="false" CssClass="emp-dash-stats">
+                    <div class="emp-stat-card">
+                        <div class="emp-stat-icon">&#128193;</div>
+                        <div class="emp-stat-body">
+                            <div class="emp-stat-label">Active Projects</div>
+                            <div class="emp-stat-value"><asp:Literal ID="litActiveCount" runat="server" Text="0" /></div>
+                        </div>
+                    </div>
+                    <div class="emp-stat-card">
+                        <div class="emp-stat-icon">&#128101;</div>
+                        <div class="emp-stat-body">
+                            <div class="emp-stat-label">Proposals Received</div>
+                            <div class="emp-stat-value"><asp:Literal ID="litProposalsReceived" runat="server" Text="0" /></div>
+                        </div>
+                    </div>
+                    <div class="emp-stat-card">
+                        <div class="emp-stat-icon">&#9989;</div>
+                        <div class="emp-stat-body">
+                            <div class="emp-stat-label">Completed Projects</div>
+                            <div class="emp-stat-value"><asp:Literal ID="litCompletedCount" runat="server" Text="0" /></div>
+                        </div>
+                    </div>
+                    <div class="emp-stat-card">
+                        <div class="emp-stat-icon">&#128176;</div>
+                        <div class="emp-stat-body">
+                            <div class="emp-stat-label">Wallet Balance</div>
+                            <div class="emp-stat-value">R<asp:Literal ID="litBalanceEmp" runat="server" /></div>
+                        </div>
+                    </div>
+                </asp:Panel>
             </div>
 
         </div><%-- /.dashboard-topband --%>
 
         <!-- SCROLLABLE CONTENT: stats, quick actions, recent activity, etc. -->
         <div class="dashboard-scroll">
+
+        <!-- ============================================================
+             EMPLOYER DASHBOARD (matches the approved mockup). All values are
+             live from the existing employer queries — nothing hardcoded.
+             ============================================================ -->
+        <asp:Panel ID="pnlEmployerDash" runat="server" Visible="false" CssClass="emp-dash-host">
+
+            <!-- MAIN THREE-COLUMN GRID: Quick Actions | My Projects+Deadlines | Activity+Help -->
+            <div class="emp-dash-grid">
+
+                <!-- LEFT: Quick Actions (full-height vertical list; all visible, no scroll) -->
+                <div class="emp-card emp-card-quick">
+                    <div class="emp-card-head"><h2>Quick Actions</h2></div>
+                    <div class="emp-card-body emp-quick-body">
+
+                        <asp:Panel ID="pnlEmployerQuick" runat="server" Visible="false" CssClass="emp-quick-list">
+                            <a href="PostProject.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#43;</span>
+                                <span class="emp-quick-label">Post a Project</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="SelectProposal.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128101;</span>
+                                <span class="emp-quick-label">View Proposals</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="ViewProgress.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128200;</span>
+                                <span class="emp-quick-label">View Progress</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="MyProjects.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128193;</span>
+                                <span class="emp-quick-label">My Projects</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="StartChat.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#9993;</span>
+                                <span class="emp-quick-label">Messages</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="Wallet.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128176;</span>
+                                <span class="emp-quick-label">Manage Wallet</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="Help.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#63;</span>
+                                <span class="emp-quick-label">Help &amp; Support</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlFreelancerQuick" runat="server" Visible="false" CssClass="emp-quick-list">
+                            <a href="BrowseProjects.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128269;</span>
+                                <span class="emp-quick-label">Browse Projects</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="SelectProposal.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128221;</span>
+                                <span class="emp-quick-label">My Proposals</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="ViewProgress.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128200;</span>
+                                <span class="emp-quick-label">View Progress</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="StartChat.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#9993;</span>
+                                <span class="emp-quick-label">Messages</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="Wallet.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#128176;</span>
+                                <span class="emp-quick-label">Manage Wallet</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                            <a href="Help.aspx" class="emp-quick-row">
+                                <span class="emp-quick-ic">&#63;</span>
+                                <span class="emp-quick-label">Help &amp; Support</span>
+                                <span class="emp-quick-chev">&#8250;</span>
+                            </a>
+                        </asp:Panel>
+
+                    </div>
+                </div>
+
+                <!-- MIDDLE COLUMN STACK: My Projects on top, Upcoming Deadlines directly beneath (10px gap) -->
+                <div class="emp-stack emp-stack-mid">
+
+                <!-- MIDDLE: My Projects -->
+                <div class="emp-card emp-card-projects">
+                    <div class="emp-card-head">
+                        <h2>My Projects</h2>
+                        <a href="MyProjects.aspx" class="emp-view-all">View All &#8594;</a>
+                    </div>
+                    <div class="emp-card-body emp-scroll">
+                        <asp:Repeater ID="rptEmpProjects" runat="server">
+                            <ItemTemplate>
+                                <div class="emp-project-row">
+                                    <div class="emp-project-main">
+                                        <h4 class="emp-project-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %></h4>
+                                        <span class='<%# "emp-badge " + Eval("StatusClass") %>'><%# Server.HtmlEncode(Convert.ToString(Eval("Status"))) %></span>
+                                    </div>
+                                    <div class="emp-project-meta">
+                                        <div class="emp-project-budget"><%# Eval("BudgetFormatted") %></div>
+                                        <%# Convert.ToInt32(Eval("Progress")) > 0
+                                            ? "<div class=\"emp-progress\"><div class=\"emp-progress-bar\" style=\"width:" + Eval("Progress") + "%\"></div></div><span class=\"emp-progress-pct\">" + Eval("Progress") + "%</span>"
+                                            : "<span class=\"emp-proposal-count\">" + Eval("ProposalCount") + " proposal(s)</span>" %>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <asp:Panel ID="pnlEmpNoProjects" runat="server" Visible="false" CssClass="emp-empty">
+                            <p>You haven't posted any projects yet. Use <strong>Post a Project</strong> to get started.</p>
+                        </asp:Panel>
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines: directly beneath My Projects in the same column stack -->
+                <div class="emp-card emp-card-deadlines">
+                    <div class="emp-card-head"><h2>Upcoming Deadlines</h2></div>
+                    <div class="emp-card-body emp-scroll">
+                        <asp:Repeater ID="rptEmpDeadlines" runat="server">
+                            <ItemTemplate>
+                                <div class="emp-deadline-item">
+                                    <div class="emp-deadline-main">
+                                        <strong class="emp-deadline-title"><%# Server.HtmlEncode(Convert.ToString(Eval("Title"))) %></strong>
+                                        <span class="emp-deadline-sub">Project deadline</span>
+                                    </div>
+                                    <span class="emp-deadline-date">&#128197; <%# Convert.ToDateTime(Eval("Deadline")).ToString("dd MMM yyyy") %></span>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <asp:Panel ID="pnlEmpNoDeadlines" runat="server" Visible="false" CssClass="emp-empty">
+                            <p>No upcoming deadlines.</p>
+                        </asp:Panel>
+                    </div>
+                </div>
+
+                </div><!-- /emp-stack-mid -->
+
+                <!-- RIGHT COLUMN STACK: Recent Activity on top, Help & Support beneath -->
+                <div class="emp-stack emp-stack-right">
+
+                <!-- RIGHT: Recent Activity -->
+                <div class="emp-card emp-card-activity">
+                    <div class="emp-card-head"><h2>Recent Activity</h2></div>
+                    <div class="emp-card-body emp-scroll">
+                        <asp:Repeater ID="rptEmpActivity" runat="server">
+                            <ItemTemplate>
+                                <div class="emp-activity-item">
+                                    <div class="emp-activity-dot"></div>
+                                    <div class="emp-activity-text">
+                                        <span class="emp-activity-desc"><%# Eval("Description") %></span>
+                                        <span class="emp-activity-date"><%# Eval("DateFormatted") %></span>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </asp:Repeater>
+                        <asp:Panel ID="pnlEmpNoActivity" runat="server" Visible="false" CssClass="emp-empty">
+                            <p>No recent activity yet.</p>
+                        </asp:Panel>
+                    </div>
+                </div>
+
+
+                </div><!-- /emp-stack-right -->
+
+            </div>
+
+        </asp:Panel>
+
+        <!-- ============================================================
+             FREELANCER DASHBOARD (unchanged generic stats + quick actions).
+             Hidden for employers (who get the mockup layout above).
+             ============================================================ -->
+        <asp:Panel ID="pnlFreelancerDash" runat="server">
 
         <!-- Stats -->
         <div class="dashboard-stats">
@@ -499,6 +907,8 @@
                 </asp:Panel>
             </div>
         </div>
+
+        </asp:Panel><%-- /#pnlFreelancerDash --%>
 
         </div><%-- /.dashboard-scroll --%>
 

@@ -162,6 +162,11 @@ namespace FreeHubProject
 
                 NotificationHelper.CreateNotification(freelancerUserId, "Payment", notificationText);
 
+                // 6. Chat lifecycle: end the conversation (idempotently) now the project is
+                //    completed — but only if no other qualifying active project remains
+                //    between the same employer and freelancer.
+                ChatLifecycle.OnProjectCompleted(ProjectId, employerUserId);
+
                 ShowStatus(string.Format("Project completed! R{0:N2} released to freelancer. Platform fee collected: R{1:N2}.", netPayout, commissionFee), true);
                 btnApproveWork.Enabled = false;
                 btnRequestRevision.Enabled = false;

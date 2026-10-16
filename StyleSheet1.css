@@ -13131,37 +13131,83 @@ FREEHUB HOME PAGE
     gap: 10px;
 }
 
+/* Profile trigger: compact rounded mint pill with a thin pale-green border.
+   Sits inside the existing header gradient without increasing header height. */
+.nav-profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 8px 5px 6px;
+    background: #eaf7ef;
+    border: 1px solid #c7e6d2;
+    border-radius: 999px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    max-width: 100%;
+}
+.nav-profile-trigger:hover { background: #e2f3e9; border-color: #b4ddc4; }
+.nav-profile-trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(45, 166, 110, 0.35);
+}
+
+/* Circular initials avatar — a soft, lighter version of the FreeHub gradient
+   with dark-teal initials. */
 .user-nav-initials {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
     border-radius: 50%;
-    background-color: #2e7d56;
-    color: #ffffff;
-    font-weight: bold;
+    background: linear-gradient(135deg, #cdeef0 0%, #d6f1e2 55%, #e4f6cf 100%);
+    color: #0f5b63;
+    font-weight: 800;
     font-size: 14px;
-}
-
-.user-nav-name {
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 500;
+    letter-spacing: .3px;
 }
 
 .user-nav-info {
     display: flex;
     flex-direction: column;
-    line-height: 1.1;
-    gap: 2px;
+    line-height: 1.15;
+    gap: 1px;
+    min-width: 0;
+}
+
+/* Name in bold dark teal; role beneath in smaller muted grey. */
+.user-nav-name {
+    color: #0f5b63;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-nav-role {
-    color: #a8d5ba;
+    color: #7b8a85;
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 500;
     display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Circular dropdown-arrow button — same lighter gradient, dark-teal chevron. */
+.user-nav-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #cdeef0 0%, #d6f1e2 55%, #e4f6cf 100%);
+    color: #0f5b63;
 }
 
 .logout-link {
@@ -13280,7 +13326,9 @@ FREEHUB HOME PAGE
     min-width: 260px;
     background-color: #ffffff;
     border-right: 1px solid #e8ece9;
-    padding: 16px 0;
+    /* Tighter top padding pulls the Back button closer to the fixed header; the freed
+       space flows into the nav's even inter-item gaps (via space-between below). */
+    padding: 8px 0 16px;
     /* The sidebar is a plain flex child of the NON-scrolling .freehub-dashboard-layout
        (its .page-content ancestor has overflow:hidden on dashboard pages), so it is
        completely stationary when the main content scrolls — no sticky/fixed needed.
@@ -13317,7 +13365,10 @@ FREEHUB HOME PAGE
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: 14px;
+    /* Smaller gap below the Back button; the space-between distribution turns the space
+       freed here (and from the tighter sidebar top padding) into larger, even gaps
+       between the menu items below Dashboard. */
+    margin-top: 8px;
 }
 
 /* Very short desktop viewports ONLY: once items have already compressed to their
@@ -13344,14 +13395,12 @@ FREEHUB HOME PAGE
     display: flex;
     align-items: center;
     gap: 12px;
-    /* Items keep a compact, CONSISTENT height so the leftover vertical space is spread
-       as even gaps BETWEEN items (via the section's space-between) rather than being
-       absorbed by taller items. A smaller vertical padding frees up more slack, so the
-       even inter-item gaps are larger and the nav looks balanced (not compressed). The
-       clamp still lets items compress further on short viewports so the longer Employer
-       nav (My Projects / Post a Project / Proposals Received / View Progress) fits
-       between the fixed header and footer without a scrollbar. */
-    padding: clamp(5px, 0.7vh, 8px) 16px;
+    /* Items are kept compact (small, consistent vertical padding) so MORE leftover
+       vertical space is freed for the section's space-between to spread as larger, even
+       gaps BETWEEN items. The clamp still lets items compress further on short viewports
+       so the longer Employer nav (My Projects / Post a Project / Proposals Received /
+       View Progress) fits between the fixed header and footer without a scrollbar. */
+    padding: clamp(3px, 0.5vh, 6px) 16px;
     border-radius: 8px;
     color: #3d5a47;
     text-decoration: none;
@@ -13735,26 +13784,26 @@ FREEHUB HOME PAGE
 }
 
 
-/* Fix: Force role to appear UNDER the name */
+/* Fix: Force role to appear UNDER the name (mint-pill colours) */
 .user-nav-info {
     display: flex !important;
     flex-direction: column !important;
-    gap: 0 !important;
-    line-height: 1.1 !important;
+    gap: 1px !important;
+    line-height: 1.15 !important;
 }
 
 .user-nav-info .user-nav-name {
     display: block !important;
-    color: #ffffff;
+    color: #0f5b63;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 800;
 }
 
 .user-nav-info .user-nav-role {
     display: block !important;
-    color: #a8d5ba;
+    color: #7b8a85;
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 

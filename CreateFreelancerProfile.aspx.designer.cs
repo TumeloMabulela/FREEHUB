@@ -16,6 +16,7 @@ namespace FreeHubProject
         protected global::System.Web.UI.WebControls.TextBox txtExperience;
         protected global::System.Web.UI.WebControls.Label lblExperienceError;
         protected global::System.Web.UI.WebControls.TextBox txtPortfolio;
+        protected global::System.Web.UI.WebControls.Label lblPortfolioError;
         protected global::System.Web.UI.WebControls.TextBox txtHourlyRate;
         protected global::System.Web.UI.WebControls.Label lblRateError;
         protected global::System.Web.UI.WebControls.Button btnSubmit;

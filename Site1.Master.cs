@@ -131,6 +131,14 @@ namespace FreeHubProject
                 pnlFreelancerNav.Visible =
                     userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
 
+                // Browse Projects is hidden for Employers (they post, not browse); it stays
+                // visible for Freelancers and any other role.
+                if (navBrowseProjects != null)
+                {
+                    navBrowseProjects.Visible =
+                        !userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
+                }
+
                 // Admins get the admin nav instead of the generic Dashboard/Browse/Wallet nav.
                 pnlAdminNav.Visible = isAdmin;
                 pnlLoggedInNav.Visible = !isAdmin;

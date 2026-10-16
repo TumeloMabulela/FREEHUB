@@ -166,5 +166,50 @@ namespace FreeHubProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Panel pnlNoActivity;
+
+        /// <summary>pnlEmployerStats control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmployerStats;
+
+        /// <summary>pnlEmployerQuick control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmployerQuick;
+
+        /// <summary>pnlFreelancerQuick control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlFreelancerQuick;
+
+        /// <summary>pnlEmployerDash control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmployerDash;
+
+        /// <summary>pnlFreelancerDash control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlFreelancerDash;
+
+        /// <summary>litActiveCount control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litActiveCount;
+
+        /// <summary>litProposalsReceived control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litProposalsReceived;
+
+        /// <summary>litCompletedCount control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litCompletedCount;
+
+        /// <summary>litBalanceEmp control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litBalanceEmp;
+
+        /// <summary>rptEmpProjects control.</summary>
+        protected global::System.Web.UI.WebControls.Repeater rptEmpProjects;
+
+        /// <summary>pnlEmpNoProjects control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmpNoProjects;
+
+        /// <summary>rptEmpActivity control.</summary>
+        protected global::System.Web.UI.WebControls.Repeater rptEmpActivity;
+
+        /// <summary>pnlEmpNoActivity control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmpNoActivity;
+
+        /// <summary>rptEmpDeadlines control.</summary>
+        protected global::System.Web.UI.WebControls.Repeater rptEmpDeadlines;
+
+        /// <summary>pnlEmpNoDeadlines control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlEmpNoDeadlines;
     }
 }

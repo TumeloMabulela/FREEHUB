@@ -11,6 +11,27 @@
     <style>
         .nx-page { font-family: Arial, Helvetica, sans-serif; }
 
+        /* ===== Fixed-middle layout (scoped to Notifications via .nx-main). The main
+           content is a NON-scrolling flex column filling the space between the fixed site
+           header and footer; the top section (breadcrumb, heading, Mark All as Read,
+           status alert, category tabs) stays stationary; and only the notification list
+           body (and the detail panel's own content, if it overflows) scrolls. ===== */
+        .freehub-main-content.nx-main {
+            height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+            /* Trim the bottom padding (the shared .freehub-main-content sets 30px) so the
+               list/split meets the top of the fixed footer with no external gap. Top and
+               side padding are kept so the heading's position + alignment are unchanged. */
+            padding-bottom: 0;
+        }
+        .nx-main .notifications-page {
+            flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+        }
+        /* Stationary top section (everything above the master-detail split). */
+        .nx-main .notification-breadcrumb,
+        .nx-main .nx-head,
+        .nx-main .nx-alert,
+        .nx-main .nx-tabs { flex: 0 0 auto; }
+
         /* Header */
         .nx-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
         .nx-head h1 { margin: 0 0 4px 0; font-size: 24px; color: #10261c; }
@@ -146,33 +167,62 @@
         }
         /* Each column is a full-height flex container; min-height:0 lets the inner
            scroll area shrink and scroll instead of pushing the page taller. */
+        /* Within the fixed-middle shell, the split fills the remaining height via flex
+           instead of a viewport calc, so it always sits just below the static tabs and
+           above the footer regardless of header/tab heights. */
+        .nx-main .nx-split {
+            height: auto; min-height: 0; max-height: none;
+            flex: 1 1 auto;
+        }
+
         .nx-list-panel { min-width:0; min-height:0; height:100%; display:flex; flex-direction:column; }
         .nx-card.selected { border-left-color:#1f9d55; background:#eafaf0; box-shadow:0 4px 12px rgba(16,40,28,.1); }
 
         /* LEFT: the list is the scroll area. The header/filters stay outside this. */
         .nx-list-panel .nx-list {
             flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
-            padding:2px 8px 2px 2px; /* small right padding so cards don't touch the scrollbar */
+            /* Right padding keeps cards off the scrollbar; bottom padding keeps the final
+               card fully readable now that the list extends to the footer. */
+            padding:2px 8px 14px 2px;
         }
 
         /* RIGHT: panel fills the shared height and scrolls its own content independently. */
         .nx-detail-panel {
             height:100%; min-height:0; display:flex; flex-direction:column;
         }
+        /* The detail panel fills the shared height and is a NON-scrolling flex column:
+           head (fixed) + body (fills) + actions (fixed bottom). No internal scrollbar. */
         .nx-detail {
-            flex:1 1 auto; min-height:0; overflow-y:auto;
+            flex:1 1 auto; min-height:0; overflow:hidden;
+            display:flex; flex-direction:column;
             background:#fff; border:1px solid #e7ece9; border-radius:16px;
-            padding:32px 34px; box-shadow:0 4px 18px rgba(16,40,28,.07);
+            padding:26px 30px 22px; box-shadow:0 4px 18px rgba(16,40,28,.07);
         }
-        .nx-detail-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:22px; }
-        .nx-detail-head .nx-ic { width:56px; height:56px; font-size:26px; border-radius:14px; }
-        .nx-detail-title { margin:0 0 8px 0; color:#10261c; font-size:24px; }
+        .nx-detail-head { flex:0 0 auto; display:flex; align-items:flex-start; gap:16px; margin-bottom:16px; }
+        .nx-detail-head .nx-ic { width:52px; height:52px; font-size:24px; border-radius:14px; }
+        .nx-detail-title { margin:0 0 6px 0; color:#10261c; font-size:22px; }
         .nx-detail-meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+        /* Body fills the space between head and actions; min-height:0 so it can shrink. */
+        .nx-detail-body { flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
         .nx-detail-content {
-            color:#374151; font-size:16px; line-height:1.75; margin:0 0 28px 0;
-            padding:20px 22px; background:#f7faf8; border-radius:12px; min-height:120px;
+            color:#374151; font-size:15.5px; line-height:1.7; margin:0;
+            padding:18px 20px; background:#f7faf8; border-radius:12px;
+            /* Message wraps naturally and is clamped so it never forces the panel to
+               scroll; longer text is opened via "View Full Message". */
+            overflow:hidden; overflow-wrap:anywhere; white-space:pre-line;
+            display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:8;
         }
-        .nx-detail-actions { display:flex; gap:12px; flex-wrap:wrap; }
+        .nx-viewfull-wrap { flex:0 0 auto; margin-top:10px; }
+        .nx-viewfull {
+            background:transparent; border:none; cursor:pointer; padding:0;
+            color:#0f7a44; font-size:13.5px; font-weight:700; font-family:Arial,Helvetica,sans-serif;
+            text-decoration:underline;
+        }
+        .nx-viewfull:hover { color:#0c6639; }
+
+        /* Actions pinned to the bottom of the panel, always visible. */
+        .nx-detail-actions { flex:0 0 auto; display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px solid #f0f3f1; }
 
         .nx-act {
             display:inline-block; text-decoration:none; cursor:pointer;
@@ -241,6 +291,11 @@
            list isn't crammed into a tiny scroll box; cap list height so the detail
            panel is still reachable without endless scrolling. */
         @media (max-width: 1000px) {
+            /* Release the fixed-middle shell so the whole page flows and scrolls naturally
+               when the layout stacks into one column. */
+            .freehub-main-content.nx-main { height:auto; overflow:visible; display:block; }
+            .nx-main .notifications-page { display:block; flex:none; min-height:0; }
+            .nx-main .nx-split { flex:none; }
             .nx-split {
                 grid-template-columns: 1fr; height:auto; min-height:0; max-height:none; gap:14px;
             }
@@ -310,6 +365,54 @@
                 if (b) b.click();
             }, 450);
         }
+
+        // Open the full notification message in a centred dialog (reuses the shared
+        // .fh-modal design) so the details panel itself never needs to scroll. Esc/overlay
+        // click or the Close button dismisses it; focus returns naturally.
+        function nxShowFullMessage() {
+            var src = document.getElementById('nxFullMessage');
+            var titleEl = document.getElementById('nxFullTitle');
+            var msg = src ? src.innerText : '';
+            var title = titleEl && titleEl.innerText ? titleEl.innerText : 'Notification';
+
+            var existing = document.getElementById('nxFullModal');
+            if (existing) existing.remove();
+
+            var overlay = document.createElement('div');
+            overlay.id = 'nxFullModal';
+            overlay.className = 'fh-modal-overlay';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+
+            var box = document.createElement('div');
+            box.className = 'fh-modal';
+            box.style.maxWidth = '560px';
+            box.style.textAlign = 'left';
+
+            var h = document.createElement('h3');
+            h.style.textAlign = 'left';
+            h.textContent = title;
+
+            var body = document.createElement('div');
+            body.style.cssText = 'max-height:60vh; overflow-y:auto; white-space:pre-line; overflow-wrap:anywhere; color:#374151; font-size:14.5px; line-height:1.7; margin:8px 0 18px; text-align:left;';
+            body.textContent = msg;   // textContent = safe (no HTML injection)
+
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'fh-modal-btn-primary';
+            btn.style.background = '#2e7d56';
+            btn.textContent = 'Close';
+            btn.onclick = function () { overlay.remove(); };
+
+            box.appendChild(h); box.appendChild(body); box.appendChild(btn);
+            overlay.appendChild(box);
+            overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+            document.addEventListener('keydown', function esc(ev) {
+                if ((ev.key === 'Escape' || ev.keyCode === 27)) { overlay.remove(); document.removeEventListener('keydown', esc); }
+            });
+            document.body.appendChild(overlay);
+            btn.focus();
+        }
     </script>
 </asp:Content>
 
@@ -317,7 +420,7 @@
     <div class="freehub-dashboard-layout">
         <uc:Sidebar runat="server" ID="SidebarControl" />
 
-        <section class="freehub-main-content">
+        <section class="freehub-main-content nx-main">
             <div class="notifications-page nx-page">
 
                 <div class="notification-breadcrumb" style="margin-bottom:12px;">
@@ -334,10 +437,9 @@
                     <asp:Button ID="btnMarkAllRead" runat="server" CssClass="nx-markall" Text="✓ Mark All as Read" OnClick="btnMarkAllRead_Click" CausesValidation="false" />
                 </div>
 
-                <!-- Status alert -->
-                <asp:Panel ID="pnlNotificationStatus" runat="server" CssClass="nx-alert" Visible="false">
-                    <asp:Label ID="lblNotificationStatus" runat="server"></asp:Label>
-                </asp:Panel>
+                <!-- (Inline status banner removed — all notification action results now use
+                     the centred global popup via MessageHelper, so there is no inline banner
+                     or reserved spacing on the page.) -->
 
                 <!-- (Search + type/time filter controls removed — the category tabs
                      below now sit directly under the heading and the panels expand up.) -->
@@ -394,6 +496,7 @@
                     <!-- RIGHT: selected notification detail -->
                     <div class="nx-detail-panel">
                         <asp:Panel ID="pnlDetail" runat="server" Visible="false" CssClass="nx-detail">
+                            <!-- HEAD (stationary) -->
                             <div class="nx-detail-head">
                                 <span class='<%= "nx-ic " + DetailIconClass %>'><asp:Label ID="lblSelectedIcon" runat="server"></asp:Label></span>
                                 <div>
@@ -405,13 +508,25 @@
                                 </div>
                             </div>
 
-                            <p class="nx-detail-content"><asp:Label ID="lblSelectedPreview" runat="server"></asp:Label></p>
+                            <!-- BODY (fills remaining height; message wraps and is clamped so the
+                                 panel never scrolls — the full text opens in a dialog). -->
+                            <div class="nx-detail-body">
+                                <p class="nx-detail-content"><asp:Label ID="lblSelectedPreview" runat="server"></asp:Label></p>
+                                <asp:Panel ID="pnlViewFull" runat="server" Visible="false" CssClass="nx-viewfull-wrap">
+                                    <button type="button" class="nx-viewfull" onclick="nxShowFullMessage(); return false;">View Full Message</button>
+                                </asp:Panel>
+                            </div>
 
+                            <!-- ACTIONS (stationary bottom section) -->
                             <div class="nx-detail-actions">
                                 <asp:Button ID="btnOpenTarget" runat="server" Text="View Details" CssClass="nx-act nx-act-primary" OnClick="btnOpenTarget_Click" CausesValidation="false" Visible="false" />
                                 <asp:Button ID="btnToggleRead" runat="server" Text="Mark as Read" CssClass="nx-act" OnClick="btnToggleRead_Click" CausesValidation="false" />
                                 <asp:Button ID="btnToggleArchive" runat="server" Text="Archive" CssClass="nx-act" OnClick="btnToggleArchive_Click" CausesValidation="false" />
                             </div>
+
+                            <!-- Full message text (hidden; copied into the dialog by nxShowFullMessage). -->
+                            <span id="nxFullMessage" style="display:none;"><asp:Literal ID="litFullMessage" runat="server" /></span>
+                            <span id="nxFullTitle" style="display:none;"><asp:Label ID="lblFullTitle" runat="server"></asp:Label></span>
 
                             <!-- kept for compatibility with existing code paths -->
                             <asp:Label ID="lblReadStatus" runat="server" Visible="false"></asp:Label>
