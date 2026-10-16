@@ -74,6 +74,27 @@ namespace FreeHubProject
             {
                 litUnreadMessageBadge.Text = "";
             }
+
+            // Admin support-inbox unread badge (only meaningful for the admin).
+            try
+            {
+                string userType = Session["UserType"] as string ?? "";
+                if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    int helpUnread = DatabaseHelper.GetAdminUnreadMessageCount(userId);
+                    litAdminHelpBadge.Text = helpUnread > 0
+                        ? $"<span style='background-color: #ef4444; color: white; border-radius: 50%; padding: 1px 6px; font-size: 9px; font-weight: bold; margin-left: 6px; display: inline-block; line-height: 1.2;'>{helpUnread}</span>"
+                        : "";
+                }
+                else
+                {
+                    litAdminHelpBadge.Text = "";
+                }
+            }
+            catch
+            {
+                litAdminHelpBadge.Text = "";
+            }
         }
 
         private void SetupNavigation()
@@ -101,12 +122,30 @@ namespace FreeHubProject
                 pnlGuestButtons.Visible = false;
                 pnlUserButtons.Visible = true;
 
+                bool isAdmin = userType.Equals("Admin", StringComparison.OrdinalIgnoreCase);
+
                 // Show role-specific navigation
                 pnlEmployerNav.Visible =
                     userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
                 pnlFreelancerNav.Visible =
                     userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+
+                // Admins get the admin nav instead of the generic Dashboard/Browse/Wallet nav.
+                pnlAdminNav.Visible = isAdmin;
+                pnlLoggedInNav.Visible = !isAdmin;
+
+                // Admins cannot switch roles — hide the "Switch Role" dropdown item.
+                if (pnlSwitchRoleItem != null)
+                {
+                    pnlSwitchRoleItem.Visible = !isAdmin;
+                }
+
+                // Ratings are not applicable to admins — hide the "Ratings" item.
+                if (pnlRatingsItem != null)
+                {
+                    pnlRatingsItem.Visible = !isAdmin;
+                }
 
                 // Set user display info
                 string firstName = Session["FirstName"] as string ?? "";

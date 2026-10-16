@@ -260,6 +260,39 @@ namespace FreeHubProject
                     HAVING (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') > 0";
                 }
 
+                // Also surface the FreeHub Support (admin) conversation if the user has
+                // ever messaged the admin via a Help link. The admin is not part of any
+                // proposal/project, so it is unioned in separately (respecting the role
+                // filters: it only appears under All/Unread, not Clients/Freelancers).
+                bool includeAdmin = (ContactFilter == "All" || ContactFilter == "Unread");
+                if (includeAdmin)
+                {
+                    string adminRow = @"
+                    UNION
+                    SELECT
+                        u.userID AS UserID,
+                        u.userType AS UserType,
+                        (u.firstName + ' ' + u.lastName) AS Name,
+                        (LEFT(u.firstName, 1) + LEFT(u.lastName, 1)) AS Initials,
+                        ISNULL((SELECT TOP 1 content FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastMessage,
+                        ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR, 2, timeStamp), 'hh:mm tt') FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC), '') AS LastTime,
+                        (SELECT TOP 1 timeStamp FROM dbo.Message WHERE (senderID = u.userID AND receiverID = @CurrentUserID) OR (senderID = @CurrentUserID AND receiverID = u.userID) ORDER BY timeStamp DESC) AS LastTimeSort,
+                        (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') AS UnreadCount
+                    FROM dbo.[User] u
+                    WHERE u.userType = 'Admin'
+                      AND u.userID <> @CurrentUserID
+                      AND EXISTS (SELECT 1 FROM dbo.Message m WHERE (m.senderID = u.userID AND m.receiverID = @CurrentUserID) OR (m.senderID = @CurrentUserID AND m.receiverID = u.userID))";
+                    if (!string.IsNullOrWhiteSpace(searchText))
+                    {
+                        adminRow += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
+                    }
+                    if (ContactFilter == "Unread")
+                    {
+                        adminRow += " AND (SELECT COUNT(*) FROM dbo.Message WHERE senderID = u.userID AND receiverID = @CurrentUserID AND status <> 'Read') > 0";
+                    }
+                    query += adminRow;
+                }
+
                 // Newest conversation first; contacts with no messages fall to the bottom.
                 query += " ORDER BY LastTimeSort DESC";
 

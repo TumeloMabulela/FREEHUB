@@ -528,7 +528,7 @@
 
                 </div>
 
-                <a href="Default.aspx"
+                <a href="StartChat.aspx?help=1&userId=1"
                    class="transactions-support-button">
 
                     Contact Support

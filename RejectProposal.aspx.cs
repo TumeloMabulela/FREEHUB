@@ -79,7 +79,7 @@ namespace FreeHubProject
 
         protected void btnHelp_Click(object sender, EventArgs e)
         {
-            lblRejectMessage.Text = "For support, please email support@freehub.co.za";
+            HelpHelper.StartHelpChat(this, null, "Reject Proposal");
         }
     }
 }

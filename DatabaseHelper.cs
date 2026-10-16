@@ -742,5 +742,394 @@ namespace FreeHubProject
 
             return string.Join(", ", parts);
         }
+
+        // ============================================================
+        // ADMIN OPERATIONS
+        // Admin is User #1 / Admin #1 (seeded). These helpers power the
+        // admin portal: dispute resolution, refund & withdrawal approval,
+        // and the admin support inbox fed by the Help links.
+        // ============================================================
+
+        /// <summary>The seeded platform admin user id (User #1).</summary>
+        public const int AdminUserId = 1;
+
+        /// <summary>Resolve the Admin.adminID for a given admin user id (defaults to 1).</summary>
+        public static int GetAdminId(int adminUserId)
+        {
+            object result = ExecuteScalar(
+                "SELECT TOP 1 adminID FROM dbo.Admin WHERE userID = @UserID ORDER BY adminID",
+                new SqlParameter("@UserID", adminUserId));
+            if (result != null && result != DBNull.Value) return Convert.ToInt32(result);
+            return 0;
+        }
+
+        // ---------- Disputes (admin side) ----------
+
+        public static DataTable GetAllDisputes(string statusFilter = null)
+        {
+            string query = @"
+                SELECT d.disputeID, d.userID, d.projectID, d.transactionID,
+                       d.disputeDescription, d.reason, d.status, d.dateCreated,
+                       d.adminID, d.adminComment, d.resolvedDate,
+                       (u.firstName + ' ' + u.lastName) AS raisedByName,
+                       u.email AS raisedByEmail
+                FROM dbo.Dispute d
+                INNER JOIN dbo.[User] u ON d.userID = u.userID";
+            if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query += " WHERE d.status = @Status";
+                query += " ORDER BY d.dateCreated DESC";
+                return ExecuteQuery(query, new SqlParameter("@Status", statusFilter));
+            }
+            query += " ORDER BY d.dateCreated DESC";
+            return ExecuteQuery(query);
+        }
+
+        public static DataRow GetDisputeById(int disputeID)
+        {
+            string query = @"
+                SELECT d.disputeID, d.userID, d.projectID, d.transactionID,
+                       d.disputeDescription, d.reason, d.status, d.dateCreated,
+                       d.adminID, d.adminComment, d.resolvedDate,
+                       (u.firstName + ' ' + u.lastName) AS raisedByName
+                FROM dbo.Dispute d
+                INNER JOIN dbo.[User] u ON d.userID = u.userID
+                WHERE d.disputeID = @DisputeID";
+            return GetDataRow(query, new SqlParameter("@DisputeID", disputeID));
+        }
+
+        /// <summary>Admin updates a dispute's status (and optional comment). On Resolved/Closed, stamps resolvedDate.</summary>
+        public static bool ResolveDispute(int disputeID, int adminUserId, string newStatus, string adminComment)
+        {
+            int adminId = GetAdminId(adminUserId);
+            bool closing = newStatus.Equals("Resolved", StringComparison.OrdinalIgnoreCase) ||
+                           newStatus.Equals("Closed", StringComparison.OrdinalIgnoreCase);
+            string query = @"
+                UPDATE dbo.Dispute
+                SET status = @Status,
+                    adminID = @AdminID,
+                    adminComment = @AdminComment,
+                    resolvedDate = " + (closing ? "GETDATE()" : "NULL") + @"
+                WHERE disputeID = @DisputeID";
+            int rows = ExecuteNonQuery(query,
+                new SqlParameter("@Status", newStatus),
+                new SqlParameter("@AdminID", adminId > 0 ? (object)adminId : DBNull.Value),
+                new SqlParameter("@AdminComment", string.IsNullOrEmpty(adminComment) ? (object)DBNull.Value : adminComment),
+                new SqlParameter("@DisputeID", disputeID));
+            return rows > 0;
+        }
+
+        public static int GetUserIdForDispute(int disputeID)
+        {
+            object result = ExecuteScalar("SELECT userID FROM dbo.Dispute WHERE disputeID = @DisputeID",
+                new SqlParameter("@DisputeID", disputeID));
+            return (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
+        }
+
+        // ---------- Refunds (admin side) ----------
+        // A refund is a dbo.[Transaction] with transactionType = 'Refund'.
+
+        public static DataTable GetAllRefunds(string statusFilter = null)
+        {
+            string query = @"
+                SELECT t.transactionID, t.walletID, t.itemDescription, t.transactionType,
+                       t.transactionAmount, t.transactionDate, t.transactionStatus,
+                       t.reference, t.paymentMethod,
+                       w.userID AS walletUserID,
+                       (u.firstName + ' ' + u.lastName) AS ownerName, u.email AS ownerEmail
+                FROM dbo.[Transaction] t
+                INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
+                INNER JOIN dbo.[User] u ON w.userID = u.userID
+                WHERE t.transactionType = 'Refund'";
+            if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query += " AND t.transactionStatus = @Status";
+                query += " ORDER BY t.transactionDate DESC";
+                return ExecuteQuery(query, new SqlParameter("@Status", statusFilter));
+            }
+            query += " ORDER BY t.transactionDate DESC";
+            return ExecuteQuery(query);
+        }
+
+        /// <summary>
+        /// Approve a pending refund: flip the transaction to Completed and credit the
+        /// owner's wallet with the refund amount. Returns the walletUserID (0 on failure).
+        /// </summary>
+        public static int ApproveRefund(int transactionID)
+        {
+            DataRow txn = GetTransactionById(transactionID);
+            if (txn == null) return 0;
+            if (!Convert.ToString(txn["transactionType"]).Equals("Refund", StringComparison.OrdinalIgnoreCase))
+                return 0;
+            if (Convert.ToString(txn["transactionStatus"]).Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                return 0; // already done
+
+            int walletID = Convert.ToInt32(txn["walletID"]);
+            decimal amount = Convert.ToDecimal(txn["transactionAmount"]);
+
+            decimal balance = GetWalletBalance(walletID);
+            UpdateWalletBalance(walletID, balance + amount);
+
+            ExecuteNonQuery(
+                "UPDATE dbo.[Transaction] SET transactionStatus = 'Completed' WHERE transactionID = @Id",
+                new SqlParameter("@Id", transactionID));
+
+            object owner = ExecuteScalar("SELECT userID FROM dbo.Wallet WHERE walletID = @W",
+                new SqlParameter("@W", walletID));
+            return (owner != null && owner != DBNull.Value) ? Convert.ToInt32(owner) : 0;
+        }
+
+        /// <summary>Reject a pending refund: mark the transaction Failed and record the reason. Returns walletUserID.</summary>
+        public static int RejectRefund(int transactionID, string reason = null)
+        {
+            DataRow txn = GetTransactionById(transactionID);
+            if (txn == null) return 0;
+            int walletID = Convert.ToInt32(txn["walletID"]);
+            StampRejectionReason(transactionID, reason);
+            ExecuteNonQuery(
+                "UPDATE dbo.[Transaction] SET transactionStatus = 'Failed' WHERE transactionID = @Id AND transactionType = 'Refund'",
+                new SqlParameter("@Id", transactionID));
+            object owner = ExecuteScalar("SELECT userID FROM dbo.Wallet WHERE walletID = @W",
+                new SqlParameter("@W", walletID));
+            return (owner != null && owner != DBNull.Value) ? Convert.ToInt32(owner) : 0;
+        }
+
+        /// <summary>
+        /// Append a rejection reason to a transaction's itemDescription so it is
+        /// persisted on the record (and later visible to the user in their history).
+        /// </summary>
+        private static void StampRejectionReason(int transactionID, string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason)) return;
+            string note = " [Rejected: " + reason.Trim() + "]";
+            ExecuteNonQuery(
+                @"UPDATE dbo.[Transaction]
+                  SET itemDescription = LEFT(ISNULL(itemDescription,'') + @Note, 500)
+                  WHERE transactionID = @Id",
+                new SqlParameter("@Note", note),
+                new SqlParameter("@Id", transactionID));
+        }
+
+        // ---------- Withdrawals (admin side) ----------
+        // Withdrawals are recorded as dbo.[Transaction] of type 'Withdrawal'
+        // (the funds are already deducted when the request is created).
+
+        public static DataTable GetAllWithdrawals(string statusFilter = null)
+        {
+            string query = @"
+                SELECT t.transactionID, t.walletID, t.itemDescription, t.transactionType,
+                       t.transactionAmount, t.transactionDate, t.transactionStatus,
+                       t.reference, t.paymentMethod,
+                       w.userID AS walletUserID,
+                       (u.firstName + ' ' + u.lastName) AS ownerName, u.email AS ownerEmail
+                FROM dbo.[Transaction] t
+                INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
+                INNER JOIN dbo.[User] u ON w.userID = u.userID
+                WHERE t.transactionType = 'Withdrawal'";
+            if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
+            {
+                query += " AND t.transactionStatus = @Status";
+                query += " ORDER BY t.transactionDate DESC";
+                return ExecuteQuery(query, new SqlParameter("@Status", statusFilter));
+            }
+            query += " ORDER BY t.transactionDate DESC";
+            return ExecuteQuery(query);
+        }
+
+        /// <summary>Approve a pending withdrawal: mark the transaction Completed. Returns walletUserID.</summary>
+        public static int ApproveWithdrawal(int transactionID)
+        {
+            DataRow txn = GetTransactionById(transactionID);
+            if (txn == null) return 0;
+            ExecuteNonQuery(
+                "UPDATE dbo.[Transaction] SET transactionStatus = 'Completed' WHERE transactionID = @Id AND transactionType = 'Withdrawal'",
+                new SqlParameter("@Id", transactionID));
+            object owner = ExecuteScalar("SELECT userID FROM dbo.Wallet w INNER JOIN dbo.[Transaction] t ON w.walletID = t.walletID WHERE t.transactionID = @Id",
+                new SqlParameter("@Id", transactionID));
+            return (owner != null && owner != DBNull.Value) ? Convert.ToInt32(owner) : 0;
+        }
+
+        /// <summary>
+        /// Reject a pending withdrawal: mark Failed and refund the held amount back to the wallet
+        /// (the amount was deducted when the request was created). Returns walletUserID.
+        /// </summary>
+        public static int RejectWithdrawal(int transactionID, string reason = null)
+        {
+            DataRow txn = GetTransactionById(transactionID);
+            if (txn == null) return 0;
+            if (Convert.ToString(txn["transactionStatus"]).Equals("Completed", StringComparison.OrdinalIgnoreCase))
+                return 0;
+            int walletID = Convert.ToInt32(txn["walletID"]);
+            decimal amount = Convert.ToDecimal(txn["transactionAmount"]);
+
+            decimal balance = GetWalletBalance(walletID);
+            UpdateWalletBalance(walletID, balance + amount); // return the held funds
+
+            StampRejectionReason(transactionID, reason);
+            ExecuteNonQuery(
+                "UPDATE dbo.[Transaction] SET transactionStatus = 'Failed' WHERE transactionID = @Id AND transactionType = 'Withdrawal'",
+                new SqlParameter("@Id", transactionID));
+
+            object owner = ExecuteScalar("SELECT userID FROM dbo.Wallet WHERE walletID = @W",
+                new SqlParameter("@W", walletID));
+            return (owner != null && owner != DBNull.Value) ? Convert.ToInt32(owner) : 0;
+        }
+
+        // ---------- Admin support inbox (Help routing) ----------
+        // The admin's inbox lists every user who has messaged the admin
+        // (receiverID = AdminUserId) OR whom the admin has messaged. This
+        // bypasses the proposal-join contact query used for normal chat.
+
+        public static DataTable GetAdminConversations(int adminUserId)
+        {
+            string query = @"
+                SELECT
+                    u.userID AS UserID,
+                    u.userType AS UserType,
+                    (u.firstName + ' ' + u.lastName) AS Name,
+                    (LEFT(u.firstName,1) + LEFT(u.lastName,1)) AS Initials,
+                    ISNULL((SELECT TOP 1 content FROM dbo.Message
+                            WHERE (senderID = u.userID AND receiverID = @AdminID)
+                               OR (senderID = @AdminID AND receiverID = u.userID)
+                            ORDER BY timeStamp DESC), '') AS LastMessage,
+                    ISNULL((SELECT TOP 1 FORMAT(DATEADD(HOUR,2,timeStamp),'hh:mm tt') FROM dbo.Message
+                            WHERE (senderID = u.userID AND receiverID = @AdminID)
+                               OR (senderID = @AdminID AND receiverID = u.userID)
+                            ORDER BY timeStamp DESC), '') AS LastTime,
+                    (SELECT TOP 1 timeStamp FROM dbo.Message
+                            WHERE (senderID = u.userID AND receiverID = @AdminID)
+                               OR (senderID = @AdminID AND receiverID = u.userID)
+                            ORDER BY timeStamp DESC) AS LastTimeSort,
+                    (SELECT COUNT(*) FROM dbo.Message
+                            WHERE senderID = u.userID AND receiverID = @AdminID AND status <> 'Read') AS UnreadCount
+                FROM dbo.[User] u
+                WHERE u.userID <> @AdminID
+                  AND EXISTS (SELECT 1 FROM dbo.Message m
+                              WHERE (m.senderID = u.userID AND m.receiverID = @AdminID)
+                                 OR (m.senderID = @AdminID AND m.receiverID = u.userID))
+                ORDER BY LastTimeSort DESC";
+            return ExecuteQuery(query, new SqlParameter("@AdminID", adminUserId));
+        }
+
+        public static DataTable GetConversation(int userA, int userB)
+        {
+            string query = @"
+                SELECT messageID, senderID, receiverID, content, attachmentUrl,
+                       timeStamp, status
+                FROM dbo.Message
+                WHERE (senderID = @A AND receiverID = @B)
+                   OR (senderID = @B AND receiverID = @A)
+                ORDER BY timeStamp ASC";
+            return ExecuteQuery(query,
+                new SqlParameter("@A", userA),
+                new SqlParameter("@B", userB));
+        }
+
+        /// <summary>Insert a plain (projectID NULL) message. Returns new messageID.</summary>
+        public static int SendMessage(int senderID, int receiverID, string content, string attachmentUrl = null)
+        {
+            string query = @"
+                INSERT INTO dbo.Message (senderID, receiverID, projectID, content, attachmentUrl, timeStamp, status)
+                VALUES (@Sender, @Receiver, NULL, @Content, @Attachment, GETDATE(), 'Sent');
+                SELECT SCOPE_IDENTITY();";
+            object result = ExecuteScalar(query,
+                new SqlParameter("@Sender", senderID),
+                new SqlParameter("@Receiver", receiverID),
+                new SqlParameter("@Content", string.IsNullOrEmpty(content) ? "" : content),
+                new SqlParameter("@Attachment", string.IsNullOrEmpty(attachmentUrl) ? (object)DBNull.Value : attachmentUrl));
+            return (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
+        }
+
+        public static int GetAdminUnreadMessageCount(int adminUserId)
+        {
+            object result = ExecuteScalar(
+                "SELECT COUNT(*) FROM dbo.Message WHERE receiverID = @AdminID AND status <> 'Read'",
+                new SqlParameter("@AdminID", adminUserId));
+            return (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
+        }
+
+        // ============================================================
+        // ADMIN DASHBOARD — read-only aggregates for the control panel.
+        // These never mutate data; they only surface counts and a recent
+        // activity feed drawn from the existing Dispute / Transaction tables.
+        // ============================================================
+
+        /// <summary>Number of open disputes (Open or In Review).</summary>
+        public static int GetOpenDisputeCount()
+        {
+            object r = ExecuteScalar(
+                "SELECT COUNT(*) FROM dbo.Dispute WHERE status = 'Open' OR status = 'In Review'");
+            return (r != null && r != DBNull.Value) ? Convert.ToInt32(r) : 0;
+        }
+
+        /// <summary>Number of pending refund transactions.</summary>
+        public static int GetPendingRefundCount()
+        {
+            object r = ExecuteScalar(
+                "SELECT COUNT(*) FROM dbo.[Transaction] WHERE transactionType = 'Refund' AND transactionStatus = 'Pending'");
+            return (r != null && r != DBNull.Value) ? Convert.ToInt32(r) : 0;
+        }
+
+        /// <summary>Number of pending withdrawal transactions.</summary>
+        public static int GetPendingWithdrawalCount()
+        {
+            object r = ExecuteScalar(
+                "SELECT COUNT(*) FROM dbo.[Transaction] WHERE transactionType = 'Withdrawal' AND transactionStatus = 'Pending'");
+            return (r != null && r != DBNull.Value) ? Convert.ToInt32(r) : 0;
+        }
+
+        /// <summary>
+        /// Read-only unified "recent activity" feed for the admin dashboard.
+        /// Merges the most recent disputes, refunds and withdrawals into a single
+        /// list ordered by date (newest first). Returns a client-side DataTable with
+        /// uniform columns: type, refId, description, userName, activityDate, status.
+        /// No data is modified.
+        /// </summary>
+        public static DataTable GetRecentAdminActivity(int top = 15)
+        {
+            if (top < 1) top = 1;
+            if (top > 100) top = 100;
+
+            string query = @"
+                SELECT TOP (@Top) type, refId, description, userName, activityDate, status FROM (
+                    SELECT 'Dispute' AS type,
+                           d.disputeID AS refId,
+                           'New dispute opened' AS description,
+                           (u.firstName + ' ' + u.lastName) AS userName,
+                           d.dateCreated AS activityDate,
+                           d.status AS status
+                    FROM dbo.Dispute d
+                    INNER JOIN dbo.[User] u ON d.userID = u.userID
+
+                    UNION ALL
+
+                    SELECT 'Refund' AS type,
+                           t.transactionID AS refId,
+                           'Refund request' AS description,
+                           (u.firstName + ' ' + u.lastName) AS userName,
+                           t.transactionDate AS activityDate,
+                           t.transactionStatus AS status
+                    FROM dbo.[Transaction] t
+                    INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
+                    INNER JOIN dbo.[User] u ON w.userID = u.userID
+                    WHERE t.transactionType = 'Refund'
+
+                    UNION ALL
+
+                    SELECT 'Withdrawal' AS type,
+                           t.transactionID AS refId,
+                           'Withdrawal request' AS description,
+                           (u.firstName + ' ' + u.lastName) AS userName,
+                           t.transactionDate AS activityDate,
+                           t.transactionStatus AS status
+                    FROM dbo.[Transaction] t
+                    INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
+                    INNER JOIN dbo.[User] u ON w.userID = u.userID
+                    WHERE t.transactionType = 'Withdrawal'
+                ) AS feed
+                ORDER BY activityDate DESC";
+
+            return ExecuteQuery(query, new SqlParameter("@Top", top));
+        }
     }
 }

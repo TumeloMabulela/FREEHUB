@@ -90,6 +90,11 @@ namespace FreeHubProject
                     // Profile deactivated — let them in to ChooseRole to reactivate
                     Response.Redirect("ChooseRole.aspx");
                 }
+                else if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Platform admin goes straight to the admin control panel.
+                    Response.Redirect("AdminDashboard.aspx");
+                }
                 else if (!string.IsNullOrWhiteSpace(returnUrl))
                 {
                     Response.Redirect(returnUrl);

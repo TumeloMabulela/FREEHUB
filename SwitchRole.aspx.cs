@@ -14,6 +14,16 @@ namespace FreeHubProject
                 return;
             }
 
+            // Admins have a single platform role and cannot switch between
+            // Freelancer/Employer. Block the page server-side so a direct URL
+            // (or a stale link) can never flip the admin's account type.
+            string userType = Session["UserType"] as string ?? "";
+            if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("AdminDashboard.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 // If BOTH profiles exist and are active, switch straight to the other one

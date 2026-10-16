@@ -68,6 +68,12 @@ namespace FreeHubProject
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litUnreadMessageBadge;
 
+        /// <summary>pnlAdminNav control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlAdminNav;
+
+        /// <summary>litAdminHelpBadge control.</summary>
+        protected global::System.Web.UI.WebControls.Literal litAdminHelpBadge;
+
         /// <summary>
         /// pnlGuestButtons control.
         /// </summary>
@@ -121,6 +127,12 @@ namespace FreeHubProject
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litUserRole;
+
+        /// <summary>pnlSwitchRoleItem control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlSwitchRoleItem;
+
+        /// <summary>pnlRatingsItem control.</summary>
+        protected global::System.Web.UI.WebControls.Panel pnlRatingsItem;
 
         /// <summary>
         /// btnLogout control.

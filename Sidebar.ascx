@@ -13,6 +13,34 @@
 
     <div class="sidebar-section">
 
+        <% if (CurrentUserType == "Admin") { %>
+        <a href="AdminDashboard.aspx"
+           class="sidebar-item <%= GetActiveClass("AdminDashboard") %>">
+            <span class="sidebar-icon">&#128737;</span>
+            <span>Admin Panel</span>
+        </a>
+        <a href="AdminInbox.aspx"
+           class="sidebar-item <%= GetActiveClass("AdminInbox") %>">
+            <span class="sidebar-icon">&#128172;</span>
+            <span>Support Inbox</span>
+        </a>
+        <a href="AdminDisputes.aspx"
+           class="sidebar-item <%= GetActiveClass("AdminDisputes") %>">
+            <span class="sidebar-icon">&#9878;</span>
+            <span>Disputes</span>
+        </a>
+        <a href="AdminRefunds.aspx"
+           class="sidebar-item <%= GetActiveClass("AdminRefunds") %>">
+            <span class="sidebar-icon">&#128181;</span>
+            <span>Refunds</span>
+        </a>
+        <a href="AdminWithdrawals.aspx"
+           class="sidebar-item <%= GetActiveClass("AdminWithdrawals") %>">
+            <span class="sidebar-icon">&#127974;</span>
+            <span>Withdrawals</span>
+        </a>
+        <% } else { %>
+
         <a href="Default.aspx"
            class="sidebar-item <%= GetActiveClass("Default") %>">
             <span class="sidebar-icon">&#127968;</span>
@@ -80,8 +108,8 @@
             <span>FAQs</span>
         </a>
 
-        <a href="Help.aspx"
-           class="sidebar-item <%= GetActiveClass("Help") %>">
+        <a href="StartChat.aspx?help=1&userId=1"
+           class="sidebar-item <%= GetActiveClass("StartChat") %>">
             <span class="sidebar-icon">&#127911;</span>
             <span>Help &amp; Support</span>
         </a>
@@ -98,4 +126,5 @@
             <span>Feedback &amp; Suggestions</span>
         </a>
 
-    </div></aside>
+    </div>
+    <% } %></aside>
