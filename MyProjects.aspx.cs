@@ -232,24 +232,47 @@ namespace FreeHubProject
                 int projectId = Convert.ToInt32(e.CommandArgument);
                 try
                 {
-                    // Delete ALL related records first
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Comment WHERE projectID = @ID",
+                    // SOFT CANCEL instead of a hard delete. A hard DELETE FROM Project would
+                    // (a) violate FK_Message_Project (messages reference the project and are
+                    // retained for history) and (b) make the derived conversation vanish
+                    // entirely rather than show as Ended. Cancelling preserves the project,
+                    // its proposals, and the whole chat history + attachments, while the
+                    // conversation correctly derives as Ended.
+                    string title = GetProjectTitleForLifecycle(projectId);
+
+                    DatabaseHelper.ExecuteNonQuery(
+                        "UPDATE dbo.Project SET projectStatus = 'Cancelled' WHERE projectID = @ID",
                         new System.Data.SqlClient.SqlParameter("@ID", projectId));
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Proposal WHERE projectID = @ID",
-                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Rating WHERE projectID = @ID",
-                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Dispute WHERE projectID = @ID",
-                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM ChatSession WHERE projectID = @ID",
-                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
-                    // Now delete the project
-                    DatabaseHelper.ExecuteNonQuery("DELETE FROM Project WHERE projectID = @ID",
-                        new System.Data.SqlClient.SqlParameter("@ID", projectId));
+
+                    // Chat lifecycle: end the conversation if no other active shared project
+                    // remains, otherwise keep it open and record the cancellation. Runs AFTER
+                    // the status flip so the "other active project" check excludes this one.
+                    int actingUserId = Convert.ToInt32(Session["UserID"]);
+                    ChatLifecycle.OnProjectCancelled(projectId, actingUserId, title);
+
+                    MessageHelper.Success(this, "Project cancelled. The related conversation has been updated.", "Project cancelled");
                 }
-                catch { }
+                catch
+                {
+                    MessageHelper.Error(this, "Could not cancel this project. Please try again.");
+                }
                 LoadProjects();
             }
+        }
+
+        /// <summary>
+        /// Reads a project's title for the chat lifecycle notice. Returns "" if not found.
+        /// </summary>
+        private string GetProjectTitleForLifecycle(int projectId)
+        {
+            try
+            {
+                object t = DatabaseHelper.ExecuteScalar(
+                    "SELECT title FROM dbo.Project WHERE projectID = @ID",
+                    new SqlParameter("@ID", projectId));
+                return t != null && t != System.DBNull.Value ? System.Convert.ToString(t) : "";
+            }
+            catch { return ""; }
         }
 
         /// <summary>

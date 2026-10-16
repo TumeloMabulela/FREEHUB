@@ -65,6 +65,49 @@ namespace FreeHubProject
         }
 
         /// <summary>
+        /// Chat lifecycle for when an employer deletes/cancels a project. Call this AFTER the
+        /// project's status has been set to 'Cancelled' (so the "other active project" check
+        /// no longer counts the cancelled one).
+        ///
+        ///  * If the same employer and freelancer have NO other active project together, the
+        ///    conversation ends: a notice "This chat has ended because the project was
+        ///    cancelled." is posted once (idempotent) and the derived model shows it as Ended.
+        ///  * If another active project remains, the chat STAYS open; a system separator
+        ///    naming the cancelled project is recorded, and the derived model automatically
+        ///    switches the governing project context to a remaining active one.
+        ///
+        /// Participants are resolved from the (retained) Approved proposal, so this must run
+        /// while the Proposal row still exists — i.e. use a soft cancel, not a hard delete.
+        /// </summary>
+        public static void OnProjectCancelled(int projectId, int actingUserId, string projectTitle)
+        {
+            string conn = ConnStr();
+            if (string.IsNullOrEmpty(conn) || projectId <= 0) return;
+
+            int employerUserId, freelancerUserId;
+            if (!TryGetProjectParticipants(conn, projectId, out employerUserId, out freelancerUserId)) return;
+
+            int from = actingUserId > 0 ? actingUserId : employerUserId;
+            int to = (from == employerUserId) ? freelancerUserId : employerUserId;
+            string title = string.IsNullOrWhiteSpace(projectTitle) ? "a project" : "\"" + projectTitle + "\"";
+
+            if (HasActiveSharedProject(conn, employerUserId, freelancerUserId))
+            {
+                // Another active project remains — keep the chat open, just record the
+                // cancellation as a project separator. The derived model re-points the
+                // governing project to a remaining active one on the next open.
+                PostSystemNoticeOnce(conn, from, to, projectId, "CANCELLED",
+                    "The project " + title + " was cancelled. This conversation remains open for your other active project.");
+            }
+            else
+            {
+                // No other active project — end the conversation with the cancellation reason.
+                PostSystemNoticeOnce(conn, from, to, projectId, "ENDEDCANCEL",
+                    "This chat has ended because the project was cancelled.");
+            }
+        }
+
+        /// <summary>
         /// Reopens the existing conversation between the project's participants on a new
         /// approval/appointment. Posts a project-separator notice ONCE (idempotent) so the
         /// reused thread clearly marks where the new project begins. Safe to call repeatedly
@@ -199,8 +242,16 @@ namespace FreeHubProject
             else
             {
                 result.IsActive = false;
-                result.ReasonMessage =
-                    "This conversation has ended because the project is completed. Your message history remains available.";
+                // Reason reflects WHY the chat ended: cancelled vs completed.
+                if (result.ProjectStatus.Equals("Cancelled", StringComparison.OrdinalIgnoreCase))
+                {
+                    result.ReasonMessage = "This chat has ended because the project was cancelled.";
+                }
+                else
+                {
+                    result.ReasonMessage =
+                        "This conversation has ended because the project is completed. Your message history remains available.";
+                }
             }
 
             return result;

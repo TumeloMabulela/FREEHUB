@@ -143,6 +143,9 @@ namespace FreeHubProject
         /// <summary>pnlEndedNotice control (replaces composer when the chat has ended).</summary>
         protected global::System.Web.UI.WebControls.Panel pnlEndedNotice;
 
+        /// <summary>litEndedReason control (why the chat ended — completed/cancelled).</summary>
+        protected global::System.Web.UI.WebControls.Literal litEndedReason;
+
         /// <summary>pnlProjectDetails control (right panel).</summary>
         protected global::System.Web.UI.WebControls.Panel pnlProjectDetails;
 

@@ -16,8 +16,11 @@
         .fh-msg-root {
             font-family: Arial, Helvetica, sans-serif;
             display: flex;
+            /* Fill the space between the site header and footer. No min-height forcing it
+               taller than the viewport (that produced an outer page scrollbar). Only the
+               inner panels scroll. */
             height: calc(100vh - 172px);
-            min-height: 520px;
+            min-height: 0;
             background: #ffffff;
             border: 1px solid #e5e9e6;
             border-radius: 14px;
@@ -131,8 +134,14 @@
         .fh-conv-state.ended  { color: #6b7280; background: #eef1f0; }
 
         /* ===== CENTRE: conversation ===== */
-        .fh-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #f7faf8; }
+        /* White by default so the welcome/empty state fills the whole centre area with no
+           grey dead-space; the pale grey belongs only to the active message-scroll area. */
+        .fh-chat { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #ffffff; }
         #upChat { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+        /* On the welcome/empty state (root NOT .chat-open) the UpdatePanel wraps a hidden
+           chat panel; collapse it so the welcome fills the whole centre with no dead space. */
+        .fh-msg-root:not(.chat-open) #upChat { flex: 0 0 auto; }
+        .fh-msg-root.chat-open .fh-welcome { display: none; }
         .fh-chat-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
         /* Welcome / empty state */
@@ -203,7 +212,7 @@
         .fh-messages {
             flex: 1; overflow-y: auto; min-height: 0;
             padding: 16px 22px; display: flex; flex-direction: column;
-            justify-content: flex-start; gap: 11px;
+            justify-content: flex-start; gap: 11px; background: #f6f8f7;
         }
         /* Every direct child of the scrolling message column must keep its natural height.
            Without flex-shrink:0 the flex column compresses items when content overflows,
@@ -262,24 +271,44 @@
         .fh-file-card {
             display: flex; align-items: center; gap: 10px;
             background: #ffffff; border: 1px solid #e5e9e6; border-radius: 10px;
-            padding: 12px; margin-top: 6px; width: 300px; max-width: 100%;
+            padding: 10px 12px; width: 300px; max-width: 100%;
             height: auto; text-decoration: none;
         }
-        /* When the message is attachment-only the first card has no bubble text above it. */
-        .fh-bubble-text:empty { display: none; }
-        .fh-bubble-text:empty + .fh-file-card,
-        .fh-bubble > .fh-file-card:first-child { margin-top: 0; }
+        .fh-file-card--na { background: #f8f9f9; }
         .fh-file-ic {
             width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            font-size: 13px; background: #fdecec; color: #d14343; font-weight: 700;
+            font-size: 12px; background: #fdecec; color: #d14343; font-weight: 700;
         }
         .fh-file-meta { flex: 1; overflow: hidden; min-width: 0; }
         .fh-file-name { font-weight: 700; font-size: 13px; color: #10261c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .fh-file-sub { font-size: 11px; color: #8b9a90; }
         .fh-file-dl { color: #1f9d55; font-size: 18px; text-decoration: none; flex-shrink: 0; }
-        .fh-file-na { color: #9ca3af; font-size: 18px; flex-shrink: 0; }
-        .fh-file-missing { color: #b91c1c; font-style: italic; font-size: 12px; margin-top: 6px; }
+        .fh-file-na { color: #c0c7c3; font-size: 18px; flex-shrink: 0; cursor: not-allowed; }
+
+        /* Image thumbnail inside a bubble — aspect ratio preserved, capped at 280x180. */
+        .fh-img-thumb {
+            display: block; max-width: 280px; max-height: 180px; width: auto; height: auto;
+            border-radius: 10px; cursor: pointer; object-fit: cover; background: #eef2ef;
+        }
+
+        /* Caption text that follows media gets a small top gap; attachment-only hides it. */
+        .fh-bubble > .fh-bubble-text:not(:first-child) { margin-top: 6px; }
+
+        /* Image lightbox overlay */
+        .fh-lightbox {
+            position: fixed; inset: 0; z-index: 10000;
+            background: rgba(16,32,24,.82); display: flex; align-items: center; justify-content: center;
+            padding: 32px;
+        }
+        .fh-lightbox-fig { margin: 0; max-width: 92vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .fh-lightbox-img { max-width: 92vw; max-height: 82vh; border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.4); object-fit: contain; }
+        .fh-lightbox-cap { color: #e8efe9; font-size: 13px; text-align: center; max-width: 80vw; overflow-wrap: anywhere; }
+        .fh-lightbox-close {
+            position: absolute; top: 18px; right: 22px; width: 42px; height: 42px; border-radius: 50%;
+            border: none; background: rgba(255,255,255,.14); color: #fff; font-size: 20px; cursor: pointer;
+        }
+        .fh-lightbox-close:hover { background: rgba(255,255,255,.26); }
 
         /* Composer (stationary) */
         .fh-input-wrap { padding: 12px 18px; background: #ffffff; border-top: 1px solid #e5e9e6; flex-shrink: 0; }
@@ -325,10 +354,15 @@
             padding: 16px 18px; border-bottom: 1px solid #eef2ef; flex-shrink: 0;
         }
         .fh-details-title { font-size: 16px; font-weight: 800; color: #10261c; }
-        /* Only the right body scrolls when content overflows */
-        .fh-details-body { padding: 16px 18px; overflow-y: auto; min-height: 0; flex: 1; }
+        /* Fixed sub-header (project name/status/link + Shared Files label) stays put. */
+        .fh-details-fixed { padding: 16px 18px 0; flex-shrink: 0; }
+        /* Only the files list + conversation status scroll. */
+        .fh-details-body { padding: 10px 18px 16px; overflow-y: auto; min-height: 0; flex: 1 1 auto; }
         .fh-details-sub { font-size: 11px; font-weight: 700; color: #9aa6a0; letter-spacing: .4px; margin: 18px 0 8px 0; }
-        .fh-details-sub:first-child { margin-top: 0; }
+        /* First label in each block (SHARED FILES in the fixed header, CONVERSATION STATUS
+           at the top of the scroll area) sheds its top margin for tidy spacing. */
+        .fh-details-fixed .fh-details-sub:last-child { margin-bottom: 0; }
+        .fh-details-body > .fh-details-sub:first-child { margin-top: 0; }
         .fh-details-project { font-size: 16px; font-weight: 800; color: #10261c; margin-bottom: 4px; }
         .fh-details-status { font-size: 13px; color: #4b5b51; display: flex; align-items: center; gap: 6px; }
         .fh-details-link { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 700; color: #12833f; text-decoration: none; }
@@ -389,10 +423,8 @@
             setTimeout(jump, 60);
             setTimeout(jump, 200);
         }
-        document.addEventListener("DOMContentLoaded", scrollPopupToBottom);
-        if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
-            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(scrollPopupToBottom);
-        }
+        // NOTE: scroll-to-bottom is now driven by the follow-logic in the page-foot script
+        // (open/switch/send jump to bottom; reading older messages preserves position).
 
         // Collapse/expand the right project-details panel; the centre area expands to fill.
         function toggleDetails() {
@@ -581,30 +613,61 @@
                                                     <div class="fh-row-avatar"><asp:Label runat="server" Text='<%# lblChatInitials.Text %>' /></div>
                                                 </asp:PlaceHolder>
                                                 <div class="fh-bubble">
-                                                    <span class="fh-bubble-text"><%# Server.HtmlEncode(Convert.ToString(Eval("content"))) %></span>
 
+                                                    <%-- Attachment (rendered as image / voice note / document card by type) --%>
                                                     <asp:PlaceHolder ID="phAttachment" runat="server" Visible='<%# Eval("attachmentUrl") != DBNull.Value && !string.IsNullOrEmpty(Eval("attachmentUrl").ToString()) %>'>
-                                                        <asp:PlaceHolder ID="phAttachmentLink" runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
-                                                            <a class="fh-file-card" href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" title="Download">
-                                                                <span class="fh-file-ic"><%# FileExtLabel(Eval("attachmentUrl")) %></span>
-                                                                <div class="fh-file-meta">
-                                                                    <div class="fh-file-name"><%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %></div>
-                                                                    <div class="fh-file-sub"><%# Server.HtmlEncode(FileMeta(Eval("attachmentUrl"))) %></div>
-                                                                </div>
-                                                                <span class="fh-file-dl">&#8681;</span>
-                                                            </a>
-                                                        </asp:PlaceHolder>
-                                                        <asp:PlaceHolder ID="phAttachmentMissing" runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
-                                                            <div class="fh-file-card">
+
+                                                        <%-- Missing / inaccessible file: unavailable state, no download --%>
+                                                        <asp:PlaceHolder runat="server" Visible='<%# !AttachmentExists(Eval("attachmentUrl")) %>'>
+                                                            <div class="fh-file-card fh-file-card--na">
                                                                 <span class="fh-file-ic" style="background:#eef1f0;color:#9ca3af;">&#128196;</span>
                                                                 <div class="fh-file-meta">
-                                                                    <div class="fh-file-name"><%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %></div>
+                                                                    <div class="fh-file-name" title='<%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %>'><%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %></div>
                                                                     <div class="fh-file-sub">Attachment unavailable</div>
                                                                 </div>
-                                                                <span class="fh-file-na">&#8856;</span>
+                                                                <span class="fh-file-na" title="Download unavailable">&#8856;</span>
                                                             </div>
                                                         </asp:PlaceHolder>
+
+                                                        <%-- Available file --%>
+                                                        <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
+
+                                                            <%-- IMAGE: compact thumbnail opening a lightbox --%>
+                                                            <asp:PlaceHolder runat="server" Visible='<%# IsImageAttachment(Eval("attachmentUrl")) %>'>
+                                                                <img class="fh-img-thumb" src='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>'
+                                                                     alt='<%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %>'
+                                                                     data-full='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>'
+                                                                     data-name='<%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %>'
+                                                                     onclick="fhOpenLightbox(this);" loading="lazy" />
+                                                            </asp:PlaceHolder>
+
+                                                            <%-- AUDIO (legacy voice notes): no longer supported — compact placeholder, no playback. --%>
+                                                            <asp:PlaceHolder runat="server" Visible='<%# IsAudioAttachment(Eval("attachmentUrl")) %>'>
+                                                                <div class="fh-file-card fh-file-card--na">
+                                                                    <span class="fh-file-ic" style="background:#eef1f0;color:#9ca3af;">&#127908;</span>
+                                                                    <div class="fh-file-meta">
+                                                                        <div class="fh-file-name">Voice note</div>
+                                                                        <div class="fh-file-sub">Voice note no longer supported</div>
+                                                                    </div>
+                                                                </div>
+                                                            </asp:PlaceHolder>
+
+                                                            <%-- DOCUMENT: compact horizontal card with download --%>
+                                                            <asp:PlaceHolder runat="server" Visible='<%# IsDocAttachment(Eval("attachmentUrl")) %>'>
+                                                                <a class="fh-file-card" href='<%# ResolveAttachmentUrl(Eval("attachmentUrl")) %>' target="_blank" title='<%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %>'>
+                                                                    <span class="fh-file-ic"><%# FileExtLabel(Eval("attachmentUrl")) %></span>
+                                                                    <div class="fh-file-meta">
+                                                                        <div class="fh-file-name"><%# Server.HtmlEncode(OriginalFileName(Eval("attachmentUrl"))) %></div>
+                                                                        <div class="fh-file-sub"><%# Server.HtmlEncode(FileMeta(Eval("attachmentUrl"))) %></div>
+                                                                    </div>
+                                                                    <span class="fh-file-dl" title="Download">&#8681;</span>
+                                                                </a>
+                                                            </asp:PlaceHolder>
+                                                        </asp:PlaceHolder>
                                                     </asp:PlaceHolder>
+
+                                                    <%-- Message text (also serves as a caption beneath media when present). --%>
+                                                    <span class="fh-bubble-text"><%# Server.HtmlEncode(Convert.ToString(Eval("content"))) %></span>
                                                 </div>
                                             </div>
                                             <span class="fh-bubble-time">
@@ -628,6 +691,7 @@
                                     placeholder="Write a message..."></asp:TextBox>
                                 <asp:Button ID="btnSend" runat="server" Text="&#10148;" CssClass="fh-send" OnClick="btnSend_Click" />
                             </asp:Panel>
+
                             <asp:Label ID="lblAttachedFileName" runat="server" CssClass="fh-attach-preview"></asp:Label>
                             <span class="fh-input-help">Enter to send &#183; Shift+Enter for a new paragraph</span>
                         </asp:Panel>
@@ -635,8 +699,8 @@
                         <asp:Panel ID="pnlEndedNotice" runat="server" CssClass="fh-ended-notice" Visible="false">
                             <span class="fh-ended-ic">&#128274;</span>
                             <span class="fh-ended-text">
-                                <strong>This conversation has ended because the project is completed.</strong>
-                                Your message history remains available.
+                                <strong><asp:Literal ID="litEndedReason" runat="server" Text="This conversation has ended." /></strong>
+                                Sending messages and attachments is disabled. Your message history remains available.
                             </span>
                         </asp:Panel>
                     </asp:Panel>
@@ -653,7 +717,8 @@
                 <span class="fh-details-title">Project details</span>
                 <a href="javascript:void(0);" class="fh-icon-btn" onclick="toggleDetails();return false;" title="Close">&#10005;</a>
             </div>
-            <div class="fh-details-body">
+            <!-- Fixed sub-header: project name, status, link + Shared Files label stay put. -->
+            <div class="fh-details-fixed">
                 <div class="fh-details-project"><asp:Label ID="lblDetailsProjectTitle" runat="server" Text="No active project" /></div>
                 <div class="fh-details-status">
                     <span id="detailsStatusDot" runat="server" class="fh-dot-green"></span>
@@ -662,6 +727,10 @@
                 <asp:HyperLink ID="lnkDetailsViewProject" runat="server" CssClass="fh-details-link" NavigateUrl="#">View project details &#8594;</asp:HyperLink>
 
                 <div class="fh-details-sub">SHARED FILES</div>
+            </div>
+
+            <!-- Scrolling area: shared-files list + conversation status. -->
+            <div class="fh-details-body">
                 <asp:Repeater ID="rptSharedFiles" runat="server">
                     <ItemTemplate>
                         <asp:PlaceHolder runat="server" Visible='<%# AttachmentExists(Eval("attachmentUrl")) %>'>
@@ -705,6 +774,15 @@
                 </asp:Panel>
             </div>
         </asp:Panel>
+    </div>
+
+    <!-- IMAGE LIGHTBOX (centre-section image previews) -->
+    <div id="fhLightbox" class="fh-lightbox" style="display:none;" onclick="fhCloseLightbox(event);">
+        <button type="button" class="fh-lightbox-close" onclick="fhCloseLightbox(event, true);" aria-label="Close preview">&#10005;</button>
+        <figure class="fh-lightbox-fig" onclick="event.stopPropagation();">
+            <img id="fhLightboxImg" class="fh-lightbox-img" src="" alt="" />
+            <figcaption id="fhLightboxCap" class="fh-lightbox-cap"></figcaption>
+        </figure>
     </div>
 
     <!-- CONTACT INFO MODAL (opened from the header avatar / contact info) -->
@@ -758,24 +836,74 @@
     <script src="<%= ResolveUrl("~/fhText.js") %>?v=1" type="text/javascript"></script>
 
     <script type="text/javascript">
-        // Wire composer keyboard shortcuts + auto-grow + duplicate-send guard once rendered.
-        (function () {
-            function wireComposer() {
-                var ta = document.getElementById('<%= txtMessage.ClientID %>');
-                var send = document.getElementById('<%= btnSend.ClientID %>');
-                if (ta && send) {
-                    ta.onkeydown = function (e) { return fhComposerKeydown(e, send.id); };
-                    ta.oninput = function () { fhAutoGrow(ta); };
-                    send.onclick = (function (orig) {
-                        return function () { if (!fhGuardSend(send)) return false; return true; };
-                    })(send.onclick);
-                }
+    (function () {
+        var TAID = '<%= txtMessage.ClientID %>';
+        var SNDID = '<%= btnSend.ClientID %>';
+
+        // ---------- Composer wiring (idempotent via onX assignment) ----------
+        function wireComposer() {
+            var ta = document.getElementById(TAID);
+            var send = document.getElementById(SNDID);
+            if (ta && send) {
+                ta.onkeydown = function (e) { return fhComposerKeydown(e, send.id); };
+                ta.oninput = function () { fhAutoGrow(ta); };
+                send.onclick = function () { if (!fhGuardSend(send)) return false; return true; };
             }
-            document.addEventListener("DOMContentLoaded", wireComposer);
-            if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
-                Sys.WebForms.PageRequestManager.getInstance().add_endRequest(wireComposer);
+        }
+
+        // ---------- Image lightbox ----------
+        window.fhOpenLightbox = function (img) {
+            var box = document.getElementById('fhLightbox');
+            var full = document.getElementById('fhLightboxImg');
+            var cap = document.getElementById('fhLightboxCap');
+            if (!box || !full) return;
+            full.src = img.getAttribute('data-full') || img.src;
+            full.alt = img.getAttribute('data-name') || '';
+            if (cap) cap.textContent = img.getAttribute('data-name') || '';
+            box.style.display = 'flex';
+        };
+        window.fhCloseLightbox = function (ev, force) {
+            // Close on backdrop click or the X; ignore clicks on the image itself.
+            var box = document.getElementById('fhLightbox');
+            if (!box) return;
+            if (force || !ev || ev.target === box) {
+                box.style.display = 'none';
+                var full = document.getElementById('fhLightboxImg');
+                if (full) full.src = '';
             }
-        })();
+        };
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                var box = document.getElementById('fhLightbox');
+                if (box && box.style.display !== 'none') window.fhCloseLightbox(null, true);
+            }
+        });
+
+        // ---------- Scroll-follow (open at latest; follow only when near bottom) ----------
+        var wasNearBottom = true;
+        function isNearBottom(el) { return (el.scrollHeight - el.scrollTop - el.clientHeight) < 120; }
+        function rememberScroll() {
+            var b = document.getElementById('fhMessages');
+            if (b) wasNearBottom = isNearBottom(b);
+        }
+        function followIfNeeded() {
+            var b = document.getElementById('fhMessages');
+            if (b && wasNearBottom && window.scrollPopupToBottom) scrollPopupToBottom();
+        }
+        function attachScrollTracker() {
+            var b = document.getElementById('fhMessages');
+            if (b) { b.onscroll = function () { wasNearBottom = isNearBottom(b); }; }
+        }
+
+        // ---------- Lifecycle wiring ----------
+        function initAll() { wireComposer(); attachScrollTracker(); }
+        document.addEventListener('DOMContentLoaded', function () { initAll(); wasNearBottom = true; followIfNeeded(); });
+        if (window.Sys && Sys.WebForms && Sys.WebForms.PageRequestManager) {
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+            prm.add_beginRequest(function () { rememberScroll(); });
+            prm.add_endRequest(function () { initAll(); followIfNeeded(); });
+        }
+    })();
     </script>
 
 </asp:Content>
