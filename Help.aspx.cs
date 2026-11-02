@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.SqlClient;
 using System.Web.UI;
 
@@ -8,7 +8,6 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
         }
 
@@ -24,7 +23,6 @@ namespace FreeHubProject
                 ShowError("Please select a topic for your request.");
                 return;
             }
-            // IF the string is empty or null
             if (string.IsNullOrEmpty(subject))
             {
                 ShowError("Please enter a subject.");

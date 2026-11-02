@@ -9,10 +9,8 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
-            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
-            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlCompletedMessage.Visible = false;
