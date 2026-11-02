@@ -1,4 +1,13 @@
-﻿using System;
+﻿// ================================================================
+// USE CASE: B600 - Select Proposal
+// WHO: Employer and Freelancer
+// WHAT: Shows a list of proposals.
+//       - Employers see proposals received on their projects
+//       - Freelancers see proposals they submitted
+//       Both can filter by status: All / Pending / Approved / Rejected
+// ================================================================
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,23 +15,23 @@ namespace FreeHubProject
 {
     public partial class SelectProposal : System.Web.UI.Page
     {
+        // Runs when the page first opens
         protected void Page_Load(object sender, EventArgs e)
         {
-            // IF user is not logged in, redirect to login page
+            // Stop if not logged in
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            // IF this is the first page load (not a button click), load data
+            // Only load data on the first visit (not after button clicks)
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
 
-                // Restrict Select/Approve/Reject to Employer only
+                // Check if the user is a Freelancer and save it for later use
                 string userType = Session["UserType"] as string ?? "";
-                // IF the logged-in user is a Freelancer
                 if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     ViewState["IsFreelancer"] = true;
@@ -36,6 +45,7 @@ namespace FreeHubProject
             }
         }
 
+        // Loads proposals from the database based on the user's role and selected filter tab
         private void LoadProposals()
         {
             int userId = Convert.ToInt32(Session["UserID"]);
@@ -45,10 +55,9 @@ namespace FreeHubProject
             {
                 DataTable proposals;
 
-                // IF the logged-in user is an Employer
+                // If user is an Employer - get proposals received on their projects
                 if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Employer sees proposals received for their projects
                     string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
                                     pr.estimatedCompletionTime, pr.status, pr.date,
                                     u.firstName + ' ' + u.lastName AS freelancerName,
@@ -60,12 +69,11 @@ namespace FreeHubProject
                                     INNER JOIN Employer e ON p.employerID = e.employerID
                                     WHERE e.userID = @UserID
                                     ORDER BY pr.date DESC";
-                    proposals = DatabaseHelper.ExecuteQuery(query,
-                        new SqlParameter("@UserID", userId));
+                    proposals = DatabaseHelper.ExecuteQuery(query, new SqlParameter("@UserID", userId));
                 }
                 else
                 {
-                    // Freelancer sees their own submitted proposals
+                    // If user is a Freelancer - get only their own submitted proposals
                     string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
                                     pr.estimatedCompletionTime, pr.status, pr.date,
                                     u2.firstName + ' ' + u2.lastName AS freelancerName,
@@ -76,17 +84,15 @@ namespace FreeHubProject
                                     INNER JOIN Project p ON pr.projectID = p.projectID
                                     WHERE f.userID = @UserID
                                     ORDER BY pr.date DESC";
-                    proposals = DatabaseHelper.ExecuteQuery(query,
-                        new SqlParameter("@UserID", userId));
+                    proposals = DatabaseHelper.ExecuteQuery(query, new SqlParameter("@UserID", userId));
                 }
 
                 bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
-                // Pill status filters are shown for both views (All / Pending / Approved
-                // / Rejected). Counts come from the user's own full result set — never
-                // hardcoded — so each freelancer only ever counts/sees their own proposals.
+                // Show the filter tabs
                 pnlFilterTabs.Visible = true;
 
+                // Count proposals by status to show in each tab badge
                 int totalCount = proposals.Rows.Count;
                 int pendingCount = 0, approvedCount = 0, rejectedCount = 0;
                 foreach (DataRow r in proposals.Rows)
@@ -97,23 +103,22 @@ namespace FreeHubProject
                     else if (st.Equals("Pending", StringComparison.OrdinalIgnoreCase)) pendingCount++;
                 }
 
-                // "Pending Approval" label on the employer view; plain "Pending" otherwise.
+                // Employers see "Pending Approval", freelancers just see "Pending"
                 string pendingLabel = isEmployer ? "Pending Approval" : "Pending";
 
-                // Set each tab's full label + count badge as inline HTML on the LinkButton
-                // Text so the labels/counts can never be lost across postbacks.
+                // Update each tab label with its count
                 lnkTabAll.Text = "All <span class=\"pl-tab-count\">" + totalCount + "</span>";
                 lnkTabPending.Text = pendingLabel + " <span class=\"pl-tab-count\">" + pendingCount + "</span>";
                 lnkTabApproved.Text = "Approved <span class=\"pl-tab-count\">" + approvedCount + "</span>";
                 lnkTabRejected.Text = "Rejected <span class=\"pl-tab-count\">" + rejectedCount + "</span>";
 
-                // Highlight the active tab (FreeHUB green).
+                // Highlight the currently selected tab
                 lnkTabAll.CssClass = CurrentFilter == "All" ? "pl-tab pl-tab-active" : "pl-tab";
                 lnkTabPending.CssClass = CurrentFilter == "Pending" ? "pl-tab pl-tab-active" : "pl-tab";
                 lnkTabApproved.CssClass = CurrentFilter == "Approved" ? "pl-tab pl-tab-active" : "pl-tab";
                 lnkTabRejected.CssClass = CurrentFilter == "Rejected" ? "pl-tab pl-tab-active" : "pl-tab";
 
-                // Build the filtered view for the selected tab (each row tested once).
+                // Filter the list if a specific tab is selected (not "All")
                 if (CurrentFilter != "All")
                 {
                     DataTable view = proposals.Clone();
@@ -126,18 +131,18 @@ namespace FreeHubProject
                     proposals = view;
                 }
 
+                // Bind the proposals to the list on screen
                 rptProposals.DataSource = proposals;
                 rptProposals.DataBind();
 
                 bool isEmpty = proposals.Rows.Count == 0;
-                pnlNoProposals.Visible = isEmpty;      // empty-state card
-                lblProposalCount.Text = proposals.Rows.Count.ToString();
 
-                // Mutually exclusive: hide the (scrollable) list wrapper when empty so the
-                // empty-state card takes the content area and no empty scrollbar shows.
+                // Show empty state if no proposals in this tab
+                pnlNoProposals.Visible = isEmpty;
+                lblProposalCount.Text = proposals.Rows.Count.ToString();
                 pnlListWrap.Visible = !isEmpty;
 
-                // Dynamic empty-state heading + description per selected filter + role.
+                // Set the empty state message based on which tab is selected
                 if (isEmpty)
                 {
                     if (CurrentFilter == "Approved")
@@ -161,7 +166,7 @@ namespace FreeHubProject
                             ? "New proposals awaiting your approval will appear here."
                             : "Your proposals awaiting a decision will appear here.";
                     }
-                    else // All
+                    else
                     {
                         litEmptyTitle.Text = isEmployer ? "No Proposals Received" : "No Proposals Yet";
                         litEmptyText.Text = isEmployer
@@ -177,7 +182,7 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>Active status filter tab: "All" (default), "Pending", "Approved" or "Rejected".</summary>
+        // Remembers which tab the user has selected (All / Pending / Approved / Rejected)
         private string CurrentFilter
         {
             get
@@ -188,34 +193,36 @@ namespace FreeHubProject
             set { ViewState["ProposalFilter"] = value; }
         }
 
+        // Runs when a filter tab is clicked - changes the active tab and reloads the list
         protected void FilterTab_Command(object sender, System.Web.UI.WebControls.CommandEventArgs e)
         {
             string cmd = Convert.ToString(e.CommandName);
             CurrentFilter = (cmd == "Pending" || cmd == "Approved" || cmd == "Rejected") ? cmd : "All";
             LoadProposals();
 
-            // Reset the proposal list scrollbar to the top on filter switch.
+            // Scroll the list back to the top after switching tabs
             ClientScript.RegisterStartupScript(GetType(), "plScrollTop",
                 "var l=document.querySelector('.pl-list'); if(l){l.scrollTop=0;}", true);
         }
 
+        // Runs when any button inside a proposal row is clicked
         protected void rptProposals_ItemCommand(object source,
             System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
             int proposalId = Convert.ToInt32(e.CommandArgument);
 
+            // View button or Approve button - go to the Review page to read the full proposal
             if (e.CommandName == "ApproveProposal")
             {
-                // Select Proposal goes to Review page - NOT auto-approve
                 Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
+            // Quick reject directly from the list
             else if (e.CommandName == "RejectProposal")
             {
                 try
                 {
                     string query = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = @ID";
-                    DatabaseHelper.ExecuteNonQuery(query,
-                        new SqlParameter("@ID", proposalId));
+                    DatabaseHelper.ExecuteNonQuery(query, new SqlParameter("@ID", proposalId));
                     ShowMessage("Proposal rejected. The freelancer has been notified.", true);
                 }
                 catch (Exception ex)
@@ -224,22 +231,20 @@ namespace FreeHubProject
                 }
                 LoadProposals();
             }
+            // View full proposal details
             else if (e.CommandName == "ViewProposal"
                      || e.CommandName == "ViewDetails"
                      || e.CommandName == "ReadAll")
             {
-                // Opens the existing full-proposal page (ReviewProposal.aspx), which loads the
-                // complete cover letter and enforces its own role-based authorisation
-                // (employers can act, freelancers are read-only).
                 Response.Redirect("ReviewProposal.aspx?id=" + proposalId);
             }
+            // Delete a proposal from the list
             else if (e.CommandName == "DeleteProposal")
             {
                 try
                 {
                     string query = "DELETE FROM Proposal WHERE proposalID = @ID";
-                    DatabaseHelper.ExecuteNonQuery(query,
-                        new SqlParameter("@ID", proposalId));
+                    DatabaseHelper.ExecuteNonQuery(query, new SqlParameter("@ID", proposalId));
                     ShowMessage("Proposal deleted successfully.", true);
                 }
                 catch (Exception ex)
@@ -250,22 +255,22 @@ namespace FreeHubProject
             }
         }
 
+        // Shows a green or red message
         private void ShowMessage(string message, bool success)
         {
             if (success) MessageHelper.Success(this, message);
             else MessageHelper.Error(this, message);
         }
 
+        // Returns true if the current user is a Freelancer
         protected bool IsFreelancerView()
         {
             string userType = Session["UserType"] as string ?? "";
             return userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
         }
 
-        /// <summary>
-        /// Maps an existing proposal status value to its badge CSS class.
-        /// Does not change or add status values — only picks a colour for display.
-        /// </summary>
+        // Returns the CSS class for the status badge colour
+        // e.g. "approved" -> green badge, "rejected" -> red badge
         protected string GetStatusClass(object status)
         {
             string s = Convert.ToString(status).Trim().ToLowerInvariant();
@@ -280,28 +285,22 @@ namespace FreeHubProject
             }
         }
 
-        /// <summary>
-        /// Returns the compact status badge's leading icon (HTML entity) for a given
-        /// existing status. Display only — no status values are added or changed.
-        /// </summary>
+        // Returns the icon shown on the status badge
         protected string GetStatusIcon(object status)
         {
             string s = Convert.ToString(status).Trim().ToLowerInvariant();
             switch (s)
             {
-                case "approved": return "&#9989;";        // ✓ check
-                case "rejected": return "&#10060;";       // ✕ cross
-                case "under review": return "&#8987;";    // ⌛ hourglass
-                case "pending": return "&#9201;";         // ◷ clock
+                case "approved": return "&#9989;";     // tick
+                case "rejected": return "&#10060;";    // cross
+                case "under review": return "&#8987;"; // hourglass
+                case "pending": return "&#9201;";      // clock
                 default: return "";
             }
         }
 
-        /// <summary>
-        /// Returns the compact status badge's label for a given existing status. The
-        /// freelancer view shows "Pending" / "In Review"; "Under Review" maps to the
-        /// friendlier "In Review" wording. Display only — status values are unchanged.
-        /// </summary>
+        // Returns a friendly label for the status
+        // "Under Review" shows as "In Review", "Pending" shows differently for employer vs freelancer
         protected string GetStatusLabel(object status)
         {
             string s = Convert.ToString(status).Trim();

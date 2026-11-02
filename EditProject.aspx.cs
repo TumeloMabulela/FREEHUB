@@ -1,4 +1,11 @@
-﻿using System;
+﻿// ================================================================
+// USE CASE: B300 - Edit Project
+// WHO: Employer only
+// WHAT: Loads an existing project into a form so the employer
+//       can change the details and save the updates.
+// ================================================================
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,7 +13,7 @@ namespace FreeHubProject
 {
     public partial class EditProject : System.Web.UI.Page
     {
-
+        // Gets the project ID from the URL e.g. EditProject.aspx?id=3
         private int ProjectId
         {
             get
@@ -17,28 +24,28 @@ namespace FreeHubProject
             }
         }
 
+        // Runs when the page first opens
         protected void Page_Load(object sender, EventArgs e)
         {
-            // IF user is not logged in, redirect to login page
+            // Stop if not logged in
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            // Employer only
+            // Only employers can edit projects - redirect anyone else away
             string userType = Session["UserType"] as string ?? "";
-            // IF the logged-in user is an Employer
             if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Default.aspx");
                 return;
             }
 
-            // Prevent selecting a past deadline in the date picker.
+            // Stop the date picker from allowing past dates
             txtDeadline.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
 
-            // IF this is the first page load (not a button click), load data
+            // Only load the project data on the first visit (not after button clicks)
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -46,9 +53,10 @@ namespace FreeHubProject
             }
         }
 
+        // Loads the existing project data and fills in the form fields
         private void LoadProject()
         {
-            // IF no valid project ID was found in the URL
+            // Stop if no project ID in the URL
             if (ProjectId <= 0)
             {
                 ShowMessage("No project selected. Please go to My Projects and select a project to edit.", false);
@@ -59,38 +67,37 @@ namespace FreeHubProject
             {
                 DataRow project = DatabaseHelper.GetProjectById(ProjectId);
 
-                // IF the project was not found in the database
+                // Stop if project not found
                 if (project == null)
                 {
                     ShowMessage("Project not found.", false);
                     return;
                 }
 
-                // Verify this project belongs to the current user
+                // Make sure this project belongs to the logged-in employer
+                // (prevent editing someone else's project)
                 int userId = Convert.ToInt32(Session["UserID"]);
                 DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
-                // IF the value is null (not found or not set)
                 if (employer == null || Convert.ToInt32(project["employerID"]) != Convert.ToInt32(employer["employerID"]))
                 {
                     ShowMessage("You do not have permission to edit this project.", false);
                     return;
                 }
 
-                // Fill form
+                // Fill in all the form fields with the existing project data
                 txtProjectTitle.Text = Convert.ToString(project["title"]);
                 txtDescription.Text = Convert.ToString(project["description"]);
 
-                // Select the category. If the saved category isn't one of the
-                // predefined options, treat it as a custom "Other" value.
+                // Set the category dropdown to the saved value
                 string savedCategory = Convert.ToString(project["category"]);
-                // IF the value exists and is not null
                 if (ddlCategory.Items.FindByValue(savedCategory) != null)
                 {
+                    // Category is in the list - select it
                     ddlCategory.SelectedValue = savedCategory;
                 }
-                // IF the field is empty or contains only whitespace
                 else if (!string.IsNullOrWhiteSpace(savedCategory))
                 {
+                    // Category was a custom "Other" value - show the text box
                     ddlCategory.SelectedValue = "Other";
                     txtOtherCategory.Text = savedCategory;
                     pnlOtherCategory.Style["display"] = "block";
@@ -108,20 +115,21 @@ namespace FreeHubProject
             }
         }
 
+        // Runs when the employer clicks Save Changes
         protected void btnSaveChanges_Click(object sender, EventArgs e)
         {
-            // IF no valid project ID was found in the URL
+            // Stop if no project ID
             if (ProjectId <= 0)
             {
                 ShowMessage("No project selected.", false);
                 return;
             }
 
-            // Smart Title Capitalisation + description clean-up before validating/saving.
+            // Clean up the title and description before saving
             txtProjectTitle.Text = TitleHelper.TitleCase(txtProjectTitle.Text);
             txtDescription.Text = TextHelper.NormalizeDescription(txtDescription.Text);
 
-            // Validation checks...
+            // Check all required fields are filled in
             if (string.IsNullOrWhiteSpace(txtProjectTitle.Text) || string.IsNullOrWhiteSpace(ddlCategory.SelectedValue) ||
                 string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtBudget.Text) ||
                 string.IsNullOrWhiteSpace(txtDeadline.Text))
@@ -130,7 +138,7 @@ namespace FreeHubProject
                 return;
             }
 
-            // When "Other" is selected, the specify field is required.
+            // If "Other" is selected, the custom category field must be filled in
             if (ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
                 && string.IsNullOrWhiteSpace(txtOtherCategory.Text))
             {
@@ -138,10 +146,12 @@ namespace FreeHubProject
                 return;
             }
 
+            // Use the custom text if "Other" was chosen, otherwise use the dropdown value
             string selectedCategory = ddlCategory.SelectedValue.Equals("Other", StringComparison.OrdinalIgnoreCase)
                 ? txtOtherCategory.Text.Trim()
                 : ddlCategory.SelectedValue;
 
+            // Make sure the budget is a valid number
             decimal budget;
             if (!decimal.TryParse(txtBudget.Text, out budget))
             {
@@ -149,6 +159,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // Make sure the deadline is a valid date
             DateTime deadline;
             if (!DateTime.TryParse(txtDeadline.Text, out deadline))
             {
@@ -156,7 +167,7 @@ namespace FreeHubProject
                 return;
             }
 
-            // IF the deadline is in the past, reject it
+            // Deadline cannot be in the past
             if (deadline.Date < DateTime.Today)
             {
                 ShowMessage("The deadline cannot be in the past. Please choose today or a future date.", false);
@@ -165,16 +176,17 @@ namespace FreeHubProject
 
             try
             {
+                // Save the updated project details to the database
                 string query = @"UPDATE Project SET 
-            title = @Title,
-            description = @Description,
-            category = @Category,
-            budget = @Budget,
-            budgetType = @BudgetType,
-            deadline = @Deadline,
-            experienceLevel = @Experience,
-            skills = @Skills
-            WHERE projectID = @ProjectID";
+                    title = @Title,
+                    description = @Description,
+                    category = @Category,
+                    budget = @Budget,
+                    budgetType = @BudgetType,
+                    deadline = @Deadline,
+                    experienceLevel = @Experience,
+                    skills = @Skills
+                    WHERE projectID = @ProjectID";
 
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@Title", txtProjectTitle.Text.Trim()),
@@ -187,23 +199,23 @@ namespace FreeHubProject
                     new SqlParameter("@Skills", txtSkills.Text.Trim()),
                     new SqlParameter("@ProjectID", ProjectId));
 
-                // Send notifications to all freelancers who applied to this project
+                // Notify all freelancers who already submitted proposals that the project changed
                 string getApplicantsQuery = @"
-            SELECT DISTINCT f.userID 
-            FROM Proposal prop
-            INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
-            WHERE prop.projectID = @ProjectID";
+                    SELECT DISTINCT f.userID 
+                    FROM Proposal prop
+                    INNER JOIN Freelancer f ON prop.freelancerID = f.freelancerID
+                    WHERE prop.projectID = @ProjectID";
 
-                DataTable dtApplicants = DatabaseHelper.GetDataTable(getApplicantsQuery, new SqlParameter("@ProjectID", ProjectId));
+                DataTable dtApplicants = DatabaseHelper.GetDataTable(getApplicantsQuery,
+                    new SqlParameter("@ProjectID", ProjectId));
 
-                // IF records were found in the database
+                // Send a notification to each freelancer who applied
                 if (dtApplicants != null && dtApplicants.Rows.Count > 0)
                 {
                     foreach (DataRow row in dtApplicants.Rows)
                     {
                         int applicantUserId = Convert.ToInt32(row["userID"]);
                         string notificationText = $"The project '{txtProjectTitle.Text.Trim()}' that you submitted a proposal for has been updated by the employer.";
-
                         NotificationHelper.CreateNotification(applicantUserId, "Project", notificationText);
                     }
                 }
@@ -215,11 +227,14 @@ namespace FreeHubProject
                 ShowMessage("Error saving changes: " + ex.Message, false);
             }
         }
+
+        // Cancel button - go back to My Projects without saving
         protected void btnCancel_Click(object sender, EventArgs e)
         {
             Response.Redirect("MyProjects.aspx");
         }
 
+        // Shows a green success message or red error message
         private void ShowMessage(string message, bool success)
         {
             if (success) MessageHelper.Success(this, message);
