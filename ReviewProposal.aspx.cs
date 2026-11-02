@@ -1,11 +1,8 @@
 ﻿// ============================================================
-// B700 - Review Proposal (Tumelo London Mabulela)
-// FILE: ReviewProposal.aspx.cs
-//
-// PURPOSE: Allows an employer to read a proposal in full and
-// decide to Approve or Reject it. Freelancers can also view
-// this page in read-only mode to check their proposal status.
-// Includes a pre-approval wallet balance check.
+// B700 - Review Proposal / B800 - Approve Proposal
+// FILE: ReviewProposal.aspx.cs (Tumelo London Mabulela)
+// PURPOSE: Employer reads a proposal in full and can approve
+// or reject it. Freelancers see a read-only view.
 // ============================================================
 
 using System;
@@ -16,12 +13,7 @@ namespace FreeHubProject
 {
     public partial class ReviewProposal : System.Web.UI.Page
     {
-        // ============================================================
-        // ProposalId (property)
-        // Reads the proposal ID from the URL query string.
-        // e.g. ReviewProposal.aspx?id=5 -> returns 5
-        // Returns 0 if no valid ID is found.
-        // ============================================================
+        // Reads the proposal ID from the URL e.g. ?id=5 -> returns 5
         private int ProposalId
         {
             get
@@ -32,16 +24,9 @@ namespace FreeHubProject
             }
         }
 
-        // ============================================================
-        // PAGE LOAD
-        // 1. Checks user is logged in
-        // 2. Checks user role:
-        //    - Freelancer gets READ-ONLY view (action buttons hidden)
-        //    - Employer gets full Approve/Reject controls
-        // 3. Calls LoadProposal() to fill in the proposal details
-        // ============================================================
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF no user is logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -51,29 +36,25 @@ namespace FreeHubProject
             string userType = Session["UserType"] as string ?? "";
             bool isFreelancer = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
 
+            // IF this is the first load (not a button click postback)
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
 
-                // Freelancers can only VIEW - hide approve/reject buttons
+                // IF the logged-in user is a Freelancer, hide the action buttons
+                // Freelancers can only READ their proposal, not act on it
                 if (isFreelancer)
                 {
                     pnlActions.Visible = false;
                 }
+
                 LoadProposal();
             }
         }
 
-        // ============================================================
-        // LoadProposal()
-        // Fetches the full proposal from the database using ProposalId.
-        // Joins Proposal + Freelancer + User + Project tables to get
-        // all the info needed to display the review screen.
-        // Also hides action buttons if proposal is already decided,
-        // and calls WarnIfInsufficientFunds() for pending proposals.
-        // ============================================================
         private void LoadProposal()
         {
+            // IF no valid proposal ID was found in the URL, show an error
             if (ProposalId <= 0)
             {
                 ShowMessage("No proposal selected.", false);
@@ -83,7 +64,7 @@ namespace FreeHubProject
 
             try
             {
-                // Join across 4 tables to get all required proposal details
+                // Query joins Proposal + Freelancer + User + Project to get all details
                 string query = @"SELECT pr.proposalID, pr.coverLetter, pr.proposedRate,
                                 pr.estimatedCompletionTime, pr.status, pr.date,
                                 u.firstName + ' ' + u.lastName AS freelancerName,
@@ -97,6 +78,7 @@ namespace FreeHubProject
                 DataTable result = DatabaseHelper.ExecuteQuery(query,
                     new SqlParameter("@ProposalID", ProposalId));
 
+                // IF no rows returned, the proposal doesn't exist
                 if (result.Rows.Count == 0)
                 {
                     ShowMessage("Proposal not found.", false);
@@ -106,21 +88,23 @@ namespace FreeHubProject
 
                 DataRow proposal = result.Rows[0];
 
-                // Fill in all the display labels
+                // Fill in all the display labels with the proposal data
                 string freelancerName = Convert.ToString(proposal["freelancerName"]);
                 lblFreelancerName.Text = freelancerName;
-                lblFreelancerInitials.Text = GetInitials(freelancerName); // e.g. "TM"
+                lblFreelancerInitials.Text = GetInitials(freelancerName);
                 lblProjectTitle.Text = TitleHelper.TitleCase(Convert.ToString(proposal["projectTitle"]));
                 lblRate.Text = "R" + Convert.ToDecimal(proposal["proposedRate"]).ToString("N0");
                 lblTime.Text = Convert.ToString(proposal["estimatedCompletionTime"]);
                 lblDate.Text = Convert.ToDateTime(proposal["date"]).ToString("dd MMM yyyy");
 
-                // HTML-encode the cover letter to prevent XSS attacks
+                // HTML-encode the cover letter to prevent XSS (script injection attacks)
                 lblCoverLetter.Text = Server.HtmlEncode(Convert.ToString(proposal["coverLetter"]));
                 lblStatus.Text = Convert.ToString(proposal["status"]);
 
-                // If proposal is already decided, hide the action buttons
                 string status = Convert.ToString(proposal["status"]);
+
+                // IF the proposal is already Approved or Rejected, hide the action buttons
+                // because the decision has already been made and cannot be changed
                 if (status != "Pending")
                 {
                     btnApproveProposal.Visible = false;
@@ -128,7 +112,7 @@ namespace FreeHubProject
                 }
                 else
                 {
-                    // Still pending - check if employer can afford to approve
+                    // IF the proposal is still Pending, check if employer can afford to approve
                     WarnIfInsufficientFunds();
                 }
             }
@@ -138,47 +122,47 @@ namespace FreeHubProject
             }
         }
 
-        // ============================================================
-        // WarnIfInsufficientFunds()
-        // Called BEFORE the employer tries to approve.
-        // Checks if employer's wallet balance can cover the difference
-        // between the proposed rate and the project budget already
-        // held in escrow. If not enough funds:
-        // - Shows a warning message to the employer
-        // - Disables the Approve button so they can't proceed
-        // ============================================================
         private void WarnIfInsufficientFunds()
         {
             string userType = Session["UserType"] as string ?? "";
-            // Only run this check for employers
+
+            // IF the current user is not an employer, skip this check
+            // (freelancers viewing their own proposal don't need the wallet check)
             if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 return;
 
             DataRow details = GetProposalFinancials();
+
+            // IF financial details could not be retrieved, skip the check
             if (details == null) return;
 
             decimal proposedRate = 0m;
+            // IF the proposed rate column has a value (not null), read it
             if (details["proposedRate"] != DBNull.Value)
                 proposedRate = Convert.ToDecimal(details["proposedRate"]);
 
             decimal projectBudget = 0m;
+            // IF the project budget column has a value, read it
             if (details["projectBudget"] != DBNull.Value)
                 projectBudget = Convert.ToDecimal(details["projectBudget"]);
 
-            // Get employer's current wallet balance
             decimal availableBalance = 0m;
             DataRow wallet = DatabaseHelper.GetWalletByUserId(
                 Convert.ToInt32(details["employerUserID"]));
+
+            // IF the wallet was found and has a balance value, read it
             if (wallet != null && wallet["balance"] != DBNull.Value)
                 availableBalance = Convert.ToDecimal(wallet["balance"]);
 
-            // Calculate how much MORE is needed above what's already in escrow
+            // Calculate how much MORE is needed beyond what's already held in escrow
             decimal additionalRequired = proposedRate - projectBudget;
+
+            // IF the additional amount is negative (budget covers the rate), set it to zero
             if (additionalRequired < 0m) additionalRequired = 0m;
 
+            // IF the employer cannot cover the additional amount, warn them and disable approve
             if (additionalRequired > availableBalance)
             {
-                // Not enough funds - warn and disable approve button
                 ShowMessage(
                     "This proposal cannot be approved. The proposed rate of R" +
                     proposedRate.ToString("N2") + " exceeds your available funds. " +
@@ -187,19 +171,15 @@ namespace FreeHubProject
                     " is required but your wallet balance is only R" +
                     availableBalance.ToString("N2") + ". Please fund your wallet to approve it.",
                     false);
+
+                // Disable the approve button so they cannot proceed without funding
                 btnApproveProposal.Enabled = false;
             }
         }
 
-        // ============================================================
-        // GetProposalFinancials()
-        // Helper method that fetches the financial details needed
-        // for the approval check: proposed rate, project budget,
-        // project ID, and employer's user ID.
-        // Used by both WarnIfInsufficientFunds() and btnApproveProposal_Click().
-        // ============================================================
         private DataRow GetProposalFinancials()
         {
+            // Returns: proposed rate, project budget already in escrow, project ID, employer user ID
             string query = @"SELECT prop.proposalID, prop.proposedRate,
                                     p.projectID, p.title AS projectTitle,
                                     p.budget AS projectBudget,
@@ -213,25 +193,13 @@ namespace FreeHubProject
                 new SqlParameter("@ProposalID", ProposalId));
         }
 
-        // ============================================================
-        // btnApproveProposal_Click() - B800 APPROVE PROPOSAL
-        // Full approval sequence:
-        // 1. Get proposal financial details
-        // 2. Check employer's wallet balance
-        // 3. Calculate shortfall (proposedRate - projectBudget)
-        // 4. Block if insufficient funds
-        // 5. Deduct shortfall from wallet and record escrow transaction
-        // 6. Update Proposal status -> Approved
-        // 7. Update Project status -> In Progress
-        // 8. Open chat session between employer and freelancer
-        // 9. Show success message, hide action buttons
-        // ============================================================
         protected void btnApproveProposal_Click(object sender, EventArgs e)
         {
             try
             {
-                // Get all financial context for this proposal
                 DataRow details = GetProposalFinancials();
+
+                // IF the proposal details could not be found (deleted/removed)
                 if (details == null)
                 {
                     ShowMessage("Proposal not found. It may have been removed.", false);
@@ -243,35 +211,43 @@ namespace FreeHubProject
                 string projectTitle = Convert.ToString(details["projectTitle"]);
 
                 decimal proposedRate = 0m;
+                // IF proposed rate is not null, read it
                 if (details["proposedRate"] != DBNull.Value)
                     proposedRate = Convert.ToDecimal(details["proposedRate"]);
 
                 decimal projectBudget = 0m;
+                // IF project budget is not null, read it
                 if (details["projectBudget"] != DBNull.Value)
                     projectBudget = Convert.ToDecimal(details["projectBudget"]);
 
-                // Get employer's wallet
+                // Get the employer's wallet details
                 int walletID = 0;
                 decimal availableBalance = 0m;
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(employerUserId);
+
+                // IF a wallet record was found for this employer
                 if (wallet != null)
                 {
                     walletID = Convert.ToInt32(wallet["walletID"]);
+                    // IF the balance column is not null, read it
                     if (wallet["balance"] != DBNull.Value)
                         availableBalance = Convert.ToDecimal(wallet["balance"]);
                 }
 
+                // IF no wallet was found at all, block the approval
                 if (walletID == 0)
                 {
                     ShowMessage("No wallet was found for your account. Cannot approve this proposal.", false);
                     return;
                 }
 
-                // How much extra is needed beyond the already-held project budget?
+                // Calculate additional funds needed (beyond what's already in escrow)
                 decimal additionalRequired = proposedRate - projectBudget;
+
+                // IF the difference is negative (proposed rate is less than budget), set it to zero
                 if (additionalRequired < 0m) additionalRequired = 0m;
 
-                // BLOCK if employer can't cover the shortfall
+                // IF the employer does not have enough money to cover the shortfall, block approval
                 if (additionalRequired > availableBalance)
                 {
                     ShowMessage(
@@ -285,13 +261,15 @@ namespace FreeHubProject
                     return;
                 }
 
-                // Deduct the additional amount from wallet and hold in escrow
+                // IF there is an additional amount to hold in escrow (rate > original budget)
                 if (additionalRequired > 0m)
                 {
                     decimal newBalance = availableBalance - additionalRequired;
+
+                    // Deduct from wallet in the database
                     DatabaseHelper.UpdateWalletBalance(walletID, newBalance);
 
-                    // Record the escrow transaction in Transaction table
+                    // Record the escrow transaction in the Transaction table
                     string escrowReference = TransactionStore.CreateReference("ESCROW");
                     DatabaseHelper.AddTransaction(
                         walletID,
@@ -303,7 +281,7 @@ namespace FreeHubProject
                         escrowReference,
                         "Wallet");
 
-                    // Sync the session balance so dashboard shows correct amount
+                    // Sync session balance so the dashboard shows the correct amount
                     Session["AvailableBalance"] = newBalance;
                 }
 
@@ -314,12 +292,14 @@ namespace FreeHubProject
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
 
-                // Open or reopen the chat session between employer and freelancer
+                // Open a chat session between the employer and freelancer for this project
                 ChatLifecycle.OnProposalApproved(projectId, employerUserId, projectTitle);
 
-                // Build success message
+                // Build success message - include escrow info IF additional funds were taken
                 string successMessage =
                     "Proposal approved! The project is now In Progress and the freelancer has been assigned.";
+
+                // IF extra funds were deducted, add that detail to the success message
                 if (additionalRequired > 0m)
                 {
                     successMessage += " An additional R" + additionalRequired.ToString("N2") +
@@ -328,7 +308,7 @@ namespace FreeHubProject
 
                 ShowMessage(successMessage, true);
 
-                // Hide buttons - decision is final
+                // Hide the action buttons since the decision is now final
                 btnApproveProposal.Visible = false;
                 btnRejectProposal.Visible = false;
                 lblStatus.Text = "Approved";
@@ -339,24 +319,18 @@ namespace FreeHubProject
             }
         }
 
-        // ============================================================
-        // btnRejectProposal_Click() - also used for B900
-        // Quick reject directly from the Review screen.
-        // Updates the Proposal status to 'Rejected' in the database.
-        // Hides the action buttons after decision is made.
-        // ============================================================
         protected void btnRejectProposal_Click(object sender, EventArgs e)
         {
             try
             {
-                // Update Proposal status to Rejected
+                // Update the proposal status to Rejected in the database
                 string query = "UPDATE Proposal SET status = 'Rejected' WHERE proposalID = @ID";
                 DatabaseHelper.ExecuteNonQuery(query,
                     new SqlParameter("@ID", ProposalId));
 
                 ShowMessage("Proposal rejected. The freelancer has been notified.", true);
 
-                // Hide buttons - decision is final
+                // Hide action buttons - decision is final
                 btnApproveProposal.Visible = false;
                 btnRejectProposal.Visible = false;
                 lblStatus.Text = "Rejected";
@@ -367,24 +341,18 @@ namespace FreeHubProject
             }
         }
 
-        // Placeholder for future "Request Changes" feature
         protected void btnRequestChanges_Click(object sender, EventArgs e)
         {
             ShowMessage("Change request noted. Please contact the freelancer to discuss the required changes.", true);
         }
 
-        // ============================================================
-        // GetInitials(string name)
-        // Builds initials from a full name.
-        // e.g. "John Smith" -> "JS"
-        // e.g. "Thabo Mokoena" -> "TM"
-        // ============================================================
         private string GetInitials(string name)
         {
             string initials = "";
             string[] parts = name.Split(' ');
             foreach (string part in parts)
             {
+                // IF this word has at least one character, take the first letter
                 if (part.Length > 0) initials += part[0];
             }
             return initials.ToUpper();
@@ -392,6 +360,7 @@ namespace FreeHubProject
 
         private void ShowMessage(string message, bool success)
         {
+            // IF success is true show green, IF false show red
             if (success) MessageHelper.Success(this, message);
             else MessageHelper.Error(this, message);
         }
