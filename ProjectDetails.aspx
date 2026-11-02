@@ -24,15 +24,17 @@
                     <a href="<%= ResolveUrl("~/BrowseProjects.aspx") %>" class="breadcrumb-link">Projects</a> <span>/</span>
                     <strong>Project Details</strong>
                 </div>
-                <div class="pd-title-row" style="display:flex; justify-content:space-between; align-items:flex-start;">
-                    <div>
+                <div class="pd-title-row" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div style="flex:1;">
                         <h1><asp:Label ID="lblTitle" runat="server" /></h1>
                         <p class="pd-posted">
                             Project posted by <strong><asp:Label ID="lblEmployerName" runat="server" /></strong>
                             &bull; Posted <asp:Label ID="lblPosted" runat="server" />
                         </p>
                     </div>
-                    <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;margin-left:auto;align-self:flex-start;">&#8592; Back to Projects</a>
+                    <div style="flex-shrink:0; margin-left:30px;">
+                        <a href="BrowseProjects.aspx" style="display:inline-block;color:#fff;background-color:#2e7d56;text-decoration:none;font-size:13px;font-weight:500;padding:10px 20px;border-radius:6px;white-space:nowrap;">&#8592; Back to Projects</a>
+                    </div>
                 </div>
             </div>
 
