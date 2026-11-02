@@ -16,8 +16,10 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 // Heartbeat: update current user's last seen timestamp.
@@ -31,6 +33,7 @@ namespace FreeHubProject
                 string queryUserId = Request.QueryString["userId"];
                 string userFromQuery = Request.QueryString["user"];
 
+                // IF the field is empty or contains only whitespace
                 if (!string.IsNullOrWhiteSpace(queryUserId))
                 {
                     int uid;
@@ -39,6 +42,7 @@ namespace FreeHubProject
                         SelectUserById(uid);
                     }
                 }
+                // IF the field is empty or contains only whitespace
                 else if (!string.IsNullOrWhiteSpace(userFromQuery))
                 {
                     SelectUserByName(userFromQuery);
@@ -85,9 +89,11 @@ namespace FreeHubProject
         {
             bool active = ChatIsActive;
 
+            // IF a valid project ID exists, proceed
             if (ActiveProjectId > 0)
             {
                 DataRow project = DatabaseHelper.GetProjectById(ActiveProjectId);
+                // IF the value exists and is not null
                 if (project != null)
                 {
                     string title = Convert.ToString(project["title"]);
@@ -266,6 +272,7 @@ namespace FreeHubProject
                     WHERE prop.status = 'Approved' 
                       AND (e.userID = @CurrentUserID OR f.userID = @CurrentUserID)";
 
+                // IF the field is empty or contains only whitespace
                 if (!string.IsNullOrWhiteSpace(searchText))
                 {
                     query += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
@@ -324,6 +331,7 @@ namespace FreeHubProject
                     WHERE u.userType = 'Admin'
                       AND u.userID <> @CurrentUserID
                       AND EXISTS (SELECT 1 FROM dbo.Message m WHERE (m.senderID = u.userID AND m.receiverID = @CurrentUserID) OR (m.senderID = @CurrentUserID AND m.receiverID = u.userID))";
+                    // IF the field is empty or contains only whitespace
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
                         adminRow += " AND (u.firstName + ' ' + u.lastName LIKE @Search)";
@@ -340,6 +348,7 @@ namespace FreeHubProject
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@CurrentUserID", CurrentUserId);
+                    // IF the field is empty or contains only whitespace
                     if (!string.IsNullOrWhiteSpace(searchText))
                     {
                         cmd.Parameters.AddWithValue("@Search", "%" + searchText + "%");
@@ -368,6 +377,7 @@ namespace FreeHubProject
         protected void Filter_Click(object sender, EventArgs e)
         {
             var btn = sender as System.Web.UI.WebControls.LinkButton;
+            // IF the value exists and is not null
             if (btn != null)
             {
                 ContactFilter = btn.CommandArgument;
@@ -453,6 +463,7 @@ namespace FreeHubProject
         private void LoadUserDetailsAndSharedFiles(int targetUserId)
         {
             DataRow user = DatabaseHelper.GetUserById(targetUserId);
+            // IF the value exists and is not null
             if (user != null)
             {
                 lblDetailName.Text = Server.HtmlEncode(Convert.ToString(user["firstName"]) + " " + Convert.ToString(user["lastName"]));
@@ -469,6 +480,7 @@ namespace FreeHubProject
 
         public string GetAvatarClass(string initials)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(initials)) return "avatar-ml";
             switch (initials.ToUpper())
             {
@@ -502,6 +514,7 @@ namespace FreeHubProject
                     cmd.Parameters.AddWithValue("@UserName", userName);
                     conn.Open();
                     object result = cmd.ExecuteScalar();
+                    // IF the value exists and is not null
                     if (result != null)
                     {
                         SelectUserById(Convert.ToInt32(result));
@@ -517,6 +530,7 @@ namespace FreeHubProject
 
             // Header identity + partner last-seen (existing, authoritative — no invented data).
             DataRow user = DatabaseHelper.GetUserById(otherUserId);
+            // IF the value exists and is not null
             if (user != null)
             {
                 string firstName = Convert.ToString(user["firstName"]);
@@ -527,6 +541,7 @@ namespace FreeHubProject
                     (!string.IsNullOrEmpty(lastName) ? lastName[0].ToString() : ""));
 
                 string accountStatus = Convert.ToString(user["accountStatus"]);
+                // IF profile is deactivated, send to ChooseRole to reactivate
                 if (accountStatus == "Inactive" || accountStatus == "Deleted" || accountStatus == "Deactivated")
                 {
                     lblPartnerStatus.Text = "Account deactivated";
@@ -589,6 +604,7 @@ namespace FreeHubProject
         private void MaybeShowRatingModal(ChatLifecycle.ChatAvailability avail)
         {
             pnlRatingModal.Visible = false;
+            // IF no valid project ID was found in the URL
             if (ActiveProjectId <= 0) return;
             if (!string.Equals(avail.ProjectStatus, "Completed", StringComparison.OrdinalIgnoreCase)) return;
 
@@ -628,6 +644,7 @@ namespace FreeHubProject
                 if (ActiveProjectId > 0)
                 {
                     ListItem sel = ddlProjectSelect.Items.FindByValue(ActiveProjectId.ToString());
+                    // IF the value exists and is not null
                     if (sel != null)
                     {
                         ddlProjectSelect.ClearSelection();
@@ -657,6 +674,7 @@ namespace FreeHubProject
             // Re-derive availability from the chosen project's authoritative status.
             DataRow project = DatabaseHelper.GetProjectById(projId);
             bool projActive = false;
+            // IF the value exists and is not null
             if (project != null)
             {
                 string status = Convert.ToString(project["projectStatus"]);
@@ -701,6 +719,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtMessage.Text) && !fileUploadControl.HasFile) return;
 
             // Voice notes are no longer supported: reject audio uploads server-side (never
@@ -817,6 +836,7 @@ namespace FreeHubProject
 
         protected void btnSearchUser_Click(object sender, EventArgs e)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtSearch.Text))
             {
                 pnlSearchResults.Visible = false;
@@ -826,6 +846,7 @@ namespace FreeHubProject
             DataTable dtUsers = DatabaseHelper.SearchRegisteredUsers(txtSearch.Text.Trim(), CurrentUserId);
             pnlSearchResults.Visible = true;
 
+            // IF records were found in the database
             if (dtUsers != null && dtUsers.Rows.Count > 0)
             {
                 rptSearchResults.DataSource = dtUsers;
@@ -857,6 +878,7 @@ namespace FreeHubProject
 
         protected void btnSubmitRating_Click(object sender, EventArgs e)
         {
+            // IF no valid project ID was found in the URL
             if (SelectedOtherUserId <= 0 || ActiveProjectId <= 0) return;
 
             int score = Convert.ToInt32(ddlRatingStars.SelectedValue);
@@ -889,6 +911,7 @@ namespace FreeHubProject
                 {
                     cmdUpdate.Parameters.AddWithValue("@RatedUserID", SelectedOtherUserId);
                     object res = cmdUpdate.ExecuteScalar();
+                    // IF the value exists and is not null
                     if (res != null) updatedScore = Convert.ToDecimal(res);
                 }
             }
@@ -931,9 +954,11 @@ namespace FreeHubProject
 
         public bool AttachmentExists(object attachmentUrl)
         {
+            // IF the value is null (not found or not set)
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return false;
 
             string url = attachmentUrl.ToString();
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(url)) return false;
 
             try
@@ -949,22 +974,27 @@ namespace FreeHubProject
 
         public string ResolveAttachmentUrl(object attachmentUrl)
         {
+            // IF the value is null (not found or not set)
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "#";
             string url = attachmentUrl.ToString();
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(url)) return "#";
             return ResolveUrl(url);
         }
 
         public string OriginalFileName(object attachmentUrl)
         {
+            // IF the value is null (not found or not set)
             if (attachmentUrl == null || attachmentUrl == DBNull.Value) return "";
             string stored = System.IO.Path.GetFileName(attachmentUrl.ToString());
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(stored)) return "";
 
             int underscore = stored.IndexOf('_');
             if (underscore == 32)
             {
                 string rest = stored.Substring(underscore + 1);
+                // IF the string is empty or null
                 if (!string.IsNullOrEmpty(rest)) return rest;
             }
             return stored;
@@ -1005,8 +1035,10 @@ namespace FreeHubProject
         /// <summary>True when a raw uploaded filename is an audio/voice-note type (blocked).</summary>
         private bool IsAudioFileName(string fileName)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(fileName)) return false;
             string ext = System.IO.Path.GetExtension(fileName);
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(ext)) return false;
             switch (ext.TrimStart('.').ToLowerInvariant())
             {
@@ -1028,6 +1060,7 @@ namespace FreeHubProject
         {
             string name = OriginalFileName(attachmentUrl);
             string ext = System.IO.Path.GetExtension(name);
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(ext)) return "\U0001F4C4"; // generic doc glyph
             ext = ext.TrimStart('.').ToUpperInvariant();
             if (ext.Length > 4) ext = ext.Substring(0, 4);
@@ -1089,6 +1122,7 @@ namespace FreeHubProject
         /// </summary>
         public string ConversationPreview(object content)
         {
+            // IF the value is null (not found or not set)
             if (content == null || content == DBNull.Value) return "";
             if (ChatLifecycle.IsSystemMessage(content)) return ChatLifecycle.StripSystem(content);
             return Convert.ToString(content);
@@ -1096,6 +1130,7 @@ namespace FreeHubProject
 
         private static string MakeSafeFileName(string name)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(name)) return "file";
             foreach (char c in System.IO.Path.GetInvalidFileNameChars())
             {

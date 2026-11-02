@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.SqlClient;
 using System.Web.Security;
 
@@ -8,12 +8,14 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 txtFirstName.Text = Session["FirstName"] as string ?? "";

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Web.UI;
 
 namespace FreeHubProject
@@ -50,6 +50,7 @@ namespace FreeHubProject
         /// </summary>
         public static void Show(Page page, string type, string message, string title = null, int durationMs = 0)
         {
+            // IF the value is null (not found or not set)
             if (page == null) return;
 
             string t = (type ?? "info").ToLowerInvariant();
@@ -65,6 +66,7 @@ namespace FreeHubProject
             // Prefer ScriptManager registration so the popup also fires after an
             // UpdatePanel async postback; fall back to ClientScript for full postbacks.
             ScriptManager sm = ScriptManager.GetCurrent(page);
+            // IF the value exists and is not null
             if (sm != null && sm.IsInAsyncPostBack)
             {
                 ScriptManager.RegisterStartupScript(page, page.GetType(), key, script, true);
@@ -78,6 +80,7 @@ namespace FreeHubProject
         /// <summary>Escapes a string for safe inclusion inside a single-quoted JS literal.</summary>
         private static string JsEscape(string s)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(s)) return string.Empty;
             System.Text.StringBuilder sb = new System.Text.StringBuilder(s.Length + 8);
             foreach (char c in s)

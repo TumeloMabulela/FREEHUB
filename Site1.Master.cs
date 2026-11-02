@@ -10,6 +10,7 @@ namespace FreeHubProject
         {
             SetupNavigation();
 
+            // IF user IS already logged in
             if (Session["UserID"] != null)
             {
                 int userId = Convert.ToInt32(Session["UserID"]);
@@ -17,14 +18,17 @@ namespace FreeHubProject
                 string lastName = Session["LastName"] as string ?? "";
                 string userType = Session["UserType"] as string ?? "Freelancer";
 
+                // IF the string is empty or null
                 if (!string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName))
                 {
                     litFullName.Text = $"{firstName} {lastName}";
+                    // IF the value exists and is not null
                     if (litInitials != null)
                     {
                         litInitials.Text = $"{firstName[0]}{lastName[0]}".ToUpper();
                     }
                 }
+                // IF the value exists and is not null
                 if (litUserRole != null)
                 {
                     litUserRole.Text = userType;
@@ -40,6 +44,7 @@ namespace FreeHubProject
         /// </summary>
         protected void Page_PreRender(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null) return;
             int userId = Convert.ToInt32(Session["UserID"]);
 
@@ -79,6 +84,7 @@ namespace FreeHubProject
             try
             {
                 string userType = Session["UserType"] as string ?? "";
+                // IF the logged-in user is an Admin
                 if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 {
                     int helpUnread = DatabaseHelper.GetAdminUnreadMessageCount(userId);
@@ -109,6 +115,7 @@ namespace FreeHubProject
                 string currentPage = System.IO.Path.GetFileName(Request.Url.AbsolutePath).ToLower();
                 bool isChooseRolePage = currentPage == "chooserole.aspx" || currentPage == "createfreelancerprofile.aspx" || currentPage == "createemployerprofile.aspx";
 
+                // IF the field is empty or contains only whitespace
                 if (!isChooseRolePage && (userType == "None" || string.IsNullOrWhiteSpace(userType) || accountStatus == "Deactivated" || accountStatus == "Inactive"))
                 {
                     Response.Redirect("ChooseRole.aspx");

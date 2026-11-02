@@ -12,6 +12,7 @@ namespace FreeHubProject
         {
             lblMessage.CssClass = "register-message error-message";
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
                 string.IsNullOrWhiteSpace(txtLastName.Text) ||
                 string.IsNullOrWhiteSpace(txtEmail.Text) ||

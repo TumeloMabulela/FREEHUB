@@ -23,6 +23,7 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -31,12 +32,14 @@ namespace FreeHubProject
 
             // Employer only - Freelancers cannot access My Projects
             string userType = Session["UserType"] as string ?? "";
+            // IF the logged-in user is a Freelancer
             if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Default.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 // Allow an initial filter via query string (back-compat with old ?view= links).
@@ -50,6 +53,7 @@ namespace FreeHubProject
                 if (savedSort == "Oldest" || savedSort == "Newest")
                 {
                     System.Web.UI.WebControls.ListItem item = ddlSortProjects.Items.FindByValue(savedSort);
+                    // IF the value exists and is not null
                     if (item != null)
                     {
                         ddlSortProjects.ClearSelection();
@@ -164,6 +168,7 @@ namespace FreeHubProject
                 pnlProjectList.Visible = !isEmpty;
                 pnlEmptyProjects.Visible = isEmpty;
 
+                // IF there are no items to show, display the empty state panel
                 if (isEmpty)
                 {
                     switch (CurrentFilter)

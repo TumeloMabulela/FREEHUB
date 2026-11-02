@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
 
@@ -8,7 +8,9 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Admin")) return;
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack) LoadWithdrawals();
         }
 
@@ -64,6 +66,7 @@ namespace FreeHubProject
         protected void btnConfirmReject_Click(object sender, EventArgs e)
         {
             string reason = txtReason.Text.Trim();
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(reason))
             {
                 lblReasonErr.Visible = true;

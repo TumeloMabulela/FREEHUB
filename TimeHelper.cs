@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FreeHubProject
 {
@@ -66,6 +66,7 @@ namespace FreeHubProject
         /// </summary>
         public static DateTime ToSast(object dbValue)
         {
+            // IF the value is null (not found or not set)
             if (dbValue == null || dbValue == DBNull.Value)
             {
                 return DateTime.MinValue;

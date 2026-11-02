@@ -17,12 +17,14 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -33,6 +35,7 @@ namespace FreeHubProject
 
         private void LoadProject()
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowMessage("No project selected.", false);
@@ -42,6 +45,7 @@ namespace FreeHubProject
             try
             {
                 DataRow project = DatabaseHelper.GetProjectById(ProjectId);
+                // IF the project was not found in the database
                 if (project == null)
                 {
                     ShowMessage("Project not found.", false);
@@ -67,6 +71,7 @@ namespace FreeHubProject
 
         private void LoadComments()
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0) return;
 
             try
@@ -127,6 +132,7 @@ namespace FreeHubProject
 
         protected void btnPostComment_Click(object sender, EventArgs e)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtComment.Text))
             {
                 ShowMessage("Please enter a comment.", false);

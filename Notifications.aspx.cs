@@ -17,6 +17,7 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
             if (CurrentUserId <= 0)
@@ -25,6 +26,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 CurrentFilter = "All";
@@ -87,6 +89,7 @@ namespace FreeHubProject
                 {
                     sb.Append(" AND type NOT IN ('Project','Proposal','Message','Payment')");
                 }
+                // IF the string is empty or null
                 else if (!string.IsNullOrEmpty(typeFilter) && typeFilter != "All")
                 {
                     sb.Append(" AND type = @TypeFilter");
@@ -94,6 +97,7 @@ namespace FreeHubProject
 
                 // Time dropdown filter.
                 int days = 0;
+                // IF the value exists and is not null
                 if (ddlTime != null) int.TryParse(ddlTime.SelectedValue, out days);
                 if (days > 0)
                 {
@@ -102,6 +106,7 @@ namespace FreeHubProject
 
                 // Search (case-insensitive on content).
                 string search = txtSearch != null ? txtSearch.Text.Trim() : "";
+                // IF the string is empty or null
                 if (!string.IsNullOrEmpty(search))
                 {
                     sb.Append(" AND LOWER(content) LIKE @Search");
@@ -116,6 +121,7 @@ namespace FreeHubProject
                         cmd.Parameters.AddWithValue("@TypeFilter", typeFilter);
                     if (days > 0)
                         cmd.Parameters.AddWithValue("@Days", days);
+                    // IF the string is empty or null
                     if (!string.IsNullOrEmpty(search))
                         cmd.Parameters.AddWithValue("@Search", "%" + search.ToLower() + "%");
 
@@ -376,6 +382,7 @@ namespace FreeHubProject
 
             // Validate ownership server-side before any action.
             string ownerType = GetNotificationType(notificationId);
+            // IF the value is null (not found or not set)
             if (ownerType == null) return; // not found or not owned by this user
 
             switch (e.CommandName)
@@ -550,6 +557,7 @@ namespace FreeHubProject
             int id = CurrentSelectedId;
             if (id <= 0) return;
             string type = GetNotificationType(id);
+            // IF the value is null (not found or not set)
             if (type == null) return;
             UpdateNotificationStatus(id, "Read");
             RouteToTarget(type);
@@ -558,6 +566,7 @@ namespace FreeHubProject
         protected void btnToggleRead_Click(object sender, EventArgs e)
         {
             int id = CurrentSelectedId;
+            // IF the value is null (not found or not set)
             if (id <= 0 || GetNotificationType(id) == null) return;
 
             string status = GetNotificationStatus(id);
@@ -574,6 +583,7 @@ namespace FreeHubProject
         protected void btnToggleArchive_Click(object sender, EventArgs e)
         {
             int id = CurrentSelectedId;
+            // IF the value is null (not found or not set)
             if (id <= 0 || GetNotificationType(id) == null) return;
 
             string status = GetNotificationStatus(id);

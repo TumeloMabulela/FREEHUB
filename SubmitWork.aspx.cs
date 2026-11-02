@@ -19,8 +19,10 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Freelancer")) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 LoadProjectDetails();
@@ -29,6 +31,7 @@ namespace FreeHubProject
 
         private void LoadProjectDetails()
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowStatus("No active project selected.", false);
@@ -39,6 +42,7 @@ namespace FreeHubProject
             try
             {
                 DataRow project = DatabaseHelper.GetProjectById(ProjectId);
+                // IF the value exists and is not null
                 if (project != null)
                 {
                     txtProjectTitle.Text = Convert.ToString(project["title"]);
@@ -116,6 +120,7 @@ namespace FreeHubProject
 
         protected void btnSubmitWork_Click(object sender, EventArgs e)
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowStatus("Invalid project selection.", false);
@@ -126,6 +131,7 @@ namespace FreeHubProject
             string links = txtDeliverableLinks.Text.Trim();
             string attachmentUrl = hfUploadedFilePath.Value;
 
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(notes))
             {
                 ShowStatus("Please enter submission notes for the employer.", false);
@@ -144,6 +150,7 @@ namespace FreeHubProject
                     WHERE p.projectID = @ProjectID";
 
                 object employerObj = DatabaseHelper.ExecuteScalar(queryEmployer, new SqlParameter("@ProjectID", ProjectId));
+                // IF the value is null (not found or not set)
                 if (employerObj == null)
                 {
                     ShowStatus("Employer details not found.", false);
@@ -154,6 +161,7 @@ namespace FreeHubProject
 
                 // 2. Format Submission Message Content
                 string fullContent = "🚀 WORK SUBMISSION FOR REVIEW:\n" + notes;
+                // IF the string is empty or null
                 if (!string.IsNullOrEmpty(links))
                 {
                     fullContent += "\n\n🔗 Deliverable Links:\n" + links;

@@ -122,6 +122,7 @@ namespace FreeHubProject
                 // Show the "Verified Employer" badge, otherwise hide it
                 bool isVerified = !string.IsNullOrWhiteSpace(Convert.ToString(project["companyName"]));
                 pnlEmployerVerified.Visible = isVerified;
+                // IF the employer is verified, show the verified badge
                 if (isVerified)
                 {
                     lblEmployerRating.Text = "Verified Employer";

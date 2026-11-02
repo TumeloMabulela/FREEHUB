@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -19,6 +19,7 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -27,6 +28,7 @@ namespace FreeHubProject
 
             // Employer only
             string userType = Session["UserType"] as string ?? "";
+            // IF the logged-in user is an Employer
             if (!userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Default.aspx");
@@ -36,6 +38,7 @@ namespace FreeHubProject
             // Prevent selecting a past deadline in the date picker.
             txtDeadline.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -45,6 +48,7 @@ namespace FreeHubProject
 
         private void LoadProject()
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowMessage("No project selected. Please go to My Projects and select a project to edit.", false);
@@ -55,6 +59,7 @@ namespace FreeHubProject
             {
                 DataRow project = DatabaseHelper.GetProjectById(ProjectId);
 
+                // IF the project was not found in the database
                 if (project == null)
                 {
                     ShowMessage("Project not found.", false);
@@ -64,6 +69,7 @@ namespace FreeHubProject
                 // Verify this project belongs to the current user
                 int userId = Convert.ToInt32(Session["UserID"]);
                 DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
+                // IF the value is null (not found or not set)
                 if (employer == null || Convert.ToInt32(project["employerID"]) != Convert.ToInt32(employer["employerID"]))
                 {
                     ShowMessage("You do not have permission to edit this project.", false);
@@ -77,10 +83,12 @@ namespace FreeHubProject
                 // Select the category. If the saved category isn't one of the
                 // predefined options, treat it as a custom "Other" value.
                 string savedCategory = Convert.ToString(project["category"]);
+                // IF the value exists and is not null
                 if (ddlCategory.Items.FindByValue(savedCategory) != null)
                 {
                     ddlCategory.SelectedValue = savedCategory;
                 }
+                // IF the field is empty or contains only whitespace
                 else if (!string.IsNullOrWhiteSpace(savedCategory))
                 {
                     ddlCategory.SelectedValue = "Other";
@@ -102,6 +110,7 @@ namespace FreeHubProject
 
         protected void btnSaveChanges_Click(object sender, EventArgs e)
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowMessage("No project selected.", false);
@@ -147,6 +156,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the deadline is in the past, reject it
             if (deadline.Date < DateTime.Today)
             {
                 ShowMessage("The deadline cannot be in the past. Please choose today or a future date.", false);
@@ -186,6 +196,7 @@ namespace FreeHubProject
 
                 DataTable dtApplicants = DatabaseHelper.GetDataTable(getApplicantsQuery, new SqlParameter("@ProjectID", ProjectId));
 
+                // IF records were found in the database
                 if (dtApplicants != null && dtApplicants.Rows.Count > 0)
                 {
                     foreach (DataRow row in dtApplicants.Rows)

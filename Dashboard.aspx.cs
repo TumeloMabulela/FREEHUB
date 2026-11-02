@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -15,6 +15,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 ShowDashboardMessage();
@@ -27,6 +28,7 @@ namespace FreeHubProject
         private void ShowDashboardMessage()
         {
             string message = Session["DashboardMessage"] as string;
+            // IF the string is empty or null
             if (!string.IsNullOrEmpty(message))
             {
                 litDashboardMessage.Text = message;
@@ -60,6 +62,7 @@ namespace FreeHubProject
             {
                 LoadEmployerDashboard(userID);
             }
+            // IF the logged-in user is a Freelancer
             else if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 LoadFreelancerDashboard(userID);
@@ -105,6 +108,7 @@ namespace FreeHubProject
 
             int activeCount = 0, completedCount = 0, totalProposals = 0;
 
+            // IF the value exists and is not null
             if (projects != null)
             {
                 foreach (DataRow row in projects.Rows)
@@ -142,6 +146,7 @@ namespace FreeHubProject
             var projectItems = new List<EmployerProjectItem>();
             var deadlineItems = new List<EmployerDeadlineItem>();
 
+            // IF the value exists and is not null
             if (projects != null)
             {
                 foreach (DataRow row in projects.Rows)
@@ -259,10 +264,12 @@ namespace FreeHubProject
             {
                 // Get recent transactions as activity
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(userID);
+                // IF a wallet record was found for this user
                 if (wallet != null)
                 {
                     int walletID = Convert.ToInt32(wallet["walletID"]);
                     DataTable transactions = DatabaseHelper.GetTransactionsByWallet(walletID);
+                    // IF the value exists and is not null
                     if (transactions != null)
                     {
                         int count = 0;
@@ -292,6 +299,7 @@ namespace FreeHubProject
                 if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     DataTable proposals = DatabaseHelper.GetProposalsByFreelancer(userID);
+                    // IF the value exists and is not null
                     if (proposals != null)
                     {
                         int count = 0;
@@ -323,6 +331,7 @@ namespace FreeHubProject
             bool isEmployer = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
             bool hasActivity = activities.Count > 0;
 
+            // IF the user is an employer, show employer-specific content
             if (isEmployer)
             {
                 // Bind the employer dashboard's Recent Activity card.

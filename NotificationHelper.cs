@@ -45,6 +45,7 @@ namespace FreeHubProject
             {
                 string titleQuery = "SELECT title FROM dbo.Project WHERE projectID = @ProjectID";
                 object titleResult = DatabaseHelper.ExecuteScalar(titleQuery, new SqlParameter("@ProjectID", projectID));
+                // IF the value exists and is not null
                 if (titleResult != null && titleResult != DBNull.Value)
                 {
                     projectTitle = titleResult.ToString();
@@ -54,6 +55,7 @@ namespace FreeHubProject
 
             // If message is generic, make it contextual using the fetched project title
             string finalMessage = message;
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(finalMessage))
             {
                 finalMessage = $"Update regarding project \"{projectTitle}\".";

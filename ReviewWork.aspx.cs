@@ -18,8 +18,10 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Employer")) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 LoadSubmissionDetails();
@@ -28,6 +30,7 @@ namespace FreeHubProject
 
         private void LoadSubmissionDetails()
         {
+            // IF no valid project ID was found in the URL
             if (ProjectId <= 0)
             {
                 ShowStatus("No project selected.", false);
@@ -54,6 +57,7 @@ namespace FreeHubProject
 
                 DataRow row = DatabaseHelper.GetDataRow(query, new SqlParameter("@ProjectID", ProjectId));
 
+                // IF the value is null (not found or not set)
                 if (row == null)
                 {
                     ShowStatus("Project or submission details not found.", false);
@@ -91,6 +95,7 @@ namespace FreeHubProject
             int freelancerUserId = ViewState["FreelancerUserID"] != null ? Convert.ToInt32(ViewState["FreelancerUserID"]) : 0;
             decimal grossBudget = ViewState["ProjectBudget"] != null ? Convert.ToDecimal(ViewState["ProjectBudget"]) : 0;
 
+            // IF the budget is zero or negative, reject it as invalid
             if (freelancerUserId == 0 || grossBudget <= 0)
             {
                 ShowStatus("Invalid project or freelancer parameters.", false);
@@ -110,6 +115,7 @@ namespace FreeHubProject
 
                 // 3. Deposit Net Amount (90%) into Freelancer's Wallet
                 DataRow freelancerWallet = DatabaseHelper.GetWalletByUserId(freelancerUserId);
+                // IF a wallet record was found for this user
                 if (freelancerWallet != null)
                 {
                     int walletId = Convert.ToInt32(freelancerWallet["walletID"]);
@@ -134,6 +140,7 @@ namespace FreeHubProject
 
                 // 4. Record Admin Commission Entry (10%)
                 DataRow adminWallet = DatabaseHelper.GetWalletByUserId(1); // Admin UserID = 1
+                // IF a wallet record was found for this user
                 if (adminWallet != null)
                 {
                     int adminWalletId = Convert.ToInt32(adminWallet["walletID"]);

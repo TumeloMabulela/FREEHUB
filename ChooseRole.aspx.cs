@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.Security;
@@ -9,12 +9,14 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 LoadRoleStatus();
@@ -127,6 +129,7 @@ namespace FreeHubProject
 
         protected void btnSubmitFreelancer_Click(object sender, EventArgs e)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtSkills.Text))
             {
                 ShowMessage("Please enter at least one skill.", "error");
@@ -188,6 +191,7 @@ namespace FreeHubProject
 
         protected void btnSubmitEmployer_Click(object sender, EventArgs e)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtCompanyName.Text))
             {
                 ShowMessage("Please enter your company name.", "error");
@@ -195,6 +199,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(ddlIndustry.SelectedValue))
             {
                 ShowMessage("Please select an industry.", "error");
@@ -202,6 +207,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtCompanyDesc.Text))
             {
                 ShowMessage("Please enter a company description.", "error");
@@ -246,6 +252,7 @@ namespace FreeHubProject
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
+            // IF user IS already logged in
             if (Session["UserID"] != null)
             {
                 int userId = Convert.ToInt32(Session["UserID"]);

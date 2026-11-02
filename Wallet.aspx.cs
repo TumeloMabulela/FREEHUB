@@ -11,8 +11,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlWalletMessage.Visible = false;
@@ -31,6 +33,7 @@ namespace FreeHubProject
         private void LoadWalletInformation()
         {
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
@@ -58,6 +61,7 @@ namespace FreeHubProject
                     pendingQuery,
                     new System.Data.SqlClient.SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (pendingResult != null && pendingResult != System.DBNull.Value)
                     pendingWithdrawals = Convert.ToDecimal(pendingResult);
 
@@ -75,6 +79,7 @@ namespace FreeHubProject
                     holdQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (holdResult != null && holdResult != System.DBNull.Value)
                     onHoldBalance = Convert.ToDecimal(holdResult);
 
@@ -120,6 +125,7 @@ namespace FreeHubProject
             object sessionValue =
                 Session[sessionName];
 
+            // IF the value is null (not found or not set)
             if (sessionValue == null)
             {
                 return 0.00m;
@@ -154,6 +160,7 @@ namespace FreeHubProject
         private void LoadTransactions()
         {
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
@@ -490,6 +497,7 @@ namespace FreeHubProject
                     e.CommandArgument
                 );
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 transactionId))
             {

@@ -10,12 +10,14 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Employer")) return;
 
             // Prevent selecting a past deadline: the browser date picker will not
             // allow anything earlier than today.
             txtDeadline.Attributes["min"] = DateTime.Today.ToString("yyyy-MM-dd");
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlPreview.Visible = false;
@@ -30,6 +32,7 @@ namespace FreeHubProject
             try
             {
                 DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
+                // IF the value exists and is not null
                 if (employer != null)
                 {
                     return Convert.ToInt32(employer["employerID"]);
@@ -62,6 +65,7 @@ namespace FreeHubProject
 
             int employerId = GetEmployerId();
 
+            // IF the employer profile does not exist yet, create one
             if (employerId == 0)
             {
                 try
@@ -125,6 +129,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the deadline is in the past, reject it
             if (deadline.Date < DateTime.Today)
             {
                 ShowMessage("The deadline cannot be in the past. Please choose today or a future date.", false);
@@ -156,6 +161,7 @@ namespace FreeHubProject
             try
             {
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(postingUserId);
+                // IF a wallet record was found for this user
                 if (wallet != null)
                 {
                     walletID = Convert.ToInt32(wallet["walletID"]);
@@ -169,6 +175,7 @@ namespace FreeHubProject
                 walletBalance = 0m;
             }
 
+            // IF no wallet was found for this user
             if (walletID == 0)
             {
                 ShowMessage(
@@ -177,6 +184,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF employer does not have enough funds to cover the budget
             if (walletBalance < budget)
             {
                 ShowMessage(
@@ -386,6 +394,7 @@ namespace FreeHubProject
             bool firstHandled = false; // track whether we've seen the first error (for focus)
             string budgetPopup = null; // specific budget message to surface as a pop-up
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtProjectTitle.Text))
             {
                 lblErrTitle.Text = "Please enter a project title.";
@@ -393,6 +402,7 @@ namespace FreeHubProject
                 valid = false; firstHandled = true;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(ddlCategory.SelectedValue))
             {
                 lblErrCategory.Text = "Please select a category.";
@@ -407,6 +417,7 @@ namespace FreeHubProject
                 valid = false; firstHandled = true;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(ddlExperience.SelectedValue))
             {
                 lblErrExperience.Text = "Please select an experience level.";
@@ -428,6 +439,7 @@ namespace FreeHubProject
                 valid = false; firstHandled = true;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(rblBudgetType.SelectedValue))
             {
                 lblErrBudgetType.Text = "Please choose a budget type.";
@@ -457,6 +469,7 @@ namespace FreeHubProject
                     lblErrBudget.Text = "Enter a valid budget amount.";
                     valid = false; firstHandled = true;
                 }
+                // IF the parsed number is zero or negative (invalid amount)
                 else if (parsed <= 0)
                 {
                     lblErrBudget.Text = "Budget must be greater than zero.";
@@ -471,6 +484,7 @@ namespace FreeHubProject
                 }
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtDeadline.Text))
             {
                 lblErrDeadline.Text = "Please select a deadline.";

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
 
@@ -19,8 +19,10 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Admin")) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 DatabaseHelper.UpdateUserLastSeen(AdminId);
@@ -68,6 +70,7 @@ namespace FreeHubProject
             DatabaseHelper.MarkMessagesAsRead(AdminId, otherUserId, null);
 
             DataRow u = DatabaseHelper.GetUserById(otherUserId);
+            // IF the value exists and is not null
             if (u != null)
             {
                 string name = (Convert.ToString(u["firstName"]) + " " + Convert.ToString(u["lastName"])).Trim();
@@ -86,6 +89,7 @@ namespace FreeHubProject
         {
             if (SelectedUserId <= 0) return;
             string body = txtReply.Text.Trim();
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(body)) { OpenThread(SelectedUserId); return; }
 
             DatabaseHelper.SendMessage(AdminId, SelectedUserId, body);

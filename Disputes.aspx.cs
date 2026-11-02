@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -10,8 +10,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -61,6 +63,7 @@ namespace FreeHubProject
                     openQuery,
                     new SqlParameter("@UserID", userID));
 
+                // IF the value exists and is not null
                 if (openResult != null && openResult != DBNull.Value)
                     openCount = Convert.ToInt32(openResult);
 
@@ -74,6 +77,7 @@ namespace FreeHubProject
                     reviewQuery,
                     new SqlParameter("@UserID", userID));
 
+                // IF the value exists and is not null
                 if (reviewResult != null && reviewResult != DBNull.Value)
                     inReviewCount = Convert.ToInt32(reviewResult);
 
@@ -87,6 +91,7 @@ namespace FreeHubProject
                     resolvedQuery,
                     new SqlParameter("@UserID", userID));
 
+                // IF the value exists and is not null
                 if (resolvedResult != null && resolvedResult != DBNull.Value)
                     resolvedCount = Convert.ToInt32(resolvedResult);
             }
@@ -153,6 +158,7 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 ddlDisputeType.SelectedValue))
             {
@@ -166,6 +172,7 @@ namespace FreeHubProject
             string referenceId =
                 txtReferenceId.Text.Trim();
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(referenceId))
             {
                 ShowMessage(
@@ -175,6 +182,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 ddlReason.SelectedValue))
             {
@@ -188,6 +196,7 @@ namespace FreeHubProject
             string description =
                 txtDescription.Text.Trim();
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(description))
             {
                 ShowMessage(
@@ -251,6 +260,7 @@ namespace FreeHubProject
                 new SqlParameter("@Reason", reason));
 
             int disputeID = 0;
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value)
                 disputeID = Convert.ToInt32(result);
 
@@ -335,6 +345,7 @@ namespace FreeHubProject
 
         private int GetUserID()
         {
+            // IF user IS already logged in
             if (Session["UserID"] != null)
                 return Convert.ToInt32(Session["UserID"]);
 
@@ -344,6 +355,7 @@ namespace FreeHubProject
 
         private int GetWalletID()
         {
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 return Convert.ToInt32(Session["WalletID"]);
 

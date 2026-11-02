@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Web.Security;
@@ -9,12 +9,14 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -115,10 +117,12 @@ namespace FreeHubProject
 
                 // Status badge from the actual account status, where available.
                 string status = Session["AccountStatus"] as string;
+                // IF the value exists and is not null
                 if (user != null && user.Table.Columns.Contains("accountStatus") && user["accountStatus"] != DBNull.Value)
                     status = Convert.ToString(user["accountStatus"]);
                 SetStatusBadge(status);
 
+                // IF the user is an employer, show employer-specific content
                 if (isEmployer)
                 {
                     pnlEmployerView.Visible = true;
@@ -129,6 +133,7 @@ namespace FreeHubProject
                     litIndustryVal.Text = Val(employer != null ? Convert.ToString(employer["industry"]) : "");
                     litCompanyDescVal.Text = Val(employer != null ? Convert.ToString(employer["description"]) : "");
                 }
+                // IF the user is a freelancer, show freelancer-specific view
                 else if (isFreelancer)
                 {
                     pnlFreelancerView.Visible = true;
@@ -138,6 +143,7 @@ namespace FreeHubProject
                     litSkillsVal.Text = Val(fl != null ? Convert.ToString(fl["skills"]) : "");
                     litExperienceVal.Text = Val(fl != null ? Convert.ToString(fl["experience"]) : "");
                     litPortfolioVal.Text = Val(fl != null ? Convert.ToString(fl["portfolioLinks"]) : "");
+                    // IF the value exists and is not null
                     if (fl != null && fl["hourlyRate"] != DBNull.Value)
                         litRateVal.Text = "R" + Convert.ToDecimal(fl["hourlyRate"]).ToString("0");
                     else
@@ -158,6 +164,7 @@ namespace FreeHubProject
         /// <summary>HTML-encodes a value for read-only display; shows "Not provided" when empty.</summary>
         private string Val(string raw)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(raw)) return NotProvided();
             return Server.HtmlEncode(raw.Trim());
         }
@@ -172,7 +179,9 @@ namespace FreeHubProject
             string s = (status ?? "").Trim();
             string css, label;
             if (s.Equals("Active", StringComparison.OrdinalIgnoreCase)) { css = "mp2-status-active"; label = "Active"; }
+            // IF the string is empty or null
             else if (s.Equals("Inactive", StringComparison.OrdinalIgnoreCase) || s.Equals("Deactivated", StringComparison.OrdinalIgnoreCase)) { css = "mp2-status-inactive"; label = string.IsNullOrEmpty(s) ? "Inactive" : s; }
+            // IF the string is empty or null
             else if (string.IsNullOrEmpty(s)) { litStatusBadge.Text = ""; return; }
             else { css = "mp2-status-default"; label = s; }
 
@@ -189,26 +198,35 @@ namespace FreeHubProject
             int userId = GetUserId();
             string profileStatus = DatabaseHelper.GetProfileStatus(userId, userType);
 
+            // IF the value exists and is not null
             if (litHeadingRole != null) litHeadingRole.Text = userType;
+            // IF the value exists and is not null
             if (litSubtitleRole != null) litSubtitleRole.Text = userType;
 
+            // IF the value exists and is not null
             if (pnlWarningFreelancer != null)
                 pnlWarningFreelancer.Visible = userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase);
+            // IF the value exists and is not null
             if (pnlWarningEmployer != null)
                 pnlWarningEmployer.Visible = userType.Equals("Employer", StringComparison.OrdinalIgnoreCase);
 
             if (profileStatus == "Deactivated")
             {
+                // IF the value exists and is not null
                 if (pnlDeactivateReady != null) pnlDeactivateReady.Visible = false;
+                // IF the value exists and is not null
                 if (pnlReactivateProfile != null)
                 {
                     pnlReactivateProfile.Visible = true;
+                    // IF the value exists and is not null
                     if (litDeactivatedRole != null) litDeactivatedRole.Text = userType;
                 }
             }
             else
             {
+                // IF the value exists and is not null
                 if (pnlDeactivateReady != null) pnlDeactivateReady.Visible = true;
+                // IF the value exists and is not null
                 if (pnlReactivateProfile != null) pnlReactivateProfile.Visible = false;
             }
         }
@@ -225,6 +243,7 @@ namespace FreeHubProject
             try
             {
                 DataRow user = DatabaseHelper.GetUserById(userId);
+                // IF the value exists and is not null
                 if (user != null)
                 {
                     txtFirstName.Text = Convert.ToString(user["firstName"]);
@@ -233,12 +252,14 @@ namespace FreeHubProject
                     txtContactNumber.Text = Convert.ToString(user["contactNumber"]);
                 }
 
+                // IF the logged-in user is a Freelancer
                 if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     pnlFreelancerFields.Visible = true;
                     pnlEmployerFields.Visible = false;
 
                     DataRow freelancer = DatabaseHelper.GetFreelancerByUserId(userId);
+                    // IF the value exists and is not null
                     if (freelancer != null)
                     {
                         txtUpdateSkills.Text = Convert.ToString(freelancer["skills"]);
@@ -247,12 +268,14 @@ namespace FreeHubProject
                         txtUpdateRate.Text = Convert.ToDecimal(freelancer["hourlyRate"]).ToString("0");
                     }
                 }
+                // IF the logged-in user is an Employer
                 else if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
                     pnlFreelancerFields.Visible = false;
                     pnlEmployerFields.Visible = true;
 
                     DataRow employer = DatabaseHelper.GetEmployerByUserId(userId);
+                    // IF the value exists and is not null
                     if (employer != null)
                     {
                         txtUpdateCompanyName.Text = Convert.ToString(employer["companyName"]);
@@ -288,6 +311,7 @@ namespace FreeHubProject
             {
                 lblErrFirstName.Text = "First name is required"; valid = false;
             }
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtLastName.Text))
             {
                 lblErrLastName.Text = "Last name is required"; valid = false;
@@ -298,6 +322,7 @@ namespace FreeHubProject
             //       validated, so hidden other-role fields never block the save. -----
             if (isFreelancer)
             {
+                // IF the field is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(txtUpdateSkills.Text))
                 {
                     lblErrSkills.Text = "Skills are required"; valid = false;
@@ -308,6 +333,7 @@ namespace FreeHubProject
                 else if (experience.Length < 30) { lblErrExperience.Text = "Minimum 30 characters"; valid = false; }
                 else if (experience.Length > 700) { lblErrExperience.Text = "Maximum 700 characters"; valid = false; }
 
+                // IF the field is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(txtUpdatePortfolio.Text))
                 {
                     lblErrPortfolio.Text = "Portfolio link is required"; valid = false;
@@ -324,12 +350,15 @@ namespace FreeHubProject
                     else if (parsedRate > 2000) { lblErrRate.Text = "Maximum R2 000"; valid = false; }
                 }
             }
+            // IF the user is an employer, show employer-specific content
             else if (isEmployer)
             {
+                // IF the field is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(txtUpdateCompanyName.Text))
                 {
                     lblErrCompany.Text = "Company name is required"; valid = false;
                 }
+                // IF the field is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(ddlUpdateIndustry.SelectedValue))
                 {
                     lblErrIndustry.Text = "Select an industry"; valid = false;
@@ -381,6 +410,7 @@ namespace FreeHubProject
                         new SqlParameter("@Rate", rate),
                         new SqlParameter("@UserID", userId));
                 }
+                // IF the logged-in user is an Employer
                 else if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
                     string emQuery = @"UPDATE Employer SET companyName = @Company, industry = @Industry,
@@ -420,6 +450,7 @@ namespace FreeHubProject
 
                 string nameIdentifier = "A user";
                 DataRow userRow = DatabaseHelper.GetUserById(userId);
+                // IF the value exists and is not null
                 if (userRow != null)
                 {
                     nameIdentifier = $"{userRow["firstName"]} {userRow["lastName"]}";
@@ -428,6 +459,7 @@ namespace FreeHubProject
                 // Notify active counterparts
                 string notifyMsg = $"⚠️ The {currentRole.ToLower()} profile for {nameIdentifier} has been deactivated. Associated chats are now read-only.";
 
+                // IF the logged-in user is an Employer
                 if (currentRole.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
                     // Hide/Cancel open projects when employer profile is deactivated
@@ -452,6 +484,7 @@ namespace FreeHubProject
                         NotificationHelper.CreateNotification(Convert.ToInt32(row["userID"]), "System", notifyMsg);
                     }
                 }
+                // IF the logged-in user is a Freelancer
                 else if (currentRole.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     DatabaseHelper.ExecuteNonQuery(
@@ -598,6 +631,7 @@ namespace FreeHubProject
 
                 decimal walletBalance = 0;
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(userId);
+                // IF a wallet record was found for this user
                 if (wallet != null)
                     walletBalance = Convert.ToDecimal(wallet["balance"]);
 
@@ -664,15 +698,25 @@ namespace FreeHubProject
         /// <summary>Clears all beside-label error messages on the edit form before re-validating.</summary>
         private void ClearEditErrors()
         {
+            // IF the value exists and is not null
             if (lblErrFirstName != null) lblErrFirstName.Text = "";
+            // IF the value exists and is not null
             if (lblErrLastName != null) lblErrLastName.Text = "";
+            // IF the value exists and is not null
             if (lblErrContact != null) lblErrContact.Text = "";
+            // IF the value exists and is not null
             if (lblErrSkills != null) lblErrSkills.Text = "";
+            // IF the value exists and is not null
             if (lblErrExperience != null) lblErrExperience.Text = "";
+            // IF the value exists and is not null
             if (lblErrPortfolio != null) lblErrPortfolio.Text = "";
+            // IF the value exists and is not null
             if (lblErrRate != null) lblErrRate.Text = "";
+            // IF the value exists and is not null
             if (lblErrCompany != null) lblErrCompany.Text = "";
+            // IF the value exists and is not null
             if (lblErrIndustry != null) lblErrIndustry.Text = "";
+            // IF the value exists and is not null
             if (lblErrDescription != null) lblErrDescription.Text = "";
         }
 

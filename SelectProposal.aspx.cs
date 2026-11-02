@@ -8,18 +8,21 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
 
                 // Restrict Select/Approve/Reject to Employer only
                 string userType = Session["UserType"] as string ?? "";
+                // IF the logged-in user is a Freelancer
                 if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     ViewState["IsFreelancer"] = true;
@@ -42,6 +45,7 @@ namespace FreeHubProject
             {
                 DataTable proposals;
 
+                // IF the logged-in user is an Employer
                 if (userType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 {
                     // Employer sees proposals received for their projects

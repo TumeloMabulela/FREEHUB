@@ -15,8 +15,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -30,6 +32,7 @@ namespace FreeHubProject
                 string requestedType =
                     Request.QueryString["type"];
 
+                // IF the field is empty or contains only whitespace
                 if (!string.IsNullOrWhiteSpace(
                     requestedType))
                 {
@@ -39,6 +42,7 @@ namespace FreeHubProject
                                 requestedType
                             );
 
+                    // IF the value exists and is not null
                     if (item != null)
                     {
                         ddlTransactionType.SelectedValue =
@@ -53,6 +57,7 @@ namespace FreeHubProject
                 string requestedTxn =
                     Request.QueryString["txn"];
 
+                // IF the field is empty or contains only whitespace
                 if (!string.IsNullOrWhiteSpace(
                     requestedTxn))
                 {
@@ -62,6 +67,7 @@ namespace FreeHubProject
                         DataRow transaction =
                             DatabaseHelper.GetTransactionById(txnId);
 
+                        // IF the value exists and is not null
                         if (transaction != null)
                         {
                             ShowDetails(transaction);
@@ -75,6 +81,7 @@ namespace FreeHubProject
         private void LoadWalletBalance()
         {
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
@@ -93,6 +100,7 @@ namespace FreeHubProject
         private void LoadTransactions()
         {
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
@@ -283,6 +291,7 @@ namespace FreeHubProject
             DataRow transaction =
                 DatabaseHelper.GetTransactionById(txnId);
 
+            // IF the value is null (not found or not set)
             if (transaction == null)
             {
                 ShowMessage(
@@ -421,6 +430,7 @@ namespace FreeHubProject
                     ViewState["SelectedTransactionId"]
                 );
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 transactionId))
             {
@@ -445,6 +455,7 @@ namespace FreeHubProject
             DataRow transaction =
                 DatabaseHelper.GetTransactionById(txnId);
 
+            // IF the value is null (not found or not set)
             if (transaction == null)
             {
                 ShowMessage(
@@ -557,6 +568,7 @@ namespace FreeHubProject
         /// <summary>Escapes characters that are special inside a PDF text string.</summary>
         private static string EscapePdfText(string text)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(text)) return "";
             // Replace the Rand sign and any non-ASCII with safe equivalents, since
             // the base Helvetica font / our encoding only covers ASCII reliably.
@@ -646,6 +658,7 @@ namespace FreeHubProject
             object value =
                 Session[sessionName];
 
+            // IF the value is null (not found or not set)
             if (value == null)
             {
                 return 0.00m;

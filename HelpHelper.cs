@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FreeHubProject
 {
@@ -23,6 +23,7 @@ namespace FreeHubProject
                 ? "A user has requested help."
                 : query.Trim();
 
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(context))
             {
                 body = "[" + context.Trim() + "] " + body;
@@ -64,6 +65,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(query))
             {
                 SendHelpMessage(userId, query, context);
@@ -78,9 +80,11 @@ namespace FreeHubProject
             try
             {
                 var row = DatabaseHelper.GetUserById(userId);
+                // IF the value exists and is not null
                 if (row != null)
                 {
                     string name = (Convert.ToString(row["firstName"]) + " " + Convert.ToString(row["lastName"])).Trim();
+                    // IF the field is empty or contains only whitespace
                     if (!string.IsNullOrWhiteSpace(name)) return name;
                 }
             }

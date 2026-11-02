@@ -16,6 +16,7 @@ namespace FreeHubProject
             DataTable table =
                 session[TransactionSessionKey] as DataTable;
 
+            // IF the value exists and is not null
             if (table != null)
             {
                 return table;

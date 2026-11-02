@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -49,6 +49,7 @@ namespace FreeHubProject
         public static void OnProjectCompleted(int projectId, int actingUserId)
         {
             string conn = ConnStr();
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(conn) || projectId <= 0) return;
 
             int employerUserId, freelancerUserId;
@@ -82,6 +83,7 @@ namespace FreeHubProject
         public static void OnProjectCancelled(int projectId, int actingUserId, string projectTitle)
         {
             string conn = ConnStr();
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(conn) || projectId <= 0) return;
 
             int employerUserId, freelancerUserId;
@@ -116,6 +118,7 @@ namespace FreeHubProject
         public static void OnProposalApproved(int projectId, int actingUserId, string projectTitle)
         {
             string conn = ConnStr();
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(conn) || projectId <= 0) return;
 
             int employerUserId, freelancerUserId;
@@ -172,6 +175,7 @@ namespace FreeHubProject
             // 1. Partner account state first — a deactivated/deleted partner locks the chat
             //    regardless of project state.
             DataRow partner = DatabaseHelper.GetUserById(otherUserId);
+            // IF the value exists and is not null
             if (partner != null)
             {
                 string acct = Convert.ToString(partner["accountStatus"]);
@@ -418,6 +422,7 @@ namespace FreeHubProject
         /// <summary>True when a stored message is a system/lifecycle event (not a user message).</summary>
         public static bool IsSystemMessage(object content)
         {
+            // IF the value is null (not found or not set)
             if (content == null || content == DBNull.Value) return false;
             return Convert.ToString(content).StartsWith(SystemPrefix, StringComparison.Ordinal);
         }
@@ -439,6 +444,7 @@ namespace FreeHubProject
 
         private static string EscapeLike(string value)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(value)) return value;
             return value.Replace("[", "[[]").Replace("%", "[%]").Replace("_", "[_]");
         }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -22,6 +22,7 @@ namespace FreeHubProject
 
         public static string NormalizeDescription(string raw)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(raw)) return raw ?? string.Empty;
 
             string text = raw.Replace("\r\n", "\n").Replace("\r", "\n").Replace('\u00A0', ' ');

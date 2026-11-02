@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -16,6 +16,7 @@ namespace FreeHubProject
         private static string GetConnectionString()
         {
             var setting = ConfigurationManager.ConnectionStrings["FreeHubDB"];
+            // IF the field is empty or contains only whitespace
             if (setting == null || string.IsNullOrWhiteSpace(setting.ConnectionString))
             {
                 throw new ConfigurationErrorsException(
@@ -41,6 +42,7 @@ namespace FreeHubProject
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    // IF the value exists and is not null
                     if (parameters != null) cmd.Parameters.AddRange(parameters);
                     using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                     {
@@ -70,6 +72,7 @@ namespace FreeHubProject
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    // IF the value exists and is not null
                     if (parameters != null) cmd.Parameters.AddRange(parameters);
                     conn.Open();
                     return cmd.ExecuteNonQuery();
@@ -83,6 +86,7 @@ namespace FreeHubProject
             {
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    // IF the value exists and is not null
                     if (parameters != null) cmd.Parameters.AddRange(parameters);
                     conn.Open();
                     return cmd.ExecuteScalar();
@@ -143,6 +147,7 @@ namespace FreeHubProject
                 new SqlParameter("@UserType", userType)
             );
 
+            // IF the value is null (not found or not set)
             if (result == null || result == DBNull.Value) return -1;
 
             int userID = Convert.ToInt32(result);
@@ -172,6 +177,7 @@ namespace FreeHubProject
                 new SqlParameter("@Password", hashedPassword)
             );
 
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
 
             result = ExecuteQuery(query,
@@ -179,6 +185,7 @@ namespace FreeHubProject
                 new SqlParameter("@Password", password)
             );
 
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
 
             string findQuery = @"
@@ -191,6 +198,7 @@ namespace FreeHubProject
                 new SqlParameter("@Login", emailOrUsername.Trim())
             );
 
+            // IF records were found in the database
             if (findResult.Rows.Count > 0)
             {
                 string storedPassword = Convert.ToString(findResult.Rows[0]["password"]);
@@ -209,6 +217,7 @@ namespace FreeHubProject
                     username, accountStatus, userType, ratingScore, dateCreated, lastSeen
                     FROM [User] WHERE userID = @UserID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@UserID", userID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -217,6 +226,7 @@ namespace FreeHubProject
         {
             string query = "SELECT walletID, userID, balance, dateCreated, walletStatus FROM Wallet WHERE userID = @UserID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@UserID", userID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -225,6 +235,7 @@ namespace FreeHubProject
         {
             string query = "SELECT employerID, userID, companyName, industry, description, contactEmail FROM Employer WHERE userID = @UserID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@UserID", userID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -233,6 +244,7 @@ namespace FreeHubProject
         {
             string query = "SELECT freelancerID, userID, skills, experience, portfolioLinks, hourlyRate FROM Freelancer WHERE userID = @UserID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@UserID", userID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -262,8 +274,10 @@ namespace FreeHubProject
         public static string GetProfileStatus(int userID, string profileType)
         {
             bool profileExists = false;
+            // IF the logged-in user is a Freelancer
             if (profileType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 profileExists = GetFreelancerByUserId(userID) != null;
+            // IF the logged-in user is an Employer
             else if (profileType.Equals("Employer", StringComparison.OrdinalIgnoreCase))
                 profileExists = GetEmployerByUserId(userID) != null;
 
@@ -275,6 +289,7 @@ namespace FreeHubProject
                 new SqlParameter("@UserID", userID),
                 new SqlParameter("@ProfileType", profileType));
 
+            // IF the value is null (not found or not set)
             if (result == null || result == DBNull.Value)
             {
                 ExecuteNonQuery(
@@ -348,6 +363,7 @@ namespace FreeHubProject
                             INNER JOIN [User] u ON e.userID = u.userID
                             WHERE p.projectID = @ProjectID";
             DataTable result = ExecuteQuery(query, new SqlParameter("@ProjectID", projectID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -435,6 +451,7 @@ namespace FreeHubProject
             DataRow freelancer = GetFreelancerByUserId(userID);
             int freelancerID;
 
+            // IF the value exists and is not null
             if (freelancer != null)
             {
                 freelancerID = Convert.ToInt32(freelancer["freelancerID"]);
@@ -471,6 +488,7 @@ namespace FreeHubProject
                 new SqlParameter("@ProposedRate", proposedRate),
                 new SqlParameter("@EstimatedTime", estimatedTime));
 
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value)
             {
                 return Convert.ToInt32(result);
@@ -540,6 +558,7 @@ namespace FreeHubProject
                 new SqlParameter("@Reference", reference ?? ""),
                 new SqlParameter("@PaymentMethod", paymentMethod ?? ""));
 
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value)
                 return Convert.ToInt32(result);
 
@@ -563,6 +582,7 @@ namespace FreeHubProject
         {
             string query = "SELECT balance FROM Wallet WHERE walletID = @WalletID";
             object result = ExecuteScalar(query, new SqlParameter("@WalletID", walletID));
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value)
                 return Convert.ToDecimal(result);
             return 0.00m;
@@ -578,6 +598,7 @@ namespace FreeHubProject
                 WHERE transactionID = @TransactionID";
             DataTable result = ExecuteQuery(query,
                 new SqlParameter("@TransactionID", transactionID));
+            // IF records were found in the database
             if (result.Rows.Count > 0) return result.Rows[0];
             return null;
         }
@@ -596,6 +617,7 @@ namespace FreeHubProject
                 new SqlParameter("@ProjectID", projectID),
                 new SqlParameter("@UserID", userID),
                 new SqlParameter("@CommentText", commentText));
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value)
                 return Convert.ToInt32(result);
             return 0;
@@ -617,6 +639,7 @@ namespace FreeHubProject
         }
         public static string CapitalizeName(string name)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(name)) return "";
             name = name.Trim();
             return char.ToUpper(name[0]) + (name.Length > 1 ? name.Substring(1).ToLower() : "");
@@ -655,6 +678,7 @@ namespace FreeHubProject
         public static string GetUserOnlineStatus(int targetUserId)
         {
             DataRow user = GetUserById(targetUserId);
+            // IF the value is null (not found or not set)
             if (user == null) return "Offline";
 
             string accountStatus = Convert.ToString(user["accountStatus"]);
@@ -728,6 +752,7 @@ namespace FreeHubProject
 
         public static string CapitalizeSkills(string skills)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(skills)) return "";
 
             string[] parts = skills.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -759,6 +784,7 @@ namespace FreeHubProject
             object result = ExecuteScalar(
                 "SELECT TOP 1 adminID FROM dbo.Admin WHERE userID = @UserID ORDER BY adminID",
                 new SqlParameter("@UserID", adminUserId));
+            // IF the value exists and is not null
             if (result != null && result != DBNull.Value) return Convert.ToInt32(result);
             return 0;
         }
@@ -775,6 +801,7 @@ namespace FreeHubProject
                        u.email AS raisedByEmail
                 FROM dbo.Dispute d
                 INNER JOIN dbo.[User] u ON d.userID = u.userID";
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
             {
                 query += " WHERE d.status = @Status";
@@ -841,6 +868,7 @@ namespace FreeHubProject
                 INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
                 INNER JOIN dbo.[User] u ON w.userID = u.userID
                 WHERE t.transactionType = 'Refund'";
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
             {
                 query += " AND t.transactionStatus = @Status";
@@ -858,6 +886,7 @@ namespace FreeHubProject
         public static int ApproveRefund(int transactionID)
         {
             DataRow txn = GetTransactionById(transactionID);
+            // IF the value is null (not found or not set)
             if (txn == null) return 0;
             if (!Convert.ToString(txn["transactionType"]).Equals("Refund", StringComparison.OrdinalIgnoreCase))
                 return 0;
@@ -883,6 +912,7 @@ namespace FreeHubProject
         public static int RejectRefund(int transactionID, string reason = null)
         {
             DataRow txn = GetTransactionById(transactionID);
+            // IF the value is null (not found or not set)
             if (txn == null) return 0;
             int walletID = Convert.ToInt32(txn["walletID"]);
             StampRejectionReason(transactionID, reason);
@@ -900,6 +930,7 @@ namespace FreeHubProject
         /// </summary>
         private static void StampRejectionReason(int transactionID, string reason)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(reason)) return;
             string note = " [Rejected: " + reason.Trim() + "]";
             ExecuteNonQuery(
@@ -926,6 +957,7 @@ namespace FreeHubProject
                 INNER JOIN dbo.Wallet w ON t.walletID = w.walletID
                 INNER JOIN dbo.[User] u ON w.userID = u.userID
                 WHERE t.transactionType = 'Withdrawal'";
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(statusFilter) && !statusFilter.Equals("All", StringComparison.OrdinalIgnoreCase))
             {
                 query += " AND t.transactionStatus = @Status";
@@ -940,6 +972,7 @@ namespace FreeHubProject
         public static int ApproveWithdrawal(int transactionID)
         {
             DataRow txn = GetTransactionById(transactionID);
+            // IF the value is null (not found or not set)
             if (txn == null) return 0;
             ExecuteNonQuery(
                 "UPDATE dbo.[Transaction] SET transactionStatus = 'Completed' WHERE transactionID = @Id AND transactionType = 'Withdrawal'",
@@ -956,6 +989,7 @@ namespace FreeHubProject
         public static int RejectWithdrawal(int transactionID, string reason = null)
         {
             DataRow txn = GetTransactionById(transactionID);
+            // IF the value is null (not found or not set)
             if (txn == null) return 0;
             if (Convert.ToString(txn["transactionStatus"]).Equals("Completed", StringComparison.OrdinalIgnoreCase))
                 return 0;

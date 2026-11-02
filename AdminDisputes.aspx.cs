@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Web.UI.WebControls;
 
@@ -8,7 +8,9 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user does not have the required role, stop here
             if (!AuthHelper.RequireRole(this, "Admin")) return;
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 LoadDisputes();
@@ -26,6 +28,7 @@ namespace FreeHubProject
         protected string FormatAdminNote(object adminComment)
         {
             string note = Convert.ToString(adminComment);
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(note)) return "";
             return "<div style='color:#5a5a5a;margin-top:4px;font-size:11px;'>Note: " + Server.HtmlEncode(note) + "</div>";
         }
@@ -58,6 +61,7 @@ namespace FreeHubProject
                 if (ownerId > 0)
                 {
                     string userMsg = "Your dispute #" + disputeID + " is now '" + newStatus + "'.";
+                    // IF the field is empty or contains only whitespace
                     if (!string.IsNullOrWhiteSpace(comment))
                         userMsg += " Admin note: " + comment;
                     NotificationHelper.CreateNotification(ownerId, "Dispute", userMsg);

@@ -9,16 +9,19 @@ namespace FreeHubProject
         private const decimal MaxDepositAmount = 20000000m;
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
             // Role check - Employer only
             string userType = Session["UserType"] as string ?? "";
+            // IF the logged-in user is a Freelancer
             if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Wallet.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -136,6 +139,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF nothing was selected from the list or dropdown
             if (rblPaymentMethod.SelectedIndex == -1)
             {
                 ShowMessage(
@@ -151,9 +155,11 @@ namespace FreeHubProject
 
             // Get wallet ID from session
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
+            // IF no wallet was found for this user
             if (walletID == 0)
             {
                 ShowMessage(
@@ -235,6 +241,7 @@ namespace FreeHubProject
         {
             amount = 0m;
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(input))
                 return false;
 
@@ -293,6 +300,7 @@ namespace FreeHubProject
             object value =
                 Session[sessionName];
 
+            // IF the value is null (not found or not set)
             if (value == null)
             {
                 return 0.00m;

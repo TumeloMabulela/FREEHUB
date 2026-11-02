@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -87,6 +87,7 @@ namespace FreeHubProject
         /// </summary>
         public static string TitleCase(string input)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(input)) return (input ?? string.Empty).Trim();
 
             // Split on whitespace, dropping empties (collapses multiple spaces).
@@ -131,6 +132,7 @@ namespace FreeHubProject
         // honouring the acronym dictionary for the segment too.
         private static string FormatSegment(string seg)
         {
+            // IF the string is empty or null
             if (string.IsNullOrEmpty(seg)) return seg;
 
             string canonical;

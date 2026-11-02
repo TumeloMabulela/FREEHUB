@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -10,8 +10,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -60,6 +62,7 @@ namespace FreeHubProject
                     paidQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (paidResult != null && paidResult != DBNull.Value)
                     totalPaidOut = Convert.ToDecimal(paidResult);
 
@@ -75,6 +78,7 @@ namespace FreeHubProject
                     escrowQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (escrowResult != null && escrowResult != DBNull.Value)
                     inEscrow = Convert.ToDecimal(escrowResult);
 
@@ -90,6 +94,7 @@ namespace FreeHubProject
                     countQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (countResult != null && countResult != DBNull.Value)
                     completedCount = Convert.ToInt32(countResult);
             }
@@ -242,6 +247,7 @@ namespace FreeHubProject
             int userID = GetUserID();
             int walletID = GetWalletID();
 
+            // IF no wallet was found for this user
             if (walletID == 0 || userID == 0)
             {
                 ShowMessage("Session expired. Please log in again.", false);
@@ -250,6 +256,7 @@ namespace FreeHubProject
 
             // Get project details
             DataRow project = DatabaseHelper.GetProjectById(projectID);
+            // IF the project was not found in the database
             if (project == null)
             {
                 ShowMessage("Project not found.", false);
@@ -265,6 +272,7 @@ namespace FreeHubProject
             object ownerResult = DatabaseHelper.ExecuteScalar(ownerQuery,
                 new SqlParameter("@EmpID", empId));
 
+            // IF the value is null (not found or not set)
             if (ownerResult == null || Convert.ToInt32(ownerResult) != userID)
             {
                 ShowMessage("You do not have permission to release funds for this project.", false);
@@ -309,12 +317,14 @@ namespace FreeHubProject
             object freelancerResult = DatabaseHelper.ExecuteScalar(freelancerQuery,
                 new SqlParameter("@ProjectID", projectID));
 
+            // IF the value exists and is not null
             if (freelancerResult != null && freelancerResult != DBNull.Value)
             {
                 int freelancerUserId = Convert.ToInt32(freelancerResult);
 
                 // 4. Pay the freelancer (90%)
                 DataRow freelancerWallet = DatabaseHelper.GetWalletByUserId(freelancerUserId);
+                // IF a wallet record was found for this user
                 if (freelancerWallet != null)
                 {
                     int flWalletId = Convert.ToInt32(freelancerWallet["walletID"]);
@@ -347,6 +357,7 @@ namespace FreeHubProject
 
             // 5. Platform commission (10%) to admin wallet
             DataRow adminWallet = DatabaseHelper.GetWalletByUserId(1);
+            // IF a wallet record was found for this user
             if (adminWallet != null)
             {
                 int adminWalletId = Convert.ToInt32(adminWallet["walletID"]);
@@ -432,6 +443,7 @@ namespace FreeHubProject
 
         private int GetWalletID()
         {
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 return Convert.ToInt32(Session["WalletID"]);
             return 0;
@@ -440,6 +452,7 @@ namespace FreeHubProject
 
         private int GetUserID()
         {
+            // IF user IS already logged in
             if (Session["UserID"] != null)
                 return Convert.ToInt32(Session["UserID"]);
             return 0;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -10,8 +10,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -63,6 +65,7 @@ namespace FreeHubProject
                     totalQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (totalResult != null && totalResult != DBNull.Value)
                     totalRefunded = Convert.ToDecimal(totalResult);
 
@@ -78,6 +81,7 @@ namespace FreeHubProject
                     pendingQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (pendingResult != null && pendingResult != DBNull.Value)
                     pendingRefunds = Convert.ToDecimal(pendingResult);
 
@@ -93,6 +97,7 @@ namespace FreeHubProject
                     countQuery,
                     new SqlParameter("@WalletID", walletID));
 
+                // IF the value exists and is not null
                 if (countResult != null && countResult != DBNull.Value)
                     completedCount = Convert.ToInt32(countResult);
             }
@@ -173,6 +178,7 @@ namespace FreeHubProject
             string transactionRef =
                 txtTransactionRef.Text.Trim();
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(transactionRef))
             {
                 ShowMessage(
@@ -199,6 +205,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 ddlReason.SelectedValue))
             {
@@ -214,6 +221,7 @@ namespace FreeHubProject
 
             int walletID = GetWalletID();
 
+            // IF no wallet was found for this user
             if (walletID == 0)
             {
                 ShowMessage(
@@ -235,6 +243,7 @@ namespace FreeHubProject
                 new SqlParameter("@WalletID", walletID),
                 new SqlParameter("@Reference", transactionRef));
 
+            // IF no records were returned from the database
             if (verifyResult.Rows.Count == 0)
             {
                 ShowMessage(
@@ -265,6 +274,7 @@ namespace FreeHubProject
                 "Refund for " + transactionRef +
                 " - " + reason;
 
+            // IF the field is empty or contains only whitespace
             if (!string.IsNullOrWhiteSpace(details))
             {
                 description += " (" + details + ")";
@@ -360,6 +370,7 @@ namespace FreeHubProject
 
         private int GetWalletID()
         {
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 return Convert.ToInt32(Session["WalletID"]);
 

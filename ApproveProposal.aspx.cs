@@ -8,6 +8,7 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, redirect to login page
             if (Session["UserID"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -15,6 +16,7 @@ namespace FreeHubProject
             }
 
             string userType = Session["UserType"] as string ?? "";
+            // IF the logged-in user is a Freelancer
             if (userType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("Default.aspx");
@@ -29,6 +31,7 @@ namespace FreeHubProject
 
         protected void btnConfirmApproval_Click(object sender, EventArgs e)
         {
+            // IF the confirmation checkbox is NOT ticked, block the action
             if (!chkConfirmApproval.Checked)
             {
                 lblApprovalMessage.Text = "Please confirm that you understand approving this proposal will start the project.";
@@ -55,6 +58,7 @@ namespace FreeHubProject
             ORDER BY prop.date DESC";
                 DataRow dr = DatabaseHelper.GetDataRow(getDetailsQuery);
 
+                // IF no matching database row was found
                 if (dr == null)
                 {
                     lblApprovalMessage.Text = "No pending proposal was found to approve.";
@@ -79,6 +83,7 @@ namespace FreeHubProject
                 int walletID = 0;
                 decimal availableBalance = 0m;
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(employerUserId);
+                // IF a wallet record was found for this user
                 if (wallet != null)
                 {
                     walletID = Convert.ToInt32(wallet["walletID"]);
@@ -86,6 +91,7 @@ namespace FreeHubProject
                         availableBalance = Convert.ToDecimal(wallet["balance"]);
                 }
 
+                // IF no wallet was found for this user
                 if (walletID == 0)
                 {
                     lblApprovalMessage.Text = "No wallet was found for the employer account. Cannot approve this proposal.";
@@ -93,8 +99,10 @@ namespace FreeHubProject
                 }
 
                 decimal additionalRequired = proposedRate - projectBudget;
+                // IF the proposed rate is less than budget, set extra to zero
                 if (additionalRequired < 0m) additionalRequired = 0m;
 
+                // IF the employer cannot afford the extra funds needed
                 if (additionalRequired > availableBalance)
                 {
                     lblApprovalMessage.Text =
@@ -153,6 +161,7 @@ namespace FreeHubProject
                 ChatLifecycle.OnProposalApproved(projectId, employerUserId, projectTitle);
 
                 string successMessage = "Proposal approved successfully! The project status has changed to 'In Progress'.";
+                // IF extra funds are needed beyond what is already in escrow
                 if (additionalRequired > 0m)
                 {
                     successMessage += " An additional R" + additionalRequired.ToString("N2") +

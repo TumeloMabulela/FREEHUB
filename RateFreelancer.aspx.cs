@@ -8,17 +8,20 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
             // Ratings are not applicable to the platform admin. Block the page
             // server-side so a direct URL can't reach it for an admin account.
             string userType = Session["UserType"] as string ?? "";
+            // IF the logged-in user is an Admin
             if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("AdminDashboard.aspx");
                 return;
             }
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlRatingMessage.Visible = false;

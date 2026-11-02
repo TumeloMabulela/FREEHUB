@@ -10,8 +10,10 @@ namespace FreeHubProject
             object sender,
             EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -28,6 +30,7 @@ namespace FreeHubProject
             decimal availableBalance = 0.00m;
 
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
@@ -70,6 +73,7 @@ namespace FreeHubProject
                 Session["BankAccounts"]
                 as List<BankAccountOption>;
 
+            // IF the value is null (not found or not set)
             if (accounts == null ||
                 accounts.Count == 0)
             {
@@ -160,6 +164,7 @@ namespace FreeHubProject
                 return;
             }
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(
                 ddlBankAccount.SelectedValue))
             {
@@ -178,9 +183,11 @@ namespace FreeHubProject
 
             // Get wallet ID
             int walletID = 0;
+            // IF the value exists and is not null
             if (Session["WalletID"] != null)
                 walletID = Convert.ToInt32(Session["WalletID"]);
 
+            // IF no wallet was found for this user
             if (walletID == 0)
             {
                 ShowMessage(
@@ -342,6 +349,7 @@ namespace FreeHubProject
                 Session["WithdrawalRequests"]
                 as List<WithdrawalRequest>;
 
+            // IF the value is null (not found or not set)
             if (withdrawals == null)
             {
                 withdrawals =
@@ -361,6 +369,7 @@ namespace FreeHubProject
             object value =
                 Session[sessionName];
 
+            // IF the value is null (not found or not set)
             if (value == null)
             {
                 return 0.00m;

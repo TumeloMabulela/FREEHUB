@@ -23,8 +23,10 @@ namespace FreeHubProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user is not logged in, stop executing this page
             if (!AuthHelper.RequireLogin(this)) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 pnlMessage.Visible = false;
@@ -58,6 +60,7 @@ namespace FreeHubProject
             {
                 string query = "";
 
+                // IF the logged-in user is a Freelancer
                 if (UserType.Equals("Freelancer", StringComparison.OrdinalIgnoreCase))
                 {
                     // Freelancer projects assigned via approved proposals
@@ -192,6 +195,7 @@ namespace FreeHubProject
             bool isEmpty = view.Rows.Count == 0;
             pnlListWrap.Visible = !isEmpty;
             pnlNoProjects.Visible = isEmpty;
+            // IF there are no items to show, display the empty state panel
             if (isEmpty) SetEmptyState();
 
             // Bind the Progress Overview widget from the FULL (unfiltered) dataset so the
@@ -260,6 +264,7 @@ namespace FreeHubProject
                     WHERE p.projectID = @ProjectID";
                 DataRow dr = DatabaseHelper.GetDataRow(getEmpQuery, new SqlParameter("@ProjectID", projectId));
 
+                // IF a database row was found
                 if (dr != null)
                 {
                     int employerUserId = Convert.ToInt32(dr["userID"]);

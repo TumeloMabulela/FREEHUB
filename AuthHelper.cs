@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Web;
 
 namespace FreeHubProject
@@ -15,6 +15,7 @@ namespace FreeHubProject
         /// </summary>
         public static bool RequireLogin(System.Web.UI.Page page)
         {
+            // IF user is not logged in, redirect to login page
             if (page.Session["UserID"] == null)
             {
                 page.Response.Redirect("Login.aspx?returnUrl=" +
@@ -37,6 +38,7 @@ namespace FreeHubProject
         /// </summary>
         public static int GetCurrentUserId(System.Web.UI.Page page)
         {
+            // IF user is not logged in, redirect to login page
             if (page.Session["UserID"] == null) return 0;
             return Convert.ToInt32(page.Session["UserID"]);
         }

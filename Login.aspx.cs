@@ -8,6 +8,7 @@ namespace FreeHubProject
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // IF user IS already logged in
             if (!IsPostBack && Session["UserID"] != null)
             {
                 Response.Redirect("Default.aspx");
@@ -18,6 +19,7 @@ namespace FreeHubProject
         {
             lblLoginMessage.CssClass = "login-message login-error";
 
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(txtLoginEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtLoginPassword.Text))
             {
@@ -32,6 +34,7 @@ namespace FreeHubProject
                     txtLoginPassword.Text
                 );
 
+                // IF the value is null (not found or not set)
                 if (user == null)
                 {
                     lblLoginMessage.Text = "Invalid email or password. Please try again.";
@@ -52,6 +55,7 @@ namespace FreeHubProject
                 // Load wallet balance
                 DataRow wallet = DatabaseHelper.GetWalletByUserId(
                     Convert.ToInt32(user["userID"]));
+                // IF a wallet record was found for this user
                 if (wallet != null)
                 {
                     Session["WalletID"] = Convert.ToInt32(wallet["walletID"]);
@@ -80,21 +84,25 @@ namespace FreeHubProject
 
                 string returnUrl = Request.QueryString["ReturnUrl"];
 
+                // IF the field is empty or contains only whitespace
                 if (string.IsNullOrWhiteSpace(userType) || userType == "None")
                 {
                     // New user — no profile created yet, must choose role
                     Response.Redirect("ChooseRole.aspx");
                 }
+                // IF profile is deactivated, send to ChooseRole to reactivate
                 else if (accountStatus == "Deactivated")
                 {
                     // Profile deactivated — let them in to ChooseRole to reactivate
                     Response.Redirect("ChooseRole.aspx");
                 }
+                // IF the logged-in user is an Admin
                 else if (userType.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 {
                     // Platform admin goes straight to the admin control panel.
                     Response.Redirect("AdminDashboard.aspx");
                 }
+                // IF the field is empty or contains only whitespace
                 else if (!string.IsNullOrWhiteSpace(returnUrl))
                 {
                     Response.Redirect(returnUrl);

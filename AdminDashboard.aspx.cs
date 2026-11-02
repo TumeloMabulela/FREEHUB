@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 
 namespace FreeHubProject
@@ -11,6 +11,7 @@ namespace FreeHubProject
             // of what links are shown in the UI.
             if (!AuthHelper.RequireRole(this, "Admin")) return;
 
+            // IF this is the first page load (not a button click), load data
             if (!IsPostBack)
             {
                 BindDashboard();
@@ -99,6 +100,7 @@ namespace FreeHubProject
         /// <summary>True for statuses considered "open / needs attention".</summary>
         protected static bool IsOpenStatus(string status)
         {
+            // IF the field is empty or contains only whitespace
             if (string.IsNullOrWhiteSpace(status)) return true;
             string s = status.Trim();
             return s.Equals("Open", StringComparison.OrdinalIgnoreCase)
