@@ -87,12 +87,10 @@ button {
 }
 
 .nav-container {
-    width: 100%;
-    max-width: none;
+    width: 90%;
+    max-width: 1250px;
     min-height: 75px;
-    margin: 0;
-    padding: 0 28px;
-    box-sizing: border-box;
+    margin: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -111,7 +109,7 @@ button {
 }
 
     .logo span {
-        color: #70C843;
+        color: #b7d68c;
     }
 
 
@@ -252,7 +250,7 @@ button {
     }
 
         .footer-container h3 span {
-            color: #70C843;
+            color: #b7d68c;
         }
 
     .footer-container h4 {
@@ -303,7 +301,7 @@ button {
 
     .nav-container {
         flex-wrap: wrap;
-        padding: 15px 20px;
+        padding: 15px 0;
     }
 
     .main-navigation {
@@ -328,8 +326,7 @@ button {
 @media screen and (max-width: 600px) {
 
     .nav-container {
-        width: 100%;
-        padding: 15px 16px;
+        width: 92%;
         justify-content: center;
         text-align: center;
     }
@@ -1421,12 +1418,9 @@ FREEHUB HOME PAGE
 
 /* LOGO */
 
-/* "Free" stays white; "HUB" uses the website's lime green. */
-.logo {
-    color: #ffffff !important;
-}
+.logo,
 .logo span {
-    color: #70C843 !important;
+    color: #ffffff !important;
 }
 
 
@@ -13140,27 +13134,31 @@ FREEHUB HOME PAGE
 /* Profile trigger: compact rounded mint pill with a thin pale-green border.
    Sits inside the existing header gradient without increasing header height. */
 .nav-profile-trigger {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: flex-start;   /* content sits to the left of the pill */
-    text-align: left;
-    gap: 10px;
-    padding: 5px 8px 5px 6px;
-    background: #ffffff;
-    border: 1px solid #d6e4de;
+    gap: 8px;
+    padding: 4px 6px;
+    background: #eaf7ef;
+    border: 1px solid #c7e6d2;
     border-radius: 999px;
     text-decoration: none;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+    width: -moz-fit-content;
+    width: fit-content;
     max-width: 100%;
 }
-.nav-profile-trigger:hover { background: #f1f8f4; border-color: #bfe0cd; }
+/* Keep the name/role block tight to its text so the chevron sits right next to
+   it (no empty gap before the dropdown arrow). */
+.nav-profile-trigger .user-nav-info { flex: 0 1 auto; }
+.nav-profile-trigger:hover { background: #e2f3e9; border-color: #b4ddc4; }
 .nav-profile-trigger:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(21, 122, 59, 0.30);
+    box-shadow: 0 0 0 3px rgba(45, 166, 110, 0.35);
 }
 
-/* Circular initials avatar — the project's teal→green gradient with white initials. */
+/* Circular initials avatar — a soft, lighter version of the FreeHub gradient
+   with dark-teal initials. */
 .user-nav-initials {
     display: flex;
     align-items: center;
@@ -13169,8 +13167,8 @@ FREEHUB HOME PAGE
     height: 38px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: linear-gradient(110deg, #118A9B 0%, #239E78 55%, #65CA43 100%);
-    color: #ffffff;
+    background: linear-gradient(135deg, #cdeef0 0%, #d6f1e2 55%, #e4f6cf 100%);
+    color: #0f5b63;
     font-weight: 800;
     font-size: 14px;
     letter-spacing: .3px;
@@ -13179,16 +13177,14 @@ FREEHUB HOME PAGE
 .user-nav-info {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;       /* name/role aligned to the far left */
-    text-align: left;
     line-height: 1.15;
     gap: 1px;
     min-width: 0;
 }
 
-/* Name in the project navy; role beneath in the project muted grey. */
+/* Name in bold dark teal; role beneath in smaller muted grey. */
 .user-nav-name {
-    color: #192B40;
+    color: #0f5b63;
     font-size: 14px;
     font-weight: 800;
     white-space: nowrap;
@@ -13197,7 +13193,7 @@ FREEHUB HOME PAGE
 }
 
 .user-nav-role {
-    color: #6b7a8a;
+    color: #7b8a85;
     font-size: 11px;
     font-weight: 500;
     display: block;
@@ -13211,12 +13207,12 @@ FREEHUB HOME PAGE
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: 26px;
+    height: 26px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: #e8f7ec;
-    color: #157a3b;
+    background: linear-gradient(135deg, #cdeef0 0%, #d6f1e2 55%, #e4f6cf 100%);
+    color: #0f5b63;
 }
 
 .logout-link {
@@ -13793,26 +13789,24 @@ FREEHUB HOME PAGE
 }
 
 
-/* Force role to appear UNDER the name, left-aligned, in the project palette. */
+/* Fix: Force role to appear UNDER the name (mint-pill colours) */
 .user-nav-info {
     display: flex !important;
     flex-direction: column !important;
-    align-items: flex-start !important;
-    text-align: left !important;
     gap: 1px !important;
     line-height: 1.15 !important;
 }
 
 .user-nav-info .user-nav-name {
     display: block !important;
-    color: #192B40;
+    color: #0f5b63;
     font-size: 14px;
     font-weight: 800;
 }
 
 .user-nav-info .user-nav-role {
     display: block !important;
-    color: #6b7a8a;
+    color: #7b8a85;
     font-size: 11px;
     font-weight: 500;
 }

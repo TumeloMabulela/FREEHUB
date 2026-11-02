@@ -51,7 +51,7 @@ namespace FreeHubProject
                 int unreadCount = unreadResult != null ? Convert.ToInt32(unreadResult) : 0;
 
                 litUnreadDot.Text = unreadCount > 0
-                    ? $"<span style='position: absolute; top: -6px; right: -8px; background-color: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; font-weight: bold; line-height: 1;'>{unreadCount}</span>"
+                    ? $"<span style='position: absolute; top: -4px; right: -4px; left: auto; background-color: #ef4444; color: white; border-radius: 50%; min-width: 16px; height: 16px; padding: 0 4px; box-sizing: border-box; font-size: 10px; font-weight: bold; line-height: 16px; text-align: center; display: inline-block;'>{unreadCount}</span>"
                     : "";
             }
             catch
