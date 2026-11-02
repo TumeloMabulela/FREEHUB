@@ -98,11 +98,15 @@ namespace FreeHubProject
                     lblDetailsProjectTitle.Text = Server.HtmlEncode(title);
                     lblDetailsProjectStatus.Text = Server.HtmlEncode(status);
 
-                    string viewUrl = ResolveUrl("~/ProjectDetails.aspx?projectId=" + ActiveProjectId);
-                    lnkViewProject.NavigateUrl = viewUrl;
-                    lnkDetailsViewProject.NavigateUrl = viewUrl;
+                    // "View Project" is role-aware: employers go to My Projects, freelancers
+                    // go to View Progress. The right-panel "View project details" link keeps
+                    // pointing at the full project page.
+                    string role = Session["UserType"] as string ?? "";
+                    string viewProjectUrl = role.Equals("Employer", StringComparison.OrdinalIgnoreCase)
+                        ? ResolveUrl("~/MyProjects.aspx")
+                        : ResolveUrl("~/ViewProgress.aspx");
+                    lnkViewProject.NavigateUrl = viewProjectUrl;
                     lnkViewProject.Visible = true;
-                    lnkDetailsViewProject.Visible = true;
 
                     // Project-status dot reflects the PROJECT status (distinct from chat status).
                     bool projActive = !status.Equals("Completed", StringComparison.OrdinalIgnoreCase) &&
@@ -134,7 +138,6 @@ namespace FreeHubProject
             lblDetailsProjectTitle.Text = "No active project";
             lblDetailsProjectStatus.Text = "&#8212;";
             lnkViewProject.Visible = false;
-            lnkDetailsViewProject.Visible = false;
             projBarDot.Attributes["class"] = "fh-dot-grey";
             detailsStatusDot.Attributes["class"] = "fh-dot-grey";
         }

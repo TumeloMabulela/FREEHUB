@@ -724,7 +724,6 @@
                     <span id="detailsStatusDot" runat="server" class="fh-dot-green"></span>
                     <asp:Label ID="lblDetailsProjectStatus" runat="server" Text="&#8212;" />
                 </div>
-                <asp:HyperLink ID="lnkDetailsViewProject" runat="server" CssClass="fh-details-link" NavigateUrl="#">View project details &#8594;</asp:HyperLink>
 
                 <div class="fh-details-sub">SHARED FILES</div>
             </div>
