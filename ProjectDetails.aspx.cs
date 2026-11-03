@@ -261,6 +261,60 @@ namespace FreeHubProject
 
                     // Insert a new comment into the Comment table
                     DatabaseHelper.AddComment(ProjectId, userId, commentText);
+
+                    // ============================================================
+                    // NOTIFY THE EMPLOYER when a freelancer posts a comment
+                    // 1. Get the project and employer details
+                    // 2. IF the commenter is not the employer themselves, send a notification
+                    // 3. The notification includes the comment text and a link to reply
+                    // ============================================================
+                    try
+                    {
+                        // Get the project details to find the employer
+                        DataRow project = DatabaseHelper.GetProjectById(ProjectId);
+                        if (project != null)
+                        {
+                            // Get the employer's user ID from the project
+                            string getEmployerQuery = @"
+                                SELECT e.userID AS EmployerUserID, u.firstName + ' ' + u.lastName AS EmployerName
+                                FROM Project p
+                                INNER JOIN Employer e ON p.employerID = e.employerID
+                                INNER JOIN [User] u ON e.userID = u.userID
+                                WHERE p.projectID = @ProjectID";
+
+                            DataRow employerRow = DatabaseHelper.GetDataRow(getEmployerQuery,
+                                new System.Data.SqlClient.SqlParameter("@ProjectID", ProjectId));
+
+                            if (employerRow != null)
+                            {
+                                int employerUserId = Convert.ToInt32(employerRow["EmployerUserID"]);
+
+                                // IF the commenter is NOT the employer themselves, send notification
+                                // (no point notifying the employer about their own comment)
+                                if (employerUserId != userId)
+                                {
+                                    // Get the commenter's name
+                                    string commenterName = Session["FirstName"] + " " + Session["LastName"];
+                                    string projectTitle = Convert.ToString(project["title"]);
+
+                                    // Build the notification message with a reply link
+                                    string notificationMsg = $"{commenterName} commented on your project " +
+                                        $"<strong>\"{projectTitle}\"</strong>: " +
+                                        $"<em>\"{(commentText.Length > 100 ? commentText.Substring(0, 100) + "..." : commentText)}\"</em> " +
+                                        $"<a href='ProjectDetails.aspx?id={ProjectId}' style='color:#059669;font-weight:bold;'>Reply here</a>";
+
+                                    // Send the notification to the employer
+                                    NotificationHelper.CreateNotification(employerUserId, "Project", notificationMsg);
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // IF notification fails, don't block the comment from being posted
+                        // The comment is already saved, the notification is just a bonus
+                    }
+
                     ShowMessage("Comment posted successfully!", true);
                 }
 
